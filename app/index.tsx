@@ -1,4 +1,5 @@
 import { Text, View } from "react-native";
+import Page from "./components/page";
 
 export default function Index() {
   return (
@@ -10,6 +11,7 @@ export default function Index() {
       }}
     >
       <Text>Wallet Guru</Text>
+      <Page></Page>
     </View>
   );
 }
