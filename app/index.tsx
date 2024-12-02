@@ -1,17 +1,17 @@
-import { Text, View } from "react-native";
-import Page from "./components/page";
+import { Text, View, StyleSheet, Dimensions } from "react-native";
+import TopBar from "./components/topBar";
+
+const styles = StyleSheet.create({
+  root: {
+    backgroundColor: "white",
+    minHeight: Dimensions.get("window")['height'],
+  }
+});
 
 export default function Index() {
   return (
-    <View
-      style={{
-        flex: 1,
-        justifyContent: "center",
-        alignItems: "center",
-      }}
-    >
-      <Text>Wallet Guru</Text>
-      <Page></Page>
+    <View style={styles.root}>
+      <TopBar />
     </View>
   );
 }
