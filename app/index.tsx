@@ -1,5 +1,5 @@
 import { Text, View, StyleSheet, Dimensions } from "react-native";
-import Page from "../components/page";
+import { Link } from "expo-router";
 
 const styles = StyleSheet.create({
     root: {
@@ -12,7 +12,13 @@ export default function Index() {
 
     return (
         <View style={styles.root}>
-            <Page></Page>
+            <Link href={"/menu"}>
+                <Text>Menu</Text>
+            </Link>
+
+            <Link href={"/login"}>
+                <Text>Login</Text>
+            </Link>
         </View>
     );
 }

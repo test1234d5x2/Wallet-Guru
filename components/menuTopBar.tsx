@@ -13,11 +13,6 @@ const styles = StyleSheet.create({
         paddingHorizontal: 15,
         backgroundColor: '#fff',
     },
-    menuContainer: {
-        display: "flex",
-        flexDirection: "column",
-        rowGap: 20,
-    },
     iconButton: {
         padding: 5,
     },
@@ -26,35 +21,17 @@ const styles = StyleSheet.create({
 
 export default function MenuTopBar() {
 
-    const menuItems = [
-        {title: 'Add Expense'},
-        {title: 'Add Income'},
-        {title: 'Transaction History'},
-        {title: 'Create A New Goal'},
-        {title: 'View Goals'},
-        {title: 'Create An Expense Category'},
-        {title: 'Expense Category Overview'},
-        {title: 'Spending Analytics'},
-      ];
-
     return (
         <View style={styles.container}>
             <View>
                 <TouchableOpacity style={styles.iconButton}>
-                    <Link href={"/login"}>
+                    <Link href={"/"}>
                         <Ionicons name="close" size={28} color="black" />
                     </Link>
                 </TouchableOpacity>
             </View>
             
-            <View style={styles.menuContainer}>
-                {menuItems.map((item) => {return <MenuItem key={item.title} title={item.title} />})}
-            </View>
-
-            <View>
-                <Text>Log Out</Text>
-                <Text>This needs to be displayed at the bottom.</Text>
-            </View>
+            
         </View>
     );
 };
