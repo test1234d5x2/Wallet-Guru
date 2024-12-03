@@ -1,7 +1,5 @@
 import { Text, View, StyleSheet, Dimensions } from "react-native";
-import TopBar from "./components/topBar";
-import MenuTopBar from "./components/menuTopBar";
-import { useNavigation } from "expo-router";
+import Page from "../components/page";
 
 const styles = StyleSheet.create({
     root: {
@@ -14,7 +12,7 @@ export default function Index() {
 
     return (
         <View style={styles.root}>
-            <MenuTopBar />
+            <Page></Page>
         </View>
     );
 }

@@ -10,8 +10,6 @@ const styles = StyleSheet.create({
         backgroundColor: '#fff',
         paddingVertical: 10,
         paddingHorizontal: 15,
-        borderBottomWidth: 1,
-        borderBottomColor: '#ddd',
     },
     iconButton: {
         padding: 5,
@@ -24,15 +22,19 @@ const styles = StyleSheet.create({
 });
 
 
+interface TopBarProps {
+    title: string
+}
 
-export default function TopBar() {
+
+export default function TopBar(props: TopBarProps) {
     return (
         <View style={styles.container}>
             <TouchableOpacity style={styles.iconButton}>
                 <Ionicons name="menu" size={28} color="black" />
             </TouchableOpacity>
 
-            <Text style={styles.title}>A Page</Text>
+            <Text style={styles.title}>{props.title}</Text>
 
             <TouchableOpacity style={styles.iconButton}>
                 <Ionicons name="person-circle-outline" size={28} color="black" />
