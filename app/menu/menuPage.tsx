@@ -1,7 +1,6 @@
-import { View, Text } from "react-native";
+import { View, Text, StyleSheet, Dimensions } from "react-native";
 
 import MainMenu from "@/components/menuComponents/menu";
-import MenuTopBar from "@/components/topBars/menuTopBar";
 import setPageTitle from "@/components/pageTitle/setPageTitle";
 
 
@@ -10,14 +9,17 @@ export default function Menu() {
     setPageTitle("Menu")
 
     return (
-        <View>
-            <View>
-                <MenuTopBar />
-            </View>
-
-            <View>
-                <MainMenu />
-            </View>
+        <View style={styles.container}>
+            <MainMenu />
         </View>
     )
 }
+
+const styles = StyleSheet.create({
+    container: {
+        padding: 20,
+        backgroundColor: '#fff',
+        minHeight: Dimensions.get("window").height,
+        rowGap: 20,
+    },
+});
