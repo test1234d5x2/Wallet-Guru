@@ -9,7 +9,7 @@ export default function LoginForm() {
     const handleLogin = () => {
         if (!email || !password) {
             setError('Please enter both email and password')
-            Alert.alert("An error message")
+            Alert.alert("Please enter both email and password")
             return;
         }
     }
@@ -19,7 +19,8 @@ export default function LoginForm() {
 
             <TextInput
                 style={styles.input}
-                placeholder="Email"
+                placeholder={"Email"}
+                placeholderTextColor={"rgba(0,0,0,0.25)"}
                 value={email}
                 onChangeText={setEmail}
                 keyboardType="email-address"
@@ -27,7 +28,8 @@ export default function LoginForm() {
 
             <TextInput
                 style={styles.input}
-                placeholder="Password"
+                placeholder={"Password"}
+                placeholderTextColor={"rgba(0,0,0,0.25)"}
                 value={password}
                 onChangeText={setPassword}
                 secureTextEntry={true}
@@ -35,12 +37,12 @@ export default function LoginForm() {
 
             {error ? <Text style={styles.errorText}>{error}</Text> : null}
 
-            <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
-                <Text style={styles.loginButtonText}>Login</Text>
+            <TouchableOpacity>
+                <Text style={styles.newUserText}>New User? Register Here</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity>
-                <Text style={styles.forgotPasswordText}>New User? Register Here</Text>
+            <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
+                <Text style={styles.loginButtonText}>Login</Text>
             </TouchableOpacity>
         </View>
     );
@@ -50,7 +52,7 @@ const styles = StyleSheet.create({
     container: {
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: '#f0f0f0',
+        rowGap: 20,
         padding: 20,
     },
     input: {
@@ -60,7 +62,6 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderRadius: 10,
         paddingLeft: 15,
-        marginBottom: 15,
         fontSize: 16,
     },
     loginButton: {
@@ -69,14 +70,13 @@ const styles = StyleSheet.create({
         padding: 15,
         borderRadius: 10,
         alignItems: 'center',
-        marginBottom: 20,
     },
     loginButtonText: {
         color: '#fff',
         fontSize: 18,
         fontWeight: 'bold',
     },
-    forgotPasswordText: {
+    newUserText: {
         fontSize: 14,
         color: 'rgba(0,0,0,0.5)',
         textDecorationLine: 'underline',
@@ -84,6 +84,5 @@ const styles = StyleSheet.create({
     errorText: {
         color: 'red',
         fontSize: 14,
-        marginBottom: 10,
     },
 })
