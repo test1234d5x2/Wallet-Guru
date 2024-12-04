@@ -3,6 +3,7 @@ import { useState } from "react";
 import { Link } from "expo-router";
 import AuthenticationInputs from "@/components/formComponents/authenticationInputs";
 
+
 export default function Login() {
 
     const [email, setEmail] = useState<string>('')
@@ -10,7 +11,7 @@ export default function Login() {
     const [error, setError] = useState<string>('')
 
 
-    const handleLogin = () => {
+    const handleRegistration = () => {
         if (!email || !password) {
             setError("Please input both email and password")
             Alert.alert("Please input both email and password")
@@ -22,19 +23,18 @@ export default function Login() {
         <View style={styles.container}>
             <AuthenticationInputs email={email} password={password} setEmail={setEmail} setPassword={setPassword} />
 
-
             {error ? <View style={styles.errorTextContainer}><Text style={styles.errorText}>{error}</Text></View> : null}
 
-            <View style={styles.newUserTextContainer}>
+            <View style={styles.registeredUserTextContainer}>
                 <TouchableOpacity>
-                    <Link href={"/registration/registrationPage"}>
-                        <Text style={styles.newUserText}>New User? Register Here</Text>
+                    <Link href={"/login/loginPage"}>
+                        <Text style={styles.registeredUserText}>Already Registered? Login Here</Text>
                     </Link>
                 </TouchableOpacity>
             </View>
 
-            <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
-                <Text style={styles.loginButtonText}>Login</Text>
+            <TouchableOpacity style={styles.loginButton} onPress={handleRegistration}>
+                <Text style={styles.loginButtonText}>Register</Text>
             </TouchableOpacity>
         </View>
     )
@@ -59,15 +59,16 @@ const styles = StyleSheet.create({
         fontSize: 18,
         fontWeight: 'bold',
     },
-    newUserTextContainer: {
+    registeredUserTextContainer: {
         justifyContent: "center",
         alignItems: "center"
     },
-    newUserText: {
+    registeredUserText: {
         fontSize: 14,
         color: 'rgba(0,0,0,0.5)',
         textDecorationLine: 'underline',
-        textAlign: "center"
+        textAlign: "center",
+        width: "100%",
     },
     errorTextContainer: {
         justifyContent: "center",

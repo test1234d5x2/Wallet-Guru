@@ -5,6 +5,7 @@ const styles = StyleSheet.create({
     root: {
         backgroundColor: "white",
         minHeight: Dimensions.get("window")['height'],
+        rowGap: 20,
     }
 });
 
@@ -18,6 +19,10 @@ export default function Index() {
 
             <Link href={"/login"}>
                 <Text>Login</Text>
+            </Link>
+
+            <Link href={"/registration"}>
+                <Text>Registration</Text>
             </Link>
         </View>
     );
