@@ -1,9 +1,10 @@
-import { Text, View, StyleSheet, Dimensions } from "react-native";
+import { Text, View, StyleSheet, Dimensions, ScrollView } from "react-native";
 import { Link } from "expo-router";
 import setPageTitle from "@/components/pageTitle/setPageTitle";
 
 const styles = StyleSheet.create({
     root: {
+        display: "flex",
         backgroundColor: "white",
         minHeight: Dimensions.get("window")['height'],
         rowGap: 20,
@@ -15,7 +16,7 @@ export default function Index() {
     setPageTitle("PAGE WILL BE REMOVED")
 
     return (
-        <View style={styles.root}>
+        <ScrollView contentContainerStyle={styles.root}>
             <Link href={"/menu/menuPage"}>
                 <Text>Menu</Text>
             </Link>
@@ -84,9 +85,21 @@ export default function Index() {
                 <Text>Account Overview</Text>
             </Link>
 
+            <Link href={"/dashboard/dashboardPage"}>
+                <Text>Dashboard</Text>
+            </Link>
+
+            <Link href={"/listTransactions/listTransactionsPage"}>
+                <Text>View All Transactions</Text>
+            </Link>
+
+            <Link href={"/analytics/analyticsPage"}>
+                <Text>Spending Analytics</Text>
+            </Link>
+
             <Link href={"/flatListTest"}>
                 <Text>Selection Dropdown Component Test</Text>
             </Link>
-        </View>
+        </ScrollView>
     )
 }
