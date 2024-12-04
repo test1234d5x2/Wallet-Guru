@@ -3,9 +3,6 @@ import { Text, View, TouchableOpacity, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Link } from 'expo-router';
 
-import MenuItem from './menuItem';
-
-
 const styles = StyleSheet.create({
     container: {
         rowGap: 20,

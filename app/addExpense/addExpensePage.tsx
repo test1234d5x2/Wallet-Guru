@@ -2,20 +2,25 @@ import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Alert, ScrollView, Dimensions } from 'react-native';
 import ExpenseDetailsInputs from '@/components/formComponents/expenseDetailsInputs';
 import setPageTitle from '@/components/pageTitle/setPageTitle';
+import TopBar from '@/components/topBars/topBar';
+
+
 
 export default function AddExpense() {
 
     setPageTitle("Add Expense")
 
-    const [title, setTitle] = useState<string>('');
-    const [amount, setAmount] = useState<string>('');
-    const [date, setDate] = useState<string>('');
-    const [category, setCategory] = useState<string>('Select Category');
-    const [notes, setNotes] = useState<string>('');
+    const [title, setTitle] = useState<string>('')
+    const [amount, setAmount] = useState<string>('')
+    const [date, setDate] = useState<string>('')
+    const [category, setCategory] = useState<string>('Select Category')
+    const [notes, setNotes] = useState<string>('')
+    const [error, setError] = useState<string>('')
 
     const handleAddExpense = () => {
         if (!title || !amount || !date || category === 'Select Category') {
-            Alert.alert('Error', 'Please fill in all required fields.');
+            Alert.alert('Please fill in all required fields.');
+            setError("Fill in all the required fields.")
             return;
         }
 
@@ -29,6 +34,7 @@ export default function AddExpense() {
 
     return (
         <ScrollView contentContainerStyle={styles.container}>
+            <TopBar />
 
             <View style={styles.expenseForm}>
                 <ExpenseDetailsInputs 
@@ -46,6 +52,8 @@ export default function AddExpense() {
                 />
             </View>
 
+            {error ? <View style={styles.centeredTextContainer}><Text style={styles.errorText}>{error}</Text></View> : null}
+
             <View style={styles.centeredTextContainer}>
                 <TouchableOpacity>
                     <Text style={styles.scanText}>Scan Receipt</Text>
@@ -53,7 +61,7 @@ export default function AddExpense() {
             </View>
             
 
-            <TouchableOpacity style={styles.addButton}>
+            <TouchableOpacity style={styles.addButton} onPress={handleAddExpense}>
                 <Text style={styles.addButtonText}>Add Expense</Text>
             </TouchableOpacity>
         </ScrollView>
@@ -65,7 +73,7 @@ const styles = StyleSheet.create({
     container: {
         display: "flex",
         rowGap: 20,
-        padding: 30,
+        padding: 20,
         backgroundColor: '#fff',
         minHeight: Dimensions.get("window").height,
     },
@@ -90,5 +98,9 @@ const styles = StyleSheet.create({
     centeredTextContainer: {
         justifyContent: "center",
         alignItems: "center",
-    }
+    },
+    errorText: {
+        color: 'red',
+        fontSize: 14,
+    },
 })

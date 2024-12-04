@@ -8,8 +8,6 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         alignItems: 'center',
         backgroundColor: '#fff',
-        paddingVertical: 10,
-        paddingHorizontal: 15,
     },
     iconButton: {
         padding: 5,
@@ -22,19 +20,13 @@ const styles = StyleSheet.create({
 });
 
 
-interface TopBarProps {
-    title: string
-}
 
-
-export default function TopBar(props: TopBarProps) {
+export default function TopBar() {
     return (
         <View style={styles.container}>
             <TouchableOpacity style={styles.iconButton}>
                 <Ionicons name="menu" size={28} color="black" />
             </TouchableOpacity>
-
-            <Text style={styles.title}>{props.title}</Text>
 
             <TouchableOpacity style={styles.iconButton}>
                 <Ionicons name="person-circle-outline" size={28} color="black" />

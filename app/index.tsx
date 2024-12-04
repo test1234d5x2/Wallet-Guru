@@ -35,6 +35,10 @@ export default function Index() {
             <Link href={"/editExpense/editExpensePage"}>
                 <Text>Edit Expense</Text>
             </Link>
+            
+            <Link href={"/viewExpenseDetails/viewExpenseDetailsPage"}>
+                <Text>View Expense Details</Text>
+            </Link>
 
             <Link href={"/flatListTest"}>
                 <Text>Selection Dropdown Componenet Test</Text>
