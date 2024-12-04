@@ -1,9 +1,12 @@
 import { View, Text, StyleSheet, Dimensions, TouchableOpacity, Alert } from "react-native";
 import { useState } from "react";
 import { Link } from "expo-router";
+import setPageTitle from "@/components/pageTitle/setPageTitle";
 import AuthenticationInputs from "@/components/formComponents/authenticationInputs";
 
 export default function Login() {
+
+    setPageTitle("Login")
 
     const [email, setEmail] = useState<string>('')
     const [password, setPassword] = useState<string>('')

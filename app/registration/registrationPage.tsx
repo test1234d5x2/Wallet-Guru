@@ -2,9 +2,12 @@ import { View, Text, StyleSheet, Dimensions, TouchableOpacity, Alert } from "rea
 import { useState } from "react";
 import { Link } from "expo-router";
 import AuthenticationInputs from "@/components/formComponents/authenticationInputs";
+import setPageTitle from "@/components/pageTitle/setPageTitle";
 
 
 export default function Login() {
+
+    setPageTitle("Create User")
 
     const [email, setEmail] = useState<string>('')
     const [password, setPassword] = useState<string>('')
