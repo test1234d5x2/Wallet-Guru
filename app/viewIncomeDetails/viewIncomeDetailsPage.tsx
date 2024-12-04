@@ -5,40 +5,33 @@ import { View, Text, TouchableOpacity, StyleSheet, Alert, Dimensions } from 'rea
 
 
 
-export default function ExpenseDetailsScreen() {
+export default function IncomeDetailsScreen() {
 
-    setPageTitle("Expense Name")
+    setPageTitle("Income Name")
 
     const handleEdit = () => {
-        Alert.alert('Edit Expense', 'Edit functionality not implemented yet.')
+        Alert.alert('Edit Income', 'Edit functionality not implemented yet.')
     };
 
     const handleDelete = () => {
-        Alert.alert('Delete Expense', 'Are you sure you want to delete this expense?', [
+        Alert.alert('Delete Income', 'Are you sure you want to delete this income source?', [
             { text: 'Cancel', style: 'cancel' },
-            { text: 'Delete', style: 'destructive', onPress: () => console.log('Expense deleted') },
+            { text: 'Delete', style: 'destructive', onPress: () => console.log('Income source deleted') },
         ])
-    }
-
-    const handleViewReceipt = () => {
-        Alert.alert("Needs Implementing")
     }
 
     return (
         <View style={styles.mainContainer}>
             <TopBar />
             <View style={styles.container}>
-                <Text style={styles.detail}>Category: {"Expense Category"}</Text>
-                <Text style={styles.detail}>£{"Expense Amount"}</Text>
+                <Text style={styles.detail}>£{"Income Amount"}</Text>
                 <Text style={styles.detail}>{"date"}</Text>
                 <View>
                     <Text style={styles.notesTitle}>Notes:</Text>
                     <Text style={styles.notes}>{"notes"}</Text>
                 </View>
-                
-                <TouchableOpacity onPress={handleViewReceipt}>
-                    <Text style={styles.viewReceipt}>View Receipt</Text>
-                </TouchableOpacity>
+
+
                 <View style={styles.buttonContainer}>
                     <TouchableOpacity style={[styles.button, styles.editButton]} onPress={handleEdit}>
                         <Text style={styles.buttonText}>Edit</Text>
@@ -82,13 +75,6 @@ const styles = StyleSheet.create({
     notes: {
         fontSize: 14,
         color: '#555',
-    },
-    viewReceipt: {
-        marginTop: 20,
-        fontSize: 16,
-        color: '#007BFF',
-        textDecorationLine: 'underline',
-        textAlign: 'center',
     },
     buttonContainer: {
         flexDirection: 'row',

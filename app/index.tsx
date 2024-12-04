@@ -40,6 +40,30 @@ export default function Index() {
                 <Text>View Expense Details</Text>
             </Link>
 
+            <Link href={"/addIncome/addIncomePage"}>
+                <Text>Add Income</Text>
+            </Link>
+
+            <Link href={"/editIncome/editIncomePage"}>
+                <Text>Edit Income</Text>
+            </Link>
+
+            <Link href={"/viewIncomeDetails/viewIncomeDetailsPage"}>
+                <Text>View Income Details</Text>
+            </Link>
+
+            <Link href={"/addExpenseCategory/addExpenseCategoryPage"}>
+                <Text>Add Expense Category</Text>
+            </Link>
+
+            <Link href={"/editExpenseCategory/editExpenseCategoryPage"}>
+                <Text>Edit Expense Category</Text>
+            </Link>
+            
+            <Link href={"/expenseCategoriesOverview/expenseCategoriesOverviewPage"}>
+                <Text>Expense Categories Overview</Text>
+            </Link>
+
             <Link href={"/flatListTest"}>
                 <Text>Selection Dropdown Componenet Test</Text>
             </Link>
