@@ -8,7 +8,7 @@ const styles = StyleSheet.create({
         minHeight: Dimensions.get("window")['height'],
         rowGap: 20,
     }
-});
+})
 
 export default function Index() {
 
@@ -52,6 +52,22 @@ export default function Index() {
                 <Text>View Income Details</Text>
             </Link>
 
+            <Link href={"/addGoal/addGoalPage"}>
+                <Text>Add Goal</Text>
+            </Link>
+
+            <Link href={"/updateGoal/updateGoalPage"}>
+                <Text>Update Goal</Text>
+            </Link>
+
+            <Link href={"/allGoals/allGoalsPage"}>
+                <Text>View All Goals</Text>
+            </Link>
+
+            <Link href={"/viewGoalDetails/viewGoalDetailsPage"}>
+                <Text>View Goal Details</Text>
+            </Link>
+
             <Link href={"/addExpenseCategory/addExpenseCategoryPage"}>
                 <Text>Add Expense Category</Text>
             </Link>
@@ -64,9 +80,13 @@ export default function Index() {
                 <Text>Expense Categories Overview</Text>
             </Link>
 
+            <Link href={"/accountOverview/accountOverviewPage"}>
+                <Text>Account Overview</Text>
+            </Link>
+
             <Link href={"/flatListTest"}>
-                <Text>Selection Dropdown Componenet Test</Text>
+                <Text>Selection Dropdown Component Test</Text>
             </Link>
         </View>
-    );
+    )
 }

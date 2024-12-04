@@ -4,9 +4,9 @@ import setPageTitle from '@/components/pageTitle/setPageTitle';
 import TopBar from '@/components/topBars/topBar';
 
 
-export default function ViewExpenseCategories() {
+export default function ViewGoalDetails() {
 
-    setPageTitle("Expense Categories")
+    setPageTitle("View Goal Detials")
 
     return (
         <View style={styles.container}>

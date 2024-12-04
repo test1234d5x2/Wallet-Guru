@@ -2,28 +2,27 @@ import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Alert, ScrollView, Dimensions } from 'react-native';
 import setPageTitle from '@/components/pageTitle/setPageTitle';
 import TopBar from '@/components/topBars/topBar';
-import IncomeDetailsInputs from '@/components/formComponents/incomeDetailsInputs';
+import GoalDetailsInputs from '@/components/formComponents/goalDetailsInputs';
 
 
+export default function AddGoal() {
 
-export default function AddIncome() {
-
-    setPageTitle("Add Income")
+    setPageTitle("Add Goal")
 
     const [title, setTitle] = useState<string>('')
-    const [amount, setAmount] = useState<string>('')
+    const [target, setTarget] = useState<string>('')
     const [date, setDate] = useState<string>('')
     const [notes, setNotes] = useState<string>('')
     const [error, setError] = useState<string>('')
 
-    const handleAddIncome = () => {
-        if (!title || !amount || !date) {
+    const handleAddGoal = () => {
+        if (!title || !target || !date) {
             Alert.alert('Please fill in all required fields.');
             setError("Fill in all the required fields.")
             return;
         }
 
-        Alert.alert('Success', 'Income added successfully!');
+        Alert.alert('Success', 'Goal added successfully!');
         return
     }
 
@@ -31,14 +30,14 @@ export default function AddIncome() {
         <ScrollView contentContainerStyle={styles.container}>
             <TopBar />
 
-            <View style={styles.incomeForm}>
-                <IncomeDetailsInputs 
+            <View style={styles.goalForm}>
+                <GoalDetailsInputs 
                     title={title}
-                    amount={amount}
+                    target={target}
                     date={date}
                     notes={notes}
                     setTitle={setTitle}
-                    setAmount={setAmount}
+                    setTarget={setTarget}
                     setDate={setDate}
                     setNotes={setNotes}
                 />
@@ -47,8 +46,8 @@ export default function AddIncome() {
             {error ? <View style={styles.centeredTextContainer}><Text style={styles.errorText}>{error}</Text></View> : null}
             
 
-            <TouchableOpacity style={styles.addButton} onPress={handleAddIncome}>
-                <Text style={styles.addButtonText}>Add Income</Text>
+            <TouchableOpacity style={styles.addButton} onPress={handleAddGoal}>
+                <Text style={styles.addButtonText}>Add Goal</Text>
             </TouchableOpacity>
         </ScrollView>
     )
@@ -63,7 +62,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#fff',
         minHeight: Dimensions.get("window").height,
     },
-    incomeForm: {
+    goalForm: {
         marginBottom: 40,
     },
     scanText: {
