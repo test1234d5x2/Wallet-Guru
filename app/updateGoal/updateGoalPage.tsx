@@ -20,7 +20,11 @@ export default function UpdateGoal() {
         }
         setError("");
         console.log("Progress updated with amount:", parseFloat(amount))
-    };
+    }
+
+    const handleHelpClick = () => [
+        Alert.alert("Update Current Goal Status", "To update your progress, enter the amount you have added to your fund. If you have taken money out of the fund, you can enter a negative number.")
+    ]
 
     return (
         <View style={styles.container}>
@@ -42,7 +46,7 @@ export default function UpdateGoal() {
                 />
 
                 <TouchableOpacity>
-                    <Ionicons name="help-circle-outline" size={24} color="black" />
+                    <Ionicons name="help-circle-outline" size={24} color="black" onPress={handleHelpClick} />
                 </TouchableOpacity>
             </View>
 
@@ -54,8 +58,8 @@ export default function UpdateGoal() {
                 <Text style={styles.updateButtonText}>Update Progress</Text>
             </TouchableOpacity>
         </View>
-    );
-};
+    )
+}
 
 const styles = StyleSheet.create({
     container: {
