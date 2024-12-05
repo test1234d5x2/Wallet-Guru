@@ -5,9 +5,10 @@ import setPageTitle from "@/components/pageTitle/setPageTitle";
 const styles = StyleSheet.create({
     root: {
         backgroundColor: "white",
-        flex: 1,
         rowGap: 20,
-    }
+        padding: 40,
+    },
+    text: {fontSize: 20},
 })
 
 export default function Index() {
@@ -17,87 +18,87 @@ export default function Index() {
     return (
         <ScrollView contentContainerStyle={styles.root}>
             <Link href={"/menu/menuPage"}>
-                <Text>Menu</Text>
+                <Text style={styles.text}>Menu</Text>
             </Link>
 
             <Link href={"/login/loginPage"}>
-                <Text>Login</Text>
+                <Text style={styles.text}>Login</Text>
             </Link>
 
             <Link href={"/registration/registrationPage"}>
-                <Text>Registration</Text>
+                <Text style={styles.text}>Registration</Text>
             </Link>
 
             <Link href={"/addExpense/addExpensePage"}>
-                <Text>Add Expense</Text>
+                <Text style={styles.text}>Add Expense</Text>
             </Link>
 
             <Link href={"/editExpense/editExpensePage"}>
-                <Text>Edit Expense</Text>
+                <Text style={styles.text}>Edit Expense</Text>
             </Link>
             
             <Link href={"/viewExpenseDetails/viewExpenseDetailsPage"}>
-                <Text>View Expense Details</Text>
+                <Text style={styles.text}>View Expense Details</Text>
             </Link>
 
             <Link href={"/addIncome/addIncomePage"}>
-                <Text>Add Income</Text>
+                <Text style={styles.text}>Add Income</Text>
             </Link>
 
             <Link href={"/editIncome/editIncomePage"}>
-                <Text>Edit Income</Text>
+                <Text style={styles.text}>Edit Income</Text>
             </Link>
 
             <Link href={"/viewIncomeDetails/viewIncomeDetailsPage"}>
-                <Text>View Income Details</Text>
+                <Text style={styles.text}>View Income Details</Text>
             </Link>
 
             <Link href={"/addGoal/addGoalPage"}>
-                <Text>Add Goal</Text>
+                <Text style={styles.text}>Add Goal</Text>
             </Link>
 
             <Link href={"/updateGoal/updateGoalPage"}>
-                <Text>Update Goal</Text>
+                <Text style={styles.text}>Update Goal</Text>
             </Link>
 
             <Link href={"/allGoals/allGoalsPage"}>
-                <Text>View All Goals</Text>
+                <Text style={styles.text}>View All Goals</Text>
             </Link>
 
             <Link href={"/viewGoalDetails/viewGoalDetailsPage"}>
-                <Text>View Goal Details</Text>
+                <Text style={styles.text}>View Goal Details</Text>
             </Link>
 
             <Link href={"/addExpenseCategory/addExpenseCategoryPage"}>
-                <Text>Add Expense Category</Text>
+                <Text style={styles.text}>Add Expense Category</Text>
             </Link>
 
             <Link href={"/editExpenseCategory/editExpenseCategoryPage"}>
-                <Text>Edit Expense Category</Text>
+                <Text style={styles.text}>Edit Expense Category</Text>
             </Link>
             
             <Link href={"/expenseCategoriesOverview/expenseCategoriesOverviewPage"}>
-                <Text>Expense Categories Overview</Text>
+                <Text style={styles.text}>Expense Categories Overview</Text>
             </Link>
 
             <Link href={"/accountOverview/accountOverviewPage"}>
-                <Text>Account Overview</Text>
+                <Text style={styles.text}>Account Overview</Text>
             </Link>
 
             <Link href={"/dashboard/dashboardPage"}>
-                <Text>Dashboard</Text>
+                <Text style={styles.text}>Dashboard</Text>
             </Link>
 
             <Link href={"/listTransactions/listTransactionsPage"}>
-                <Text>View All Transactions</Text>
+                <Text style={styles.text}>View All Transactions</Text>
             </Link>
 
             <Link href={"/analytics/analyticsPage"}>
-                <Text>Spending Analytics</Text>
+                <Text style={styles.text}>Spending Analytics</Text>
             </Link>
 
             <Link href={"/flatListTest"}>
-                <Text>Selection Dropdown Component Test</Text>
+                <Text style={styles.text}>Selection Dropdown Component Test</Text>
             </Link>
         </ScrollView>
     )
