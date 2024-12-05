@@ -1,6 +1,7 @@
 import React from 'react';
-import { View, TextInput, StyleSheet, Alert } from 'react-native';
-import { ScrollView } from 'react-native-gesture-handler';
+import { View, TextInput, StyleSheet } from 'react-native';
+import EmailInputField from './inputFields/emailInputField';
+import PasswordInputField from './inputFields/passwordInputField';
 
 interface AuthenticationInputsProps {
     email: string,
@@ -14,22 +15,14 @@ export default function AuthenticationInputs(props: AuthenticationInputsProps) {
     return (
         <View style={styles.container}>
 
-            <TextInput
-                style={styles.input}
-                placeholder={"Email"}
-                placeholderTextColor={"rgba(0,0,0,0.25)"}
-                value={props.email}
-                onChangeText={props.setEmail}
-                keyboardType="email-address"
+            <EmailInputField
+                email={props.email}
+                setEmail={(props.setEmail)}
             />
 
-            <TextInput
-                style={styles.input}
-                placeholder={"Password"}
-                placeholderTextColor={"rgba(0,0,0,0.25)"}
-                value={props.password}
-                onChangeText={props.setPassword}
-                secureTextEntry={true}
+            <PasswordInputField
+                password={props.password}
+                setPassword={props.setPassword} 
             />
 
         </View>

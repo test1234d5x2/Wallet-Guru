@@ -1,6 +1,7 @@
 import React from 'react';
-import { View, TextInput, StyleSheet } from 'react-native';
-
+import { View, StyleSheet } from 'react-native';
+import StandardInputField from './inputFields/standardInputField';
+import NumericInputField from './inputFields/numericInputField';
 
 interface ExpenseCategoryInputs {
     categoryName: string,
@@ -16,21 +17,16 @@ export default function ExpenseCategoryInputs(props: ExpenseCategoryInputs) {
     return (
         <View style={styles.container}>
 
-            <TextInput
-                style={styles.input}
-                placeholder="Category Name"
-                placeholderTextColor={"rgba(0,0,0,0.25)"}
+            <StandardInputField
                 value={props.categoryName}
-                onChangeText={props.setCategoryName}
+                setValue={props.setCategoryName}
+                placeholder="Category Name"
             />
 
-            <TextInput
-                style={styles.input}
-                placeholder="Monthly Limit"
-                placeholderTextColor={"rgba(0,0,0,0.25)"}
+            <NumericInputField
                 value={props.monthlyLimit}
-                keyboardType="numeric"
-                onChangeText={props.setMonthlyLimit}
+                placeholder="Monthly Limit"
+                setValue={props.setMonthlyLimit}
             />
 
         </View>
@@ -42,20 +38,5 @@ const styles = StyleSheet.create({
         backgroundColor: '#fff',
         justifyContent: 'center',
         rowGap: 20,
-    },
-    heading: {
-        fontSize: 20,
-        fontWeight: 'bold',
-        textAlign: 'center',
-        marginBottom: 20,
-    },
-    input: {
-        width: '100%',
-        height: 50,
-        borderColor: '#ccc',
-        borderWidth: 1,
-        borderRadius: 10,
-        paddingLeft: 15,
-        fontSize: 16,
     },
 });

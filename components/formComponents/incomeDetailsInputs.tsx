@@ -1,5 +1,7 @@
 import React from 'react';
-import { TextInput, StyleSheet, ScrollView } from 'react-native';
+import { StyleSheet, ScrollView } from 'react-native';
+import StandardInputField from './inputFields/standardInputField';
+import NumericInputField from './inputFields/numericInputField';
 
 
 interface IncomeDetailsInputsProps {
@@ -19,37 +21,28 @@ export default function IncomeDetailsInputs(props: IncomeDetailsInputsProps) {
     return (
         <ScrollView contentContainerStyle={styles.container}>
 
-            <TextInput
-                style={styles.input}
+            <StandardInputField
                 placeholder="Title"
-                placeholderTextColor={"rgba(0,0,0,0.25)"}
                 value={props.title}
-                onChangeText={props.setTitle}
+                setValue={props.setTitle}
             />
 
-            <TextInput
-                style={styles.input}
+            <NumericInputField
                 placeholder="Amount"
-                placeholderTextColor={"rgba(0,0,0,0.25)"}
-                keyboardType="numeric"
                 value={props.amount}
-                onChangeText={props.setAmount}
+                setValue={props.setAmount}
             />
 
-            <TextInput
-                style={styles.input}
+            <StandardInputField
                 placeholder="Date"
-                placeholderTextColor={"rgba(0,0,0,0.25)"}
                 value={props.date}
-                onChangeText={props.setDate}
+                setValue={props.setDate}
             />
 
-            <TextInput
-                style={styles.input}
+            <StandardInputField
                 placeholder="Notes"
-                placeholderTextColor={"rgba(0,0,0,0.25)"}
                 value={props.notes}
-                onChangeText={props.setNotes}
+                setValue={props.setNotes}
             />
         </ScrollView>
     );
@@ -59,14 +52,5 @@ const styles = StyleSheet.create({
     container: {
         backgroundColor: '#fff',
         rowGap: 20,
-    },
-    input: {
-        width: '100%',
-        height: 50,
-        borderColor: '#ccc',
-        borderWidth: 1,
-        borderRadius: 10,
-        paddingLeft: 15,
-        fontSize: 16,
     },
 });
