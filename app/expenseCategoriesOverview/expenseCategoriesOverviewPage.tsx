@@ -31,7 +31,7 @@ export default function ViewExpenseCategories() {
                 <Text style={styles.categoryName}>{category.name}</Text>
 
                 <Text style={styles.label}>Spending: £{category.spending}</Text>
-                <Progress.Bar progress={category.progress} color="#007BFF" />
+                <Progress.Bar progress={category.progress} color="#007BFF" width={null} />
                 <Text style={styles.label}>Budget: £{category.budget}</Text>
 
                 <View style={styles.actionsContainer}>
