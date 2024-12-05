@@ -66,11 +66,10 @@ const styles = StyleSheet.create({
         flex: 1,
         padding: 20,
         backgroundColor: "#fff",
-        rowGap: 20,
+        rowGap: 30,
     },
     label: {
         fontSize: 16,
-        marginVertical: 5,
     },
     inputContainer: {
         display: "flex",
@@ -83,20 +82,17 @@ const styles = StyleSheet.create({
         borderColor: "#ccc",
         borderRadius: 5,
         padding: 10,
-        marginVertical: 10,
         fontSize: 16,
     },
     errorText: {
         color: "red",
         fontSize: 14,
-        marginTop: 10,
     },
     updateButton: {
         backgroundColor: "#007BFF",
         padding: 15,
         borderRadius: 5,
         alignItems: "center",
-        marginTop: 20,
     },
     updateButtonText: {
         color: "#fff",

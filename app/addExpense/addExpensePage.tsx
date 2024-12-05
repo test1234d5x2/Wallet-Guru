@@ -75,7 +75,7 @@ const styles = StyleSheet.create({
         rowGap: 20,
         padding: 20,
         backgroundColor: '#fff',
-        minHeight: Dimensions.get("window").height,
+        flex: 1,
     },
     expenseForm: {
         marginBottom: 40,

@@ -4,9 +4,8 @@ import setPageTitle from "@/components/pageTitle/setPageTitle";
 
 const styles = StyleSheet.create({
     root: {
-        display: "flex",
         backgroundColor: "white",
-        minHeight: Dimensions.get("window")['height'],
+        flex: 1,
         rowGap: 20,
     }
 })

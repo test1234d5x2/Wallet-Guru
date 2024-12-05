@@ -46,7 +46,7 @@ export default function Login() {
 const styles = StyleSheet.create({
     container: {
         backgroundColor: "white",
-        minHeight: Dimensions.get("window").height,
+        flex: 1,
         rowGap: 20,
         padding: 20,
     },

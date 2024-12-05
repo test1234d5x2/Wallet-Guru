@@ -21,7 +21,7 @@ export default function AccountOverview() {
 
     return (
         <View style={styles.container}>
-            <Ionicons name="person-circle-outline" size={100} color="black" style={styles.icon} />
+            <Ionicons name="person-circle-outline" size={100} color="black" />
 
             <Text style={styles.emailText}>UserEmail@email.com</Text>
 
@@ -42,25 +42,21 @@ export default function AccountOverview() {
 
 const styles = StyleSheet.create({
     container: {
-        justifyContent: "center",
         alignItems: "center",
         backgroundColor: "#fff",
         padding: 20,
-    },
-    icon: {
-        marginBottom: 20,
+        flex: 1,
+        rowGap: 30,
     },
     emailText: {
         fontSize: 16,
         fontWeight: "bold",
-        marginBottom: 30,
     },
     buttonPrimary: {
         backgroundColor: "#007BFF",
         paddingVertical: 15,
         paddingHorizontal: 30,
         borderRadius: 5,
-        marginVertical: 10,
         width: "80%",
         alignItems: "center",
     },
@@ -69,7 +65,6 @@ const styles = StyleSheet.create({
         paddingVertical: 15,
         paddingHorizontal: 30,
         borderRadius: 5,
-        marginVertical: 40,
         width: "80%",
         alignItems: "center",
     },

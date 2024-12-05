@@ -56,11 +56,10 @@ export default function EditIncome() {
 
 const styles = StyleSheet.create({
     container: {
-        display: "flex",
         rowGap: 20,
         padding: 20,
         backgroundColor: '#fff',
-        minHeight: Dimensions.get("window").height,
+        flex: 1,
     },
     incomeForm: {
         marginBottom: 40,

@@ -54,7 +54,7 @@ export default function ExpenseDetailsScreen() {
 
 const styles = StyleSheet.create({
     mainContainer: {
-        minHeight: Dimensions.get("window").height,
+        flex: 1,
         padding: 20,
         backgroundColor: "white",
         rowGap: 20

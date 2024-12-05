@@ -62,7 +62,7 @@ const styles = StyleSheet.create({
     container: {
         padding: 20,
         backgroundColor: '#fff',
-        minHeight: Dimensions.get("window").height,
+        flex: 1,
         rowGap: 20,
     },
     categoryContainer: {

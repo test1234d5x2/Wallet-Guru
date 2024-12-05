@@ -38,7 +38,9 @@ export default function AddExpenseCategory() {
         <View style={styles.container}>
             <TopBar />
 
-            <ExpenseCategoryInputs categoryName={categoryName} monthlyLimit={monthlyLimit} setCategoryName={setCategoryName} setMonthlyLimit={setMonthlyLimit} />            
+            <View style={styles.expenseCategoryForm}>
+                <ExpenseCategoryInputs categoryName={categoryName} monthlyLimit={monthlyLimit} setCategoryName={setCategoryName} setMonthlyLimit={setMonthlyLimit} />
+            </View>
 
             {error === '' ? null: <Text style={styles.errorText}>{error}</Text>}
 
@@ -56,10 +58,12 @@ const styles = StyleSheet.create({
         minHeight: Dimensions.get("window").height,
         rowGap: 20,
     },
+    expenseCategoryForm: {
+        marginBottom: 40,
+    },
     errorText: {
         color: 'red',
         fontSize: 14,
-        marginBottom: 15,
         textAlign: 'center',
     },
     addButton: {
@@ -67,7 +71,6 @@ const styles = StyleSheet.create({
         padding: 15,
         borderRadius: 5,
         alignItems: 'center',
-        marginTop: 10,
     },
     addButtonText: {
         color: '#fff',
