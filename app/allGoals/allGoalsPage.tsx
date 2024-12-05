@@ -9,7 +9,7 @@ export default function AllGoals() {
 
     setPageTitle("All Goals")
 
-    const [selectedSort, setSelectedSort] = useState<string>("");
+    const [selectedSort, setSelectedSort] = useState<string>("")
 
     const goals = [
         { id: "1", title: "Goal Title", target: 2500, progress: 0.4 },
@@ -42,11 +42,11 @@ export default function AllGoals() {
     }
 
     const handleEdit = (id: string) => {
-        console.log(`Edit goal with ID: ${id}`);
+        console.log(`Edit goal with ID: ${id}`)
     };
 
     const handleDelete = (id: string) => {
-        console.log(`Delete goal with ID: ${id}`);
+        console.log(`Delete goal with ID: ${id}`)
     };
 
     return (
