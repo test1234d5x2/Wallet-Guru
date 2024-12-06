@@ -2,7 +2,7 @@ import React from 'react';
 import { View, StyleSheet, ScrollView } from 'react-native';
 import StandardInputField from './inputFields/standardInputField';
 import NumericInputField from './inputFields/numericInputField';
-import ModalSelection from '../modalSelection/ModalSelection';
+import ModalSelection from '../modalSelection/modalSelection';
 
 
 interface ExpenseDetailsInputsProps {

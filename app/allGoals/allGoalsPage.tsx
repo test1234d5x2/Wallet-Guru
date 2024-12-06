@@ -4,6 +4,7 @@ import * as Progress from 'react-native-progress';
 import { Ionicons } from '@expo/vector-icons';
 import setPageTitle from '@/components/pageTitle/setPageTitle';
 import TopBar from '@/components/topBars/topBar';
+import uuid from 'react-native-uuid';
 
 export default function AllGoals() {
 
@@ -21,7 +22,7 @@ export default function AllGoals() {
 
     for (let goal of goals) {
         displayElements.push(
-            <View key={goal.id} style={styles.goalContainer}>
+            <View key={uuid.v4()} style={styles.goalContainer}>
                 <View style={styles.goalHeader}>
                     <Text style={styles.goalTitle}>{goal.title}</Text>
                     <Text style={styles.goalTarget}>Target: £{goal.target}</Text>
@@ -38,7 +39,7 @@ export default function AllGoals() {
                 </View>
             </View>
         )
-        displayElements.push(<View style={styles.divider} key={Math.random().toString()} />)
+        displayElements.push(<View style={styles.divider} key={uuid.v4()} />)
     }
 
     const handleEdit = (id: string) => {

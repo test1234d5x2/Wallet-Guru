@@ -1,5 +1,5 @@
 import User from "./User";
-import { v4 as uuid4 } from "uuid";
+import uuid from 'react-native-uuid';
 
 class ExpenseCategory {
     id: string
@@ -7,7 +7,7 @@ class ExpenseCategory {
     monthlyBudget: number
 
     constructor(name: string, monthlyBudget: number) {
-        this.id = uuid4()
+        this.id = uuid.v4()
         this.name = name
         this.monthlyBudget = monthlyBudget
     }

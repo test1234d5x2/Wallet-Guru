@@ -1,6 +1,6 @@
 import Transaction from "./Transaction";
 import User from "./User";
-import { v4 as uuid4 } from "uuid";
+import uuid from 'react-native-uuid';
 
 class Income implements Transaction {
     id: string
@@ -11,7 +11,7 @@ class Income implements Transaction {
     notes: string
 
     constructor(user: User, title: string, amount: number, date: Date, notes: string) {
-        this.id = uuid4()
+        this.id = uuid.v4()
         this.user = user
         this.title = title
         this.amount = amount

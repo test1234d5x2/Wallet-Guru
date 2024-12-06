@@ -1,4 +1,4 @@
-import { v4 as uuid4 } from "uuid"
+import uuid from 'react-native-uuid';
 
 class User {
     private id: string
@@ -6,7 +6,7 @@ class User {
     private password: string
 
     constructor(username: string, password: string) {
-        this.id = uuid4();
+        this.id = uuid.v4()
         this.username = username
         this.password = password
     }

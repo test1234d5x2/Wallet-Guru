@@ -4,6 +4,7 @@ import * as Progress from 'react-native-progress';
 import { Ionicons } from '@expo/vector-icons';
 import setPageTitle from '@/components/pageTitle/setPageTitle';
 import TopBar from '@/components/topBars/topBar';
+import uuid from 'react-native-uuid';
 
 
 export default function ViewExpenseCategories() {
@@ -27,7 +28,7 @@ export default function ViewExpenseCategories() {
 
     for (let category of categories) {
         displayElements.push(
-            <View key={category.id} style={styles.categoryContainer}>
+            <View key={uuid.v4()} style={styles.categoryContainer}>
                 <Text style={styles.categoryName}>{category.name}</Text>
 
                 <Text style={styles.label}>Spending: £{category.spending}</Text>
@@ -45,7 +46,7 @@ export default function ViewExpenseCategories() {
             </View>
         )
 
-        displayElements.push(<View style={styles.divider} key={Math.random().toString()} />)
+        displayElements.push(<View style={styles.divider} key={uuid.v4()} />)
     }
 
 

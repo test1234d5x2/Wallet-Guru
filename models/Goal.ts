@@ -1,6 +1,5 @@
 import User from "./User";
-import { v4 as uuid4 } from "uuid";
-
+import uuid from 'react-native-uuid';
 
 export class Goal {
     id: string
@@ -11,7 +10,7 @@ export class Goal {
     status: GoalStatus
 
     constructor(name: string, user: User, description: string, target: number, status: GoalStatus) {
-        this.id = uuid4()
+        this.id = uuid.v4()
         this.user = user
         this.name = name
         this.description = description
