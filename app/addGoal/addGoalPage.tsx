@@ -3,6 +3,8 @@ import { View, Text, TouchableOpacity, StyleSheet, Alert, ScrollView, Dimensions
 import setPageTitle from '@/components/pageTitle/setPageTitle';
 import TopBar from '@/components/topBars/topBar';
 import GoalDetailsInputs from '@/components/formComponents/goalDetailsInputs';
+import validateEmpty from '@/utils/validateEmpty';
+import isNumeric from '@/utils/validateNumeric';
 
 
 export default function AddGoal() {
@@ -17,10 +19,30 @@ export default function AddGoal() {
 
     const handleAddGoal = () => {
         if (!title || !target || !date) {
-            Alert.alert('Please fill in all required fields.');
+            Alert.alert('Please fill in all required fields.')
             setError("Fill in all the required fields.")
             return;
         }
+
+        else if (validateEmpty(title)) {
+            Alert.alert("Empty Title Field", "The title field must be filled properly.")
+            setError("The title field must be filled properly.")
+            return
+        }
+
+        else if (validateEmpty(target)) {
+            Alert.alert("Empty Monthly Limit Field", "The monthly limit field must be filled properly.")
+            setError("The monthly limit field must be filled properly.")
+            return false
+        }
+
+        else if (!isNumeric(target)) {
+            Alert.alert("Monthly Limit Field Not Numeric", "The monthly limit field must be a number.")
+            setError("The monthly limit field must be a number.")
+            return false
+        }
+
+        // The date field must be changed to a Date picker, validation is not implemented.
 
         Alert.alert('Success', 'Goal added successfully!');
         return

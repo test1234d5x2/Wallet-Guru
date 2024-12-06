@@ -3,6 +3,8 @@ import { View, Text, TouchableOpacity, StyleSheet, Alert, Dimensions } from 'rea
 import ExpenseCategoryInputs from '@/components/formComponents/expenseCategoryInputs';
 import setPageTitle from '@/components/pageTitle/setPageTitle';
 import TopBar from '@/components/topBars/topBar';
+import validateEmpty from '@/utils/validateEmpty';
+import isNumeric from '@/utils/validateNumeric';
 
 export default function AddExpenseCategory() {
 
@@ -13,15 +15,31 @@ export default function AddExpenseCategory() {
     const [error, setError] = useState<string>('')
 
     const validateForm = () => {
-        const limit = parseFloat(monthlyLimit);
-        if (!categoryName.trim()) {
-            setError('Category name cannot be empty.')
+
+        if (!categoryName || !monthlyLimit) {
+            Alert.alert("Please fill in all the fields.")
+            setError("Please fill in all the fields.")
             return false
         }
-        if (isNaN(limit) || limit <= 0) {
-            setError('Monthly Limit must be a positive figure.')
+
+        else if (validateEmpty(categoryName)) {
+            Alert.alert("Empty Category Name Field", "The category name field must be filled properly.")
+            setError("The category name field must be filled properly.")
             return false
         }
+
+        else if (validateEmpty(monthlyLimit)) {
+            Alert.alert("Empty Monthly Limit Field", "The monthly limit field must be filled properly.")
+            setError("The monthly limit field must be filled properly.")
+            return false
+        }
+
+        else if (!isNumeric(monthlyLimit)) {
+            Alert.alert("Monthly Limit Field Not Numeric", "The monthly limit field must be a number.")
+            setError("The monthly limit field must be a number.")
+            return false
+        }
+        
         setError('')
         return true
     };

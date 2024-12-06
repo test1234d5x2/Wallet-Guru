@@ -3,6 +3,8 @@ import { View, Text, TouchableOpacity, StyleSheet, Alert, ScrollView, Dimensions
 import setPageTitle from '@/components/pageTitle/setPageTitle';
 import TopBar from '@/components/topBars/topBar';
 import IncomeDetailsInputs from '@/components/formComponents/incomeDetailsInputs';
+import validateEmpty from '@/utils/validateEmpty';
+import isNumeric from '@/utils/validateNumeric';
 
 
 
@@ -18,12 +20,32 @@ export default function AddIncome() {
 
     const handleAddIncome = () => {
         if (!title || !amount || !date) {
-            Alert.alert('Please fill in all required fields.');
+            Alert.alert('Please fill in all required fields.')
             setError("Fill in all the required fields.")
             return;
         }
 
-        Alert.alert('Success', 'Income added successfully!');
+        else if (validateEmpty(title)) {
+            Alert.alert("Empty Title Field", "The title field must be filled properly.")
+            setError("The title field must be filled properly.")
+            return
+        }
+
+        else if (validateEmpty(amount)) {
+            Alert.alert("Empty Amount Field", "The amount field must be filled properly.")
+            setError("The amount field must be filled properly.")
+            return
+        }
+
+        else if (!isNumeric(amount)) {
+            Alert.alert("Amount Field Not Numeric", "The amount field must be a number.")
+            setError("The amount field must be a number.")
+            return
+        }
+
+        // Date field needs to be changed to a date picker.
+
+        Alert.alert('Success', 'Income added successfully!')
         return
     }
 
