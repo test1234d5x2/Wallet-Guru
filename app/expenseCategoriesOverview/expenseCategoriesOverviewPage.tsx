@@ -45,7 +45,7 @@ export default function ViewExpenseCategories() {
             </View>
         )
 
-        displayElements.push(<View style={styles.divider} />)
+        displayElements.push(<View style={styles.divider} key={Math.random().toString()} />)
     }
 
 

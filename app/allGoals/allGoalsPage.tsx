@@ -38,7 +38,7 @@ export default function AllGoals() {
                 </View>
             </View>
         )
-        displayElements.push(<View style={styles.divider} />)
+        displayElements.push(<View style={styles.divider} key={Math.random().toString()} />)
     }
 
     const handleEdit = (id: string) => {

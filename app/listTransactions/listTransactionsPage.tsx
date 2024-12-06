@@ -3,6 +3,7 @@ import { View, Text, TouchableOpacity, StyleSheet, Dimensions, ScrollView } from
 import setPageTitle from '@/components/pageTitle/setPageTitle';
 import TopBar from '@/components/topBars/topBar';
 import { Ionicons } from '@expo/vector-icons';
+import { v4 as uuid4, v1 } from 'uuid';
 
 
 export default function ViewTransactionsList() {
@@ -55,7 +56,7 @@ export default function ViewTransactionsList() {
             </View>
         )
 
-        transactionDisplayElements.push(<View style={styles.divider} />)
+        transactionDisplayElements.push(<View style={styles.divider} key={Math.random().toString()} />)
     }
 
     return (
