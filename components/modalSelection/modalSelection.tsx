@@ -3,46 +3,46 @@ import { View, Text, FlatList, TouchableOpacity, StyleSheet, Modal, Pressable, S
 import setPageTitle from '@/components/pageTitle/setPageTitle';
 
 
+interface ModalSelectionProps {
+    choices: Array<string>
+    value: string
+    setValue: (text: string) => void
+}
 
-const FlatListDropdown = () => {
+const ModalSelection = (props: ModalSelectionProps) => {
     setPageTitle('Flat List Test');
 
-    const [selectedCategory, setSelectedCategory] = useState<string>('Select Category')
     const [showDropdown, setShowDropdown] = useState<boolean>(false)
 
-    const categories = ['Select Category', 'Food', 'Transport', 'Shopping', 'Bills', 'Other'];
-
-    for (let x = 0; x < 2; x++) {
-        categories.push(...categories)
-    }
+    const categories = ['Food', 'Transport', 'Shopping', 'Bills', 'Other'];
 
     return (
-        <View style={flatListStyles.container}>
-            <TouchableOpacity style={flatListStyles.dropdown} onPress={() => setShowDropdown(true)}>
-                <Text style={flatListStyles.dropdownText}>{selectedCategory}</Text>
+        <View style={styles.container}>
+            <TouchableOpacity style={styles.dropdown} onPress={() => setShowDropdown(true)}>
+                <Text style={styles.dropdownText}>{props.value}</Text>
             </TouchableOpacity>
 
             <Modal visible={showDropdown} transparent={true} onRequestClose={() => setShowDropdown(false)}>
-                <SafeAreaView style={flatListStyles.modalOverlay}>
-                    <View style={flatListStyles.modalContainer}>
+                <SafeAreaView style={styles.modalOverlay}>
+                    <View style={styles.modalContainer}>
                         <FlatList
                             data={categories}
                             keyExtractor={(item, index) => index.toString()}
                             renderItem={({ item }) => (
                                 <TouchableOpacity
-                                    style={flatListStyles.dropdownOption}
+                                    style={styles.dropdownOption}
                                     onPress={() => {
-                                        setSelectedCategory(item);
+                                        props.setValue(item);
                                         setShowDropdown(false);
                                     }}
                                 >
-                                    <Text style={flatListStyles.optionText}>{item}</Text>
+                                    <Text style={styles.optionText}>{item}</Text>
                                 </TouchableOpacity>
                             )}
                         />
                     </View>
                     <Pressable
-                        style={flatListStyles.modalDismissArea}
+                        style={styles.modalDismissArea}
                         onPress={() => setShowDropdown(false)}
                     />
                 </SafeAreaView>
@@ -51,7 +51,7 @@ const FlatListDropdown = () => {
     )
 }
 
-const flatListStyles = StyleSheet.create({
+const styles = StyleSheet.create({
     container: {
         flex: 1,
         padding: 20,
@@ -95,4 +95,4 @@ const flatListStyles = StyleSheet.create({
     },
 })
 
-export default FlatListDropdown;
+export default ModalSelection;

@@ -1,8 +1,8 @@
 import React from 'react';
 import { View, StyleSheet, ScrollView } from 'react-native';
-import { Picker } from '@react-native-picker/picker';
 import StandardInputField from './inputFields/standardInputField';
 import NumericInputField from './inputFields/numericInputField';
+import ModalSelection from '../modalSelection/ModalSelection';
 
 
 interface ExpenseDetailsInputsProps {
@@ -43,7 +43,7 @@ export default function ExpenseDetailsInputs(props: ExpenseDetailsInputsProps) {
                 setValue={props.setDate}
             />
 
-            <View style={styles.pickerContainer}>
+            {/* <View style={styles.pickerContainer}>
                 <Picker selectedValue={props.category} onValueChange={(itemValue) => {props.setCategory(itemValue)}} selectionColor={"white"}>
                     <Picker.Item label="Select Category" value="Select Category" color="black" />
                     <Picker.Item label="Food" value="Food" color="black" />
@@ -52,6 +52,10 @@ export default function ExpenseDetailsInputs(props: ExpenseDetailsInputsProps) {
                     <Picker.Item label="Bills" value="Bills" color="black" />
                     <Picker.Item label="Other" value="Other" color="black" />
                 </Picker>
+            </View> */}
+
+            <View>
+                <ModalSelection choices={props.categoriesList} value={props.category} setValue={props.setCategory} />
             </View>
 
             <StandardInputField
@@ -60,21 +64,12 @@ export default function ExpenseDetailsInputs(props: ExpenseDetailsInputsProps) {
                 setValue={props.setNotes}
             />
         </ScrollView>
-    );
-};
+    )
+}
 
 const styles = StyleSheet.create({
     container: {
         backgroundColor: '#fff',
         rowGap: 20,
     },
-    pickerContainer: {
-        borderWidth: 1,
-        borderColor: '#ccc',
-        borderRadius: 5,
-    },
-    picker: {
-        backgroundColor: "black",
-        color: "white",
-    },
-});
+})
