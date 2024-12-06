@@ -97,7 +97,7 @@ export default function Index() {
                 <Text style={styles.text}>Spending Analytics</Text>
             </Link>
 
-            <Link href={"/flatListTest"}>
+            <Link href={"/flatListDropdown"}>
                 <Text style={styles.text}>Selection Dropdown Component Test</Text>
             </Link>
         </ScrollView>
