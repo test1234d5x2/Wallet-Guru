@@ -1,6 +1,7 @@
-import { Text, View, StyleSheet, Image, TouchableOpacity, Dimensions } from "react-native";
+import { View, StyleSheet, TouchableOpacity } from "react-native";
 import React from "react";
 import { Ionicons } from "@expo/vector-icons";
+import { Link } from "expo-router";
 
 const styles = StyleSheet.create({
     container: {
@@ -25,11 +26,15 @@ export default function TopBar() {
     return (
         <View style={styles.container}>
             <TouchableOpacity style={styles.iconButton}>
-                <Ionicons name="menu" size={28} color="black" />
+                <Link href={"/menu/menuPage"}>
+                    <Ionicons name="menu" size={28} color="black" />                
+                </Link>
             </TouchableOpacity>
 
             <TouchableOpacity style={styles.iconButton}>
-                <Ionicons name="person-circle-outline" size={28} color="black" />
+                <Link href={"/accountOverview/accountOverviewPage"}>
+                    <Ionicons name="person-circle-outline" size={28} color="black" />
+                </Link>
             </TouchableOpacity>
         </View>
     )
