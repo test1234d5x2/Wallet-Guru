@@ -4,8 +4,7 @@ import { StyleSheet, Text, TouchableOpacity } from "react-native";
 
 const styles = StyleSheet.create({
     menuText: {
-        fontSize: 16,
-        color: 'blue',
+        fontSize: 20,
         textDecorationLine: 'underline',
     },
 })
