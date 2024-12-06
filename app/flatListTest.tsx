@@ -5,6 +5,7 @@ import setPageTitle from '@/components/pageTitle/setPageTitle';
 
 
 // This might replace the Picker in the add expense and edit expense section.
+// This needs to be turned into a modal since absolute positioning on the dropdown container is not going to be a good idea.
 
 const AddExpenseScreen = () => {
 
