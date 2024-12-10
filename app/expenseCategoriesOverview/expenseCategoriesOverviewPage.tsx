@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Dimensions } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import * as Progress from 'react-native-progress';
 import { Ionicons } from '@expo/vector-icons';
 import setPageTitle from '@/components/pageTitle/setPageTitle';

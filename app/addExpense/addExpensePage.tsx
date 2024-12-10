@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Alert, ScrollView, Dimensions } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Alert, ScrollView } from 'react-native';
 import ExpenseDetailsInputs from '@/components/formComponents/expenseDetailsInputs';
 import setPageTitle from '@/components/pageTitle/setPageTitle';
 import TopBar from '@/components/topBars/topBar';
@@ -48,7 +48,7 @@ export default function AddExpense() {
         // Date field needs to be changed to a date picker.
 
 
-        Alert.alert('Success', 'Expense added successfully!');
+        Alert.alert('Success', 'Expense added successfully!')
         setError("")
 
         router.replace("/listTransactions/listTransactionsPage")
@@ -57,8 +57,8 @@ export default function AddExpense() {
     }
 
     const handleScanReceipt = () => {
-        Alert.alert('Feature Coming Soon', 'Receipt scanning is not yet implemented.');
-    };
+        Alert.alert('Feature Coming Soon', 'Receipt scanning is not yet implemented.')
+    }
 
     return (
         <ScrollView contentContainerStyle={styles.container}>

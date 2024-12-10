@@ -18,13 +18,14 @@ export default function UpdateGoal() {
             setError("The amount entered must be a number.")
             return;
         }
-        setError("");
+        setError("")
         console.log("Progress updated with amount:", parseFloat(amount))
     }
 
-    const handleHelpClick = () => [
+    const handleHelpClick = () => {
         Alert.alert("Update Current Goal Status", "To update your progress, enter the amount you have added to your fund. If you have taken money out of the fund, you can enter a negative number.")
-    ]
+        return
+    }
 
     return (
         <View style={styles.container}>

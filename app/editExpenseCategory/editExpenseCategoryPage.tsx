@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Alert, Dimensions } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import ExpenseCategoryInputs from '@/components/formComponents/expenseCategoryInputs';
 import setPageTitle from '@/components/pageTitle/setPageTitle';
 import TopBar from '@/components/topBars/topBar';
@@ -32,7 +32,7 @@ export default function EditExpenseCategory() {
         router.replace("/expenseCategoriesOverview/expenseCategoriesOverviewPage")
 
         return true
-    };
+    }
 
     const handleEditCategory = () => {
         if (validateForm()) {
@@ -40,7 +40,7 @@ export default function EditExpenseCategory() {
             setCategoryName('')
             setMonthlyLimit('')
         }
-    };
+    }
 
     return (
         <View style={styles.container}>
@@ -61,9 +61,9 @@ export default function EditExpenseCategory() {
 
 const styles = StyleSheet.create({
     container: {
+        flex: 1,
         padding: 20,
         backgroundColor: '#fff',
-        minHeight: Dimensions.get("window").height,
         rowGap: 20,
     },
     expenseCategoryForm: {
@@ -85,4 +85,4 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: 'bold',
     },
-});
+})

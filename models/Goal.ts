@@ -1,27 +1,32 @@
 import User from "./User";
+import GoalStatus from "@/enums/GoalStatus";
 import uuid from 'react-native-uuid';
 
-export class Goal {
+export default class Goal {
     id: string
     user: User
-    name: string
+    title: string
     description: string
     target: number
+    current: number
     status: GoalStatus
 
-    constructor(name: string, user: User, description: string, target: number, status: GoalStatus) {
+    constructor(title: string, user: User, description: string, target: number, status: GoalStatus) {
         this.id = uuid.v4()
         this.user = user
-        this.name = name
+        this.title = title
         this.description = description
         this.target = target
+        this.current = 0
         this.status = status
     }
 
-}
+    updateCurrent(figure: number): boolean {
+        this.current += figure
+        return true
+    }
 
-export enum GoalStatus {
-    Active = "Active",
-    Completed = "Completed",
-    Archived = "Archived",
+    calculateProgress(): number {
+        return this.current / this.target
+    }
 }

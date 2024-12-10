@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, Dimensions, TouchableOpacity, Alert } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, Alert } from "react-native";
 import { useState } from "react";
 import { Link } from "expo-router";
 import AuthenticationInputs from "@/components/formComponents/authenticationInputs";

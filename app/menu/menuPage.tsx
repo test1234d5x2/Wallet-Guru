@@ -1,5 +1,4 @@
-import { View, Text, StyleSheet, Dimensions } from "react-native";
-
+import { View, StyleSheet } from "react-native";
 import MainMenu from "@/components/menuComponents/menu";
 import setPageTitle from "@/components/pageTitle/setPageTitle";
 
@@ -22,4 +21,4 @@ const styles = StyleSheet.create({
         flex: 1,
         rowGap: 20,
     },
-});
+})

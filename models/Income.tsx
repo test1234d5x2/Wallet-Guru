@@ -34,6 +34,7 @@ class Income implements Transaction {
     }
 
     getFullDisplay(): React.ReactElement {
+        // Needs Completing
         return <div></div>
     }
 }

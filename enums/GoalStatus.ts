@@ -1,5 +1,7 @@
 enum GoalStatus {
-    ACTIVE,
-    COMPLETED,
-    ARCHIVED
+    Active = "Active",
+    Completed = "Completed",
+    Archived = "Archived",
 }
+
+export default GoalStatus;

@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet} from "react-native";
+import { View, StyleSheet} from "react-native";
 import MenuItem from './menuItem';
 
 
@@ -14,20 +14,20 @@ const styles = StyleSheet.create({
 export default function MainMenu() {
 
     const menuItems = [
-        {title: 'Add Expense'},
-        {title: 'Add Income'},
-        {title: 'Transaction History'},
-        {title: 'Create A New Goal'},
-        {title: 'View Goals'},
-        {title: 'Create An Expense Category'},
-        {title: 'Expense Category Overview'},
-        {title: 'Spending Analytics'},
+        {title: 'Add Expense', link: "/addExpense/addExpensePage"},
+        {title: 'Add Income', link: "/addIncome/addIncomePage"},
+        {title: 'Transaction History', link: "/listTransactions/listTransactionsPage"},
+        {title: 'Create A New Goal', link: "/addGoal/addGoalPage"},
+        {title: 'View Goals', link: "/allGoals/allGoalsPage"},
+        {title: 'Create An Expense Category', link: "/addExpenseCategory/addExpenseCategoryPage"},
+        {title: 'Expense Category Overview', link: "/expenseCategoryOverview/expenseCategoryOverviewPage"},
+        {title: 'Spending Analytics', link: ""},
     ];
 
     return (
         <View>
             <View style={styles.menuContainer}>
-                {menuItems.map((item) => {return <MenuItem key={item.title} title={item.title} />})}
+                {menuItems.map((item) => {return <MenuItem key={item.title} title={item.title} url={item.link} />})}
             </View>
         </View>
     )

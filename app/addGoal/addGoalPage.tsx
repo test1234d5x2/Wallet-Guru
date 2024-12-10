@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Alert, ScrollView, Dimensions } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Alert, ScrollView } from 'react-native';
 import setPageTitle from '@/components/pageTitle/setPageTitle';
 import TopBar from '@/components/topBars/topBar';
 import GoalDetailsInputs from '@/components/formComponents/goalDetailsInputs';
@@ -46,7 +46,7 @@ export default function AddGoal() {
 
         // The date field must be changed to a Date picker, validation is not implemented.
 
-        Alert.alert('Success', 'Goal added successfully!');
+        Alert.alert('Success', 'Goal added successfully!')
         setError("")
 
         router.replace("/allGoals/allGoalsPage")

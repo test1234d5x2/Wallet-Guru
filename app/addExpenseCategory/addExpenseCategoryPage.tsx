@@ -44,7 +44,7 @@ export default function AddExpenseCategory() {
         
         setError('')
         return true
-    };
+    }
 
     const handleAddCategory = () => {
         if (validateForm()) {
@@ -52,8 +52,9 @@ export default function AddExpenseCategory() {
             setCategoryName('')
             setMonthlyLimit('')
             router.replace("/expenseCategoriesOverview/expenseCategoriesOverviewPage")
+            return
         }
-    };
+    }
 
     return (
         <View style={styles.container}>

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Alert, ScrollView, Dimensions } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Alert, ScrollView } from 'react-native';
 import ExpenseDetailsInputs from '@/components/formComponents/expenseDetailsInputs';
 import setPageTitle from '@/components/pageTitle/setPageTitle';
 import TopBar from '@/components/topBars/topBar';
@@ -23,7 +23,7 @@ export default function EditExpense() {
         if (!title || !amount || !date || category === 'Select Category') {
             Alert.alert('Error', 'Please fill in all required fields.')
             setError("Fill in all the required fields.")
-            return;
+            return
         }
 
         Alert.alert('Success', 'Expense added successfully!')

@@ -17,7 +17,7 @@ export default function ViewTransactionsList() {
     const router = useRouter()
 
     const [selectedType, setSelectedType] = useState<string>("")
-    const [startDate, setStartDate] = useState<string>("");
+    const [startDate, setStartDate] = useState<string>("")
     const [endDate, setEndDate] = useState<string>("")
 
 
@@ -27,9 +27,9 @@ export default function ViewTransactionsList() {
 
 
     const transactions = [
-        { data: new Expense(new User("", ""), "Expense Name", -25.5, new Date(), "", new ExpenseCategory("Food", 250)) },
-        { data: new Income(new User("", ""), "Income Name", 1250, new Date(), "") },
-        { data: new Expense(new User("", ""), "Expense Name", -25.5, new Date(), "", new ExpenseCategory("Food", 250)) },
+        new Expense(new User("", ""), "Expense Name", -25.5, new Date(), "", new ExpenseCategory("Food", 250)),
+        new Income(new User("", ""), "Income Name", 1250, new Date(), ""),
+        new Expense(new User("", ""), "Expense Name", -25.5, new Date(), "", new ExpenseCategory("Food", 250)),
     ]
 
     
@@ -39,8 +39,8 @@ export default function ViewTransactionsList() {
 
     for (let transaction of transactions) {
         transactionDisplayElements.push(
-            <TouchableOpacity key={uuid.v4()} onPress={() => handleTransactionClick(transaction.data)}>
-                {transaction.data.getListItemDisplay()}
+            <TouchableOpacity key={uuid.v4()} onPress={() => handleTransactionClick(transaction)}>
+                {transaction.getListItemDisplay()}
             </TouchableOpacity>
         )
         transactionDisplayElements.push(<View style={styles.divider} key={uuid.v4()} />)
@@ -79,5 +79,4 @@ const styles = StyleSheet.create({
         height: 1,
         backgroundColor: "#ccc",
     },
-
 })

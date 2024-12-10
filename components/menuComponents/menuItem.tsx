@@ -1,6 +1,19 @@
-import { StyleSheet, Text, TouchableOpacity } from "react-native";
+import { StyleSheet, Text } from "react-native";
+import { Link } from "expo-router";
 
 
+interface MenuDisplayProps {
+    title: string
+    url: string
+}
+
+export default function MenuItem(props: MenuDisplayProps) {
+    return (
+        <Link href={props.url} replace={true}>
+            <Text style={styles.menuText}>{props.title}</Text>
+        </Link>
+    )
+}
 
 const styles = StyleSheet.create({
     menuText: {
@@ -8,16 +21,3 @@ const styles = StyleSheet.create({
         textDecorationLine: 'underline',
     },
 })
-
-
-interface MenuDisplayProps {
-    title: string
-}
-
-export default function MenuItem(props: MenuDisplayProps) {
-    return (
-        <TouchableOpacity>
-            <Text style={styles.menuText}>{props.title}</Text>
-        </TouchableOpacity>
-    )
-}

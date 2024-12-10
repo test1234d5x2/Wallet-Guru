@@ -1,7 +1,7 @@
 import setPageTitle from '@/components/pageTitle/setPageTitle';
 import TopBar from '@/components/topBars/topBar';
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Alert, Dimensions } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 
 
 
@@ -11,7 +11,7 @@ export default function ExpenseDetailsScreen() {
 
     const handleEdit = () => {
         Alert.alert('Edit Expense', 'Edit functionality not implemented yet.')
-    };
+    }
 
     const handleDelete = () => {
         Alert.alert('Delete Expense', 'Are you sure you want to delete this expense?', [
