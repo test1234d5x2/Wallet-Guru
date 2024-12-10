@@ -3,14 +3,18 @@ import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import * as Progress from 'react-native-progress';
 import setPageTitle from '@/components/pageTitle/setPageTitle';
 import TopBar from '@/components/topBars/topBar';
+import { useRouter } from 'expo-router';
 
 
 export default function ViewGoalDetails() {
 
     setPageTitle("Goal Title")
 
+    const router = useRouter()
+
     const handleUpdateProgress = () => {
-        console.log("Update Progress clicked")
+        router.navigate("/updateGoalPage")
+        return
     }
 
     const handleDeleteGoal = () => {
@@ -35,7 +39,7 @@ export default function ViewGoalDetails() {
 
             <View style={styles.actionsContainer}>
                 <TouchableOpacity style={styles.editButton} onPress={handleUpdateProgress}>
-                    <Text style={styles.buttonText}>Edit</Text>
+                    <Text style={styles.buttonText}>Update</Text>
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.deleteButton} onPress={handleDeleteGoal}>
                     <Text style={styles.buttonText}>Delete</Text>

@@ -3,6 +3,7 @@ import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import * as Progress from 'react-native-progress';
 import { Ionicons } from '@expo/vector-icons';
 import ExpenseCategory from '@/models/ExpenseCategory';
+import { useRouter } from 'expo-router';
 
 
 interface ExpenseCategoryProps {
@@ -12,8 +13,11 @@ interface ExpenseCategoryProps {
 
 export default function ExpenseCategoryItem(props: ExpenseCategoryProps) {
 
+    const router = useRouter()
+
     const handleEdit = (id: string) => {
-        console.log(`Edit category with ID: ${id}`)
+        router.navigate("/editExpenseCategoryPage")
+        return
     }
     const handleDelete = (id: string) => {
         console.log(`Delete category with ID: ${id}`)

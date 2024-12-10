@@ -33,6 +33,10 @@ class Expense implements Transaction {
         return "/viewExpenseDetailsPage"
     }
 
+    getEditURL(): string {
+        return "/editExpensePage"
+    }
+
     getListItemDisplay(): React.ReactElement {
         return <ExpenseItem expense={this} />
     }

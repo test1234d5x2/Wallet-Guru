@@ -2,6 +2,7 @@ import Goal from "@/models/Goal";
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import * as Progress from 'react-native-progress';
 import { Ionicons } from '@expo/vector-icons';
+import { useRouter } from "expo-router";
 
 
 interface GoalItemProps {
@@ -11,8 +12,11 @@ interface GoalItemProps {
 
 export default function GoalItem(props: GoalItemProps) {
 
-    const handleEdit = (id: string) => {
-        console.log(`Edit goal with ID: ${id}`)
+    const router = useRouter()
+
+    const handleUpdate = (id: string) => {
+        router.navigate("/updateGoalPage")
+        return
     }
 
     const handleDelete = (id: string) => {
@@ -28,7 +32,7 @@ export default function GoalItem(props: GoalItemProps) {
             <Text style={styles.progressLabel}>Progress</Text>
             <Progress.Bar progress={props.goal.calculateProgress()} color="#007BFF" width={null} />
             <View style={styles.actionsContainer}>
-                <TouchableOpacity style={styles.editButton} onPress={() => handleEdit(props.goal.id)}>
+                <TouchableOpacity style={styles.editButton} onPress={() => handleUpdate(props.goal.id)}>
                     <Ionicons name="pencil-outline" size={20} color="#fff" />
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.deleteButton} onPress={() => handleDelete(props.goal.id)}>

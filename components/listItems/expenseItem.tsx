@@ -1,7 +1,8 @@
 import { Ionicons } from '@expo/vector-icons';
-import React, { useState } from 'react';
+import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import Expense from '@/models/Expense';
+import { useRouter } from 'expo-router';
 
 interface ExpenseItemProps {
     expense: Expense
@@ -9,9 +10,7 @@ interface ExpenseItemProps {
 
 export default function ExpenseItem(props: ExpenseItemProps) {
 
-    const handleEditTransaction = (id: string) => {
-        console.log(`Edit transaction with ID: ${id}`)
-    }
+    const router = useRouter()
 
     const handleDeleteTransaction = (id: string) => {
         console.log(`Delete transaction with ID: ${id}`)
@@ -31,7 +30,7 @@ export default function ExpenseItem(props: ExpenseItemProps) {
             
 
             <View style={styles.actionsContainer}>
-                <TouchableOpacity style={styles.editButton} onPress={() => handleEditTransaction(props.expense.id)}>
+                <TouchableOpacity style={styles.editButton} onPress={() => router.navigate(props.expense.getEditURL())}>
                     <Ionicons name="pencil-outline" size={20} color="#fff" />
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.deleteButton} onPress={() => handleDeleteTransaction(props.expense.id)}>

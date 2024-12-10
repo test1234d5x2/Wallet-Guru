@@ -1,5 +1,6 @@
 import setPageTitle from '@/components/pageTitle/setPageTitle';
 import TopBar from '@/components/topBars/topBar';
+import { useRouter } from 'expo-router';
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 
@@ -9,8 +10,11 @@ export default function IncomeDetailsScreen() {
 
     setPageTitle("Income Name")
 
+    const router = useRouter()
+
     const handleEdit = () => {
-        Alert.alert('Edit Income', 'Edit functionality not implemented yet.')
+        router.navigate("/editIncomePage")
+        return
     }
 
     const handleDelete = () => {
