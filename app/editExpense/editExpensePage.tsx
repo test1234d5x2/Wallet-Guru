@@ -4,6 +4,8 @@ import ExpenseDetailsInputs from '@/components/formComponents/expenseDetailsInpu
 import setPageTitle from '@/components/pageTitle/setPageTitle';
 import TopBar from '@/components/topBars/topBar';
 import { useRouter } from 'expo-router';
+import validateEmpty from '@/utils/validateEmpty';
+import isNumeric from '@/utils/validateNumeric';
 
 
 
@@ -21,21 +23,43 @@ export default function EditExpense() {
 
     const handleEditExpense = () => {
         if (!title || !amount || !date || category === 'Select Category') {
-            Alert.alert('Error', 'Please fill in all required fields.')
+            Alert.alert('Please fill in all required fields.')
             setError("Fill in all the required fields.")
             return
         }
 
+        else if (validateEmpty(title)) {
+            Alert.alert("Empty Title Field", "The title field must be filled properly.")
+            setError("The title field must be filled properly.")
+            return
+        }
+
+        else if (validateEmpty(amount)) {
+            Alert.alert("Empty Amount Field", "The amount field must be filled properly.")
+            setError("The amount field must be filled properly.")
+            return
+        }
+
+        else if (!isNumeric(amount)) {
+            Alert.alert("Amount Field Not Numeric", "The amount field must be a number.")
+            setError("The amount field must be a number.")
+            return
+        }
+
+        // Date field needs to be changed to a date picker.
+
+
         Alert.alert('Success', 'Expense added successfully!')
         setError("")
-        router.replace("/viewExpenseDetails/viewExpenseDetailsPage")
+
+        router.replace("/listTransactions/listTransactionsPage")
 
         return
     }
 
     const handleScanReceipt = () => {
         Alert.alert('Feature Coming Soon', 'Receipt scanning is not yet implemented.')
-    };
+    }
 
     return (
         <ScrollView contentContainerStyle={styles.container}>

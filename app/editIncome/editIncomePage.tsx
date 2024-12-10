@@ -4,6 +4,8 @@ import setPageTitle from '@/components/pageTitle/setPageTitle';
 import TopBar from '@/components/topBars/topBar';
 import IncomeDetailsInputs from '@/components/formComponents/incomeDetailsInputs';
 import { useRouter } from 'expo-router';
+import validateEmpty from '@/utils/validateEmpty';
+import isNumeric from '@/utils/validateNumeric';
 
 
 export default function EditIncome() {
@@ -19,8 +21,26 @@ export default function EditIncome() {
 
     const handleEditIncome = () => {
         if (!title || !amount || !date) {
-            Alert.alert('Error', 'Please fill in all required fields.')
+            Alert.alert('Please fill in all required fields.')
             setError("Fill in all the required fields.")
+            return;
+        }
+
+        else if (validateEmpty(title)) {
+            Alert.alert("Empty Title Field", "The title field must be filled properly.")
+            setError("The title field must be filled properly.")
+            return
+        }
+
+        else if (validateEmpty(amount)) {
+            Alert.alert("Empty Amount Field", "The amount field must be filled properly.")
+            setError("The amount field must be filled properly.")
+            return
+        }
+
+        else if (!isNumeric(amount)) {
+            Alert.alert("Amount Field Not Numeric", "The amount field must be a number.")
+            setError("The amount field must be a number.")
             return
         }
 

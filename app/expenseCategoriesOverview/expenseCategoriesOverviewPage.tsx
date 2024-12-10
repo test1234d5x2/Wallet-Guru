@@ -1,49 +1,29 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import * as Progress from 'react-native-progress';
-import { Ionicons } from '@expo/vector-icons';
+import { View, StyleSheet } from 'react-native';
 import setPageTitle from '@/components/pageTitle/setPageTitle';
 import TopBar from '@/components/topBars/topBar';
 import uuid from 'react-native-uuid';
+import ExpenseCategory from '@/models/ExpenseCategory';
+import User from '@/models/User';
+import ExpenseCategoryItem from '@/components/listItems/expenseCategoryItem';
 
 
 export default function ViewExpenseCategories() {
 
     setPageTitle("Expense Categories")
 
+    // This is filler data. Remove once the application is working.
+    const user = new User("", "")
     const categories = [
-        { id: "1", name: "Category Name", spending: 400, budget: 1000, progress: 0.4 },
-        { id: "2", name: "Category Name", spending: 400, budget: 1000, progress: 0.4 },
+        new ExpenseCategory(user, "Category Name", 400, 1000),
+        new ExpenseCategory(user, "Category Name", 400, 1000),
     ]
-
-    const handleEditCategory = (id: string) => {
-        console.log(`Edit category with ID: ${id}`)
-    }
-
-    const handleDeleteCategory = (id: string) => {
-        console.log(`Delete category with ID: ${id}`)
-    }
 
     let displayElements = []
 
     for (let category of categories) {
         displayElements.push(
-            <View key={uuid.v4()} style={styles.categoryContainer}>
-                <Text style={styles.categoryName}>{category.name}</Text>
-
-                <Text style={styles.label}>Spending: £{category.spending}</Text>
-                <Progress.Bar progress={category.progress} color="#007BFF" width={null} />
-                <Text style={styles.label}>Budget: £{category.budget}</Text>
-
-                <View style={styles.actionsContainer}>
-                    <TouchableOpacity style={styles.editButton} onPress={() => handleEditCategory(category.id)}>
-                        <Ionicons name="pencil-outline" size={20} color="#fff" />
-                    </TouchableOpacity>
-                    <TouchableOpacity style={styles.deleteButton} onPress={() => handleDeleteCategory(category.id)}>
-                        <Ionicons name="trash-outline" size={20} color="#fff" />
-                    </TouchableOpacity>
-                </View>
-            </View>
+            <ExpenseCategoryItem key={uuid.v4()} category={category} />
         )
 
         displayElements.push(<View style={styles.divider} key={uuid.v4()} />)

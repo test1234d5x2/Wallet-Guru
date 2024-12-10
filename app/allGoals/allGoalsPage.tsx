@@ -12,9 +12,9 @@ import { useRouter } from 'expo-router';
 export default function AllGoals() {
 
     setPageTitle("All Goals")
-    const router = useRouter()
 
     const [selectedSort, setSelectedSort] = useState<string>("")
+    const router = useRouter()
 
     const handleGoalClick = (id: string) => {
         router.navigate("/viewGoalDetails/viewGoalDetailsPage")
