@@ -17,7 +17,7 @@ export default function AllGoals() {
     const router = useRouter()
 
     const handleGoalClick = (id: string) => {
-        router.navigate("/viewGoalDetails/viewGoalDetailsPage")
+        router.navigate("/viewGoalDetailsPage")
     }
 
     // This is filler. Remove when the app is fully working.

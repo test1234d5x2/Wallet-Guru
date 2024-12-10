@@ -2,27 +2,18 @@ import { View, StyleSheet} from "react-native";
 import MenuItem from './menuItem';
 
 
-const styles = StyleSheet.create({
-    menuContainer: {
-        display: "flex",
-        flexDirection: "column",
-        rowGap: 20,
-    },
-});
-
-
 export default function MainMenu() {
 
     const menuItems = [
-        {title: 'Add Expense', link: "/addExpense/addExpensePage"},
-        {title: 'Add Income', link: "/addIncome/addIncomePage"},
-        {title: 'Transaction History', link: "/listTransactions/listTransactionsPage"},
-        {title: 'Create A New Goal', link: "/addGoal/addGoalPage"},
-        {title: 'View Goals', link: "/allGoals/allGoalsPage"},
-        {title: 'Create An Expense Category', link: "/addExpenseCategory/addExpenseCategoryPage"},
-        {title: 'Expense Category Overview', link: "/expenseCategoryOverview/expenseCategoryOverviewPage"},
+        {title: 'Add Expense', link: "/addExpensePage"},
+        {title: 'Add Income', link: "/addIncomePage"},
+        {title: 'Transaction History', link: "/listTransactionsPage"},
+        {title: 'Create A New Goal', link: "/addGoalPage"},
+        {title: 'View Goals', link: "/allGoalsPage"},
+        {title: 'Create An Expense Category', link: "/addExpenseCategoryPage"},
+        {title: 'Expense Category Overview', link: "/expenseCategoryOverviewPage"},
         {title: 'Spending Analytics', link: ""},
-    ];
+    ]
 
     return (
         <View>
@@ -32,3 +23,11 @@ export default function MainMenu() {
         </View>
     )
 }
+
+const styles = StyleSheet.create({
+    menuContainer: {
+        display: "flex",
+        flexDirection: "column",
+        rowGap: 20,
+    },
+})

@@ -1,43 +1,48 @@
 import { View, Text, StyleSheet, TouchableOpacity, Alert } from "react-native";
 import { useState } from "react";
-import { Link } from "expo-router";
-import AuthenticationInputs from "@/components/formComponents/authenticationInputs";
+import { Link, useRouter } from "expo-router";
 import setPageTitle from "@/components/pageTitle/setPageTitle";
-
+import AuthenticationInputs from "@/components/formComponents/authenticationInputs";
 
 export default function Login() {
 
-    setPageTitle("Create User")
+    setPageTitle("Login")
 
     const [email, setEmail] = useState<string>('')
     const [password, setPassword] = useState<string>('')
     const [error, setError] = useState<string>('')
+    const router=  useRouter()
 
 
-    const handleRegistration = () => {
+    const handleLogin = () => {
         if (!email || !password) {
             setError("Please input both email and password")
             Alert.alert("Please input both email and password")
             return
         }
+
+        setError("")
+        router.replace("/dashboardPage")
+        return
     }
 
     return (
         <View style={styles.container}>
             <AuthenticationInputs email={email} password={password} setEmail={setEmail} setPassword={setPassword} />
 
+
             {error ? <View style={styles.errorTextContainer}><Text style={styles.errorText}>{error}</Text></View> : null}
 
-            <View style={styles.registeredUserTextContainer}>
+            <View style={styles.newUserTextContainer}>
                 <TouchableOpacity>
-                    <Link href={"/login/loginPage"} replace={true}>
-                        <Text style={styles.registeredUserText}>Already Registered? Login Here</Text>
+                    <Link href={"/registrationPage"} replace={true}>
+                        <Text style={styles.newUserText}>New User? Register Here</Text>
                     </Link>
                 </TouchableOpacity>
             </View>
 
-            <TouchableOpacity style={styles.loginButton} onPress={handleRegistration}>
-                <Text style={styles.loginButtonText}>Register</Text>
+            <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
+                <Text style={styles.loginButtonText}>Login</Text>
             </TouchableOpacity>
         </View>
     )
@@ -62,16 +67,15 @@ const styles = StyleSheet.create({
         fontSize: 18,
         fontWeight: 'bold',
     },
-    registeredUserTextContainer: {
+    newUserTextContainer: {
         justifyContent: "center",
         alignItems: "center"
     },
-    registeredUserText: {
+    newUserText: {
         fontSize: 14,
         color: 'rgba(0,0,0,0.5)',
         textDecorationLine: 'underline',
-        textAlign: "center",
-        width: "100%",
+        textAlign: "center"
     },
     errorTextContainer: {
         justifyContent: "center",

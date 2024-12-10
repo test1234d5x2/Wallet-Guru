@@ -26,13 +26,13 @@ export default function TopBar() {
     return (
         <View style={styles.container}>
             <TouchableOpacity style={styles.iconButton}>
-                <Link href={"/menu/menuPage"}>
+                <Link href={"/menuPage"}>
                     <Ionicons name="menu" size={28} color="black" />                
                 </Link>
             </TouchableOpacity>
 
             <TouchableOpacity style={styles.iconButton}>
-                <Link href={"/accountOverview/accountOverviewPage"}>
+                <Link href={"/accountOverviewPage"}>
                     <Ionicons name="person-circle-outline" size={28} color="black" />
                 </Link>
             </TouchableOpacity>

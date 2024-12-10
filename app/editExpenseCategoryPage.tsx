@@ -53,7 +53,7 @@ export default function EditExpenseCategory() {
             setCategoryName('')
             setMonthlyLimit('')
             setError("")
-            router.replace("/expenseCategoriesOverview/expenseCategoriesOverviewPage")
+            router.replace("/expenseCategoriesOverviewPage")
             return
         }
     }

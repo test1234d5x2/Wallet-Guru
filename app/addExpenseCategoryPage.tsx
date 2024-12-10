@@ -51,7 +51,7 @@ export default function AddExpenseCategory() {
             Alert.alert('Success', `Category "${categoryName}" added with a limit of £${monthlyLimit}`)
             setCategoryName('')
             setMonthlyLimit('')
-            router.replace("/expenseCategoriesOverview/expenseCategoriesOverviewPage")
+            router.replace("/expenseCategoriesOverviewPage")
             return
         }
     }

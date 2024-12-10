@@ -1,30 +1,30 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Alert, ScrollView } from 'react-native';
-import ExpenseDetailsInputs from '@/components/formComponents/expenseDetailsInputs';
 import setPageTitle from '@/components/pageTitle/setPageTitle';
 import TopBar from '@/components/topBars/topBar';
+import IncomeDetailsInputs from '@/components/formComponents/incomeDetailsInputs';
 import validateEmpty from '@/utils/validateEmpty';
 import isNumeric from '@/utils/validateNumeric';
 import { useRouter } from 'expo-router';
 
 
-export default function AddExpense() {
 
-    setPageTitle("Add Expense")
+export default function AddIncome() {
+
+    setPageTitle("Add Income")
 
     const [title, setTitle] = useState<string>('')
     const [amount, setAmount] = useState<string>('')
     const [date, setDate] = useState<string>('')
-    const [category, setCategory] = useState<string>('Select Category')
     const [notes, setNotes] = useState<string>('')
     const [error, setError] = useState<string>('')
     const router = useRouter()
 
-    const handleAddExpense = () => {
-        if (!title || !amount || !date || category === 'Select Category') {
+    const handleAddIncome = () => {
+        if (!title || !amount || !date) {
             Alert.alert('Please fill in all required fields.')
             setError("Fill in all the required fields.")
-            return
+            return;
         }
 
         else if (validateEmpty(title)) {
@@ -47,50 +47,36 @@ export default function AddExpense() {
 
         // Date field needs to be changed to a date picker.
 
-
-        Alert.alert('Success', 'Expense added successfully!')
+        Alert.alert('Success', 'Income added successfully!')
         setError("")
 
-        router.replace("/listTransactions/listTransactionsPage")
+        router.replace("/listTransactionsPage")
 
         return
-    }
-
-    const handleScanReceipt = () => {
-        Alert.alert('Feature Coming Soon', 'Receipt scanning is not yet implemented.')
     }
 
     return (
         <ScrollView contentContainerStyle={styles.container}>
             <TopBar />
 
-            <View style={styles.expenseForm}>
-                <ExpenseDetailsInputs 
+            <View style={styles.incomeForm}>
+                <IncomeDetailsInputs 
                     title={title}
                     amount={amount}
                     date={date}
-                    category={category}
                     notes={notes}
-                    categoriesList={["1", "2"]}
                     setTitle={setTitle}
                     setAmount={setAmount}
                     setDate={setDate}
-                    setCategory={setCategory}
                     setNotes={setNotes}
                 />
             </View>
 
             {error ? <View style={styles.centeredTextContainer}><Text style={styles.errorText}>{error}</Text></View> : null}
-
-            <View style={styles.centeredTextContainer}>
-                <TouchableOpacity>
-                    <Text style={styles.scanText}>Scan Receipt</Text>
-                </TouchableOpacity>
-            </View>
             
 
-            <TouchableOpacity style={styles.addButton} onPress={handleAddExpense}>
-                <Text style={styles.addButtonText}>Add Expense</Text>
+            <TouchableOpacity style={styles.addButton} onPress={handleAddIncome}>
+                <Text style={styles.addButtonText}>Add Income</Text>
             </TouchableOpacity>
         </ScrollView>
     )
@@ -105,7 +91,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#fff',
         flex: 1,
     },
-    expenseForm: {
+    incomeForm: {
         marginBottom: 40,
     },
     scanText: {
