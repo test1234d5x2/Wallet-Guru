@@ -1,4 +1,4 @@
-import { Text, View, StyleSheet, Dimensions, ScrollView } from "react-native";
+import { Text, View, StyleSheet, Dimensions, ScrollView, StatusBar } from "react-native";
 import { Link } from "expo-router";
 import setPageTitle from "@/components/pageTitle/setPageTitle";
 
@@ -17,6 +17,9 @@ export default function Index() {
 
     return (
         <ScrollView contentContainerStyle={styles.root}>
+
+            <StatusBar barStyle="dark-content" />
+
             <Link href={"/menu/menuPage"}>
                 <Text style={styles.text}>Menu</Text>
             </Link>
