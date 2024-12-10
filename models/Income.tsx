@@ -26,7 +26,7 @@ class Income implements Transaction {
     }
 
     getPageURL(): string {
-        return "/viewIncomeDetails/viewIncomeDetailsPage"
+        return "/viewIncomeDetailsPage"
     }
 
     getListItemDisplay(): React.ReactElement {

@@ -11,7 +11,7 @@ export default function MainMenu() {
         {title: 'Create A New Goal', link: "/addGoalPage"},
         {title: 'View Goals', link: "/allGoalsPage"},
         {title: 'Create An Expense Category', link: "/addExpenseCategoryPage"},
-        {title: 'Expense Category Overview', link: "/expenseCategoryOverviewPage"},
+        {title: 'Expense Category Overview', link: "/expenseCategoriesOverviewPage"},
         {title: 'Spending Analytics', link: ""},
     ]
 

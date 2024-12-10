@@ -30,7 +30,7 @@ class Expense implements Transaction {
     }
 
     getPageURL(): string {
-        return "/viewExpenseDetails/viewExpenseDetailsPage"
+        return "/viewExpenseDetailsPage"
     }
 
     getListItemDisplay(): React.ReactElement {
