@@ -5,6 +5,7 @@ import setPageTitle from '@/components/pageTitle/setPageTitle';
 import TopBar from '@/components/topBars/topBar';
 import validateEmpty from '@/utils/validateEmpty';
 import isNumeric from '@/utils/validateNumeric';
+import { useRouter } from 'expo-router';
 
 
 export default function AddExpense() {
@@ -17,6 +18,7 @@ export default function AddExpense() {
     const [category, setCategory] = useState<string>('Select Category')
     const [notes, setNotes] = useState<string>('')
     const [error, setError] = useState<string>('')
+    const router = useRouter()
 
     const handleAddExpense = () => {
         if (!title || !amount || !date || category === 'Select Category') {
@@ -48,6 +50,9 @@ export default function AddExpense() {
 
         Alert.alert('Success', 'Expense added successfully!');
         setError("")
+
+        router.replace("/listTransactions/listTransactionsPage")
+
         return
     }
 

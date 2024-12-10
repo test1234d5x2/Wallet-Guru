@@ -1,3 +1,4 @@
+import IncomeItem from "@/components/listItems/incomeItem";
 import Transaction from "./Transaction";
 import User from "./User";
 import uuid from 'react-native-uuid';
@@ -20,7 +21,20 @@ class Income implements Transaction {
     }
 
     deleteTransaction(): boolean {
+        console.log("Delete Income")
         return false
+    }
+
+    getPageURL(): string {
+        return "/viewIncomeDetails/viewIncomeDetailsPage"
+    }
+
+    getListItemDisplay(): React.ReactElement {
+        return <IncomeItem income={this} />
+    }
+
+    getFullDisplay(): React.ReactElement {
+        return <div></div>
     }
 }
 

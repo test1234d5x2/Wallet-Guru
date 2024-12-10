@@ -1,23 +1,30 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView } from 'react-native';
+import { useRouter } from 'expo-router';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import setPageTitle from '@/components/pageTitle/setPageTitle';
 import TopBar from '@/components/topBars/topBar';
 import Income from '@/models/Income';
 import Expense from '@/models/Expense';
 import User from '@/models/User';
 import ExpenseCategory from '@/models/ExpenseCategory';
-import ExpenseItem from '@/components/listItems/expenseItem';
-import IncomeItem from '@/components/listItems/incomeItem';
 import uuid from 'react-native-uuid';
+import Transaction from '@/models/Transaction';
 
 
 export default function ViewTransactionsList() {
 
     setPageTitle("Transactions")
+    const router = useRouter()
 
     const [selectedType, setSelectedType] = useState<string>("")
     const [startDate, setStartDate] = useState<string>("");
     const [endDate, setEndDate] = useState<string>("")
+
+
+    const handleTransactionClick = (transaction: Transaction) => {
+        router.push(transaction.getPageURL())
+    }
+
 
     const transactions = [
         { data: new Expense(new User("", ""), "Expense Name", -25.5, new Date(), "", new ExpenseCategory("Food", 250)) },
@@ -31,7 +38,11 @@ export default function ViewTransactionsList() {
     let transactionDisplayElements = []
 
     for (let transaction of transactions) {
-        transactionDisplayElements.push(transaction.data instanceof Expense ? <ExpenseItem key={uuid.v4()} expense={transaction.data} /> : <IncomeItem key={uuid.v4()} income={transaction.data} /> )
+        transactionDisplayElements.push(
+            <TouchableOpacity key={uuid.v4()} onPress={() => handleTransactionClick(transaction.data)}>
+                {transaction.data.getListItemDisplay()}
+            </TouchableOpacity>
+        )
         transactionDisplayElements.push(<View style={styles.divider} key={uuid.v4()} />)
     }
 

@@ -5,6 +5,7 @@ import TopBar from '@/components/topBars/topBar';
 import IncomeDetailsInputs from '@/components/formComponents/incomeDetailsInputs';
 import validateEmpty from '@/utils/validateEmpty';
 import isNumeric from '@/utils/validateNumeric';
+import { useRouter } from 'expo-router';
 
 
 
@@ -17,6 +18,7 @@ export default function AddIncome() {
     const [date, setDate] = useState<string>('')
     const [notes, setNotes] = useState<string>('')
     const [error, setError] = useState<string>('')
+    const router = useRouter()
 
     const handleAddIncome = () => {
         if (!title || !amount || !date) {
@@ -46,6 +48,10 @@ export default function AddIncome() {
         // Date field needs to be changed to a date picker.
 
         Alert.alert('Success', 'Income added successfully!')
+        setError("")
+
+        router.replace("/listTransactions/listTransactionsPage")
+
         return
     }
 

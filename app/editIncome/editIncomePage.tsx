@@ -3,26 +3,31 @@ import { View, Text, TouchableOpacity, StyleSheet, Alert, ScrollView, Dimensions
 import setPageTitle from '@/components/pageTitle/setPageTitle';
 import TopBar from '@/components/topBars/topBar';
 import IncomeDetailsInputs from '@/components/formComponents/incomeDetailsInputs';
+import { useRouter } from 'expo-router';
 
 
 export default function EditIncome() {
 
     setPageTitle("Edit Income")
 
-    const [title, setTitle] = useState<string>('');
-    const [amount, setAmount] = useState<string>('');
-    const [date, setDate] = useState<string>('');
-    const [notes, setNotes] = useState<string>('');
+    const [title, setTitle] = useState<string>('')
+    const [amount, setAmount] = useState<string>('')
+    const [date, setDate] = useState<string>('')
+    const [notes, setNotes] = useState<string>('')
     const [error, setError] = useState<string>('')
+    const router = useRouter()
 
     const handleEditIncome = () => {
         if (!title || !amount || !date) {
-            Alert.alert('Error', 'Please fill in all required fields.');
+            Alert.alert('Error', 'Please fill in all required fields.')
             setError("Fill in all the required fields.")
-            return;
+            return
         }
 
-        Alert.alert('Success', 'Expense added successfully!');
+        Alert.alert('Success', 'Expense added successfully!')
+        setError("")
+        router.replace("/viewIncomeDetails/viewIncomeDetailsPage")
+        
         return
     }
 

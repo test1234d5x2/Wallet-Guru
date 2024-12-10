@@ -30,7 +30,7 @@ export default function Login() {
 
             <View style={styles.registeredUserTextContainer}>
                 <TouchableOpacity>
-                    <Link href={"/login/loginPage"}>
+                    <Link href={"/login/loginPage"} replace={true}>
                         <Text style={styles.registeredUserText}>Already Registered? Login Here</Text>
                     </Link>
                 </TouchableOpacity>

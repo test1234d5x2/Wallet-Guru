@@ -5,6 +5,7 @@ import setPageTitle from '@/components/pageTitle/setPageTitle';
 import TopBar from '@/components/topBars/topBar';
 import validateEmpty from '@/utils/validateEmpty';
 import isNumeric from '@/utils/validateNumeric';
+import { useRouter } from 'expo-router';
 
 export default function AddExpenseCategory() {
 
@@ -13,6 +14,7 @@ export default function AddExpenseCategory() {
     const [categoryName, setCategoryName] = useState<string>('')
     const [monthlyLimit, setMonthlyLimit] = useState<string>('')
     const [error, setError] = useState<string>('')
+    const router = useRouter()
 
     const validateForm = () => {
 
@@ -49,6 +51,7 @@ export default function AddExpenseCategory() {
             Alert.alert('Success', `Category "${categoryName}" added with a limit of £${monthlyLimit}`)
             setCategoryName('')
             setMonthlyLimit('')
+            router.replace("/expenseCategoriesOverview/expenseCategoriesOverviewPage")
         }
     };
 

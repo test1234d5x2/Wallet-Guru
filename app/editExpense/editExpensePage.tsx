@@ -3,6 +3,7 @@ import { View, Text, TouchableOpacity, StyleSheet, Alert, ScrollView, Dimensions
 import ExpenseDetailsInputs from '@/components/formComponents/expenseDetailsInputs';
 import setPageTitle from '@/components/pageTitle/setPageTitle';
 import TopBar from '@/components/topBars/topBar';
+import { useRouter } from 'expo-router';
 
 
 
@@ -10,26 +11,30 @@ export default function EditExpense() {
 
     setPageTitle("Edit Expense")
 
-    const [title, setTitle] = useState<string>('');
-    const [amount, setAmount] = useState<string>('');
-    const [date, setDate] = useState<string>('');
-    const [category, setCategory] = useState<string>('Select Category');
-    const [notes, setNotes] = useState<string>('');
+    const [title, setTitle] = useState<string>('')
+    const [amount, setAmount] = useState<string>('')
+    const [date, setDate] = useState<string>('')
+    const [category, setCategory] = useState<string>('Select Category')
+    const [notes, setNotes] = useState<string>('')
     const [error, setError] = useState<string>('')
+    const router = useRouter()
 
     const handleEditExpense = () => {
         if (!title || !amount || !date || category === 'Select Category') {
-            Alert.alert('Error', 'Please fill in all required fields.');
+            Alert.alert('Error', 'Please fill in all required fields.')
             setError("Fill in all the required fields.")
             return;
         }
 
-        Alert.alert('Success', 'Expense added successfully!');
+        Alert.alert('Success', 'Expense added successfully!')
+        setError("")
+        router.replace("/viewExpenseDetails/viewExpenseDetailsPage")
+
         return
     }
 
     const handleScanReceipt = () => {
-        Alert.alert('Feature Coming Soon', 'Receipt scanning is not yet implemented.');
+        Alert.alert('Feature Coming Soon', 'Receipt scanning is not yet implemented.')
     };
 
     return (

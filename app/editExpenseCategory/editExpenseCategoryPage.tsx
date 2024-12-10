@@ -3,6 +3,7 @@ import { View, Text, TouchableOpacity, StyleSheet, Alert, Dimensions } from 'rea
 import ExpenseCategoryInputs from '@/components/formComponents/expenseCategoryInputs';
 import setPageTitle from '@/components/pageTitle/setPageTitle';
 import TopBar from '@/components/topBars/topBar';
+import { useRouter } from 'expo-router';
 
 
 export default function EditExpenseCategory() {
@@ -12,18 +13,24 @@ export default function EditExpenseCategory() {
     const [categoryName, setCategoryName] = useState<string>('')
     const [monthlyLimit, setMonthlyLimit] = useState<string>('')
     const [error, setError] = useState<string>('')
+    const router = useRouter()
 
     const validateForm = () => {
-        const limit = parseFloat(monthlyLimit);
+        const limit = parseFloat(monthlyLimit)
+
         if (!categoryName.trim()) {
             setError('Category name cannot be empty.')
             return false
         }
+
         if (isNaN(limit) || limit <= 0) {
             setError('Monthly Limit must be a positive figure.')
             return false
         }
+
         setError('')
+        router.replace("/expenseCategoriesOverview/expenseCategoriesOverviewPage")
+
         return true
     };
 

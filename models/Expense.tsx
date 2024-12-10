@@ -2,6 +2,7 @@ import Transaction from "./Transaction";
 import User from "./User";
 import ExpenseCategory from "./ExpenseCategory";
 import uuid from 'react-native-uuid';
+import ExpenseItem from "@/components/listItems/expenseItem";
 
 
 class Expense implements Transaction {
@@ -24,7 +25,20 @@ class Expense implements Transaction {
     }
 
     deleteTransaction(): boolean {
+        console.log("Delete Expense")
         return false
+    }
+
+    getPageURL(): string {
+        return "/viewExpenseDetails/viewExpenseDetailsPage"
+    }
+
+    getListItemDisplay(): React.ReactElement {
+        return <ExpenseItem expense={this} />
+    }
+
+    getFullDisplay(): React.ReactElement {
+        return <div></div>
     }
 }
 

@@ -5,6 +5,7 @@ import TopBar from '@/components/topBars/topBar';
 import GoalDetailsInputs from '@/components/formComponents/goalDetailsInputs';
 import validateEmpty from '@/utils/validateEmpty';
 import isNumeric from '@/utils/validateNumeric';
+import { useRouter } from 'expo-router';
 
 
 export default function AddGoal() {
@@ -16,6 +17,7 @@ export default function AddGoal() {
     const [date, setDate] = useState<string>('')
     const [notes, setNotes] = useState<string>('')
     const [error, setError] = useState<string>('')
+    const router = useRouter()
 
     const handleAddGoal = () => {
         if (!title || !target || !date) {
@@ -45,6 +47,10 @@ export default function AddGoal() {
         // The date field must be changed to a Date picker, validation is not implemented.
 
         Alert.alert('Success', 'Goal added successfully!');
+        setError("")
+
+        router.replace("/allGoals/allGoalsPage")
+
         return
     }
 

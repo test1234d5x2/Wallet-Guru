@@ -9,6 +9,9 @@ interface Transaction {
     notes: string
 
     deleteTransaction(): boolean
+    getPageURL(): string
+    getListItemDisplay(): React.ReactElement
+    getFullDisplay(): React.ReactElement
 }
 
 export default Transaction;
