@@ -16,7 +16,7 @@ export default function AddGoal() {
     const [title, setTitle] = useState<string>('')
     const [target, setTarget] = useState<string>('')
     const [date, setDate] = useState<Date>(new Date())
-    const [notes, setNotes] = useState<string>('')
+    const [description, setDesc] = useState<string>('')
     const [error, setError] = useState<string>('')
     const router = useRouter()
 
@@ -74,11 +74,11 @@ export default function AddGoal() {
                     title={title}
                     target={target}
                     date={date}
-                    notes={notes}
+                    description={description}
                     setTitle={setTitle}
                     setTarget={setTarget}
                     setDate={setDate}
-                    setNotes={setNotes}
+                    setDesc={setDesc}
                 />
             </View>
 

@@ -9,7 +9,7 @@ interface MenuDisplayProps {
 
 export default function MenuItem(props: MenuDisplayProps) {
     return (
-        <Link href={props.url} replace={true}>
+        <Link href={props.url} replace>
             <Text style={styles.menuText}>{props.title}</Text>
         </Link>
     )

@@ -9,11 +9,11 @@ interface GoalDetailsInputsProps {
     title: string,
     target: string,
     date: Date,
-    notes: string,
+    description: string,
     setTitle: (text: string) => void,
     setTarget: (text: string) => void,
     setDate: (text: Date) => void,
-    setNotes: (text: string) => void,
+    setDesc: (text: string) => void,
 }
 
 
@@ -37,9 +37,9 @@ export default function GoalDetailsInputs(props: GoalDetailsInputsProps) {
             <DateInputField date={props.date} setDate={props.setDate} />
 
             <StandardInputField
-                placeholder="Notes"
-                value={props.notes}
-                setValue={props.setNotes}
+                placeholder="Description"
+                value={props.description}
+                setValue={props.setDesc}
             />
         </ScrollView>
     )

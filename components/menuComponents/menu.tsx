@@ -12,6 +12,7 @@ export default function MainMenu() {
         {title: 'View Goals', link: "/allGoalsPage"},
         {title: 'Create An Expense Category', link: "/addExpenseCategoryPage"},
         {title: 'Expense Category Overview', link: "/expenseCategoriesOverviewPage"},
+        {title: 'Dashboard', link: "/dashboardPage"},
         {title: 'Spending Analytics', link: ""},
     ]
 

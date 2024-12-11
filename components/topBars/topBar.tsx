@@ -26,7 +26,7 @@ export default function TopBar() {
     return (
         <View style={styles.container}>
             <TouchableOpacity style={styles.iconButton}>
-                <Link href={"/menuPage"}>
+                <Link href={"/menuPage"} replace>
                     <Ionicons name="menu" size={28} color="black" />                
                 </Link>
             </TouchableOpacity>

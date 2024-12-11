@@ -4,11 +4,18 @@ import * as Progress from 'react-native-progress';
 import setPageTitle from '@/components/pageTitle/setPageTitle';
 import TopBar from '@/components/topBars/topBar';
 import { useRouter } from 'expo-router';
+import User from '@/models/User';
+import Goal from '@/models/Goal';
+import GoalStatus from '@/enums/GoalStatus';
 
 
 export default function ViewGoalDetails() {
 
-    setPageTitle("Goal Title")
+    const user = new User("", "")
+    const goal = new Goal("Goal Title", user, "khdfbjhdasjhdajshb", 2500, GoalStatus.Active)
+    goal.updateCurrent(1000)
+
+    setPageTitle(goal.title)
 
     const router = useRouter()
 
@@ -32,16 +39,16 @@ export default function ViewGoalDetails() {
         <View style={styles.container}>
             <TopBar />
 
-            <Text style={styles.label}>Target: £2500</Text>
+            <Text style={styles.label}>Target: £{goal.target}</Text>
 
             <View style={{rowGap: 5}}>
-                <Text style={styles.label}>Current: £1000</Text>
-                <Progress.Bar progress={0.4} color="#007BFF" width={null} />
+                <Text style={styles.label}>Current: £{goal.current}</Text>
+                <Progress.Bar progress={goal.calculateProgress()} color="#007BFF" width={null} />
             </View>
 
-            <Text style={styles.label}>Deadline: 05/2025</Text>
+            <Text style={styles.label}>Deadline: {/* NEED TO ADD A DEADLINE ATTRIBUTE TO GOAL. */}</Text>
 
-            <Text style={styles.label}>Notes: Lorum ipsum dolor sit amet.</Text>
+            <Text style={styles.label}>Description: {goal.description}</Text>
 
             <View style={styles.actionsContainer}>
                 <TouchableOpacity style={styles.editButton} onPress={handleUpdateProgress}>

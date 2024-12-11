@@ -1,5 +1,8 @@
 import setPageTitle from '@/components/pageTitle/setPageTitle';
 import TopBar from '@/components/topBars/topBar';
+import Expense from '@/models/Expense';
+import ExpenseCategory from '@/models/ExpenseCategory';
+import User from '@/models/User';
 import { useRouter } from 'expo-router';
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
@@ -8,7 +11,11 @@ import { View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 
 export default function ExpenseDetailsScreen() {
 
-    setPageTitle("Expense Name")
+    const user = new User("", "")
+    const expense = new Expense(user, "Expense Name", -25.5, new Date(), "", new ExpenseCategory(user, "Food", 250, 1000))
+    
+
+    setPageTitle(expense.title)
 
     const router = useRouter()
 
@@ -35,12 +42,12 @@ export default function ExpenseDetailsScreen() {
         <View style={styles.mainContainer}>
             <TopBar />
             <View style={styles.container}>
-                <Text style={styles.detail}>Category: {"Expense Category"}</Text>
-                <Text style={styles.detail}>£{"Expense Amount"}</Text>
-                <Text style={styles.detail}>{"date"}</Text>
+                <Text style={styles.detail}>Category: {expense.expenseCategory.name}</Text>
+                <Text style={styles.detail}>Amount: £{Math.abs(expense.amount).toFixed(2)}</Text>
+                <Text style={styles.detail}>Date: {expense.date.toDateString()}</Text>
                 <View>
                     <Text style={styles.notesTitle}>Notes:</Text>
-                    <Text style={styles.notes}>{"notes"}</Text>
+                    <Text style={styles.notes}>{expense.notes}</Text>
                 </View>
                 
                 <TouchableOpacity onPress={handleViewReceipt}>

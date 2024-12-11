@@ -35,7 +35,7 @@ export default function AllGoals() {
 
     for (let goal of goals) {
         displayElements.push(
-            <TouchableOpacity key={uuid.v4()} onPress={() => handleGoalClick(goal.id)}>
+            <TouchableOpacity key={uuid.v4()} onPress={() => handleGoalClick(goal.getID())}>
                 <GoalItem goal={goal} />
             </TouchableOpacity>
         )

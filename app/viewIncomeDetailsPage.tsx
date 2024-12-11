@@ -1,5 +1,7 @@
 import setPageTitle from '@/components/pageTitle/setPageTitle';
 import TopBar from '@/components/topBars/topBar';
+import Income from '@/models/Income';
+import User from '@/models/User';
 import { useRouter } from 'expo-router';
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
@@ -8,7 +10,10 @@ import { View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 
 export default function IncomeDetailsScreen() {
 
-    setPageTitle("Income Name")
+    const user = new User("", "")
+    const income = new Income(user, "Income Name", 1250, new Date(), "")
+
+    setPageTitle(income.title)
 
     const router = useRouter()
 
@@ -31,11 +36,11 @@ export default function IncomeDetailsScreen() {
         <View style={styles.mainContainer}>
             <TopBar />
             <View style={styles.container}>
-                <Text style={styles.detail}>£{"Income Amount"}</Text>
-                <Text style={styles.detail}>{"date"}</Text>
+                <Text style={styles.detail}>Amount: £{income.amount.toFixed(2)}</Text>
+                <Text style={styles.detail}>Date: {income.date.toDateString()}</Text>
                 <View>
                     <Text style={styles.notesTitle}>Notes:</Text>
-                    <Text style={styles.notes}>{"notes"}</Text>
+                    <Text style={styles.notes}>{income.notes}</Text>
                 </View>
 
 
