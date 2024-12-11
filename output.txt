@@ -1,0 +1,3805 @@
+
+--- Content from /Users/mostafael-shoubaky/Documents/Uni Work/Year 3/Final Year Project/Code/wallet-guru/app/editExpenseCategoryPage.tsx ---
+import React, { useState } from 'react';
+import { View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import ExpenseCategoryInputs from '@/components/formComponents/expenseCategoryInputs';
+import setPageTitle from '@/components/pageTitle/setPageTitle';
+import TopBar from '@/components/topBars/topBar';
+import { useRouter } from 'expo-router';
+import validateEmpty from '@/utils/validateEmpty';
+import isNumeric from '@/utils/validateNumeric';
+
+
+export default function EditExpenseCategory() {
+
+    setPageTitle("Edit Expense Category")
+
+    const [categoryName, setCategoryName] = useState<string>('')
+    const [monthlyLimit, setMonthlyLimit] = useState<string>('')
+    const [error, setError] = useState<string>('')
+    const router = useRouter()
+
+    const validateForm = () => {
+
+        if (!categoryName || !monthlyLimit) {
+            Alert.alert("Please fill in all the fields.")
+            setError("Please fill in all the fields.")
+            return false
+        }
+
+        else if (validateEmpty(categoryName)) {
+            Alert.alert("Empty Category Name Field", "The category name field must be filled properly.")
+            setError("The category name field must be filled properly.")
+            return false
+        }
+
+        else if (validateEmpty(monthlyLimit)) {
+            Alert.alert("Empty Monthly Limit Field", "The monthly limit field must be filled properly.")
+            setError("The monthly limit field must be filled properly.")
+            return false
+        }
+
+        else if (!isNumeric(monthlyLimit)) {
+            Alert.alert("Monthly Limit Field Not Numeric", "The monthly limit field must be a number.")
+            setError("The monthly limit field must be a number.")
+            return false
+        }
+        
+        setError('')
+        return true
+    }
+
+    const handleEditCategory = () => {
+        if (validateForm()) {
+            Alert.alert('Success', `Category "${categoryName}" added with a limit of £${monthlyLimit}`)
+            setCategoryName('')
+            setMonthlyLimit('')
+            setError("")
+            router.replace("/expenseCategoriesOverviewPage")
+            return
+        }
+    }
+
+    return (
+        <View style={styles.container}>
+            <TopBar />
+
+            <View style={styles.expenseCategoryForm}>
+                <ExpenseCategoryInputs categoryName={categoryName} monthlyLimit={monthlyLimit} setCategoryName={setCategoryName} setMonthlyLimit={setMonthlyLimit} />
+            </View>
+
+            {error === '' ? null: <Text style={styles.errorText}>{error}</Text>}
+
+            <TouchableOpacity style={styles.editButton} onPress={handleEditCategory}>
+                <Text style={styles.editButtonText}>Edit Category</Text>
+            </TouchableOpacity>
+        </View>
+    )
+}
+
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        padding: 20,
+        backgroundColor: '#fff',
+        rowGap: 20,
+    },
+    expenseCategoryForm: {
+        marginBottom: 40,
+    },
+    errorText: {
+        color: 'red',
+        fontSize: 14,
+        textAlign: 'center',
+    },
+    editButton: {
+        backgroundColor: '#007BFF',
+        padding: 15,
+        borderRadius: 5,
+        alignItems: 'center',
+    },
+    editButtonText: {
+        color: '#fff',
+        fontSize: 16,
+        fontWeight: 'bold',
+    },
+})
+
+--- Content from /Users/mostafael-shoubaky/Documents/Uni Work/Year 3/Final Year Project/Code/wallet-guru/app/index.tsx ---
+import setPageTitle from "@/components/pageTitle/setPageTitle";
+import { useRouter } from "expo-router";
+import { useEffect, useState } from "react";
+import { ActivityIndicator, StatusBar, View, StyleSheet } from "react-native";
+
+export default function Index() {
+
+    setPageTitle("Welcome!")
+
+    const router = useRouter()
+    const [isReady, setIsReady] = useState(false)
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setIsReady(true)
+        }, 0)
+
+        return () => clearTimeout(timer)
+    }, [])
+
+    useEffect(() => {
+        if (isReady) {
+            router.replace("/loginPage")
+        }
+    }, [isReady])
+
+    return (
+        <View style={styles.main}>
+            <StatusBar barStyle={"dark-content"} />
+
+            <ActivityIndicator color={"black"} />
+        </View>
+    )
+}
+
+const styles = StyleSheet.create({
+    main: {
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        flex: 1,
+    }
+})
+
+
+--- Content from /Users/mostafael-shoubaky/Documents/Uni Work/Year 3/Final Year Project/Code/wallet-guru/app/loginPage.tsx ---
+import { View, Text, StyleSheet, TouchableOpacity, Alert } from "react-native";
+import { useState } from "react";
+import { Link, useRouter } from "expo-router";
+import setPageTitle from "@/components/pageTitle/setPageTitle";
+import AuthenticationInputs from "@/components/formComponents/authenticationInputs";
+
+export default function Login() {
+
+    setPageTitle("Login")
+
+    const [email, setEmail] = useState<string>('')
+    const [password, setPassword] = useState<string>('')
+    const [error, setError] = useState<string>('')
+    const router = useRouter()
+
+    const handleLogin = () => {
+        if (!email || !password) {
+            setError("Please input both email and password")
+            Alert.alert("Please input both email and password")
+            return
+        }
+
+        setError("")
+        router.replace("/dashboardPage")
+        return
+    }
+
+    return (
+        <View style={styles.container}>
+            <AuthenticationInputs email={email} password={password} setEmail={setEmail} setPassword={setPassword} />
+
+
+            {error ? <View style={styles.errorTextContainer}><Text style={styles.errorText}>{error}</Text></View> : null}
+
+            <View style={styles.newUserTextContainer}>
+                <TouchableOpacity>
+                    <Link href={"/registrationPage"} replace={true}>
+                        <Text style={styles.newUserText}>New User? Register Here</Text>
+                    </Link>
+                </TouchableOpacity>
+            </View>
+
+            <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
+                <Text style={styles.loginButtonText}>Login</Text>
+            </TouchableOpacity>
+        </View>
+    )
+}
+
+const styles = StyleSheet.create({
+    container: {
+        backgroundColor: "white",
+        flex: 1,
+        rowGap: 20,
+        padding: 20,
+    },
+    loginButton: {
+        backgroundColor: '#5480D4',
+        width: '100%',
+        padding: 15,
+        borderRadius: 10,
+        alignItems: 'center',
+    },
+    loginButtonText: {
+        color: '#fff',
+        fontSize: 18,
+        fontWeight: 'bold',
+    },
+    newUserTextContainer: {
+        justifyContent: "center",
+        alignItems: "center"
+    },
+    newUserText: {
+        fontSize: 14,
+        color: 'rgba(0,0,0,0.5)',
+        textDecorationLine: 'underline',
+        textAlign: "center"
+    },
+    errorTextContainer: {
+        justifyContent: "center",
+        alignItems: "center"
+    },
+    errorText: {
+        color: 'red',
+        fontSize: 14,
+    },
+})
+
+--- Content from /Users/mostafael-shoubaky/Documents/Uni Work/Year 3/Final Year Project/Code/wallet-guru/app/editExpensePage.tsx ---
+import React, { useState } from 'react';
+import { View, Text, TouchableOpacity, StyleSheet, Alert, ScrollView } from 'react-native';
+import ExpenseDetailsInputs from '@/components/formComponents/expenseDetailsInputs';
+import setPageTitle from '@/components/pageTitle/setPageTitle';
+import TopBar from '@/components/topBars/topBar';
+import { useRouter } from 'expo-router';
+import validateEmpty from '@/utils/validateEmpty';
+import isNumeric from '@/utils/validateNumeric';
+import { isValidDate, isTodayOrBefore } from '@/utils/validateDate';
+
+
+
+export default function EditExpense() {
+
+    setPageTitle("Edit Expense")
+
+    const [title, setTitle] = useState<string>('')
+    const [amount, setAmount] = useState<string>('')
+    const [date, setDate] = useState<Date>(new Date())
+    const [category, setCategory] = useState<string>('Select Category')
+    const [notes, setNotes] = useState<string>('')
+    const [error, setError] = useState<string>('')
+    const router = useRouter()
+
+    const handleEditExpense = () => {
+        if (!title || !amount || !date || category === 'Select Category') {
+            Alert.alert('Please fill in all required fields.')
+            setError("Fill in all the required fields.")
+            return
+        }
+
+        else if (validateEmpty(title)) {
+            Alert.alert("Empty Title Field", "The title field must be filled properly.")
+            setError("The title field must be filled properly.")
+            return
+        }
+
+        else if (validateEmpty(amount)) {
+            Alert.alert("Empty Amount Field", "The amount field must be filled properly.")
+            setError("The amount field must be filled properly.")
+            return
+        }
+
+        else if (!isNumeric(amount)) {
+            Alert.alert("Amount Field Not Numeric", "The amount field must be a number.")
+            setError("The amount field must be a number.")
+            return
+        }
+
+        else if (!isValidDate(date)) {
+            Alert.alert("Date Field Invalid", "Please select a date.")
+            setError("Please select a date.")
+            return
+        }
+
+        else if (!isTodayOrBefore(date)) {
+            Alert.alert("Date Field Invalid", "Please select a date that is today or before today.")
+            setError("Please select a date that is today or before today.")
+            return
+        }
+
+        Alert.alert('Success', 'Expense added successfully!')
+        setError("")
+
+        router.replace("/viewExpenseDetailsPage")
+
+        return
+    }
+
+    const handleScanReceipt = () => {
+        Alert.alert('Feature Coming Soon', 'Receipt scanning is not yet implemented.')
+    }
+
+    return (
+        <ScrollView contentContainerStyle={styles.container}>
+            <TopBar />
+
+            <View style={styles.expenseForm}>
+                <ExpenseDetailsInputs 
+                    title={title}
+                    amount={amount}
+                    date={date}
+                    category={category}
+                    notes={notes}
+                    categoriesList={["1", "2"]}
+                    setTitle={setTitle}
+                    setAmount={setAmount}
+                    setDate={setDate}
+                    setCategory={setCategory}
+                    setNotes={setNotes}
+                />
+            </View>
+
+            {error ? <View style={styles.centeredTextContainer}><Text style={styles.errorText}>{error}</Text></View> : null}
+
+            <View style={styles.centeredTextContainer}>
+                <TouchableOpacity>
+                    <Text style={styles.scanText}>Scan Receipt</Text>
+                </TouchableOpacity>
+            </View>
+            
+
+            <TouchableOpacity style={styles.addButton} onPress={handleEditExpense}>
+                <Text style={styles.addButtonText}>Edit Expense</Text>
+            </TouchableOpacity>
+        </ScrollView>
+    )
+}
+
+
+const styles = StyleSheet.create({
+    container: {
+        display: "flex",
+        rowGap: 20,
+        padding: 20,
+        backgroundColor: '#fff',
+        flex: 1,
+    },
+    expenseForm: {
+        marginBottom: 40,
+    },
+    scanText: {
+        color: '#777',
+        textDecorationLine: 'underline',
+    },
+    addButton: {
+        backgroundColor: '#007BFF',
+        padding: 15,
+        borderRadius: 5,
+        alignItems: 'center',
+    },
+    addButtonText: {
+        color: '#fff',
+        fontSize: 16,
+        fontWeight: 'bold',
+    },
+    centeredTextContainer: {
+        justifyContent: "center",
+        alignItems: "center",
+    },
+    errorText: {
+        color: 'red',
+        fontSize: 14,
+    },
+})
+
+--- Content from /Users/mostafael-shoubaky/Documents/Uni Work/Year 3/Final Year Project/Code/wallet-guru/app/expenseCategoriesOverviewPage.tsx ---
+import React from 'react';
+import { View, StyleSheet } from 'react-native';
+import setPageTitle from '@/components/pageTitle/setPageTitle';
+import TopBar from '@/components/topBars/topBar';
+import uuid from 'react-native-uuid';
+import ExpenseCategory from '@/models/ExpenseCategory';
+import User from '@/models/User';
+import ExpenseCategoryItem from '@/components/listItems/expenseCategoryItem';
+
+
+export default function ViewExpenseCategories() {
+
+    setPageTitle("Expense Categories")
+
+    // This is filler data. Remove once the application is working.
+    const user = new User("", "")
+    const categories = [
+        new ExpenseCategory(user, "Category Name", 400, 1000),
+        new ExpenseCategory(user, "Category Name", 400, 1000),
+    ]
+
+    let displayElements = []
+
+    for (let category of categories) {
+        displayElements.push(
+            <ExpenseCategoryItem key={uuid.v4()} category={category} />
+        )
+
+        displayElements.push(<View style={styles.divider} key={uuid.v4()} />)
+    }
+
+
+    return (
+        <View style={styles.container}>
+            <TopBar />
+
+            {displayElements}
+        </View>
+    )
+}
+
+const styles = StyleSheet.create({
+    container: {
+        padding: 20,
+        backgroundColor: '#fff',
+        flex: 1,
+        rowGap: 20,
+    },
+    categoryContainer: {
+        rowGap: 10,
+    },
+    categoryName: {
+        fontSize: 16,
+        fontWeight: "bold",
+    },
+    label: {
+        fontSize: 14,
+    },
+    progressBar: {
+        height: 10,
+        borderRadius: 5,
+    },
+    actionsContainer: {
+        flexDirection: "row",
+        justifyContent: "space-between",
+    },
+    editButton: {
+        backgroundColor: "#007BFF",
+        padding: 10,
+        borderRadius: 5,
+        alignItems: "center",
+        justifyContent: "center",
+    },
+    deleteButton: {
+        backgroundColor: "#FF4C4C",
+        padding: 10,
+        borderRadius: 5,
+        alignItems: "center",
+        justifyContent: "center",
+    },
+    divider: {
+        height: 1,
+        backgroundColor: "#ccc",
+    },
+})
+
+--- Content from /Users/mostafael-shoubaky/Documents/Uni Work/Year 3/Final Year Project/Code/wallet-guru/app/analyticsPage.tsx ---
+import React from 'react';
+import { View, StyleSheet } from 'react-native';
+import setPageTitle from '@/components/pageTitle/setPageTitle';
+import TopBar from '@/components/topBars/topBar';
+
+
+export default function Analytics() {
+
+    setPageTitle("Spending Analytics")
+
+    return (
+        <View style={styles.container}>
+            <TopBar />
+        </View>
+    )
+}
+
+const styles = StyleSheet.create({
+    container: {
+        padding: 20,
+        backgroundColor: '#fff',
+        flex: 1,
+        rowGap: 20,
+    },
+});
+
+--- Content from /Users/mostafael-shoubaky/Documents/Uni Work/Year 3/Final Year Project/Code/wallet-guru/app/editIncomePage.tsx ---
+import React, { useState } from 'react';
+import { View, Text, TouchableOpacity, StyleSheet, Alert, ScrollView } from 'react-native';
+import setPageTitle from '@/components/pageTitle/setPageTitle';
+import TopBar from '@/components/topBars/topBar';
+import IncomeDetailsInputs from '@/components/formComponents/incomeDetailsInputs';
+import { useRouter } from 'expo-router';
+import validateEmpty from '@/utils/validateEmpty';
+import isNumeric from '@/utils/validateNumeric';
+import { isValidDate, isTodayOrBefore } from '@/utils/validateDate';
+
+
+export default function EditIncome() {
+
+    setPageTitle("Edit Income")
+
+    const [title, setTitle] = useState<string>('')
+    const [amount, setAmount] = useState<string>('')
+    const [date, setDate] = useState<Date>(new Date())
+    const [notes, setNotes] = useState<string>('')
+    const [error, setError] = useState<string>('')
+    const router = useRouter()
+
+    const handleEditIncome = () => {
+        if (!title || !amount || !date) {
+            Alert.alert('Please fill in all required fields.')
+            setError("Fill in all the required fields.")
+            return;
+        }
+
+        else if (validateEmpty(title)) {
+            Alert.alert("Empty Title Field", "The title field must be filled properly.")
+            setError("The title field must be filled properly.")
+            return
+        }
+
+        else if (validateEmpty(amount)) {
+            Alert.alert("Empty Amount Field", "The amount field must be filled properly.")
+            setError("The amount field must be filled properly.")
+            return
+        }
+
+        else if (!isNumeric(amount)) {
+            Alert.alert("Amount Field Not Numeric", "The amount field must be a number.")
+            setError("The amount field must be a number.")
+            return
+        }
+
+        else if (!isValidDate(date)) {
+            Alert.alert("Date Field Invalid", "Please select a date.")
+            setError("Please select a date.")
+            return
+        }
+
+        else if (!isTodayOrBefore(date)) {
+            Alert.alert("Date Field Invalid", "Please select a date that is today or before today.")
+            setError("Please select a date that is today or before today.")
+            return
+        }
+
+        Alert.alert('Success', 'Expense added successfully!')
+        setError("")
+        router.replace("/viewIncomeDetailsPage")
+        
+        return
+    }
+
+    return (
+        <ScrollView contentContainerStyle={styles.container}>
+            <TopBar />
+
+            <View style={styles.incomeForm}>
+                <IncomeDetailsInputs 
+                    title={title}
+                    amount={amount}
+                    date={date}
+                    notes={notes}
+                    setTitle={setTitle}
+                    setAmount={setAmount}
+                    setDate={setDate}
+                    setNotes={setNotes}
+                />
+            </View>
+
+            {error ? <View style={styles.centeredTextContainer}><Text style={styles.errorText}>{error}</Text></View> : null}
+            
+
+            <TouchableOpacity style={styles.addButton} onPress={handleEditIncome}>
+                <Text style={styles.addButtonText}>Edit Income</Text>
+            </TouchableOpacity>
+        </ScrollView>
+    )
+}
+
+
+const styles = StyleSheet.create({
+    container: {
+        rowGap: 20,
+        padding: 20,
+        backgroundColor: '#fff',
+        flex: 1,
+    },
+    incomeForm: {
+        marginBottom: 40,
+    },
+    scanText: {
+        color: '#777',
+        textDecorationLine: 'underline',
+    },
+    addButton: {
+        backgroundColor: '#007BFF',
+        padding: 15,
+        borderRadius: 5,
+        alignItems: 'center',
+    },
+    addButtonText: {
+        color: '#fff',
+        fontSize: 16,
+        fontWeight: 'bold',
+    },
+    centeredTextContainer: {
+        justifyContent: "center",
+        alignItems: "center",
+    },
+    errorText: {
+        color: 'red',
+        fontSize: 14,
+    },
+})
+
+--- Content from /Users/mostafael-shoubaky/Documents/Uni Work/Year 3/Final Year Project/Code/wallet-guru/app/accountOverviewPage.tsx ---
+import React from "react";
+import { View, Text, TouchableOpacity, StyleSheet, Alert } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
+import setPageTitle from "@/components/pageTitle/setPageTitle";
+import { useRouter, useNavigation } from "expo-router";
+
+export default function AccountOverview() {
+
+    setPageTitle("Account Overview")
+
+    const router = useRouter()
+    const nav = useNavigation()
+
+    const handleChangePassword = () => {
+        console.log("Change Password Pressed")
+    }
+
+    const handleLogOut = () => {
+        while (router.canGoBack()) {router.back()}
+        router.replace("/loginPage")
+    }
+
+    const handleDeleteAccount = () => {
+        Alert.alert('Delete Account', 'Are you sure you want to delete your account?', [
+            { text: 'Cancel', style: 'cancel' },
+            { text: 'Delete', style: 'destructive', onPress: () => {
+                console.log("Account Deleted")
+                router.dismissAll()
+                router.navigate("/")
+            } },
+        ])
+    }
+
+    return (
+        <View style={styles.container}>
+            <Ionicons name="person-circle-outline" size={100} color="black" />
+
+            <Text style={styles.emailText}>UserEmail@email.com</Text>
+
+            <TouchableOpacity style={styles.buttonPrimary} onPress={handleChangePassword}>
+                <Text style={styles.buttonText}>Change Password</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity style={styles.buttonPrimary} onPress={handleLogOut}>
+                <Text style={styles.buttonText}>Log Out</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity style={styles.buttonDanger} onPress={handleDeleteAccount}>
+                <Text style={styles.buttonText}>Delete Account</Text>
+            </TouchableOpacity>
+        </View>
+    )
+}
+
+const styles = StyleSheet.create({
+    container: {
+        alignItems: "center",
+        backgroundColor: "#fff",
+        padding: 20,
+        flex: 1,
+        rowGap: 30,
+    },
+    emailText: {
+        fontSize: 16,
+        fontWeight: "bold",
+    },
+    buttonPrimary: {
+        backgroundColor: "#007BFF",
+        paddingVertical: 15,
+        paddingHorizontal: 30,
+        borderRadius: 5,
+        width: "80%",
+        alignItems: "center",
+    },
+    buttonDanger: {
+        backgroundColor: "#FF4C4C",
+        paddingVertical: 15,
+        paddingHorizontal: 30,
+        borderRadius: 5,
+        width: "80%",
+        alignItems: "center",
+        marginTop: 50,
+    },
+    buttonText: {
+        color: "#fff",
+        fontSize: 16,
+        fontWeight: "bold",
+    },
+})
+
+--- Content from /Users/mostafael-shoubaky/Documents/Uni Work/Year 3/Final Year Project/Code/wallet-guru/app/registrationPage.tsx ---
+import { View, Text, StyleSheet, TouchableOpacity, Alert } from "react-native";
+import { useState } from "react";
+import AuthenticationInputs from "@/components/formComponents/authenticationInputs";
+import setPageTitle from "@/components/pageTitle/setPageTitle";
+import { useRouter } from "expo-router";
+import isValidEmail from "@/utils/validateEmail";
+
+
+export default function Login() {
+
+    setPageTitle("Create User")
+
+    const [email, setEmail] = useState<string>('')
+    const [password, setPassword] = useState<string>('')
+    const [error, setError] = useState<string>('')
+    const router = useRouter()
+
+
+    const handleRedirection = () => {
+        router.replace("/loginPage")
+    }
+
+    const handleRegistration = () => {
+        if (!email || !password) {
+            setError("Please input both email and password")
+            Alert.alert("Please input both email and password")
+            return
+        }
+
+        if (!isValidEmail(email)) {
+            setError("Please enter a valid email.")
+            Alert.alert("Invalid Email", "Please enter a valid email.")
+            return
+        }
+
+        setError("")
+
+        return
+    }
+
+    return (
+        <View style={styles.container}>
+            <AuthenticationInputs email={email} password={password} setEmail={setEmail} setPassword={setPassword} />
+
+            {error ? <View style={styles.errorTextContainer}><Text style={styles.errorText}>{error}</Text></View> : null}
+
+            <View style={styles.registeredUserTextContainer}>
+                <TouchableOpacity onPress={handleRedirection}>
+                    <Text style={styles.registeredUserText}>Already Registered? Login Here</Text>
+                </TouchableOpacity>
+            </View>
+
+            <TouchableOpacity style={styles.loginButton} onPress={handleRegistration}>
+                <Text style={styles.loginButtonText}>Register</Text>
+            </TouchableOpacity>
+        </View>
+    )
+}
+
+const styles = StyleSheet.create({
+    container: {
+        backgroundColor: "white",
+        flex: 1,
+        rowGap: 20,
+        padding: 20,
+    },
+    loginButton: {
+        backgroundColor: '#5480D4',
+        width: '100%',
+        padding: 15,
+        borderRadius: 10,
+        alignItems: 'center',
+    },
+    loginButtonText: {
+        color: '#fff',
+        fontSize: 18,
+        fontWeight: 'bold',
+    },
+    registeredUserTextContainer: {
+        justifyContent: "center",
+        alignItems: "center"
+    },
+    registeredUserText: {
+        fontSize: 14,
+        color: 'rgba(0,0,0,0.5)',
+        textDecorationLine: 'underline',
+        textAlign: "center",
+        width: "100%",
+    },
+    errorTextContainer: {
+        justifyContent: "center",
+        alignItems: "center"
+    },
+    errorText: {
+        color: 'red',
+        fontSize: 14,
+    },
+})
+
+--- Content from /Users/mostafael-shoubaky/Documents/Uni Work/Year 3/Final Year Project/Code/wallet-guru/app/listTransactionsPage.tsx ---
+import React, { useState } from 'react';
+import { useRouter } from 'expo-router';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import setPageTitle from '@/components/pageTitle/setPageTitle';
+import TopBar from '@/components/topBars/topBar';
+import Income from '@/models/Income';
+import Expense from '@/models/Expense';
+import User from '@/models/User';
+import ExpenseCategory from '@/models/ExpenseCategory';
+import uuid from 'react-native-uuid';
+import Transaction from '@/models/Transaction';
+
+
+export default function ViewTransactionsList() {
+
+    setPageTitle("Transactions")
+    const router = useRouter()
+
+    const [selectedType, setSelectedType] = useState<string>("")
+    const [startDate, setStartDate] = useState<string>("")
+    const [endDate, setEndDate] = useState<string>("")
+
+
+    const handleTransactionClick = (transaction: Transaction) => {
+        router.push(transaction.getPageURL())
+    }
+
+    // This is filler data. Remove once app fully working.
+    const user = new User("", "")
+    const transactions = [
+        new Expense(user, "Expense Name", -25.5, new Date(), "", new ExpenseCategory(user, "Food", 250, 1000)),
+        new Income(user, "Income Name", 1250, new Date(), ""),
+        new Expense(user, "Expense Name", -25.5, new Date(), "", new ExpenseCategory(user, "Travel", 500, 1000)),
+    ]
+
+    
+
+
+    let transactionDisplayElements = []
+
+    for (let transaction of transactions) {
+        transactionDisplayElements.push(
+            <TouchableOpacity key={uuid.v4()} onPress={() => handleTransactionClick(transaction)}>
+                {transaction.getListItemDisplay()}
+            </TouchableOpacity>
+        )
+        transactionDisplayElements.push(<View style={styles.divider} key={uuid.v4()} />)
+    }
+
+    return (
+        <ScrollView contentContainerStyle={styles.container}>
+            <TopBar />
+
+            
+            <View style={styles.filtersContainer}>
+                <Text style={styles.filterTitle}>Filters:</Text>
+            </View>
+
+            {transactionDisplayElements}
+        </ScrollView>
+    )
+}
+
+const styles = StyleSheet.create({
+    container: {
+        padding: 20,
+        backgroundColor: '#fff',
+        flex: 1,
+        rowGap: 30,
+    },
+    filterTitle: {
+        fontSize: 18,
+        fontWeight: "bold",
+    },
+    filtersContainer: {
+        flexDirection: "row",
+        alignItems: "center",
+    },
+    divider: {
+        height: 1,
+        backgroundColor: "#ccc",
+    },
+})
+
+--- Content from /Users/mostafael-shoubaky/Documents/Uni Work/Year 3/Final Year Project/Code/wallet-guru/app/viewIncomeDetailsPage.tsx ---
+import setPageTitle from '@/components/pageTitle/setPageTitle';
+import TopBar from '@/components/topBars/topBar';
+import Income from '@/models/Income';
+import User from '@/models/User';
+import { useRouter } from 'expo-router';
+import React from 'react';
+import { View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+
+
+
+export default function IncomeDetailsScreen() {
+
+    const user = new User("", "")
+    const income = new Income(user, "Income Name", 1250, new Date(), "")
+
+    setPageTitle(income.title)
+
+    const router = useRouter()
+
+    const handleEdit = () => {
+        router.navigate("/editIncomePage")
+        return
+    }
+
+    const handleDelete = () => {
+        Alert.alert('Delete Income', 'Are you sure you want to delete this income source?', [
+            { text: 'Cancel', style: 'cancel' },
+            { text: 'Delete', style: 'destructive', onPress: () => {
+                console.log('Income source deleted')
+                router.replace("/listTransactionsPage")
+            } },
+        ])
+    }
+
+    return (
+        <View style={styles.mainContainer}>
+            <TopBar />
+            <View style={styles.container}>
+                <Text style={styles.detail}>Amount: £{income.amount.toFixed(2)}</Text>
+                <Text style={styles.detail}>Date: {income.date.toDateString()}</Text>
+                <View>
+                    <Text style={styles.notesTitle}>Notes:</Text>
+                    <Text style={styles.notes}>{income.notes}</Text>
+                </View>
+
+
+                <View style={styles.buttonContainer}>
+                    <TouchableOpacity style={[styles.button, styles.editButton]} onPress={handleEdit}>
+                        <Text style={styles.buttonText}>Edit</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={[styles.button, styles.deleteButton]} onPress={handleDelete}>
+                        <Text style={styles.buttonText}>Delete</Text>
+                    </TouchableOpacity>
+                </View>
+            </View>
+        </View>
+    )
+}
+
+const styles = StyleSheet.create({
+    mainContainer: {
+        flex: 1,
+        padding: 20,
+        backgroundColor: "white",
+        rowGap: 20
+    },
+    container: {
+        backgroundColor: '#fff',
+        rowGap: 20
+    },
+    name: {
+        fontSize: 24,
+        fontWeight: 'bold',
+        textAlign: 'center',
+        marginBottom: 20,
+    },
+    detail: {
+        fontSize: 16,
+        marginBottom: 10,
+    },
+    notesTitle: {
+        fontSize: 16,
+        fontWeight: 'bold',
+        marginTop: 20,
+        marginBottom: 5,
+    },
+    notes: {
+        fontSize: 14,
+        color: '#555',
+    },
+    buttonContainer: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        marginTop: 30,
+    },
+    button: {
+        flex: 1,
+        marginHorizontal: 10,
+        paddingVertical: 15,
+        borderRadius: 30,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    editButton: {
+        backgroundColor: '#007BFF',
+    },
+    deleteButton: {
+        backgroundColor: '#FF4C4C',
+    },
+    buttonText: {
+        fontSize: 20,
+        color: '#fff',
+        fontWeight: 'bold',
+    },
+})
+
+--- Content from /Users/mostafael-shoubaky/Documents/Uni Work/Year 3/Final Year Project/Code/wallet-guru/app/addExpenseCategoryPage.tsx ---
+import React, { useState } from 'react';
+import { View, Text, TouchableOpacity, StyleSheet, Alert, Dimensions } from 'react-native';
+import ExpenseCategoryInputs from '@/components/formComponents/expenseCategoryInputs';
+import setPageTitle from '@/components/pageTitle/setPageTitle';
+import TopBar from '@/components/topBars/topBar';
+import validateEmpty from '@/utils/validateEmpty';
+import isNumeric from '@/utils/validateNumeric';
+import { useRouter } from 'expo-router';
+
+export default function AddExpenseCategory() {
+
+    setPageTitle("Add Expense Category")
+
+    const [categoryName, setCategoryName] = useState<string>('')
+    const [monthlyLimit, setMonthlyLimit] = useState<string>('')
+    const [error, setError] = useState<string>('')
+    const router = useRouter()
+
+    const validateForm = () => {
+
+        if (!categoryName || !monthlyLimit) {
+            Alert.alert("Please fill in all the fields.")
+            setError("Please fill in all the fields.")
+            return false
+        }
+
+        else if (validateEmpty(categoryName)) {
+            Alert.alert("Empty Category Name Field", "The category name field must be filled properly.")
+            setError("The category name field must be filled properly.")
+            return false
+        }
+
+        else if (validateEmpty(monthlyLimit)) {
+            Alert.alert("Empty Monthly Limit Field", "The monthly limit field must be filled properly.")
+            setError("The monthly limit field must be filled properly.")
+            return false
+        }
+
+        else if (!isNumeric(monthlyLimit)) {
+            Alert.alert("Monthly Limit Field Not Numeric", "The monthly limit field must be a number.")
+            setError("The monthly limit field must be a number.")
+            return false
+        }
+        
+        setError('')
+        return true
+    }
+
+    const handleAddCategory = () => {
+        if (validateForm()) {
+            Alert.alert('Success', `Category "${categoryName}" added with a limit of £${monthlyLimit}`)
+            setCategoryName('')
+            setMonthlyLimit('')
+            router.replace("/expenseCategoriesOverviewPage")
+            return
+        }
+    }
+
+    return (
+        <View style={styles.container}>
+            <TopBar />
+
+            <View style={styles.expenseCategoryForm}>
+                <ExpenseCategoryInputs categoryName={categoryName} monthlyLimit={monthlyLimit} setCategoryName={setCategoryName} setMonthlyLimit={setMonthlyLimit} />
+            </View>
+
+            {error === '' ? null: <Text style={styles.errorText}>{error}</Text>}
+
+            <TouchableOpacity style={styles.addButton} onPress={handleAddCategory}>
+                <Text style={styles.addButtonText}>Add Category</Text>
+            </TouchableOpacity>
+        </View>
+    )
+}
+
+const styles = StyleSheet.create({
+    container: {
+        padding: 20,
+        backgroundColor: '#fff',
+        minHeight: Dimensions.get("window").height,
+        rowGap: 20,
+    },
+    expenseCategoryForm: {
+        marginBottom: 40,
+    },
+    errorText: {
+        color: 'red',
+        fontSize: 14,
+        textAlign: 'center',
+    },
+    addButton: {
+        backgroundColor: '#007BFF',
+        padding: 15,
+        borderRadius: 5,
+        alignItems: 'center',
+    },
+    addButtonText: {
+        color: '#fff',
+        fontSize: 16,
+        fontWeight: 'bold',
+    },
+});
+
+--- Content from /Users/mostafael-shoubaky/Documents/Uni Work/Year 3/Final Year Project/Code/wallet-guru/app/viewGoalDetailsPage.tsx ---
+import React from 'react';
+import { View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import * as Progress from 'react-native-progress';
+import setPageTitle from '@/components/pageTitle/setPageTitle';
+import TopBar from '@/components/topBars/topBar';
+import { useRouter } from 'expo-router';
+import User from '@/models/User';
+import Goal from '@/models/Goal';
+import GoalStatus from '@/enums/GoalStatus';
+
+
+export default function ViewGoalDetails() {
+
+    const user = new User("", "")
+    const goal = new Goal("Goal Title", user, "khdfbjhdasjhdajshb", 2500, GoalStatus.Active)
+    goal.updateCurrent(1000)
+
+    setPageTitle(goal.title)
+
+    const router = useRouter()
+
+    const handleUpdateProgress = () => {
+        router.navigate("/updateGoalPage")
+        return
+    }
+
+    const handleDeleteGoal = () => {
+        Alert.alert('Delete Goal', 'Are you sure you want to delete this goal?', [
+            { text: 'Cancel', style: 'cancel' },
+            { text: 'Delete', style: 'destructive', onPress: () => {
+                console.log('Goal deleted')
+                router.replace("/allGoalsPage")
+            } },
+        ])
+    }
+
+
+    return (
+        <View style={styles.container}>
+            <TopBar />
+
+            <Text style={styles.label}>Target: £{goal.target}</Text>
+
+            <View style={{rowGap: 5}}>
+                <Text style={styles.label}>Current: £{goal.current}</Text>
+                <Progress.Bar progress={goal.calculateProgress()} color="#007BFF" width={null} />
+            </View>
+
+            <Text style={styles.label}>Deadline: {/* NEED TO ADD A DEADLINE ATTRIBUTE TO GOAL. */}</Text>
+
+            <Text style={styles.label}>Description: {goal.description}</Text>
+
+            <View style={styles.actionsContainer}>
+                <TouchableOpacity style={styles.editButton} onPress={handleUpdateProgress}>
+                    <Text style={styles.buttonText}>Update</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.deleteButton} onPress={handleDeleteGoal}>
+                    <Text style={styles.buttonText}>Delete</Text>
+                </TouchableOpacity>
+            </View>
+        </View>
+    )
+}
+
+const styles = StyleSheet.create({
+    container: {
+        padding: 20,
+        backgroundColor: '#fff',
+        flex: 1,
+        rowGap: 30,
+    },
+    label: {
+        fontSize: 16,
+    },
+    actionsContainer: {
+        flexDirection: "row",
+        justifyContent: "space-between",
+      },
+      editButton: {
+        flex: 1,
+        backgroundColor: "#007BFF",
+        paddingVertical: 15,
+        borderRadius: 5,
+        alignItems: "center",
+        marginHorizontal: 10,
+        marginLeft: 0,
+      },
+      deleteButton: {
+        flex: 1,
+        backgroundColor: "#FF4C4C",
+        paddingVertical: 15,
+        borderRadius: 5,
+        alignItems: "center",
+        marginHorizontal: 10,
+        marginRight: 0,
+      },
+      buttonText: {
+        color: "#fff",
+        fontSize: 16,
+        fontWeight: "bold",
+      },
+})
+
+--- Content from /Users/mostafael-shoubaky/Documents/Uni Work/Year 3/Final Year Project/Code/wallet-guru/app/_layout.tsx ---
+import { Stack } from "expo-router";
+
+export default function RootLayout() {
+  return <Stack screenOptions={{headerStyle: {backgroundColor: "white"}, headerTintColor: "black", headerBackButtonDisplayMode: "minimal"}} />;
+}
+
+
+--- Content from /Users/mostafael-shoubaky/Documents/Uni Work/Year 3/Final Year Project/Code/wallet-guru/app/viewExpenseDetailsPage.tsx ---
+import setPageTitle from '@/components/pageTitle/setPageTitle';
+import TopBar from '@/components/topBars/topBar';
+import Expense from '@/models/Expense';
+import ExpenseCategory from '@/models/ExpenseCategory';
+import User from '@/models/User';
+import { useRouter } from 'expo-router';
+import React from 'react';
+import { View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+
+
+
+export default function ExpenseDetailsScreen() {
+
+    const user = new User("", "")
+    const expense = new Expense(user, "Expense Name", -25.5, new Date(), "", new ExpenseCategory(user, "Food", 250, 1000))
+    
+
+    setPageTitle(expense.title)
+
+    const router = useRouter()
+
+    const handleEdit = () => {
+        router.navigate("/editExpensePage")
+        return
+    }
+
+    const handleDelete = () => {
+        Alert.alert('Delete Expense', 'Are you sure you want to delete this expense?', [
+            { text: 'Cancel', style: 'cancel' },
+            { text: 'Delete', style: 'destructive', onPress: () => {
+                console.log('Expense deleted')
+                router.replace("/listTransactionsPage")
+            } },
+        ])
+    }
+
+    const handleViewReceipt = () => {
+        Alert.alert("Needs Implementing")
+    }
+
+    return (
+        <View style={styles.mainContainer}>
+            <TopBar />
+            <View style={styles.container}>
+                <Text style={styles.detail}>Category: {expense.expenseCategory.name}</Text>
+                <Text style={styles.detail}>Amount: £{Math.abs(expense.amount).toFixed(2)}</Text>
+                <Text style={styles.detail}>Date: {expense.date.toDateString()}</Text>
+                <View>
+                    <Text style={styles.notesTitle}>Notes:</Text>
+                    <Text style={styles.notes}>{expense.notes}</Text>
+                </View>
+                
+                <TouchableOpacity onPress={handleViewReceipt}>
+                    <Text style={styles.viewReceipt}>View Receipt</Text>
+                </TouchableOpacity>
+                <View style={styles.buttonContainer}>
+                    <TouchableOpacity style={[styles.button, styles.editButton]} onPress={handleEdit}>
+                        <Text style={styles.buttonText}>Edit</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={[styles.button, styles.deleteButton]} onPress={handleDelete}>
+                        <Text style={styles.buttonText}>Delete</Text>
+                    </TouchableOpacity>
+                </View>
+            </View>
+        </View>
+    )
+}
+
+const styles = StyleSheet.create({
+    mainContainer: {
+        flex: 1,
+        padding: 20,
+        backgroundColor: "white",
+        rowGap: 20
+    },
+    container: {
+        backgroundColor: '#fff',
+        rowGap: 20
+    },
+    name: {
+        fontSize: 24,
+        fontWeight: 'bold',
+        textAlign: 'center',
+        marginBottom: 20,
+    },
+    detail: {
+        fontSize: 16,
+        marginBottom: 10,
+    },
+    notesTitle: {
+        fontSize: 16,
+        fontWeight: 'bold',
+        marginTop: 20,
+        marginBottom: 5,
+    },
+    notes: {
+        fontSize: 14,
+        color: '#555',
+    },
+    viewReceipt: {
+        marginTop: 20,
+        fontSize: 16,
+        color: '#007BFF',
+        textDecorationLine: 'underline',
+        textAlign: 'center',
+    },
+    buttonContainer: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        marginTop: 30,
+    },
+    button: {
+        flex: 1,
+        marginHorizontal: 10,
+        paddingVertical: 15,
+        borderRadius: 30,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    editButton: {
+        backgroundColor: '#007BFF',
+    },
+    deleteButton: {
+        backgroundColor: '#FF4C4C',
+    },
+    buttonText: {
+        fontSize: 20,
+        color: '#fff',
+        fontWeight: 'bold',
+    },
+})
+
+--- Content from /Users/mostafael-shoubaky/Documents/Uni Work/Year 3/Final Year Project/Code/wallet-guru/app/updateGoalPage.tsx ---
+import setPageTitle from "@/components/pageTitle/setPageTitle";
+import TopBar from "@/components/topBars/topBar";
+import { Ionicons } from "@expo/vector-icons";
+import React, { useState } from "react";
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from "react-native";
+
+
+export default function UpdateGoal() {
+
+    setPageTitle("Update Goal")
+
+    const [amount, setAmount] = useState<string>("")
+    const [error, setError] = useState<string>("")
+
+    const handleUpdateProgress = () => {
+        if (!/^-?\d+(\.\d+)?$/.test(amount)) {
+            Alert.alert("The amount entered must be a number.")
+            setError("The amount entered must be a number.")
+            return;
+        }
+        setError("")
+        console.log("Progress updated with amount:", parseFloat(amount))
+    }
+
+    const handleHelpClick = () => {
+        Alert.alert("Update Current Goal Status", "To update your progress, enter the amount you have added to your fund. If you have taken money out of the fund, you can enter a negative number.")
+        return
+    }
+
+    return (
+        <View style={styles.container}>
+
+            <TopBar />
+
+            <Text style={styles.label}>Goal: Goal Name</Text>
+            <Text style={styles.label}>Target: £2500</Text>
+            <Text style={styles.label}>Current: £1000</Text>
+
+            <View style={styles.inputContainer}>
+                <TextInput
+                    style={styles.input}
+                    placeholder="Amount Added/Removed"
+                    placeholderTextColor={"rgba(0,0,0,0.25)"}
+                    value={amount}
+                    onChangeText={(text) => setAmount(text)}
+                    keyboardType="numeric"
+                />
+
+                <TouchableOpacity>
+                    <Ionicons name="help-circle-outline" size={24} color="black" onPress={handleHelpClick} />
+                </TouchableOpacity>
+            </View>
+
+            
+
+            {error ? <Text style={styles.errorText}>{error}</Text> : null}
+
+            <TouchableOpacity style={styles.updateButton} onPress={handleUpdateProgress}>
+                <Text style={styles.updateButtonText}>Update Progress</Text>
+            </TouchableOpacity>
+        </View>
+    )
+}
+
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        padding: 20,
+        backgroundColor: "#fff",
+        rowGap: 30,
+    },
+    label: {
+        fontSize: 16,
+    },
+    inputContainer: {
+        display: "flex",
+        flexDirection: "row",
+        alignItems: "center",
+        columnGap: 15,
+    },
+    input: {
+        borderWidth: 1,
+        borderColor: "#ccc",
+        borderRadius: 5,
+        padding: 10,
+        fontSize: 16,
+    },
+    errorText: {
+        color: "red",
+        fontSize: 14,
+    },
+    updateButton: {
+        backgroundColor: "#007BFF",
+        padding: 15,
+        borderRadius: 5,
+        alignItems: "center",
+    },
+    updateButtonText: {
+        color: "#fff",
+        fontSize: 16,
+        fontWeight: "bold",
+    },
+})
+
+--- Content from /Users/mostafael-shoubaky/Documents/Uni Work/Year 3/Final Year Project/Code/wallet-guru/app/addExpensePage.tsx ---
+import React, { useState } from 'react';
+import { View, Text, TouchableOpacity, StyleSheet, Alert, ScrollView } from 'react-native';
+import ExpenseDetailsInputs from '@/components/formComponents/expenseDetailsInputs';
+import setPageTitle from '@/components/pageTitle/setPageTitle';
+import TopBar from '@/components/topBars/topBar';
+import validateEmpty from '@/utils/validateEmpty';
+import isNumeric from '@/utils/validateNumeric';
+import { useRouter } from 'expo-router';
+import { isTodayOrBefore, isValidDate } from '@/utils/validateDate';
+
+
+export default function AddExpense() {
+
+    setPageTitle("Add Expense")
+
+    const [title, setTitle] = useState<string>('')
+    const [amount, setAmount] = useState<string>('')
+    const [date, setDate] = useState<Date>(new Date())
+    const [category, setCategory] = useState<string>('Select Category')
+    const [notes, setNotes] = useState<string>('')
+    const [error, setError] = useState<string>('')
+    const router = useRouter()
+
+    const handleAddExpense = () => {
+        if (!title || !amount || !date || category === 'Select Category') {
+            Alert.alert('Please fill in all required fields.')
+            setError("Fill in all the required fields.")
+            return
+        }
+
+        else if (validateEmpty(title)) {
+            Alert.alert("Empty Title Field", "The title field must be filled properly.")
+            setError("The title field must be filled properly.")
+            return
+        }
+
+        else if (validateEmpty(amount)) {
+            Alert.alert("Empty Amount Field", "The amount field must be filled properly.")
+            setError("The amount field must be filled properly.")
+            return
+        }
+
+        else if (!isNumeric(amount)) {
+            Alert.alert("Amount Field Not Numeric", "The amount field must be a number.")
+            setError("The amount field must be a number.")
+            return
+        }
+
+        else if (!isValidDate(date)) {
+            Alert.alert("Date Field Invalid", "Please select a date.")
+            setError("Please select a date.")
+            return
+        }
+
+        else if (!isTodayOrBefore(date)) {
+            Alert.alert("Date Field Invalid", "Please select a date that is today or before today.")
+            setError("Please select a date that is today or before today.")
+            return
+        }
+
+        Alert.alert('Success', 'Expense added successfully!')
+        setError("")
+
+        router.replace("/listTransactionsPage")
+
+        return
+    }
+
+    const handleScanReceipt = () => {
+        Alert.alert('Feature Coming Soon', 'Receipt scanning is not yet implemented.')
+    }
+
+    return (
+        <ScrollView contentContainerStyle={styles.container}>
+            <TopBar />
+
+            <View style={styles.expenseForm}>
+                <ExpenseDetailsInputs 
+                    title={title}
+                    amount={amount}
+                    date={date}
+                    category={category}
+                    notes={notes}
+                    categoriesList={["1", "2"]}
+                    setTitle={setTitle}
+                    setAmount={setAmount}
+                    setDate={setDate}
+                    setCategory={setCategory}
+                    setNotes={setNotes}
+                />
+            </View>
+
+            {error ? <View style={styles.centeredTextContainer}><Text style={styles.errorText}>{error}</Text></View> : null}
+
+            <View style={styles.centeredTextContainer}>
+                <TouchableOpacity>
+                    <Text style={styles.scanText}>Scan Receipt</Text>
+                </TouchableOpacity>
+            </View>
+            
+
+            <TouchableOpacity style={styles.addButton} onPress={handleAddExpense}>
+                <Text style={styles.addButtonText}>Add Expense</Text>
+            </TouchableOpacity>
+        </ScrollView>
+    )
+}
+
+
+const styles = StyleSheet.create({
+    container: {
+        display: "flex",
+        rowGap: 20,
+        padding: 20,
+        backgroundColor: '#fff',
+        flex: 1,
+    },
+    expenseForm: {
+        marginBottom: 40,
+    },
+    scanText: {
+        color: '#777',
+        textDecorationLine: 'underline',
+    },
+    addButton: {
+        backgroundColor: '#007BFF',
+        padding: 15,
+        borderRadius: 5,
+        alignItems: 'center',
+    },
+    addButtonText: {
+        color: '#fff',
+        fontSize: 16,
+        fontWeight: 'bold',
+    },
+    centeredTextContainer: {
+        justifyContent: "center",
+        alignItems: "center",
+    },
+    errorText: {
+        color: 'red',
+        fontSize: 14,
+    },
+})
+
+--- Content from /Users/mostafael-shoubaky/Documents/Uni Work/Year 3/Final Year Project/Code/wallet-guru/app/allGoalsPage.tsx ---
+import React, { useState } from 'react';
+import { View, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import setPageTitle from '@/components/pageTitle/setPageTitle';
+import TopBar from '@/components/topBars/topBar';
+import uuid from 'react-native-uuid';
+import Goal from '@/models/Goal';
+import GoalStatus from '@/enums/GoalStatus';
+import User from '@/models/User';
+import GoalItem from '@/components/listItems/goalItem';
+import { useRouter } from 'expo-router';
+
+export default function AllGoals() {
+
+    setPageTitle("All Goals")
+
+    const [selectedSort, setSelectedSort] = useState<string>("")
+    const router = useRouter()
+
+    const handleGoalClick = (id: string) => {
+        router.navigate("/viewGoalDetailsPage")
+    }
+
+    // This is filler. Remove when the app is fully working.
+    const user = new User("", "")
+    const goals = [
+        new Goal("Goal Title", user, "khdfbjhdasjhdajshb", 2500, GoalStatus.Active),
+        new Goal("Goal Title", user, "khdfbjhdasjhdajshb", 2500, GoalStatus.Active),
+        new Goal("Goal Title", user, "khdfbjhdasjhdajshb", 2500, GoalStatus.Active),
+    ]
+    for (let x = 0; x < goals.length; x++) {
+        goals[x].updateCurrent(goals[x].target * 0.2 * (x+1))
+    }
+
+    let displayElements = []
+
+    for (let goal of goals) {
+        displayElements.push(
+            <TouchableOpacity key={uuid.v4()} onPress={() => handleGoalClick(goal.getID())}>
+                <GoalItem goal={goal} />
+            </TouchableOpacity>
+        )
+        displayElements.push(<View style={styles.divider} key={uuid.v4()} />)
+    }
+
+    return (
+        <ScrollView contentContainerStyle={styles.container}>
+            <TopBar />
+
+            {displayElements}
+            
+        </ScrollView>
+    )
+}
+
+const styles = StyleSheet.create({
+    container: {
+        padding: 20,
+        backgroundColor: '#fff',
+        flex: 1,
+        rowGap: 30,
+    },
+    divider: {
+        height: 1,
+        backgroundColor: "#ccc",
+    },
+})
+
+--- Content from /Users/mostafael-shoubaky/Documents/Uni Work/Year 3/Final Year Project/Code/wallet-guru/app/addGoalPage.tsx ---
+import React, { useState } from 'react';
+import { View, Text, TouchableOpacity, StyleSheet, Alert, ScrollView } from 'react-native';
+import setPageTitle from '@/components/pageTitle/setPageTitle';
+import TopBar from '@/components/topBars/topBar';
+import GoalDetailsInputs from '@/components/formComponents/goalDetailsInputs';
+import validateEmpty from '@/utils/validateEmpty';
+import isNumeric from '@/utils/validateNumeric';
+import { useRouter } from 'expo-router';
+import { isValidDate, isTodayOrAfter } from '@/utils/validateDate';
+
+
+export default function AddGoal() {
+
+    setPageTitle("Add Goal")
+
+    const [title, setTitle] = useState<string>('')
+    const [target, setTarget] = useState<string>('')
+    const [date, setDate] = useState<Date>(new Date())
+    const [description, setDesc] = useState<string>('')
+    const [error, setError] = useState<string>('')
+    const router = useRouter()
+
+    const handleAddGoal = () => {
+        if (!title || !target || !date) {
+            Alert.alert('Please fill in all required fields.')
+            setError("Fill in all the required fields.")
+            return;
+        }
+
+        else if (validateEmpty(title)) {
+            Alert.alert("Empty Title Field", "The title field must be filled properly.")
+            setError("The title field must be filled properly.")
+            return
+        }
+
+        else if (validateEmpty(target)) {
+            Alert.alert("Empty Target Field", "The target field must be filled properly.")
+            setError("The target field must be filled properly.")
+            return false
+        }
+
+        else if (!isNumeric(target)) {
+            Alert.alert("Target Field Not Numeric", "The target field must be a number.")
+            setError("The target field must be a number.")
+            return false
+        }
+
+        else if (!isValidDate(date)) {
+            Alert.alert("Date Field Invalid", "Please select a date.")
+            setError("Please select a date.")
+            return
+        }
+
+        else if (!isTodayOrAfter(date)) {
+            Alert.alert("Date Field Invalid", "Please select a date that is today or after today.")
+            setError("Please select a date that is today or after today.")
+            return
+        }
+
+        Alert.alert('Success', 'Goal added successfully!')
+        setError("")
+
+        router.replace("/allGoalsPage")
+
+        return
+    }
+
+    return (
+        <ScrollView contentContainerStyle={styles.container}>
+            <TopBar />
+
+            <View style={styles.goalForm}>
+                <GoalDetailsInputs 
+                    title={title}
+                    target={target}
+                    date={date}
+                    description={description}
+                    setTitle={setTitle}
+                    setTarget={setTarget}
+                    setDate={setDate}
+                    setDesc={setDesc}
+                />
+            </View>
+
+            {error ? <View style={styles.centeredTextContainer}><Text style={styles.errorText}>{error}</Text></View> : null}
+            
+
+            <TouchableOpacity style={styles.addButton} onPress={handleAddGoal}>
+                <Text style={styles.addButtonText}>Add Goal</Text>
+            </TouchableOpacity>
+        </ScrollView>
+    )
+}
+
+
+const styles = StyleSheet.create({
+    container: {
+        display: "flex",
+        rowGap: 20,
+        padding: 20,
+        backgroundColor: '#fff',
+        flex: 1,
+    },
+    goalForm: {
+        marginBottom: 40,
+    },
+    scanText: {
+        color: '#777',
+        textDecorationLine: 'underline',
+    },
+    addButton: {
+        backgroundColor: '#007BFF',
+        padding: 15,
+        borderRadius: 5,
+        alignItems: 'center',
+    },
+    addButtonText: {
+        color: '#fff',
+        fontSize: 16,
+        fontWeight: 'bold',
+    },
+    centeredTextContainer: {
+        justifyContent: "center",
+        alignItems: "center",
+    },
+    errorText: {
+        color: 'red',
+        fontSize: 14,
+    },
+})
+
+--- Content from /Users/mostafael-shoubaky/Documents/Uni Work/Year 3/Final Year Project/Code/wallet-guru/app/addIncomePage.tsx ---
+import React, { useState } from 'react';
+import { View, Text, TouchableOpacity, StyleSheet, Alert, ScrollView } from 'react-native';
+import setPageTitle from '@/components/pageTitle/setPageTitle';
+import TopBar from '@/components/topBars/topBar';
+import IncomeDetailsInputs from '@/components/formComponents/incomeDetailsInputs';
+import validateEmpty from '@/utils/validateEmpty';
+import isNumeric from '@/utils/validateNumeric';
+import { useRouter } from 'expo-router';
+import { isValidDate, isTodayOrBefore } from '@/utils/validateDate';
+
+
+
+export default function AddIncome() {
+
+    setPageTitle("Add Income")
+
+    const [title, setTitle] = useState<string>('')
+    const [amount, setAmount] = useState<string>('')
+    const [date, setDate] = useState<Date>(new Date())
+    const [notes, setNotes] = useState<string>('')
+    const [error, setError] = useState<string>('')
+    const router = useRouter()
+
+    const handleAddIncome = () => {
+        if (!title || !amount || !date) {
+            Alert.alert('Please fill in all required fields.')
+            setError("Fill in all the required fields.")
+            return;
+        }
+
+        else if (validateEmpty(title)) {
+            Alert.alert("Empty Title Field", "The title field must be filled properly.")
+            setError("The title field must be filled properly.")
+            return
+        }
+
+        else if (validateEmpty(amount)) {
+            Alert.alert("Empty Amount Field", "The amount field must be filled properly.")
+            setError("The amount field must be filled properly.")
+            return
+        }
+
+        else if (!isNumeric(amount)) {
+            Alert.alert("Amount Field Not Numeric", "The amount field must be a number.")
+            setError("The amount field must be a number.")
+            return
+        }
+
+        else if (!isValidDate(date)) {
+            Alert.alert("Date Field Invalid", "Please select a date.")
+            setError("Please select a date.")
+            return
+        }
+
+        else if (!isTodayOrBefore(date)) {
+            Alert.alert("Date Field Invalid", "Please select a date that is today or before today.")
+            setError("Please select a date that is today or before today.")
+            return
+        }
+
+        Alert.alert('Success', 'Income added successfully!')
+        setError("")
+
+        router.replace("/listTransactionsPage")
+
+        return
+    }
+
+    return (
+        <ScrollView contentContainerStyle={styles.container}>
+            <TopBar />
+
+            <View style={styles.incomeForm}>
+                <IncomeDetailsInputs 
+                    title={title}
+                    amount={amount}
+                    date={date}
+                    notes={notes}
+                    setTitle={setTitle}
+                    setAmount={setAmount}
+                    setDate={setDate}
+                    setNotes={setNotes}
+                />
+            </View>
+
+            {error ? <View style={styles.centeredTextContainer}><Text style={styles.errorText}>{error}</Text></View> : null}
+            
+
+            <TouchableOpacity style={styles.addButton} onPress={handleAddIncome}>
+                <Text style={styles.addButtonText}>Add Income</Text>
+            </TouchableOpacity>
+        </ScrollView>
+    )
+}
+
+
+const styles = StyleSheet.create({
+    container: {
+        display: "flex",
+        rowGap: 20,
+        padding: 20,
+        backgroundColor: '#fff',
+        flex: 1,
+    },
+    incomeForm: {
+        marginBottom: 40,
+    },
+    scanText: {
+        color: '#777',
+        textDecorationLine: 'underline',
+    },
+    addButton: {
+        backgroundColor: '#007BFF',
+        padding: 15,
+        borderRadius: 5,
+        alignItems: 'center',
+    },
+    addButtonText: {
+        color: '#fff',
+        fontSize: 16,
+        fontWeight: 'bold',
+    },
+    centeredTextContainer: {
+        justifyContent: "center",
+        alignItems: "center",
+    },
+    errorText: {
+        color: 'red',
+        fontSize: 14,
+    },
+})
+
+--- Content from /Users/mostafael-shoubaky/Documents/Uni Work/Year 3/Final Year Project/Code/wallet-guru/app/dashboardPage.tsx ---
+import React from 'react';
+import { View, Text, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
+import { Link } from 'expo-router';
+import setPageTitle from '@/components/pageTitle/setPageTitle';
+import TopBar from '@/components/topBars/topBar';
+import * as Progress from 'react-native-progress';
+
+
+export default function Dashboard() {
+
+    setPageTitle("Dashboard")
+
+    return (
+        <ScrollView contentContainerStyle={styles.container}>
+            <TopBar />
+
+            <View style={styles.section}>
+                <View style={styles.sectionHeader}>
+                    <Text style={styles.sectionTitle}>This Month:</Text>
+                    <TouchableOpacity>
+                        <Link href={"/analyticsPage"}>
+                            <Text style={styles.linkText}>View Analytics</Text>
+                        </Link>
+                    </TouchableOpacity>
+                </View>
+                <View style={styles.summaryContainer}>
+                    <View>
+                        <Text style={styles.label}>Income</Text>
+                        <Text style={styles.value}>£1000.00</Text>
+                    </View>
+                    <View style={styles.divider} />
+                    <View>
+                        <Text style={styles.label}>Spending</Text>
+                        <Text style={styles.value}>£750.00</Text>
+                    </View>
+                </View>
+            </View>
+
+            <View style={styles.section}>
+                <View style={styles.sectionHeader}>
+                    <Text style={styles.sectionTitle}>Transactions:</Text>
+                    <TouchableOpacity>
+                        <Link href={"/listTransactionsPage"}>
+                            <Text style={styles.linkText}>View All</Text>
+                        </Link>
+                    </TouchableOpacity>
+                </View>
+                <View style={styles.transaction}>
+                    <Text style={styles.transactionName}>Expense Name</Text>
+                    <Text style={styles.transactionAmount}>-£25.50</Text>
+                </View>
+                <View style={styles.dividerLine} />
+                <View style={styles.transaction}>
+                    <Text style={styles.transactionName}>Income Name</Text>
+                    <Text style={styles.transactionAmount}>+£1000.00</Text>
+                </View>
+                <View style={styles.dividerLine} />
+                <View style={styles.transaction}>
+                    <Text style={styles.transactionName}>Expense Name</Text>
+                    <Text style={styles.transactionAmount}>-£25.50</Text>
+                </View>
+            </View>
+
+            <View style={styles.section}>
+                <View style={styles.sectionHeader}>
+                    <Text style={styles.sectionTitle}>Budget Overview:</Text>
+                    <TouchableOpacity>
+                        <Link href={"/expenseCategoriesOverviewPage"}>
+                            <Text style={styles.linkText}>View</Text>
+                        </Link>
+                    </TouchableOpacity>
+                </View>
+                <View style={styles.progressContainer}>
+                    <View style={styles.progressTextContainer}>
+                        <Text style={styles.budgetLabel}>Food</Text>
+                        <Text style={styles.budgetPercentage}>40%</Text>
+                    </View>
+                    <View>
+                        <Progress.Bar progress={0.4} width={null} />
+                    </View>
+                </View>
+                <View style={styles.progressContainer}>
+                    <View style={styles.progressTextContainer}>
+                        <Text style={styles.budgetLabel}>Travel</Text>
+                        <Text style={styles.budgetPercentage}>40%</Text>
+                    </View>
+                    <View>
+                        <Progress.Bar progress={0.4} width={null} />
+                    </View>
+                </View>
+            </View>
+        </ScrollView>
+    )
+}
+
+const styles = StyleSheet.create({
+    container: {
+        padding: 20,
+        backgroundColor: '#fff',
+        flex: 1,
+        rowGap: 50,
+    },
+    summaryContainer: {
+        flexDirection: "row",
+        justifyContent: "space-between",
+        alignItems: "center",
+    },
+    label: {
+        fontSize: 16,
+        color: "#555",
+    },
+    value: {
+        fontSize: 18,
+        fontWeight: "bold",
+    },
+    divider: {
+        width: 1,
+        backgroundColor: "#ccc",
+        height: "100%",
+    },
+    section: {
+        rowGap: 15,
+    },
+    sectionHeader: {
+        flexDirection: "row",
+        justifyContent: "space-between",
+        alignItems: "center",
+    },
+    sectionTitle: {
+        fontSize: 18,
+        fontWeight: "bold",
+    },
+    linkText: {
+        fontSize: 16,
+        color: "#007BFF",
+        textDecorationLine: "underline",
+    },
+    transaction: {
+        flexDirection: "row",
+        justifyContent: "space-between",
+    },
+    transactionName: {
+        fontSize: 16,
+        color: "#555",
+    },
+    transactionAmount: {
+        fontSize: 16,
+        fontWeight: "bold",
+        color: "#555",
+    },
+    dividerLine: {
+        height: 1,
+        backgroundColor: "#ccc",
+    },
+    progressContainer: {
+        flexDirection: "column",
+        rowGap: 5,
+    },
+    progressTextContainer: {
+        flexDirection: "row",
+        justifyContent: "space-between",
+    },
+    budgetLabel: {
+        fontSize: 16,
+    },
+    budgetPercentage: {
+        fontSize: 16,
+    },
+
+});
+
+--- Content from /Users/mostafael-shoubaky/Documents/Uni Work/Year 3/Final Year Project/Code/wallet-guru/app/menuPage.tsx ---
+import { View, StyleSheet } from "react-native";
+import MainMenu from "@/components/menuComponents/menu";
+import setPageTitle from "@/components/pageTitle/setPageTitle";
+
+
+export default function Menu() {
+
+    setPageTitle("Menu")
+
+    return (
+        <View style={styles.container}>
+            <MainMenu />
+        </View>
+    )
+}
+
+const styles = StyleSheet.create({
+    container: {
+        padding: 20,
+        backgroundColor: '#fff',
+        flex: 1,
+        rowGap: 20,
+    },
+})
+
+--- Content from /Users/mostafael-shoubaky/Documents/Uni Work/Year 3/Final Year Project/Code/wallet-guru/components/formComponents/goalDetailsInputs.tsx ---
+import React from 'react';
+import { StyleSheet, ScrollView } from 'react-native';
+import StandardInputField from './inputFields/standardInputField';
+import NumericInputField from './inputFields/numericInputField';
+import DateInputField from './inputFields/dateInputField';
+
+
+interface GoalDetailsInputsProps {
+    title: string,
+    target: string,
+    date: Date,
+    description: string,
+    setTitle: (text: string) => void,
+    setTarget: (text: string) => void,
+    setDate: (text: Date) => void,
+    setDesc: (text: string) => void,
+}
+
+
+export default function GoalDetailsInputs(props: GoalDetailsInputsProps) {
+
+    return (
+        <ScrollView contentContainerStyle={styles.container}>
+
+            <StandardInputField
+                placeholder="Title"
+                value={props.title}
+                setValue={props.setTitle}
+            />
+
+            <NumericInputField
+                placeholder="Target"
+                value={props.target}
+                setValue={props.setTarget}
+            />
+
+            <DateInputField date={props.date} setDate={props.setDate} />
+
+            <StandardInputField
+                placeholder="Description"
+                value={props.description}
+                setValue={props.setDesc}
+            />
+        </ScrollView>
+    )
+}
+
+const styles = StyleSheet.create({
+    container: {
+        backgroundColor: '#fff',
+        rowGap: 20,
+    },
+})
+
+--- Content from /Users/mostafael-shoubaky/Documents/Uni Work/Year 3/Final Year Project/Code/wallet-guru/components/formComponents/expenseCategoryInputs.tsx ---
+import React from 'react';
+import { View, StyleSheet } from 'react-native';
+import StandardInputField from './inputFields/standardInputField';
+import NumericInputField from './inputFields/numericInputField';
+
+interface ExpenseCategoryInputs {
+    categoryName: string,
+    monthlyLimit: string,
+    setCategoryName: (text: string) => void,
+    setMonthlyLimit: (text: string) => void,
+
+}
+
+
+export default function ExpenseCategoryInputs(props: ExpenseCategoryInputs) {
+    
+    return (
+        <View style={styles.container}>
+
+            <StandardInputField
+                value={props.categoryName}
+                setValue={props.setCategoryName}
+                placeholder="Category Name"
+            />
+
+            <NumericInputField
+                value={props.monthlyLimit}
+                placeholder="Monthly Limit"
+                setValue={props.setMonthlyLimit}
+            />
+
+        </View>
+    );
+};
+
+const styles = StyleSheet.create({
+    container: {
+        backgroundColor: '#fff',
+        justifyContent: 'center',
+        rowGap: 20,
+    },
+});
+
+--- Content from /Users/mostafael-shoubaky/Documents/Uni Work/Year 3/Final Year Project/Code/wallet-guru/components/formComponents/expenseDetailsInputs.tsx ---
+import React from 'react';
+import { View, StyleSheet, ScrollView } from 'react-native';
+import StandardInputField from './inputFields/standardInputField';
+import NumericInputField from './inputFields/numericInputField';
+import ModalSelection from '../modalSelection/modalSelection';
+import DateInputField from './inputFields/dateInputField';
+
+
+interface ExpenseDetailsInputsProps {
+    title: string,
+    amount: string,
+    date: Date,
+    category: string,
+    notes: string,
+    categoriesList: Array<string>,
+    setTitle: (text: string) => void,
+    setAmount: (text: string) => void,
+    setDate: (text: Date) => void,
+    setCategory: (text: string) => void,
+    setNotes: (text: string) => void,
+}
+
+
+export default function ExpenseDetailsInputs(props: ExpenseDetailsInputsProps) {
+
+    
+
+    return (
+        <ScrollView contentContainerStyle={styles.container}>
+
+            <StandardInputField
+                placeholder="Title"
+                value={props.title}
+                setValue={props.setTitle}
+            />
+
+            <NumericInputField
+                placeholder="Amount"
+                value={props.amount}
+                setValue={props.setAmount}
+            />
+
+            <DateInputField date={props.date} setDate={props.setDate} />
+
+            <View style={styles.input}>
+                <ModalSelection choices={props.categoriesList} value={props.category} setValue={props.setCategory} />
+            </View>
+
+            <StandardInputField
+                placeholder="Notes"
+                value={props.notes}
+                setValue={props.setNotes}
+            />
+        </ScrollView>
+    )
+}
+
+const styles = StyleSheet.create({
+    container: {
+        backgroundColor: '#fff',
+        rowGap: 20,
+    },
+    input: {
+        width: '100%',
+        borderColor: '#ccc',
+        borderWidth: 1,
+        borderRadius: 10,
+        paddingLeft: 15,
+        fontSize: 16,
+    },
+})
+
+--- Content from /Users/mostafael-shoubaky/Documents/Uni Work/Year 3/Final Year Project/Code/wallet-guru/components/formComponents/incomeDetailsInputs.tsx ---
+import React from 'react';
+import { StyleSheet, ScrollView } from 'react-native';
+import StandardInputField from './inputFields/standardInputField';
+import NumericInputField from './inputFields/numericInputField';
+import DateInputField from './inputFields/dateInputField';
+
+
+interface IncomeDetailsInputsProps {
+    title: string,
+    amount: string,
+    date: Date,
+    notes: string,
+    setTitle: (text: string) => void,
+    setAmount: (text: string) => void,
+    setDate: (text: Date) => void,
+    setNotes: (text: string) => void,
+}
+
+
+export default function IncomeDetailsInputs(props: IncomeDetailsInputsProps) {
+
+    return (
+        <ScrollView contentContainerStyle={styles.container}>
+
+            <StandardInputField
+                placeholder="Title"
+                value={props.title}
+                setValue={props.setTitle}
+            />
+
+            <NumericInputField
+                placeholder="Amount"
+                value={props.amount}
+                setValue={props.setAmount}
+            />
+
+            <DateInputField date={props.date} setDate={props.setDate} />
+
+            <StandardInputField
+                placeholder="Notes"
+                value={props.notes}
+                setValue={props.setNotes}
+            />
+        </ScrollView>
+    );
+};
+
+const styles = StyleSheet.create({
+    container: {
+        backgroundColor: '#fff',
+        rowGap: 20,
+    },
+});
+
+--- Content from /Users/mostafael-shoubaky/Documents/Uni Work/Year 3/Final Year Project/Code/wallet-guru/components/formComponents/authenticationInputs.tsx ---
+import React from 'react';
+import { View, TextInput, StyleSheet } from 'react-native';
+import EmailInputField from './inputFields/emailInputField';
+import PasswordInputField from './inputFields/passwordInputField';
+
+interface AuthenticationInputsProps {
+    email: string,
+    password: string
+    setEmail: (text: string) => void,
+    setPassword: (text: string) => void,
+
+}
+
+export default function AuthenticationInputs(props: AuthenticationInputsProps) {
+    return (
+        <View style={styles.container}>
+
+            <EmailInputField
+                email={props.email}
+                setEmail={(props.setEmail)}
+            />
+
+            <PasswordInputField
+                password={props.password}
+                setPassword={props.setPassword} 
+            />
+
+        </View>
+    );
+};
+
+const styles = StyleSheet.create({
+    container: {
+        justifyContent: 'center',
+        alignItems: 'center',
+        rowGap: 20,
+        padding: 20,
+    },
+    input: {
+        width: '100%',
+        height: 50,
+        borderColor: '#ccc',
+        borderWidth: 1,
+        borderRadius: 10,
+        paddingLeft: 15,
+        fontSize: 16,
+    },
+})
+
+--- Content from /Users/mostafael-shoubaky/Documents/Uni Work/Year 3/Final Year Project/Code/wallet-guru/components/formComponents/inputFields/dateInputField.tsx ---
+import React, { useState } from "react"
+import DateTimePicker from '@react-native-community/datetimepicker';
+import { Text, View, StyleSheet } from "react-native";
+
+interface DateInputFieldProps {
+    date: Date
+    setDate: (text: Date) => void
+}
+
+
+export default function DateInputField(props: DateInputFieldProps) {
+    
+    const [show, setShow] = useState<boolean>(false)
+
+    const handleDateChange = (event: any, selectedDate?: Date) => {
+        const currentDate = selectedDate || props.date
+        props.setDate(currentDate)
+        setShow(false)
+        
+    }
+
+    const showPicker = () => {
+        setShow(true)
+    }
+
+    return (
+        <View style={styles.dateFieldContainer}>
+            <Text onPress={showPicker}>Date: {props.date.toDateString()}</Text>
+            {show && <DateTimePicker
+                value={props.date}
+                onChange={handleDateChange}
+                mode="date" 
+                display="default"
+            />}
+        </View>
+        
+    )
+}
+
+const styles = StyleSheet.create({
+    dateFieldContainer: {
+        paddingVertical: 20,
+        paddingLeft: 15,
+        borderWidth: 1,
+        borderColor: "#ccc",
+        borderRadius: 10,
+        rowGap: 20,
+    }
+})
+
+--- Content from /Users/mostafael-shoubaky/Documents/Uni Work/Year 3/Final Year Project/Code/wallet-guru/components/formComponents/inputFields/passwordInputField.tsx ---
+import React from 'react';
+import { TextInput, StyleSheet } from 'react-native';
+
+
+interface PasswordFieldProps {
+    password: string
+    setPassword: (text: string) => void
+}
+
+export default function PasswordInputField(props: PasswordFieldProps) {
+    return (
+        <TextInput 
+            style={styles.input}
+            placeholder={"Password"}
+            placeholderTextColor={"rgba(0,0,0,0.25)"}
+            value={props.password}
+            onChangeText={props.setPassword}
+            secureTextEntry={true}
+        />
+    )
+}
+
+const styles = StyleSheet.create({
+    input: {
+        width: '100%',
+        height: 50,
+        borderColor: '#ccc',
+        borderWidth: 1,
+        borderRadius: 10,
+        paddingLeft: 15,
+        fontSize: 16,
+    },
+})
+
+--- Content from /Users/mostafael-shoubaky/Documents/Uni Work/Year 3/Final Year Project/Code/wallet-guru/components/formComponents/inputFields/numericInputField.tsx ---
+import React from 'react';
+import { TextInput, StyleSheet } from 'react-native';
+
+
+interface NumericInputProps {
+    value: string
+    placeholder: string
+    setValue: (text: string) => void
+}
+
+export default function NumericInputField(props: NumericInputProps) {
+    return (
+        <TextInput 
+            style={styles.input}
+            placeholder={props.placeholder}
+            placeholderTextColor={"rgba(0,0,0,0.25)"}
+            value={props.value}
+            onChangeText={props.setValue}
+            keyboardType='decimal-pad'
+        />
+    )
+}
+
+const styles = StyleSheet.create({
+    input: {
+        width: '100%',
+        height: 50,
+        borderColor: '#ccc',
+        borderWidth: 1,
+        borderRadius: 10,
+        paddingLeft: 15,
+        fontSize: 16,
+    },
+})
+
+--- Content from /Users/mostafael-shoubaky/Documents/Uni Work/Year 3/Final Year Project/Code/wallet-guru/components/formComponents/inputFields/emailInputField.tsx ---
+import React from 'react';
+import { TextInput, StyleSheet } from 'react-native';
+
+
+interface EmailFieldProps {
+    email: string
+    setEmail: (text: string) => void
+}
+
+export default function EmailInputField(props: EmailFieldProps) {
+    return (
+        <TextInput 
+            style={styles.input}
+            placeholder={"Email"}
+            placeholderTextColor={"rgba(0,0,0,0.25)"}
+            value={props.email}
+            onChangeText={props.setEmail}
+            keyboardType="email-address"
+        />
+    )
+}
+
+const styles = StyleSheet.create({
+    input: {
+        width: '100%',
+        height: 50,
+        borderColor: '#ccc',
+        borderWidth: 1,
+        borderRadius: 10,
+        paddingLeft: 15,
+        fontSize: 16,
+    },
+})
+
+--- Content from /Users/mostafael-shoubaky/Documents/Uni Work/Year 3/Final Year Project/Code/wallet-guru/components/formComponents/inputFields/standardInputField.tsx ---
+import React from 'react';
+import { TextInput, StyleSheet } from 'react-native';
+
+
+interface StandardInputProps {
+    value: string
+    placeholder: string
+    setValue: (text: string) => void
+}
+
+export default function StandardInputField(props: StandardInputProps) {
+    return (
+        <TextInput 
+            style={styles.input}
+            placeholder={props.placeholder}
+            placeholderTextColor={"rgba(0,0,0,0.25)"}
+            value={props.value}
+            onChangeText={props.setValue}
+        />
+    )
+}
+
+const styles = StyleSheet.create({
+    input: {
+        width: '100%',
+        height: 50,
+        borderColor: '#ccc',
+        borderWidth: 1,
+        borderRadius: 10,
+        paddingLeft: 15,
+        fontSize: 16,
+    },
+})
+
+--- Content from /Users/mostafael-shoubaky/Documents/Uni Work/Year 3/Final Year Project/Code/wallet-guru/components/pageTitle/setPageTitle.tsx ---
+import { useLayoutEffect } from 'react';
+import { useNavigation } from '@react-navigation/native';
+
+export default function setPageTitle(title: string) {
+    const nav = useNavigation();
+
+    useLayoutEffect(() => nav.setOptions({headerTitle: title}))
+}
+
+--- Content from /Users/mostafael-shoubaky/Documents/Uni Work/Year 3/Final Year Project/Code/wallet-guru/components/topBars/topBar.tsx ---
+import { View, StyleSheet, TouchableOpacity } from "react-native";
+import React from "react";
+import { Ionicons } from "@expo/vector-icons";
+import { Link } from "expo-router";
+
+const styles = StyleSheet.create({
+    container: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        backgroundColor: '#fff',
+    },
+    iconButton: {
+        padding: 5,
+    },
+    title: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        color: 'black',
+    },
+});
+
+
+
+export default function TopBar() {
+    return (
+        <View style={styles.container}>
+            <TouchableOpacity style={styles.iconButton}>
+                <Link href={"/menuPage"} replace>
+                    <Ionicons name="menu" size={28} color="black" />                
+                </Link>
+            </TouchableOpacity>
+
+            <TouchableOpacity style={styles.iconButton}>
+                <Link href={"/accountOverviewPage"}>
+                    <Ionicons name="person-circle-outline" size={28} color="black" />
+                </Link>
+            </TouchableOpacity>
+        </View>
+    )
+}  
+
+--- Content from /Users/mostafael-shoubaky/Documents/Uni Work/Year 3/Final Year Project/Code/wallet-guru/components/menuComponents/menuItem.tsx ---
+import { StyleSheet, Text } from "react-native";
+import { Link } from "expo-router";
+
+
+interface MenuDisplayProps {
+    title: string
+    url: string
+}
+
+export default function MenuItem(props: MenuDisplayProps) {
+    return (
+        <Link href={props.url} replace>
+            <Text style={styles.menuText}>{props.title}</Text>
+        </Link>
+    )
+}
+
+const styles = StyleSheet.create({
+    menuText: {
+        fontSize: 20,
+        textDecorationLine: 'underline',
+    },
+})
+
+--- Content from /Users/mostafael-shoubaky/Documents/Uni Work/Year 3/Final Year Project/Code/wallet-guru/components/menuComponents/menu.tsx ---
+import { View, StyleSheet} from "react-native";
+import MenuItem from './menuItem';
+
+
+export default function MainMenu() {
+
+    const menuItems = [
+        {title: 'Add Expense', link: "/addExpensePage"},
+        {title: 'Add Income', link: "/addIncomePage"},
+        {title: 'Transaction History', link: "/listTransactionsPage"},
+        {title: 'Create A New Goal', link: "/addGoalPage"},
+        {title: 'View Goals', link: "/allGoalsPage"},
+        {title: 'Create An Expense Category', link: "/addExpenseCategoryPage"},
+        {title: 'Expense Category Overview', link: "/expenseCategoriesOverviewPage"},
+        {title: 'Dashboard', link: "/dashboardPage"},
+        {title: 'Spending Analytics', link: ""},
+    ]
+
+    return (
+        <View>
+            <View style={styles.menuContainer}>
+                {menuItems.map((item) => {return <MenuItem key={item.title} title={item.title} url={item.link} />})}
+            </View>
+        </View>
+    )
+}
+
+const styles = StyleSheet.create({
+    menuContainer: {
+        display: "flex",
+        flexDirection: "column",
+        rowGap: 20,
+    },
+})
+
+--- Content from /Users/mostafael-shoubaky/Documents/Uni Work/Year 3/Final Year Project/Code/wallet-guru/components/modalSelection/modalSelection.tsx ---
+import React, { useState } from 'react';
+import { View, Text, FlatList, TouchableOpacity, StyleSheet, Modal, Pressable, SafeAreaView } from 'react-native';
+
+
+interface ModalSelectionProps {
+    choices: Array<string>
+    value: string
+    setValue: (text: string) => void
+}
+
+const ModalSelection = (props: ModalSelectionProps) => {
+
+    const [showDropdown, setShowDropdown] = useState<boolean>(false)
+
+    return (
+        <View style={styles.container}>
+            <TouchableOpacity style={styles.dropdown} onPress={() => setShowDropdown(true)}>
+                <Text style={styles.dropdownText}>{props.value}</Text>
+            </TouchableOpacity>
+
+            <Modal visible={showDropdown} transparent={true} onRequestClose={() => setShowDropdown(false)}>
+                <SafeAreaView style={styles.modalOverlay}>
+                    <View style={styles.modalContainer}>
+                        <FlatList
+                            data={props.choices}
+                            keyExtractor={(item, index) => index.toString()}
+                            renderItem={({ item }) => (
+                                <TouchableOpacity
+                                    style={styles.dropdownOption}
+                                    onPress={() => {
+                                        props.setValue(item);
+                                        setShowDropdown(false);
+                                    }}
+                                >
+                                    <Text style={styles.optionText}>{item}</Text>
+                                </TouchableOpacity>
+                            )}
+                        />
+                    </View>
+                    <Pressable
+                        style={styles.modalDismissArea}
+                        onPress={() => setShowDropdown(false)}
+                    />
+                </SafeAreaView>
+            </Modal>
+        </View>
+    )
+}
+
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        paddingVertical: 20,
+    },
+    dropdown: {
+        backgroundColor: '#fff',
+    },
+    dropdownText: {
+        fontSize: 16,
+    },
+    modalOverlay: {
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: "center",
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    },
+    modalContainer: {
+        width: '90%',
+        backgroundColor: '#fff',
+        elevation: 5,
+        zIndex: 1000,
+    },
+    modalDismissArea: {
+        position: "absolute",
+        top: 0,
+        right: 0,
+        left: 0,
+        bottom: 0,
+    },
+    dropdownOption: {
+        padding: 15,
+        borderBottomWidth: 1,
+        borderColor: '#ccc',
+    },
+    optionText: {
+        fontSize: 16,
+    },
+})
+
+export default ModalSelection;
+
+
+--- Content from /Users/mostafael-shoubaky/Documents/Uni Work/Year 3/Final Year Project/Code/wallet-guru/components/listItems/expenseCategoryItem.tsx ---
+import React from 'react';
+import { View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import * as Progress from 'react-native-progress';
+import { Ionicons } from '@expo/vector-icons';
+import ExpenseCategory from '@/models/ExpenseCategory';
+import { useRouter } from 'expo-router';
+
+
+interface ExpenseCategoryProps {
+    category: ExpenseCategory
+}
+
+
+export default function ExpenseCategoryItem(props: ExpenseCategoryProps) {
+
+    const router = useRouter()
+
+    const handleEdit = (id: string) => {
+        router.navigate("/editExpenseCategoryPage")
+        return
+    }
+    const handleDelete = (id: string) => {
+        Alert.alert('Delete Expense Category', 'Are you sure you want to delete this expense category?', [
+            { text: 'Cancel', style: 'cancel' },
+            { text: 'Delete', style: 'destructive', onPress: () => {
+                console.log('Expense category deleted')
+                router.replace("/expenseCategoriesOverviewPage")
+            } },
+        ])
+    }
+
+    return (
+        <View style={styles.categoryContainer}>
+            <Text style={styles.categoryName}>{props.category.name}</Text>
+
+            <Text style={styles.label}>Spending: £{props.category.currentMonthlySpending}</Text>
+            <Progress.Bar progress={props.category.calculateBudgetUsed()} color="#007BFF" width={null} />
+            <Text style={styles.label}>Budget: £{props.category.monthlyBudget}</Text>
+
+            <View style={styles.actionsContainer}>
+                <TouchableOpacity style={styles.editButton} onPress={() => handleEdit(props.category.getID())}>
+                    <Ionicons name="pencil-outline" size={20} color="#fff" />
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.deleteButton} onPress={() => handleDelete(props.category.getID())}>
+                    <Ionicons name="trash-outline" size={20} color="#fff" />
+                </TouchableOpacity>
+            </View>
+        </View>
+    )
+}
+
+
+
+
+const styles = StyleSheet.create({
+    categoryContainer: {
+        rowGap: 10,
+    },
+    categoryName: {
+        fontSize: 16,
+        fontWeight: "bold",
+    },
+    label: {
+        fontSize: 14,
+    },
+    progressBar: {
+        height: 10,
+        borderRadius: 5,
+    },
+    actionsContainer: {
+        flexDirection: "row",
+        justifyContent: "space-between",
+    },
+    editButton: {
+        backgroundColor: "#007BFF",
+        padding: 10,
+        borderRadius: 5,
+        alignItems: "center",
+        justifyContent: "center",
+    },
+    deleteButton: {
+        backgroundColor: "#FF4C4C",
+        padding: 10,
+        borderRadius: 5,
+        alignItems: "center",
+        justifyContent: "center",
+    },
+})
+
+--- Content from /Users/mostafael-shoubaky/Documents/Uni Work/Year 3/Final Year Project/Code/wallet-guru/components/listItems/incomeItem.tsx ---
+import { Ionicons } from '@expo/vector-icons';
+import React, { useState } from 'react';
+import { View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import Income from '@/models/Income';
+import { useRouter } from 'expo-router';
+
+interface IncomeItemProps {
+    income: Income
+}
+
+export default function IncomeItem(props: IncomeItemProps) {
+
+    const router = useRouter()
+
+    const handleDeleteTransaction = (id: string) => {
+        Alert.alert('Delete Income', 'Are you sure you want to delete this income source?', [
+            { text: 'Cancel', style: 'cancel' },
+            { text: 'Delete', style: 'destructive', onPress: () => {
+                console.log('Income deleted')
+                router.replace("/listTransactionsPage")
+            } },
+        ])
+    }
+
+    return (
+        <View style={styles.transactionContainer}>
+            <View style={styles.transactionTextContainer}>
+                <View>
+                    <Text style={styles.transactionName}>{props.income.title}</Text>
+                </View>
+                <Text style={[styles.transactionAmount, styles.incomeAmount]}>
+                    {props.income.amount < 0 ? "-" : "+"}£{Math.abs(props.income.amount)}
+                </Text>
+            </View>
+            
+
+            <View style={styles.actionsContainer}>
+                <TouchableOpacity style={styles.editButton} onPress={() => router.navigate(props.income.getEditURL())}>
+                    <Ionicons name="pencil-outline" size={20} color="#fff" />
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.deleteButton} onPress={() => handleDeleteTransaction(props.income.getID())}>
+                    <Ionicons name="trash-outline" size={20} color="#fff" />
+                </TouchableOpacity>
+            </View>
+        </View>
+    )
+}
+
+
+const styles = StyleSheet.create({
+    transactionContainer: {
+        rowGap: 15,
+    },
+    transactionTextContainer: {
+        flexDirection: "row",
+        justifyContent: "space-between"
+    },
+    transactionName: {
+        fontSize: 16,
+        fontWeight: "bold",
+    },
+    transactionCategory: {
+        fontSize: 14,
+        color: "#555",
+    },
+    transactionAmount: {
+        fontSize: 16,
+        fontWeight: "bold",
+    },
+    expenseAmount: {
+        color: "#FF4C4C",
+    },
+    incomeAmount: {
+        color: "#007BFF",
+    },
+    actionsContainer: {
+        flexDirection: "row",
+        justifyContent: "space-between",
+        alignItems: "center",
+    },
+    editButton: {
+        backgroundColor: "#007BFF",
+        padding: 10,
+        borderRadius: 5,
+        width: 50,
+        alignItems: "center",
+    },
+    deleteButton: {
+        backgroundColor: "#FF4C4C",
+        padding: 10,
+        borderRadius: 5,
+        width: 50,
+        alignItems: "center",
+    },
+})
+
+--- Content from /Users/mostafael-shoubaky/Documents/Uni Work/Year 3/Final Year Project/Code/wallet-guru/components/listItems/goalItem.tsx ---
+import Goal from "@/models/Goal";
+import { View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import * as Progress from 'react-native-progress';
+import { Ionicons } from '@expo/vector-icons';
+import { useRouter } from "expo-router";
+
+
+interface GoalItemProps {
+    goal: Goal
+}
+
+
+export default function GoalItem(props: GoalItemProps) {
+
+    const router = useRouter()
+
+    const handleUpdate = (id: string) => {
+        router.navigate("/updateGoalPage")
+        return
+    }
+
+    const handleDelete = (id: string) => {
+        Alert.alert('Delete Goal', 'Are you sure you want to delete this goal?', [
+            { text: 'Cancel', style: 'cancel' },
+            { text: 'Delete', style: 'destructive', onPress: () => {
+                console.log('Goal deleted')
+                router.replace("/allGoalsPage")
+            } },
+        ])
+    }
+
+    return (
+        <View style={styles.goalContainer}>
+            <View style={styles.goalHeader}>
+                <Text style={styles.goalTitle}>{props.goal.title}</Text>
+                <Text style={styles.goalTarget}>Target: £{props.goal.target}</Text>
+            </View>
+            <Text style={styles.progressLabel}>Progress</Text>
+            <Progress.Bar progress={props.goal.calculateProgress()} color="#007BFF" width={null} />
+            <View style={styles.actionsContainer}>
+                <TouchableOpacity style={styles.editButton} onPress={() => handleUpdate(props.goal.getID())}>
+                    <Ionicons name="pencil-outline" size={20} color="#fff" />
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.deleteButton} onPress={() => handleDelete(props.goal.getID())}>
+                    <Ionicons name="trash-outline" size={20} color="#fff" />
+                </TouchableOpacity>
+            </View>
+        </View>
+    )
+}
+
+
+const styles = StyleSheet.create({
+    goalContainer: {
+        rowGap: 15,
+    },
+    goalHeader: {
+        flexDirection: "row",
+        justifyContent: "space-between",
+    },
+    goalTitle: {
+        fontSize: 16,
+        fontWeight: "bold",
+    },
+    goalTarget: {
+        fontSize: 16,
+    },
+    progressLabel: {
+        fontSize: 14,
+    },
+    actionsContainer: {
+        flexDirection: "row",
+        justifyContent: "space-between",
+    },
+    editButton: {
+        backgroundColor: "#007BFF",
+        padding: 10,
+        borderRadius: 5,
+        alignItems: "center",
+    },
+    deleteButton: {
+        backgroundColor: "#FF4C4C",
+        padding: 10,
+        borderRadius: 5,
+        alignItems: "center",
+    },
+})
+
+--- Content from /Users/mostafael-shoubaky/Documents/Uni Work/Year 3/Final Year Project/Code/wallet-guru/components/listItems/expenseItem.tsx ---
+import { Ionicons } from '@expo/vector-icons';
+import React from 'react';
+import { View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import Expense from '@/models/Expense';
+import { useRouter } from 'expo-router';
+
+interface ExpenseItemProps {
+    expense: Expense
+}
+
+export default function ExpenseItem(props: ExpenseItemProps) {
+
+    const router = useRouter()
+
+    const handleDeleteTransaction = (id: string) => {
+        Alert.alert('Delete Expense', 'Are you sure you want to delete this expense?', [
+            { text: 'Cancel', style: 'cancel' },
+            { text: 'Delete', style: 'destructive', onPress: () => {
+                console.log('Expense deleted')
+                router.replace("/listTransactionsPage")
+            } },
+        ])
+    }
+
+    return (
+        <View style={styles.transactionContainer}>
+            <View style={styles.transactionTextContainer}>
+                <View>
+                    <Text style={styles.transactionName}>{props.expense.title}</Text>
+                    <Text style={styles.transactionCategory}>Category: {props.expense.expenseCategory.name}</Text>
+                </View>
+                <Text style={[styles.transactionAmount, styles.expenseAmount]}>
+                    {props.expense.amount < 0 ? "-" : "+"}£{Math.abs(props.expense.amount).toFixed(2)}
+                </Text>
+            </View>
+            
+
+            <View style={styles.actionsContainer}>
+                <TouchableOpacity style={styles.editButton} onPress={() => router.navigate(props.expense.getEditURL())}>
+                    <Ionicons name="pencil-outline" size={20} color="#fff" />
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.deleteButton} onPress={() => handleDeleteTransaction(props.expense.getID())}>
+                    <Ionicons name="trash-outline" size={20} color="#fff" />
+                </TouchableOpacity>
+            </View>
+        </View>
+    )
+}
+
+
+const styles = StyleSheet.create({
+    transactionContainer: {
+        rowGap: 15,
+    },
+    transactionTextContainer: {
+        flexDirection: "row",
+        justifyContent: "space-between"
+    },
+    transactionName: {
+        fontSize: 16,
+        fontWeight: "bold",
+    },
+    transactionCategory: {
+        fontSize: 14,
+        color: "#555",
+    },
+    transactionAmount: {
+        fontSize: 16,
+        fontWeight: "bold",
+    },
+    expenseAmount: {
+        color: "#FF4C4C",
+    },
+    incomeAmount: {
+        color: "#007BFF",
+    },
+    actionsContainer: {
+        flexDirection: "row",
+        justifyContent: "space-between",
+        alignItems: "center",
+    },
+    editButton: {
+        backgroundColor: "#007BFF",
+        padding: 10,
+        borderRadius: 5,
+        width: 50,
+        alignItems: "center",
+    },
+    deleteButton: {
+        backgroundColor: "#FF4C4C",
+        padding: 10,
+        borderRadius: 5,
+        width: 50,
+        alignItems: "center",
+    },
+})
+
+--- Content from /Users/mostafael-shoubaky/Documents/Uni Work/Year 3/Final Year Project/Code/wallet-guru/enums/TransactionType.ts ---
+enum TransactionType {
+    EXPENSE,
+    INCOME
+}
+
+export default TransactionType;
+
+--- Content from /Users/mostafael-shoubaky/Documents/Uni Work/Year 3/Final Year Project/Code/wallet-guru/enums/GoalStatus.ts ---
+enum GoalStatus {
+    Active = "Active",
+    Completed = "Completed",
+    Archived = "Archived",
+}
+
+export default GoalStatus;
+
+--- Content from /Users/mostafael-shoubaky/Documents/Uni Work/Year 3/Final Year Project/Code/wallet-guru/enums/UserStatus.ts ---
+enum UserStatus {
+    VERIFIED,
+    PENDING
+}
+
+export default UserStatus;
+
+--- Content from /Users/mostafael-shoubaky/Documents/Uni Work/Year 3/Final Year Project/Code/wallet-guru/models/Goal.ts ---
+import User from "./User";
+import GoalStatus from "@/enums/GoalStatus";
+import uuid from 'react-native-uuid';
+
+export default class Goal {
+    private id: string
+    private user: User
+    title: string
+    description: string
+    target: number
+    current: number
+    status: GoalStatus
+
+    constructor(title: string, user: User, description: string, target: number, status: GoalStatus) {
+        this.id = uuid.v4()
+        this.user = user
+        this.title = title
+        this.description = description
+        this.target = target
+        this.current = 0
+        this.status = status
+    }
+
+    getID(): string {
+        return this.id
+    }
+
+    getUser(): User {
+        return this.user
+    }
+
+    updateCurrent(figure: number): boolean {
+        this.current += figure
+        return true
+    }
+
+    calculateProgress(): number {
+        return this.current / this.target
+    }
+}
+
+--- Content from /Users/mostafael-shoubaky/Documents/Uni Work/Year 3/Final Year Project/Code/wallet-guru/models/Expense.tsx ---
+import Transaction from "./Transaction";
+import User from "./User";
+import ExpenseCategory from "./ExpenseCategory";
+import uuid from 'react-native-uuid';
+import ExpenseItem from "@/components/listItems/expenseItem";
+
+
+class Expense implements Transaction {
+    private id: string
+    private user: User
+    title: string
+    amount: number
+    date: Date
+    notes: string
+    expenseCategory: ExpenseCategory
+
+    constructor(user: User, title: string, amount: number, date: Date, notes: string, expenseCategory: ExpenseCategory) {
+        this.id = uuid.v4()
+        this.user = user
+        this.title = title
+        this.amount = amount
+        this.date = date
+        this.notes = notes
+        this.expenseCategory = expenseCategory
+    }
+
+    getID(): string {
+        return this.id
+    }
+
+    getUser(): User {
+        return this.user
+    }
+
+    deleteTransaction(): boolean {
+        console.log("Delete Expense")
+        return false
+    }
+
+    getPageURL(): string {
+        return "/viewExpenseDetailsPage"
+    }
+
+    getEditURL(): string {
+        return "/editExpensePage"
+    }
+
+    getListItemDisplay(): React.ReactElement {
+        return <ExpenseItem expense={this} />
+    }
+
+    getFullDisplay(): React.ReactElement {
+        // Needs Completing
+        return <div></div>
+    }
+}
+
+export default Expense;
+
+--- Content from /Users/mostafael-shoubaky/Documents/Uni Work/Year 3/Final Year Project/Code/wallet-guru/models/Transaction.ts ---
+import User from "./User"
+
+interface Transaction {
+    deleteTransaction(): boolean
+    getPageURL(): string
+    getEditURL(): string
+    getListItemDisplay(): React.ReactElement
+    getFullDisplay(): React.ReactElement
+}
+
+export default Transaction;
+
+--- Content from /Users/mostafael-shoubaky/Documents/Uni Work/Year 3/Final Year Project/Code/wallet-guru/models/User.ts ---
+import uuid from 'react-native-uuid';
+
+class User {
+    private id: string
+    private username: string
+    private password: string
+
+    constructor(username: string, password: string) {
+        this.id = uuid.v4()
+        this.username = username
+        this.password = password
+    }
+
+    public getUserID(): string {return this.id}
+
+    public deleteUser(): boolean {return false}
+
+    
+}
+
+export default User;
+
+--- Content from /Users/mostafael-shoubaky/Documents/Uni Work/Year 3/Final Year Project/Code/wallet-guru/models/Income.tsx ---
+import IncomeItem from "@/components/listItems/incomeItem";
+import Transaction from "./Transaction";
+import User from "./User";
+import uuid from 'react-native-uuid';
+
+class Income implements Transaction {
+    private id: string
+    private user: User
+    title: string
+    amount: number
+    date: Date
+    notes: string
+
+    constructor(user: User, title: string, amount: number, date: Date, notes: string) {
+        this.id = uuid.v4()
+        this.user = user
+        this.title = title
+        this.amount = amount
+        this.date = date
+        this.notes = notes
+    }
+
+    getID(): string {
+        return this.id
+    }
+
+    getUser(): User {
+        return this.user
+    }
+
+    deleteTransaction(): boolean {
+        console.log("Delete Income")
+        return false
+    }
+
+    getPageURL(): string {
+        return "/viewIncomeDetailsPage"
+    }
+
+    getEditURL(): string {
+        return "/editIncomePage"
+    }
+
+    getListItemDisplay(): React.ReactElement {
+        return <IncomeItem income={this} />
+    }
+
+    getFullDisplay(): React.ReactElement {
+        // Needs Completing
+        return <div></div>
+    }
+}
+
+export default Income;
+
+--- Content from /Users/mostafael-shoubaky/Documents/Uni Work/Year 3/Final Year Project/Code/wallet-guru/models/ExpenseCategory.ts ---
+import User from "./User";
+import uuid from 'react-native-uuid';
+
+class ExpenseCategory {
+    private id: string
+    private user: User
+    name: string
+    currentMonthlySpending: number
+    monthlyBudget: number
+
+    constructor(user: User, name: string, currentMonthlySpending: number, monthlyBudget: number) {
+        this.id = uuid.v4()
+        this.user = user
+        this.name = name
+        this.currentMonthlySpending = currentMonthlySpending
+        this.monthlyBudget = monthlyBudget
+    }
+
+    getID(): string {
+        return this.id
+    }
+
+    getUser(): User {
+        return this.user
+    }
+
+    calculateBudgetUsed(): number {
+        return this.currentMonthlySpending / this.monthlyBudget
+    }
+}
+
+export default ExpenseCategory;
+
+--- Content from /Users/mostafael-shoubaky/Documents/Uni Work/Year 3/Final Year Project/Code/wallet-guru/utils/validateDate.ts ---
+export function isTodayOrBefore(date: Date): boolean {
+    const today = normaliseDateStartTime(new Date())
+    date = normaliseDateStartTime(date)
+
+    return date <= today
+}
+
+export function isTodayOrAfter(date: Date): boolean {
+    const today = normaliseDateStartTime(new Date())
+    date = normaliseDateStartTime(date)
+
+    return date >= today
+}
+
+export function isValidDate(date: Date): boolean {
+    return !isNaN(date.getTime())
+}
+
+function normaliseDateStartTime(date: Date): Date {
+    const normalisedDate = new Date(date);
+    normalisedDate.setHours(0, 0, 0, 0)
+    return normalisedDate
+}
+
+--- Content from /Users/mostafael-shoubaky/Documents/Uni Work/Year 3/Final Year Project/Code/wallet-guru/utils/validateNumeric.ts ---
+export default function isNumeric(number: string): boolean {
+    return /^-?\d+(\.\d+)?$/.test(number)
+}
+
+--- Content from /Users/mostafael-shoubaky/Documents/Uni Work/Year 3/Final Year Project/Code/wallet-guru/utils/validateEmpty.ts ---
+export default function validateEmpty(input: string): boolean {
+    return input.trim().length === 0
+}
+
+
+
+--- Content from /Users/mostafael-shoubaky/Documents/Uni Work/Year 3/Final Year Project/Code/wallet-guru/utils/validatePassword.ts ---
+
+
+--- Content from /Users/mostafael-shoubaky/Documents/Uni Work/Year 3/Final Year Project/Code/wallet-guru/utils/validateEmail.ts ---
+import validator from "validator";
+
+export default function isValidEmail(email: string): boolean {
+    return validator.isEmail(email)
+}
+
+--- Content from /Users/mostafael-shoubaky/Documents/Uni Work/Year 3/Final Year Project/Code/wallet-guru/tests/utils/validateDate.test.ts ---
+import { isTodayOrBefore, isTodayOrAfter, isValidDate } from '@/utils/validateDate';
+
+describe('validateDate', () => {
+  it('should correctly validate if a date is today or before today', () => {
+    const today = new Date();
+    const yesterday = new Date(today);
+    yesterday.setDate(today.getDate() - 1);
+    const tomorrow = new Date(today);
+    tomorrow.setDate(today.getDate() + 1);
+
+    expect(isTodayOrBefore(yesterday)).toBe(true);
+    expect(isTodayOrBefore(today)).toBe(true);
+    expect(isTodayOrBefore(tomorrow)).toBe(false);
+  });
+
+  it('should correctly validate if a date is today or after today', () => {
+    const today = new Date();
+    const yesterday = new Date(today);
+    yesterday.setDate(today.getDate() - 1);
+    const tomorrow = new Date(today);
+    tomorrow.setDate(today.getDate() + 1);
+
+    expect(isTodayOrAfter(yesterday)).toBe(false);
+    expect(isTodayOrAfter(today)).toBe(true);
+    expect(isTodayOrAfter(tomorrow)).toBe(true);
+  });
+
+  it('should validate valid dates correctly', () => {
+    expect(isValidDate(new Date())).toBe(true);
+    expect(isValidDate(new Date('2023-01-01'))).toBe(true);
+  });
+
+  it('should invalidate invalid dates', () => {
+    expect(isValidDate(new Date('invalid-date'))).toBe(false);
+    expect(isValidDate(new Date(''))).toBe(false);
+  });
+});
+
+
+--- Content from /Users/mostafael-shoubaky/Documents/Uni Work/Year 3/Final Year Project/Code/wallet-guru/tests/utils/validateEmpty.test.ts ---
+import validateEmpty from "@/utils/validateEmpty";
+
+describe('validateEmpty', () => {
+  it('should return true for empty strings', () => {
+    expect(validateEmpty('')).toBe(true);
+    expect(validateEmpty('   ')).toBe(true);
+    expect(validateEmpty('\n\t')).toBe(true);
+  });
+
+  it('should return false for non-empty strings', () => {
+    expect(validateEmpty('a')).toBe(false);
+    expect(validateEmpty(' a ')).toBe(false);
+    expect(validateEmpty('hello')).toBe(false);
+  });
+});
+
+
+--- Content from /Users/mostafael-shoubaky/Documents/Uni Work/Year 3/Final Year Project/Code/wallet-guru/tests/utils/validateNumeric.test.ts ---
+import isNumeric from '@/utils/validateNumeric';
+
+describe('isNumeric', () => {
+  it('should return true for valid numeric strings', () => {
+    expect(isNumeric('123')).toBe(true);
+    expect(isNumeric('-123')).toBe(true);
+    expect(isNumeric('123.456')).toBe(true);
+    expect(isNumeric('-123.456')).toBe(true);
+  });
+
+  it('should return false for invalid numeric strings', () => {
+    expect(isNumeric('abc')).toBe(false);
+    expect(isNumeric('123a')).toBe(false);
+    expect(isNumeric('12.3.4')).toBe(false);
+    expect(isNumeric('')).toBe(false);
+    expect(isNumeric(' ')).toBe(false);
+  });
+});
+
+
+--- Content from /Users/mostafael-shoubaky/Documents/Uni Work/Year 3/Final Year Project/Code/wallet-guru/tests/utils/validateEmail.test.ts ---
+import isValidEmail from "@/utils/validateEmail";
+
+
+describe('isValidEmail', () => {
+  it('should return true for valid email addresses', () => {
+    expect(isValidEmail('test@example.com')).toBe(true);
+    expect(isValidEmail('user.name+tag+sorting@example.com')).toBe(true);
+    expect(isValidEmail('user_name@example.co.uk')).toBe(true);
+  });
+
+  it('should return false for invalid email addresses', () => {
+    expect(isValidEmail('plainaddress')).toBe(false);
+    expect(isValidEmail('@missingusername.com')).toBe(false);
+    expect(isValidEmail('username@.com')).toBe(false);
+    expect(isValidEmail('username@com')).toBe(false);
+    expect(isValidEmail('username@.com.')).toBe(false);
+    expect(isValidEmail('username@-example.com')).toBe(false);
+  });
+});
+
+
+--- Content from /Users/mostafael-shoubaky/Documents/Uni Work/Year 3/Final Year Project/Code/wallet-guru/tests/models/Income.test.ts ---
+import Income from '@/models/Income';
+import User from '@/models/User';
+
+describe('Income Model', () => {
+  let user: User;
+  let income: Income;
+
+  beforeEach(() => {
+    user = new User('testuser', 'password123');
+    income = new Income(user, 'Salary', 3000, new Date(), 'Monthly salary');
+  });
+
+  it('should create an income with provided details', () => {
+    expect(income).toHaveProperty('id');
+    expect(income.title).toBe('Salary');
+    expect(income.amount).toBe(3000);
+    expect(income.notes).toBe('Monthly salary');
+  });
+
+  it('getID should return the income ID', () => {
+    expect(income.getID()).toBeDefined();
+  });
+
+  it('getUser should return the associated user', () => {
+    expect(income.getUser()).toBe(user);
+  });
+
+  it('deleteTransaction should log and return false', () => {
+    console.log = jest.fn();
+    expect(income.deleteTransaction()).toBe(false);
+    expect(console.log).toHaveBeenCalledWith("Delete Income");
+  });
+
+  it('getPageURL should return correct URL', () => {
+    expect(income.getPageURL()).toBe("/viewIncomeDetailsPage");
+  });
+
+  it('getEditURL should return correct URL', () => {
+    expect(income.getEditURL()).toBe("/editIncomePage");
+  });
+});
+
+
+--- Content from /Users/mostafael-shoubaky/Documents/Uni Work/Year 3/Final Year Project/Code/wallet-guru/tests/models/ExpenseCategory.test.ts ---
+import ExpenseCategory from '@/models/ExpenseCategory';
+import User from '@/models/User';
+
+describe('ExpenseCategory Model', () => {
+  let user: User;
+  let category: ExpenseCategory;
+
+  beforeEach(() => {
+    user = new User('testuser', 'password123');
+    category = new ExpenseCategory(user, 'Food', 250, 1000);
+  });
+
+  it('should create an expense category with provided details', () => {
+    expect(category).toHaveProperty('id');
+    expect(category.name).toBe('Food');
+    expect(category.currentMonthlySpending).toBe(250);
+    expect(category.monthlyBudget).toBe(1000);
+  });
+
+  it('should calculate budget used correctly', () => {
+    expect(category.calculateBudgetUsed()).toBe(0.25);
+    category.currentMonthlySpending = 500;
+    expect(category.calculateBudgetUsed()).toBe(0.5);
+  });
+
+  it('getID should return the category ID', () => {
+    expect(category.getID()).toBeDefined();
+  });
+
+  it('getUser should return the associated user', () => {
+    expect(category.getUser()).toBe(user);
+  });
+});
+
+
+--- Content from /Users/mostafael-shoubaky/Documents/Uni Work/Year 3/Final Year Project/Code/wallet-guru/tests/models/User.test.ts ---
+import User from '@/models/User';
+
+describe('User Model', () => {
+  it('should create a user with provided username and password', () => {
+    const user = new User('testuser', 'password123');
+    expect(user).toHaveProperty('id');
+    expect(user.getUserID()).toBeDefined();
+  });
+
+  it('should have a unique ID for each user', () => {
+    const user1 = new User('user1', 'pass1');
+    const user2 = new User('user2', 'pass2');
+    expect(user1.getUserID()).not.toBe(user2.getUserID());
+  });
+
+  it('deleteUser should return false (stub)', () => {
+    const user = new User('user', 'pass');
+    expect(user.deleteUser()).toBe(false);
+  });
+});
+
+
+--- Content from /Users/mostafael-shoubaky/Documents/Uni Work/Year 3/Final Year Project/Code/wallet-guru/tests/models/Goal.test.ts ---
+import Goal from '@/models/Goal';
+import User from '@/models/User';
+import GoalStatus from '@/enums/GoalStatus';
+
+describe('Goal Model', () => {
+  let user: User;
+  let goal: Goal;
+
+  beforeEach(() => {
+    user = new User('testuser', 'password123');
+    goal = new Goal('Save for Vacation', user, 'Vacation to Hawaii', 5000, GoalStatus.Active);
+  });
+
+  it('should create a goal with provided details', () => {
+    expect(goal).toHaveProperty('id');
+    expect(goal.title).toBe('Save for Vacation');
+    expect(goal.description).toBe('Vacation to Hawaii');
+    expect(goal.target).toBe(5000);
+    expect(goal.current).toBe(0);
+    expect(goal.status).toBe(GoalStatus.Active);
+  });
+
+  it('should update current amount correctly', () => {
+    goal.updateCurrent(1000);
+    expect(goal.current).toBe(1000);
+    goal.updateCurrent(500);
+    expect(goal.current).toBe(1500);
+  });
+
+  it('should calculate progress correctly', () => {
+    goal.updateCurrent(2500);
+    expect(goal.calculateProgress()).toBe(0.5);
+    goal.updateCurrent(2500);
+    expect(goal.calculateProgress()).toBe(1);
+  });
+
+  it('getID should return the goal ID', () => {
+    expect(goal.getID()).toBeDefined();
+  });
+
+  it('getUser should return the associated user', () => {
+    expect(goal.getUser()).toBe(user);
+  });
+});
+
+
+--- Content from /Users/mostafael-shoubaky/Documents/Uni Work/Year 3/Final Year Project/Code/wallet-guru/tests/models/Expense.test.ts ---
+import Expense from '@/models/Expense';
+import User from '@/models/User';
+import ExpenseCategory from '@/models/ExpenseCategory';
+
+describe('Expense Model', () => {
+  let user: User;
+  let category: ExpenseCategory;
+  let expense: Expense;
+
+  beforeEach(() => {
+    user = new User('testuser', 'password123');
+    category = new ExpenseCategory(user, 'Food', 100, 500);
+    expense = new Expense(user, 'Groceries', -50, new Date(), 'Weekly groceries', category);
+  });
+
+  it('should create an expense with provided details', () => {
+    expect(expense).toHaveProperty('id');
+    expect(expense.title).toBe('Groceries');
+    expect(expense.amount).toBe(-50);
+    expect(expense.notes).toBe('Weekly groceries');
+    expect(expense.expenseCategory).toBe(category);
+  });
+
+  it('getID should return the expense ID', () => {
+    expect(expense.getID()).toBeDefined();
+  });
+
+  it('getUser should return the associated user', () => {
+    expect(expense.getUser()).toBe(user);
+  });
+
+  it('deleteTransaction should log and return false', () => {
+    console.log = jest.fn();
+    expect(expense.deleteTransaction()).toBe(false);
+    expect(console.log).toHaveBeenCalledWith("Delete Expense");
+  });
+
+  it('getPageURL should return correct URL', () => {
+    expect(expense.getPageURL()).toBe("/viewExpenseDetailsPage");
+  });
+
+  it('getEditURL should return correct URL', () => {
+    expect(expense.getEditURL()).toBe("/editExpensePage");
+  });
+});
+

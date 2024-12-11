@@ -23,7 +23,7 @@ def combine_files_from_directories(base_folder, directories, output_file):
 
 if __name__ == "__main__":
     base_folder = os.path.dirname(os.path.abspath(__file__))
-    directories = ["app", "components", "enums", "models", "utils"]
+    directories = ["app", "components", "enums", "models", "utils", "tests"]
     output_file = input("Enter the output file name (e.g., combined_output.txt): ").strip()
 
     combine_files_from_directories(base_folder, directories, output_file)
