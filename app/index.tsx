@@ -24,8 +24,6 @@ export default function Index() {
         }
     }, [isReady])
 
-
-
     return (
         <View style={styles.main}>
             <StatusBar barStyle={"dark-content"} />

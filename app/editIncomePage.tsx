@@ -6,6 +6,7 @@ import IncomeDetailsInputs from '@/components/formComponents/incomeDetailsInputs
 import { useRouter } from 'expo-router';
 import validateEmpty from '@/utils/validateEmpty';
 import isNumeric from '@/utils/validateNumeric';
+import { isValidDate, isTodayOrBefore } from '@/utils/validateDate';
 
 
 export default function EditIncome() {
@@ -41,6 +42,18 @@ export default function EditIncome() {
         else if (!isNumeric(amount)) {
             Alert.alert("Amount Field Not Numeric", "The amount field must be a number.")
             setError("The amount field must be a number.")
+            return
+        }
+
+        else if (!isValidDate(date)) {
+            Alert.alert("Date Field Invalid", "Please select a date.")
+            setError("Please select a date.")
+            return
+        }
+
+        else if (!isTodayOrBefore(date)) {
+            Alert.alert("Date Field Invalid", "Please select a date that is today or before today.")
+            setError("Please select a date that is today or before today.")
             return
         }
 

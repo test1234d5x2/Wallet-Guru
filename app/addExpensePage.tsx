@@ -6,6 +6,7 @@ import TopBar from '@/components/topBars/topBar';
 import validateEmpty from '@/utils/validateEmpty';
 import isNumeric from '@/utils/validateNumeric';
 import { useRouter } from 'expo-router';
+import { isTodayOrBefore, isValidDate } from '@/utils/validateDate';
 
 
 export default function AddExpense() {
@@ -45,9 +46,17 @@ export default function AddExpense() {
             return
         }
 
-        // Date field needs to be changed to a date picker.
-        console.log("HERE")
-        console.log(new Date(date))
+        else if (!isValidDate(date)) {
+            Alert.alert("Date Field Invalid", "Please select a date.")
+            setError("Please select a date.")
+            return
+        }
+
+        else if (!isTodayOrBefore(date)) {
+            Alert.alert("Date Field Invalid", "Please select a date that is today or before today.")
+            setError("Please select a date that is today or before today.")
+            return
+        }
 
         Alert.alert('Success', 'Expense added successfully!')
         setError("")

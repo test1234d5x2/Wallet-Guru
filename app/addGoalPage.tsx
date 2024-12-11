@@ -6,6 +6,7 @@ import GoalDetailsInputs from '@/components/formComponents/goalDetailsInputs';
 import validateEmpty from '@/utils/validateEmpty';
 import isNumeric from '@/utils/validateNumeric';
 import { useRouter } from 'expo-router';
+import { isValidDate, isTodayOrAfter } from '@/utils/validateDate';
 
 
 export default function AddGoal() {
@@ -44,7 +45,17 @@ export default function AddGoal() {
             return false
         }
 
-        // The date field must be changed to a Date picker, validation is not implemented.
+        else if (!isValidDate(date)) {
+            Alert.alert("Date Field Invalid", "Please select a date.")
+            setError("Please select a date.")
+            return
+        }
+
+        else if (!isTodayOrAfter(date)) {
+            Alert.alert("Date Field Invalid", "Please select a date that is today or after today.")
+            setError("Please select a date that is today or after today.")
+            return
+        }
 
         Alert.alert('Success', 'Goal added successfully!')
         setError("")
