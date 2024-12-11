@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import * as Progress from 'react-native-progress';
 import setPageTitle from '@/components/pageTitle/setPageTitle';
 import TopBar from '@/components/topBars/topBar';
@@ -18,7 +18,13 @@ export default function ViewGoalDetails() {
     }
 
     const handleDeleteGoal = () => {
-        console.log("Delete Goal clicked")
+        Alert.alert('Delete Goal', 'Are you sure you want to delete this goal?', [
+            { text: 'Cancel', style: 'cancel' },
+            { text: 'Delete', style: 'destructive', onPress: () => {
+                console.log('Goal deleted')
+                router.replace("/allGoalsPage")
+            } },
+        ])
     }
 
 

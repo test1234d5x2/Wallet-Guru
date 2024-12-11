@@ -20,7 +20,10 @@ export default function ExpenseDetailsScreen() {
     const handleDelete = () => {
         Alert.alert('Delete Expense', 'Are you sure you want to delete this expense?', [
             { text: 'Cancel', style: 'cancel' },
-            { text: 'Delete', style: 'destructive', onPress: () => console.log('Expense deleted') },
+            { text: 'Delete', style: 'destructive', onPress: () => {
+                console.log('Expense deleted')
+                router.replace("/listTransactionsPage")
+            } },
         ])
     }
 

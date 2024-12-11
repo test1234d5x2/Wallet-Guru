@@ -20,7 +20,10 @@ export default function IncomeDetailsScreen() {
     const handleDelete = () => {
         Alert.alert('Delete Income', 'Are you sure you want to delete this income source?', [
             { text: 'Cancel', style: 'cancel' },
-            { text: 'Delete', style: 'destructive', onPress: () => console.log('Income source deleted') },
+            { text: 'Delete', style: 'destructive', onPress: () => {
+                console.log('Income source deleted')
+                router.replace("/listTransactionsPage")
+            } },
         ])
     }
 

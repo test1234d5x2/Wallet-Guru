@@ -1,6 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import Expense from '@/models/Expense';
 import { useRouter } from 'expo-router';
 
@@ -13,7 +13,13 @@ export default function ExpenseItem(props: ExpenseItemProps) {
     const router = useRouter()
 
     const handleDeleteTransaction = (id: string) => {
-        console.log(`Delete transaction with ID: ${id}`)
+        Alert.alert('Delete Expense', 'Are you sure you want to delete this expense?', [
+            { text: 'Cancel', style: 'cancel' },
+            { text: 'Delete', style: 'destructive', onPress: () => {
+                console.log('Expense deleted')
+                router.replace("/listTransactionsPage")
+            } },
+        ])
     }
 
     return (
@@ -24,7 +30,7 @@ export default function ExpenseItem(props: ExpenseItemProps) {
                     <Text style={styles.transactionCategory}>Category: {props.expense.expenseCategory.name}</Text>
                 </View>
                 <Text style={[styles.transactionAmount, styles.expenseAmount]}>
-                    {props.expense.amount < 0 ? "-" : "+"}£{Math.abs(props.expense.amount)}
+                    {props.expense.amount < 0 ? "-" : "+"}£{Math.abs(props.expense.amount).toFixed(2)}
                 </Text>
             </View>
             

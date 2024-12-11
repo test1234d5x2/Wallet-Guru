@@ -1,5 +1,5 @@
 import Goal from "@/models/Goal";
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import * as Progress from 'react-native-progress';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from "expo-router";
@@ -20,7 +20,13 @@ export default function GoalItem(props: GoalItemProps) {
     }
 
     const handleDelete = (id: string) => {
-        console.log(`Delete goal with ID: ${id}`)
+        Alert.alert('Delete Goal', 'Are you sure you want to delete this goal?', [
+            { text: 'Cancel', style: 'cancel' },
+            { text: 'Delete', style: 'destructive', onPress: () => {
+                console.log('Goal deleted')
+                router.replace("/allGoalsPage")
+            } },
+        ])
     }
 
     return (

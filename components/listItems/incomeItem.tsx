@@ -1,6 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import Income from '@/models/Income';
 import { useRouter } from 'expo-router';
 
@@ -13,7 +13,13 @@ export default function IncomeItem(props: IncomeItemProps) {
     const router = useRouter()
 
     const handleDeleteTransaction = (id: string) => {
-        console.log(`Delete transaction with ID: ${id}`)
+        Alert.alert('Delete Income', 'Are you sure you want to delete this income source?', [
+            { text: 'Cancel', style: 'cancel' },
+            { text: 'Delete', style: 'destructive', onPress: () => {
+                console.log('Income deleted')
+                router.replace("/listTransactionsPage")
+            } },
+        ])
     }
 
     return (
