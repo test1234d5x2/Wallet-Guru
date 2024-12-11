@@ -14,7 +14,7 @@ export default function AddExpense() {
 
     const [title, setTitle] = useState<string>('')
     const [amount, setAmount] = useState<string>('')
-    const [date, setDate] = useState<string>('')
+    const [date, setDate] = useState<Date>(new Date())
     const [category, setCategory] = useState<string>('Select Category')
     const [notes, setNotes] = useState<string>('')
     const [error, setError] = useState<string>('')
@@ -46,7 +46,8 @@ export default function AddExpense() {
         }
 
         // Date field needs to be changed to a date picker.
-
+        console.log("HERE")
+        console.log(new Date(date))
 
         Alert.alert('Success', 'Expense added successfully!')
         setError("")

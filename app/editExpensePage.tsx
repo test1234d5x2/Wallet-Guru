@@ -15,7 +15,7 @@ export default function EditExpense() {
 
     const [title, setTitle] = useState<string>('')
     const [amount, setAmount] = useState<string>('')
-    const [date, setDate] = useState<string>('')
+    const [date, setDate] = useState<Date>(new Date())
     const [category, setCategory] = useState<string>('Select Category')
     const [notes, setNotes] = useState<string>('')
     const [error, setError] = useState<string>('')

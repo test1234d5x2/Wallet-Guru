@@ -8,11 +8,11 @@ import DateInputField from './inputFields/dateInputField';
 interface IncomeDetailsInputsProps {
     title: string,
     amount: string,
-    date: string,
+    date: Date,
     notes: string,
     setTitle: (text: string) => void,
     setAmount: (text: string) => void,
-    setDate: (text: string) => void,
+    setDate: (text: Date) => void,
     setNotes: (text: string) => void,
 }
 
@@ -34,7 +34,7 @@ export default function IncomeDetailsInputs(props: IncomeDetailsInputsProps) {
                 setValue={props.setAmount}
             />
 
-            <DateInputField setDate={props.setDate} />
+            <DateInputField date={props.date} setDate={props.setDate} />
 
             <StandardInputField
                 placeholder="Notes"

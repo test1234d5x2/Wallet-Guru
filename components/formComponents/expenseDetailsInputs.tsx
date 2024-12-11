@@ -9,13 +9,13 @@ import DateInputField from './inputFields/dateInputField';
 interface ExpenseDetailsInputsProps {
     title: string,
     amount: string,
-    date: string,
+    date: Date,
     category: string,
     notes: string,
     categoriesList: Array<string>,
     setTitle: (text: string) => void,
     setAmount: (text: string) => void,
-    setDate: (text: string) => void,
+    setDate: (text: Date) => void,
     setCategory: (text: string) => void,
     setNotes: (text: string) => void,
 }
@@ -40,7 +40,7 @@ export default function ExpenseDetailsInputs(props: ExpenseDetailsInputsProps) {
                 setValue={props.setAmount}
             />
 
-            <DateInputField setDate={props.setDate} />
+            <DateInputField date={props.date} setDate={props.setDate} />
 
             <View style={styles.input}>
                 <ModalSelection choices={props.categoriesList} value={props.category} setValue={props.setCategory} />

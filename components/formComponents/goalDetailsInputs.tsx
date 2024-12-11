@@ -8,11 +8,11 @@ import DateInputField from './inputFields/dateInputField';
 interface GoalDetailsInputsProps {
     title: string,
     target: string,
-    date: string,
+    date: Date,
     notes: string,
     setTitle: (text: string) => void,
     setTarget: (text: string) => void,
-    setDate: (text: string) => void,
+    setDate: (text: Date) => void,
     setNotes: (text: string) => void,
 }
 
@@ -34,7 +34,7 @@ export default function GoalDetailsInputs(props: GoalDetailsInputsProps) {
                 setValue={props.setTarget}
             />
 
-            <DateInputField setDate={props.setDate} />
+            <DateInputField date={props.date} setDate={props.setDate} />
 
             <StandardInputField
                 placeholder="Notes"
