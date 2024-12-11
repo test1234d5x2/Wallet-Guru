@@ -3,8 +3,8 @@ import GoalStatus from "@/enums/GoalStatus";
 import uuid from 'react-native-uuid';
 
 export default class Goal {
-    id: string
-    user: User
+    private id: string
+    private user: User
     title: string
     description: string
     target: number
@@ -19,6 +19,14 @@ export default class Goal {
         this.target = target
         this.current = 0
         this.status = status
+    }
+
+    getID(): string {
+        return this.id
+    }
+
+    getUser(): User {
+        return this.user
     }
 
     updateCurrent(figure: number): boolean {

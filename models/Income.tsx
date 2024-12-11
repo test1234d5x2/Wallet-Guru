@@ -4,8 +4,8 @@ import User from "./User";
 import uuid from 'react-native-uuid';
 
 class Income implements Transaction {
-    id: string
-    user: User
+    private id: string
+    private user: User
     title: string
     amount: number
     date: Date
@@ -18,6 +18,14 @@ class Income implements Transaction {
         this.amount = amount
         this.date = date
         this.notes = notes
+    }
+
+    getID(): string {
+        return this.id
+    }
+
+    getUser(): User {
+        return this.user
     }
 
     deleteTransaction(): boolean {

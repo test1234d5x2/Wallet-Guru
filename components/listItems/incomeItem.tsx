@@ -23,7 +23,7 @@ export default function IncomeItem(props: IncomeItemProps) {
     }
 
     return (
-        <View key={props.income.id} style={styles.transactionContainer}>
+        <View style={styles.transactionContainer}>
             <View style={styles.transactionTextContainer}>
                 <View>
                     <Text style={styles.transactionName}>{props.income.title}</Text>
@@ -38,7 +38,7 @@ export default function IncomeItem(props: IncomeItemProps) {
                 <TouchableOpacity style={styles.editButton} onPress={() => router.navigate(props.income.getEditURL())}>
                     <Ionicons name="pencil-outline" size={20} color="#fff" />
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.deleteButton} onPress={() => handleDeleteTransaction(props.income.id)}>
+                <TouchableOpacity style={styles.deleteButton} onPress={() => handleDeleteTransaction(props.income.getID())}>
                     <Ionicons name="trash-outline" size={20} color="#fff" />
                 </TouchableOpacity>
             </View>

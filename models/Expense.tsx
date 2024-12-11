@@ -6,8 +6,8 @@ import ExpenseItem from "@/components/listItems/expenseItem";
 
 
 class Expense implements Transaction {
-    id: string
-    user: User
+    private id: string
+    private user: User
     title: string
     amount: number
     date: Date
@@ -22,6 +22,14 @@ class Expense implements Transaction {
         this.date = date
         this.notes = notes
         this.expenseCategory = expenseCategory
+    }
+
+    getID(): string {
+        return this.id
+    }
+
+    getUser(): User {
+        return this.user
     }
 
     deleteTransaction(): boolean {

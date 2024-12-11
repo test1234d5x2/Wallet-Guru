@@ -23,7 +23,7 @@ export default function ExpenseItem(props: ExpenseItemProps) {
     }
 
     return (
-        <View key={props.expense.id} style={styles.transactionContainer}>
+        <View style={styles.transactionContainer}>
             <View style={styles.transactionTextContainer}>
                 <View>
                     <Text style={styles.transactionName}>{props.expense.title}</Text>
@@ -39,7 +39,7 @@ export default function ExpenseItem(props: ExpenseItemProps) {
                 <TouchableOpacity style={styles.editButton} onPress={() => router.navigate(props.expense.getEditURL())}>
                     <Ionicons name="pencil-outline" size={20} color="#fff" />
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.deleteButton} onPress={() => handleDeleteTransaction(props.expense.id)}>
+                <TouchableOpacity style={styles.deleteButton} onPress={() => handleDeleteTransaction(props.expense.getID())}>
                     <Ionicons name="trash-outline" size={20} color="#fff" />
                 </TouchableOpacity>
             </View>

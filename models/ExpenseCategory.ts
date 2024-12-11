@@ -2,8 +2,8 @@ import User from "./User";
 import uuid from 'react-native-uuid';
 
 class ExpenseCategory {
-    id: string
-    user: User
+    private id: string
+    private user: User
     name: string
     currentMonthlySpending: number
     monthlyBudget: number
@@ -14,6 +14,14 @@ class ExpenseCategory {
         this.name = name
         this.currentMonthlySpending = currentMonthlySpending
         this.monthlyBudget = monthlyBudget
+    }
+
+    getID(): string {
+        return this.id
+    }
+
+    getUser(): User {
+        return this.user
     }
 
     calculateBudgetUsed(): number {

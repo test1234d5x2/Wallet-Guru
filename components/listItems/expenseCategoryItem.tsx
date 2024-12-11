@@ -38,10 +38,10 @@ export default function ExpenseCategoryItem(props: ExpenseCategoryProps) {
             <Text style={styles.label}>Budget: £{props.category.monthlyBudget}</Text>
 
             <View style={styles.actionsContainer}>
-                <TouchableOpacity style={styles.editButton} onPress={() => handleEdit(props.category.id)}>
+                <TouchableOpacity style={styles.editButton} onPress={() => handleEdit(props.category.getID())}>
                     <Ionicons name="pencil-outline" size={20} color="#fff" />
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.deleteButton} onPress={() => handleDelete(props.category.id)}>
+                <TouchableOpacity style={styles.deleteButton} onPress={() => handleDelete(props.category.getID())}>
                     <Ionicons name="trash-outline" size={20} color="#fff" />
                 </TouchableOpacity>
             </View>

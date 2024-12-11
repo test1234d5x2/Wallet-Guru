@@ -38,10 +38,10 @@ export default function GoalItem(props: GoalItemProps) {
             <Text style={styles.progressLabel}>Progress</Text>
             <Progress.Bar progress={props.goal.calculateProgress()} color="#007BFF" width={null} />
             <View style={styles.actionsContainer}>
-                <TouchableOpacity style={styles.editButton} onPress={() => handleUpdate(props.goal.id)}>
+                <TouchableOpacity style={styles.editButton} onPress={() => handleUpdate(props.goal.getID())}>
                     <Ionicons name="pencil-outline" size={20} color="#fff" />
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.deleteButton} onPress={() => handleDelete(props.goal.id)}>
+                <TouchableOpacity style={styles.deleteButton} onPress={() => handleDelete(props.goal.getID())}>
                     <Ionicons name="trash-outline" size={20} color="#fff" />
                 </TouchableOpacity>
             </View>
