@@ -1,7 +1,8 @@
 import React from 'react';
-import { TextInput, StyleSheet, ScrollView } from 'react-native';
+import { StyleSheet, ScrollView } from 'react-native';
 import StandardInputField from './inputFields/standardInputField';
 import NumericInputField from './inputFields/numericInputField';
+import DateInputField from './inputFields/dateInputField';
 
 
 interface GoalDetailsInputsProps {
@@ -33,11 +34,7 @@ export default function GoalDetailsInputs(props: GoalDetailsInputsProps) {
                 setValue={props.setTarget}
             />
 
-            <StandardInputField
-                placeholder="Date"
-                value={props.date}
-                setValue={props.setDate}
-            />
+            <DateInputField setDate={props.setDate} />
 
             <StandardInputField
                 placeholder="Notes"

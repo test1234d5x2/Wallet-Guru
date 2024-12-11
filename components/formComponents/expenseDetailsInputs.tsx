@@ -3,6 +3,7 @@ import { View, StyleSheet, ScrollView } from 'react-native';
 import StandardInputField from './inputFields/standardInputField';
 import NumericInputField from './inputFields/numericInputField';
 import ModalSelection from '../modalSelection/modalSelection';
+import DateInputField from './inputFields/dateInputField';
 
 
 interface ExpenseDetailsInputsProps {
@@ -22,6 +23,8 @@ interface ExpenseDetailsInputsProps {
 
 export default function ExpenseDetailsInputs(props: ExpenseDetailsInputsProps) {
 
+    
+
     return (
         <ScrollView contentContainerStyle={styles.container}>
 
@@ -37,24 +40,9 @@ export default function ExpenseDetailsInputs(props: ExpenseDetailsInputsProps) {
                 setValue={props.setAmount}
             />
 
-            <StandardInputField
-                placeholder="Date"
-                value={props.date}
-                setValue={props.setDate}
-            />
+            <DateInputField setDate={props.setDate} />
 
-            {/* <View style={styles.pickerContainer}>
-                <Picker selectedValue={props.category} onValueChange={(itemValue) => {props.setCategory(itemValue)}} selectionColor={"white"}>
-                    <Picker.Item label="Select Category" value="Select Category" color="black" />
-                    <Picker.Item label="Food" value="Food" color="black" />
-                    <Picker.Item label="Transport" value="Transport" color="black" />
-                    <Picker.Item label="Shopping" value="Shopping" color="black" />
-                    <Picker.Item label="Bills" value="Bills" color="black" />
-                    <Picker.Item label="Other" value="Other" color="black" />
-                </Picker>
-            </View> */}
-
-            <View>
+            <View style={styles.input}>
                 <ModalSelection choices={props.categoriesList} value={props.category} setValue={props.setCategory} />
             </View>
 
@@ -71,5 +59,13 @@ const styles = StyleSheet.create({
     container: {
         backgroundColor: '#fff',
         rowGap: 20,
+    },
+    input: {
+        width: '100%',
+        borderColor: '#ccc',
+        borderWidth: 1,
+        borderRadius: 10,
+        paddingLeft: 15,
+        fontSize: 16,
     },
 })

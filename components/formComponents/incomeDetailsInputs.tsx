@@ -2,6 +2,7 @@ import React from 'react';
 import { StyleSheet, ScrollView } from 'react-native';
 import StandardInputField from './inputFields/standardInputField';
 import NumericInputField from './inputFields/numericInputField';
+import DateInputField from './inputFields/dateInputField';
 
 
 interface IncomeDetailsInputsProps {
@@ -33,11 +34,7 @@ export default function IncomeDetailsInputs(props: IncomeDetailsInputsProps) {
                 setValue={props.setAmount}
             />
 
-            <StandardInputField
-                placeholder="Date"
-                value={props.date}
-                setValue={props.setDate}
-            />
+            <DateInputField setDate={props.setDate} />
 
             <StandardInputField
                 placeholder="Notes"

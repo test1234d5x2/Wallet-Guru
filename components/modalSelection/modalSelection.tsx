@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { View, Text, FlatList, TouchableOpacity, StyleSheet, Modal, Pressable, SafeAreaView } from 'react-native';
-import setPageTitle from '@/components/pageTitle/setPageTitle';
 
 
 interface ModalSelectionProps {
@@ -10,11 +9,8 @@ interface ModalSelectionProps {
 }
 
 const ModalSelection = (props: ModalSelectionProps) => {
-    setPageTitle('Flat List Test');
 
     const [showDropdown, setShowDropdown] = useState<boolean>(false)
-
-    const categories = ['Food', 'Transport', 'Shopping', 'Bills', 'Other'];
 
     return (
         <View style={styles.container}>
@@ -26,7 +22,7 @@ const ModalSelection = (props: ModalSelectionProps) => {
                 <SafeAreaView style={styles.modalOverlay}>
                     <View style={styles.modalContainer}>
                         <FlatList
-                            data={categories}
+                            data={props.choices}
                             keyExtractor={(item, index) => index.toString()}
                             renderItem={({ item }) => (
                                 <TouchableOpacity
@@ -54,13 +50,9 @@ const ModalSelection = (props: ModalSelectionProps) => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        padding: 20,
+        paddingVertical: 20,
     },
     dropdown: {
-        padding: 15,
-        borderWidth: 1,
-        borderColor: '#ccc',
-        borderRadius: 5,
         backgroundColor: '#fff',
     },
     dropdownText: {

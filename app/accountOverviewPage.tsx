@@ -3,7 +3,6 @@ import { View, Text, TouchableOpacity, StyleSheet, Alert } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import setPageTitle from "@/components/pageTitle/setPageTitle";
 import { useRouter, useNavigation } from "expo-router";
-import { CommonActions } from "@react-navigation/native";
 
 export default function AccountOverview() {
 
@@ -80,6 +79,7 @@ const styles = StyleSheet.create({
         borderRadius: 5,
         width: "80%",
         alignItems: "center",
+        marginTop: 50,
     },
     buttonText: {
         color: "#fff",
