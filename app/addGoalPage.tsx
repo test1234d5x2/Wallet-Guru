@@ -34,14 +34,14 @@ export default function AddGoal() {
         }
 
         else if (validateEmpty(target)) {
-            Alert.alert("Empty Monthly Limit Field", "The monthly limit field must be filled properly.")
-            setError("The monthly limit field must be filled properly.")
+            Alert.alert("Empty Target Field", "The target field must be filled properly.")
+            setError("The target field must be filled properly.")
             return false
         }
 
         else if (!isNumeric(target)) {
-            Alert.alert("Monthly Limit Field Not Numeric", "The monthly limit field must be a number.")
-            setError("The monthly limit field must be a number.")
+            Alert.alert("Target Field Not Numeric", "The target field must be a number.")
+            setError("The target field must be a number.")
             return false
         }
 

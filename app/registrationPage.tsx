@@ -3,6 +3,7 @@ import { useState } from "react";
 import AuthenticationInputs from "@/components/formComponents/authenticationInputs";
 import setPageTitle from "@/components/pageTitle/setPageTitle";
 import { useRouter } from "expo-router";
+import isValidEmail from "@/utils/validateEmail";
 
 
 export default function Login() {
@@ -25,6 +26,16 @@ export default function Login() {
             Alert.alert("Please input both email and password")
             return
         }
+
+        if (!isValidEmail(email)) {
+            setError("Please enter a valid email.")
+            Alert.alert("Invalid Email", "Please enter a valid email.")
+            return
+        }
+
+        setError("")
+
+        return
     }
 
     return (
