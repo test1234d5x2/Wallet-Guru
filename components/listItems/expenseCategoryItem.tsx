@@ -1,9 +1,10 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import { View, Text, StyleSheet, Alert } from 'react-native';
 import * as Progress from 'react-native-progress';
-import { Ionicons } from '@expo/vector-icons';
 import ExpenseCategory from '@/models/ExpenseCategory';
 import { useRouter } from 'expo-router';
+import ListItemDeleteButton from './listItemDeleteButton';
+import ListItemEditButton from './listItemEditButton';
 
 
 interface ExpenseCategoryProps {
@@ -38,12 +39,8 @@ export default function ExpenseCategoryItem(props: ExpenseCategoryProps) {
             <Text style={styles.label}>Budget: £{props.category.monthlyBudget}</Text>
 
             <View style={styles.actionsContainer}>
-                <TouchableOpacity style={styles.editButton} onPress={() => handleEdit(props.category.getID())}>
-                    <Ionicons name="pencil-outline" size={20} color="#fff" />
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.deleteButton} onPress={() => handleDelete(props.category.getID())}>
-                    <Ionicons name="trash-outline" size={20} color="#fff" />
-                </TouchableOpacity>
+                <ListItemEditButton id={props.category.getID()} handleEdit={handleEdit} />
+                <ListItemDeleteButton id={props.category.getID()} handleDelete={handleDelete} />
             </View>
         </View>
     )
@@ -70,19 +67,5 @@ const styles = StyleSheet.create({
     actionsContainer: {
         flexDirection: "row",
         justifyContent: "space-between",
-    },
-    editButton: {
-        backgroundColor: "#007BFF",
-        padding: 10,
-        borderRadius: 5,
-        alignItems: "center",
-        justifyContent: "center",
-    },
-    deleteButton: {
-        backgroundColor: "#FF4C4C",
-        padding: 10,
-        borderRadius: 5,
-        alignItems: "center",
-        justifyContent: "center",
     },
 })

@@ -1,8 +1,9 @@
-import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import { View, Text, StyleSheet, Alert } from 'react-native';
 import Expense from '@/models/Expense';
 import { useRouter } from 'expo-router';
+import ListItemEditButton from './listItemEditButton';
+import ListItemDeleteButton from './listItemDeleteButton';
 
 interface ExpenseItemProps {
     expense: Expense
@@ -11,6 +12,10 @@ interface ExpenseItemProps {
 export default function ExpenseItem(props: ExpenseItemProps) {
 
     const router = useRouter()
+
+    const handleEdit = (id: string) => {
+        router.navigate(props.expense.getEditURL())
+    }
 
     const handleDeleteTransaction = (id: string) => {
         Alert.alert('Delete Expense', 'Are you sure you want to delete this expense?', [
@@ -36,12 +41,8 @@ export default function ExpenseItem(props: ExpenseItemProps) {
             
 
             <View style={styles.actionsContainer}>
-                <TouchableOpacity style={styles.editButton} onPress={() => router.navigate(props.expense.getEditURL())}>
-                    <Ionicons name="pencil-outline" size={20} color="#fff" />
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.deleteButton} onPress={() => handleDeleteTransaction(props.expense.getID())}>
-                    <Ionicons name="trash-outline" size={20} color="#fff" />
-                </TouchableOpacity>
+                <ListItemEditButton id={props.expense.getID()} handleEdit={handleEdit} />
+                <ListItemDeleteButton id={props.expense.getID()} handleDelete={handleDeleteTransaction} />
             </View>
         </View>
     )

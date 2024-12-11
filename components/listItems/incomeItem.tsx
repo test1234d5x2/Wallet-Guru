@@ -1,8 +1,9 @@
-import { Ionicons } from '@expo/vector-icons';
-import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import React from 'react';
+import { View, Text, StyleSheet, Alert } from 'react-native';
 import Income from '@/models/Income';
 import { useRouter } from 'expo-router';
+import ListItemEditButton from './listItemEditButton';
+import ListItemDeleteButton from './listItemDeleteButton';
 
 interface IncomeItemProps {
     income: Income
@@ -11,6 +12,10 @@ interface IncomeItemProps {
 export default function IncomeItem(props: IncomeItemProps) {
 
     const router = useRouter()
+
+    const handleEdit = (id: string) => {
+        router.navigate(props.income.getEditURL())
+    }
 
     const handleDeleteTransaction = (id: string) => {
         Alert.alert('Delete Income', 'Are you sure you want to delete this income source?', [
@@ -35,12 +40,8 @@ export default function IncomeItem(props: IncomeItemProps) {
             
 
             <View style={styles.actionsContainer}>
-                <TouchableOpacity style={styles.editButton} onPress={() => router.navigate(props.income.getEditURL())}>
-                    <Ionicons name="pencil-outline" size={20} color="#fff" />
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.deleteButton} onPress={() => handleDeleteTransaction(props.income.getID())}>
-                    <Ionicons name="trash-outline" size={20} color="#fff" />
-                </TouchableOpacity>
+                <ListItemEditButton id={props.income.getID()} handleEdit={handleEdit} />
+                <ListItemDeleteButton id={props.income.getID()} handleDelete={handleDeleteTransaction} />
             </View>
         </View>
     )
