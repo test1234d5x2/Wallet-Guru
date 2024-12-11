@@ -11,8 +11,7 @@ export default function Login() {
     const [email, setEmail] = useState<string>('')
     const [password, setPassword] = useState<string>('')
     const [error, setError] = useState<string>('')
-    const router=  useRouter()
-
+    const router = useRouter()
 
     const handleLogin = () => {
         if (!email || !password) {

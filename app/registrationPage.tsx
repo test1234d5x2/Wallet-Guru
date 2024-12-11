@@ -1,8 +1,8 @@
 import { View, Text, StyleSheet, TouchableOpacity, Alert } from "react-native";
 import { useState } from "react";
-import { Link } from "expo-router";
 import AuthenticationInputs from "@/components/formComponents/authenticationInputs";
 import setPageTitle from "@/components/pageTitle/setPageTitle";
+import { useRouter } from "expo-router";
 
 
 export default function Login() {
@@ -12,7 +12,12 @@ export default function Login() {
     const [email, setEmail] = useState<string>('')
     const [password, setPassword] = useState<string>('')
     const [error, setError] = useState<string>('')
+    const router = useRouter()
 
+
+    const handleRedirection = () => {
+        router.replace("/loginPage")
+    }
 
     const handleRegistration = () => {
         if (!email || !password) {
@@ -29,10 +34,8 @@ export default function Login() {
             {error ? <View style={styles.errorTextContainer}><Text style={styles.errorText}>{error}</Text></View> : null}
 
             <View style={styles.registeredUserTextContainer}>
-                <TouchableOpacity>
-                    <Link href={"/loginPage"} replace={true}>
-                        <Text style={styles.registeredUserText}>Already Registered? Login Here</Text>
-                    </Link>
+                <TouchableOpacity onPress={handleRedirection}>
+                    <Text style={styles.registeredUserText}>Already Registered? Login Here</Text>
                 </TouchableOpacity>
             </View>
 

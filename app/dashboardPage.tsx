@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
+import { Link } from 'expo-router';
 import setPageTitle from '@/components/pageTitle/setPageTitle';
 import TopBar from '@/components/topBars/topBar';
 import * as Progress from 'react-native-progress';
@@ -17,7 +18,9 @@ export default function Dashboard() {
                 <View style={styles.sectionHeader}>
                     <Text style={styles.sectionTitle}>This Month:</Text>
                     <TouchableOpacity>
-                        <Text style={styles.linkText}>View Analytics</Text>
+                        <Link href={"/analyticsPage"}>
+                            <Text style={styles.linkText}>View Analytics</Text>
+                        </Link>
                     </TouchableOpacity>
                 </View>
                 <View style={styles.summaryContainer}>
@@ -37,7 +40,9 @@ export default function Dashboard() {
                 <View style={styles.sectionHeader}>
                     <Text style={styles.sectionTitle}>Transactions:</Text>
                     <TouchableOpacity>
-                        <Text style={styles.linkText}>View All</Text>
+                        <Link href={"/listTransactionsPage"}>
+                            <Text style={styles.linkText}>View All</Text>
+                        </Link>
                     </TouchableOpacity>
                 </View>
                 <View style={styles.transaction}>
@@ -60,7 +65,9 @@ export default function Dashboard() {
                 <View style={styles.sectionHeader}>
                     <Text style={styles.sectionTitle}>Budget Overview:</Text>
                     <TouchableOpacity>
-                        <Text style={styles.linkText}>View</Text>
+                        <Link href={"/expenseCategoriesOverviewPage"}>
+                            <Text style={styles.linkText}>View</Text>
+                        </Link>
                     </TouchableOpacity>
                 </View>
                 <View style={styles.progressContainer}>
