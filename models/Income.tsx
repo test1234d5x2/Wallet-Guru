@@ -42,7 +42,7 @@ class Income implements Transaction {
     }
 
     getListItemDisplay(): React.ReactElement {
-        return <IncomeItem income={this} />
+        return <IncomeItem income={this} key={uuid.v4()} />
     }
 
     getFullDisplay(): React.ReactElement {

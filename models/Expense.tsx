@@ -46,7 +46,7 @@ class Expense implements Transaction {
     }
 
     getListItemDisplay(): React.ReactElement {
-        return <ExpenseItem expense={this} />
+        return <ExpenseItem expense={this} key={uuid.v4()} />
     }
 
     getFullDisplay(): React.ReactElement {

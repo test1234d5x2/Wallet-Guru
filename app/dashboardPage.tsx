@@ -3,12 +3,45 @@ import { View, Text, TouchableOpacity, StyleSheet, ScrollView } from 'react-nati
 import { Link } from 'expo-router';
 import setPageTitle from '@/components/pageTitle/setPageTitle';
 import TopBar from '@/components/topBars/topBar';
-import * as Progress from 'react-native-progress';
+import Expense from '@/models/Expense';
+import ExpenseCategory from '@/models/ExpenseCategory';
+import Income from '@/models/Income';
+import User from '@/models/User';
+import uuid from 'react-native-uuid';
+import ExpenseCategoryItem from '@/components/listItems/expenseCategoryItem';
+
 
 
 export default function Dashboard() {
 
     setPageTitle("Dashboard")
+
+    // This is filler data. Remove once app fully working.
+    const user = new User("", "")
+    const transactions = [
+        new Expense(user, "Expense Name", -25.5, new Date(), "", new ExpenseCategory(user, "Food", 250, 1000)),
+        new Income(user, "Income Name", 1250, new Date(), ""),
+        new Expense(user, "Expense Name", -25.5, new Date(), "", new ExpenseCategory(user, "Travel", 500, 1000)),
+    ]
+
+    const categories = [
+        new ExpenseCategory(user, "Category Name", 400, 1000),
+        new ExpenseCategory(user, "Category Name", 400, 1000),
+    ]
+
+
+    const transactionItemsList = []
+    for (let transaction of transactions) {
+        transactionItemsList.push(transaction.getListItemDisplay())
+        transactionItemsList.push(<View style={styles.dividerLine} key={uuid.v4()} />)
+    }
+
+    const expenseCategoryItemsList = []
+    for (let expenseCategory of categories) {
+        expenseCategoryItemsList.push(<ExpenseCategoryItem category={expenseCategory} key={uuid.v4()} />)
+        expenseCategoryItemsList.push(<View style={styles.dividerLine} key={uuid.v4()} />)
+    }
+
 
     return (
         <ScrollView contentContainerStyle={styles.container}>
@@ -45,20 +78,7 @@ export default function Dashboard() {
                         </Link>
                     </TouchableOpacity>
                 </View>
-                <View style={styles.transaction}>
-                    <Text style={styles.transactionName}>Expense Name</Text>
-                    <Text style={styles.transactionAmount}>-£25.50</Text>
-                </View>
-                <View style={styles.dividerLine} />
-                <View style={styles.transaction}>
-                    <Text style={styles.transactionName}>Income Name</Text>
-                    <Text style={styles.transactionAmount}>+£1000.00</Text>
-                </View>
-                <View style={styles.dividerLine} />
-                <View style={styles.transaction}>
-                    <Text style={styles.transactionName}>Expense Name</Text>
-                    <Text style={styles.transactionAmount}>-£25.50</Text>
-                </View>
+                {transactionItemsList}
             </View>
 
             <View style={styles.section}>
@@ -70,24 +90,7 @@ export default function Dashboard() {
                         </Link>
                     </TouchableOpacity>
                 </View>
-                <View style={styles.progressContainer}>
-                    <View style={styles.progressTextContainer}>
-                        <Text style={styles.budgetLabel}>Food</Text>
-                        <Text style={styles.budgetPercentage}>40%</Text>
-                    </View>
-                    <View>
-                        <Progress.Bar progress={0.4} width={null} />
-                    </View>
-                </View>
-                <View style={styles.progressContainer}>
-                    <View style={styles.progressTextContainer}>
-                        <Text style={styles.budgetLabel}>Travel</Text>
-                        <Text style={styles.budgetPercentage}>40%</Text>
-                    </View>
-                    <View>
-                        <Progress.Bar progress={0.4} width={null} />
-                    </View>
-                </View>
+                {expenseCategoryItemsList}
             </View>
         </ScrollView>
     )
@@ -97,8 +100,8 @@ const styles = StyleSheet.create({
     container: {
         padding: 20,
         backgroundColor: '#fff',
-        flex: 1,
         rowGap: 50,
+        flexGrow: 1,
     },
     summaryContainer: {
         flexDirection: "row",

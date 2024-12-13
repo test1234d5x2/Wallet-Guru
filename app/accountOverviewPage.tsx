@@ -3,13 +3,15 @@ import { View, Text, TouchableOpacity, StyleSheet, Alert } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import setPageTitle from "@/components/pageTitle/setPageTitle";
 import { useRouter, useNavigation } from "expo-router";
+import User from "@/models/User";
 
 export default function AccountOverview() {
 
     setPageTitle("Account Overview")
 
     const router = useRouter()
-    const nav = useNavigation()
+
+    const user = new User("UserEmail@email.com", "")
 
     const handleChangePassword = () => {
         console.log("Change Password Pressed")
@@ -35,7 +37,7 @@ export default function AccountOverview() {
         <View style={styles.container}>
             <Ionicons name="person-circle-outline" size={100} color="black" />
 
-            <Text style={styles.emailText}>UserEmail@email.com</Text>
+            <Text style={styles.emailText}>{user.getEmail()}</Text>
 
             <TouchableOpacity style={styles.buttonPrimary} onPress={handleChangePassword}>
                 <Text style={styles.buttonText}>Change Password</Text>

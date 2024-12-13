@@ -13,6 +13,10 @@ class User {
 
     public getUserID(): string {return this.id}
 
+    public getEmail(): string {return this.username}
+
+    public getPassword(): string {return this.password}
+
     public deleteUser(): boolean {return false}
 
     
