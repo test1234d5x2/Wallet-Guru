@@ -13,7 +13,7 @@ export default function MainMenu() {
         {title: 'Create An Expense Category', link: "/addExpenseCategoryPage"},
         {title: 'Expense Category Overview', link: "/expenseCategoriesOverviewPage"},
         {title: 'Dashboard', link: "/dashboardPage"},
-        {title: 'Spending Analytics', link: ""},
+        {title: 'Spending Analytics', link: "/analyticsPage"},
     ]
 
     return (
