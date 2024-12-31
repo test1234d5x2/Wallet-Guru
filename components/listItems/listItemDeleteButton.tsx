@@ -10,7 +10,7 @@ interface ListItemDeleteButtonProps {
 
 export default function ListItemDeleteButton(props: ListItemDeleteButtonProps) {
     return (
-        <TouchableOpacity style={styles.deleteButton} onPress={() => props.handleDelete(props.id)}>
+        <TouchableOpacity style={styles.deleteButton} onPress={() => props.handleDelete(props.id)} testID="delete-button">
             <Ionicons name="trash-outline" size={20} color="#fff" />
         </TouchableOpacity>
     )

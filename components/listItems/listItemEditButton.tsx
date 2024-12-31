@@ -10,7 +10,7 @@ interface ListItemEditButtonProps {
 
 export default function ListItemEditButton(props: ListItemEditButtonProps) {
     return (
-        <TouchableOpacity style={styles.editButton} onPress={() => props.handleEdit(props.id)}>
+        <TouchableOpacity style={styles.editButton} onPress={() => props.handleEdit(props.id)} testID="edit-button">
             <Ionicons name="pencil-outline" size={20} color="#fff" />
         </TouchableOpacity>
     )
