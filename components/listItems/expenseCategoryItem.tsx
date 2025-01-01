@@ -34,8 +34,8 @@ export default function ExpenseCategoryItem(props: ExpenseCategoryProps) {
         <View style={styles.categoryContainer}>
             <Text style={styles.categoryName}>{props.category.name}</Text>
 
-            <Text style={styles.label}>Spending: £{props.category.currentMonthlySpending}</Text>
-            <Progress.Bar progress={props.category.calculateBudgetUsed()} color="#007BFF" width={null} />
+            <Text style={styles.label}>Spending: £200</Text>
+            <Progress.Bar progress={props.category.calculateBudgetUsed(200)} color="#007BFF" width={null} />
             <Text style={styles.label}>Budget: £{props.category.monthlyBudget}</Text>
 
             <View style={styles.actionsContainer}>

@@ -28,9 +28,9 @@ export default function ViewTransactionsList() {
     // This is filler data. Remove once app fully working.
     const user = new User("", "")
     const transactions = [
-        new Expense(user, "Expense Name", -25.5, new Date(), "", new ExpenseCategory(user, "Food", 250, 1000)),
+        new Expense(user, "Expense Name", -25.5, new Date(), "", new ExpenseCategory(user, "Food", 1000)),
         new Income(user, "Income Name", 1250, new Date(), ""),
-        new Expense(user, "Expense Name", -25.5, new Date(), "", new ExpenseCategory(user, "Travel", 500, 1000)),
+        new Expense(user, "Expense Name", -25.5, new Date(), "", new ExpenseCategory(user, "Travel", 1000)),
     ]
 
     

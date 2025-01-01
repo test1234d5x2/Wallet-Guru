@@ -5,14 +5,12 @@ class ExpenseCategory {
     private id: string
     private user: User
     name: string
-    currentMonthlySpending: number
     monthlyBudget: number
 
-    constructor(user: User, name: string, currentMonthlySpending: number, monthlyBudget: number) {
+    constructor(user: User, name: string, monthlyBudget: number) {
         this.id = uuid.v4()
         this.user = user
         this.name = name
-        this.currentMonthlySpending = currentMonthlySpending
         this.monthlyBudget = monthlyBudget
     }
 
@@ -24,8 +22,8 @@ class ExpenseCategory {
         return this.user
     }
 
-    calculateBudgetUsed(): number {
-        return this.currentMonthlySpending / this.monthlyBudget
+    calculateBudgetUsed(currentMonthlySpending: number): number {
+        return currentMonthlySpending / this.monthlyBudget
     }
 }
 

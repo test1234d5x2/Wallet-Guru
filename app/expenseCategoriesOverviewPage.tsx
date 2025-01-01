@@ -15,8 +15,8 @@ export default function ViewExpenseCategories() {
     // This is filler data. Remove once the application is working.
     const user = new User("", "")
     const categories = [
-        new ExpenseCategory(user, "Category Name", 400, 1000),
-        new ExpenseCategory(user, "Category Name", 400, 1000),
+        new ExpenseCategory(user, "Category Name", 1000),
+        new ExpenseCategory(user, "Category Name", 1000),
     ]
 
     let displayElements = []

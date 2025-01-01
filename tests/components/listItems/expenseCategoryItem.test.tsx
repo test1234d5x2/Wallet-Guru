@@ -21,7 +21,7 @@ jest.mock('expo-router', () => ({
 jest.spyOn(Alert, 'alert');
 
 // Mock category
-const mockCategory = new ExpenseCategory(new User("", ""), 'Test Category', 200, 500);
+const mockCategory = new ExpenseCategory(new User("", ""), 'Test Category', 500);
 mockCategory.getID = jest.fn(() => '123');
 mockCategory.calculateBudgetUsed = jest.fn(() => 0.4);
 
