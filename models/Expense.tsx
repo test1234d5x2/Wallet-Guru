@@ -3,7 +3,6 @@ import User from "./User";
 import ExpenseCategory from "./ExpenseCategory";
 import uuid from 'react-native-uuid';
 import ExpenseItem from "@/components/listItems/expenseItem";
-import Receipt from "./Receipt";
 
 
 class Expense implements Transaction {
@@ -14,9 +13,9 @@ class Expense implements Transaction {
     date: Date
     notes: string
     expenseCategory: ExpenseCategory
-    receipt?: Receipt
+    receipt?: string
 
-    constructor(user: User, title: string, amount: number, date: Date, notes: string, expenseCategory: ExpenseCategory, receipt: Receipt) {
+    constructor(user: User, title: string, amount: number, date: Date, notes: string, expenseCategory: ExpenseCategory, receipt?: string) {
         this.id = uuid.v4()
         this.user = user
         this.title = title
