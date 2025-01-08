@@ -28,15 +28,6 @@ export default function EditExpense() {
     setPageTitle("Edit Expense")
 
 
-
-    const [title, setTitle] = useState<string>('')
-    const [amount, setAmount] = useState<string>('')
-    const [date, setDate] = useState<Date>(new Date())
-    const [category, setCategory] = useState<ExpenseCategory>(new ExpenseCategory(authenticatedUser, "Other", 10000))
-    const [notes, setNotes] = useState<string>('')
-    const [error, setError] = useState<string>('')
-
-
     const expense = registry.getAllExpensesByUser(authenticatedUser).find(exp => exp.getID() === id);
     if (!expense) {
         Alert.alert("Error", "Expense does not exist.")
@@ -44,13 +35,12 @@ export default function EditExpense() {
         return
     }
 
-    setTitle(expense.title)
-    setAmount(expense.amount.toString())
-    setDate(new Date(expense.date))
-    setCategory(expense.expenseCategory)
-    setNotes(expense.notes)
-
-
+    const [title, setTitle] = useState<string>(expense.title)
+    const [amount, setAmount] = useState<string>(expense.amount.toString())
+    const [date, setDate] = useState<Date>(expense.date)
+    const [category, setCategory] = useState<ExpenseCategory>(expense.expenseCategory)
+    const [notes, setNotes] = useState<string>(expense.notes)
+    const [error, setError] = useState<string>('')
 
 
     const validateForm = () => {
