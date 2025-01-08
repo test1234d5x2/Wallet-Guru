@@ -13,7 +13,7 @@ def combine_files_from_directories(base_folder, directories, output_file):
                             
                             if os.path.isfile(file_path) and filename != os.path.basename(output_file):
                                 with open(file_path, 'r') as infile:
-                                    outfile.write(f"\n--- Content from {file_path} ---\n")
+                                    outfile.write(f"\n--- Content from {filename} ---\n")
                                     outfile.write(infile.read())
                                     outfile.write("\n")
         print(f"Files combined successfully into {output_file}")
