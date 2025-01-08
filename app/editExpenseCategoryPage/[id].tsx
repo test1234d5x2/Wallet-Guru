@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import ExpenseCategoryInputs from '@/components/formComponents/expenseCategoryInputs';
 import setPageTitle from '@/components/pageTitle/setPageTitle';
@@ -6,10 +6,9 @@ import TopBar from '@/components/topBars/topBar';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import validateEmpty from '@/utils/validateEmpty';
 import isNumeric from '@/utils/validateNumeric';
-
+import Registry from '@/models/Registry';
 
 export default function EditExpenseCategory() {
-
     const { id } = useLocalSearchParams();
 
     setPageTitle("Edit Expense Category")
@@ -19,44 +18,65 @@ export default function EditExpenseCategory() {
     const [error, setError] = useState<string>('')
     const router = useRouter()
 
-    const validateForm = () => {
+    const registry = Registry.getInstance()
+    const authenticatedUser = registry.getAuthenticatedUser()
 
+    if (!authenticatedUser) {
+        Alert.alert("Error", "You must be logged in to edit a category.")
+        router.replace("/loginPage")
+        return
+    }
+
+    const category = registry.getAllExpenseCategoriesByUser(authenticatedUser).find(cat => cat.getID() === id);
+    if (!category) {
+        Alert.alert("Error", "Category not found.")
+        router.replace("/expenseCategoriesOverviewPage")
+        return
+    }
+
+    setCategoryName(category.name)
+    setMonthlyLimit(category.monthlyBudget.toString())
+
+
+    
+    const validateForm = () => {
         if (!categoryName || !monthlyLimit) {
             Alert.alert("Please fill in all the fields.")
             setError("Please fill in all the fields.")
             return false
         }
 
-        else if (validateEmpty(categoryName)) {
+        if (validateEmpty(categoryName)) {
             Alert.alert("Empty Category Name Field", "The category name field must be filled properly.")
             setError("The category name field must be filled properly.")
             return false
         }
 
-        else if (validateEmpty(monthlyLimit)) {
+        if (validateEmpty(monthlyLimit)) {
             Alert.alert("Empty Monthly Limit Field", "The monthly limit field must be filled properly.")
             setError("The monthly limit field must be filled properly.")
             return false
         }
 
-        else if (!isNumeric(monthlyLimit)) {
+        if (!isNumeric(monthlyLimit)) {
             Alert.alert("Monthly Limit Field Not Numeric", "The monthly limit field must be a number.")
             setError("The monthly limit field must be a number.")
             return false
         }
-        
+
         setError('')
         return true
     }
 
     const handleEditCategory = () => {
         if (validateForm()) {
-            Alert.alert('Success', `Category "${categoryName}" added with a limit of £${monthlyLimit}`)
-            setCategoryName('')
-            setMonthlyLimit('')
-            setError("")
-            router.replace("/expenseCategoriesOverviewPage")
-            return
+            try {
+                registry.updateExpenseCategory(id as string, categoryName, parseFloat(monthlyLimit))
+                Alert.alert('Success', `Category "${categoryName}" updated with a limit of £${monthlyLimit}`)
+                router.replace("/expenseCategoriesOverviewPage")
+            } catch (err: any) {
+                Alert.alert("Error", err.message)
+            }
         }
     }
 
@@ -68,7 +88,7 @@ export default function EditExpenseCategory() {
                 <ExpenseCategoryInputs categoryName={categoryName} monthlyLimit={monthlyLimit} setCategoryName={setCategoryName} setMonthlyLimit={setMonthlyLimit} />
             </View>
 
-            {error === '' ? null: <Text style={styles.errorText}>{error}</Text>}
+            {error === '' ? null : <Text style={styles.errorText}>{error}</Text>}
 
             <TouchableOpacity style={styles.editButton} onPress={handleEditCategory}>
                 <Text style={styles.editButtonText}>Edit Category</Text>

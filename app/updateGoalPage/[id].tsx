@@ -3,11 +3,31 @@ import TopBar from "@/components/topBars/topBar";
 import { Ionicons } from "@expo/vector-icons";
 import React, { useState } from "react";
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from "react-native";
-
+import { useRouter, useLocalSearchParams } from 'expo-router';
+import Registry from '@/models/Registry';
 
 export default function UpdateGoal() {
 
+    const router = useRouter();
+    const { id } = useLocalSearchParams();
     setPageTitle("Update Goal")
+
+    const registry = Registry.getInstance();
+    const authenticatedUser = registry.getAuthenticatedUser();
+
+    if (!authenticatedUser) {
+        Alert.alert("Error", "You must be logged in to update a goal.");
+        router.replace("/loginPage");
+        return null;
+    }
+
+    const goal = registry.getAllGoalsByUser(authenticatedUser).find(g => g.getID() === id);
+
+    if (!goal) {
+        Alert.alert("Error", "Goal not found.");
+        router.replace("/allGoalsPage");
+        return null;
+    }
 
     const [amount, setAmount] = useState<string>("")
     const [error, setError] = useState<string>("")
@@ -18,8 +38,16 @@ export default function UpdateGoal() {
             setError("The amount entered must be a number.")
             return;
         }
+
+        const amountValue = parseFloat(amount);
+        try {
+            goal.updateCurrent(amountValue);
+            Alert.alert("Success", "Goal progress updated successfully!");
+            router.replace("/allGoalsPage");
+        } catch (err: any) {
+            Alert.alert("Error", err.message);
+        }
         setError("")
-        console.log("Progress updated with amount:", parseFloat(amount))
     }
 
     const handleHelpClick = () => {
@@ -32,9 +60,9 @@ export default function UpdateGoal() {
 
             <TopBar />
 
-            <Text style={styles.label}>Goal: Goal Name</Text>
-            <Text style={styles.label}>Target: £2500</Text>
-            <Text style={styles.label}>Current: £1000</Text>
+            <Text style={styles.label}>Goal: {goal.title}</Text>
+            <Text style={styles.label}>Target: £{goal.target}</Text>
+            <Text style={styles.label}>Current: £{goal.current}</Text>
 
             <View style={styles.inputContainer}>
                 <TextInput
@@ -50,8 +78,6 @@ export default function UpdateGoal() {
                     <Ionicons name="help-circle-outline" size={24} color="black" onPress={handleHelpClick} />
                 </TouchableOpacity>
             </View>
-
-            
 
             {error ? <Text style={styles.errorText}>{error}</Text> : null}
 

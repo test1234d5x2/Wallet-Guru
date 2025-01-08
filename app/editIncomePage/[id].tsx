@@ -7,64 +7,88 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import validateEmpty from '@/utils/validateEmpty';
 import isNumeric from '@/utils/validateNumeric';
 import { isValidDate, isTodayOrBefore } from '@/utils/validateDate';
-
+import Registry from '@/models/Registry';
 
 export default function EditIncome() {
-
     const { id } = useLocalSearchParams();
 
+    const router = useRouter();
     setPageTitle("Edit Income")
 
-    const [title, setTitle] = useState<string>('')
-    const [amount, setAmount] = useState<string>('')
-    const [date, setDate] = useState<Date>(new Date())
-    const [notes, setNotes] = useState<string>('')
-    const [error, setError] = useState<string>('')
-    const router = useRouter()
+    const registry = Registry.getInstance();
+    const authenticatedUser = registry.getAuthenticatedUser();
+    if (!authenticatedUser) {
+        Alert.alert("Error", "You must be logged in to edit income.");
+    
+        router.replace("/loginPage");
+        return;
+    }
+
+    const income = registry.getAllIncomesByUser(authenticatedUser).find(inc => inc.getID() === id);
+    if (!income) {
+        Alert.alert("Error", "Income not found.");
+        router.replace("/listTransactionsPage");
+        return;
+    }
+
+    const [title, setTitle] = useState<string>(income.title);
+    const [amount, setAmount] = useState<string>(income.amount.toString());
+    const [date, setDate] = useState<Date>(new Date(income.date));
+    const [notes, setNotes] = useState<string>(income.notes);
+    const [error, setError] = useState<string>('');
+
+    const validateForm = () => {
+        if (!title || !amount || !date) {
+            Alert.alert('Please fill in all required fields.');
+            setError("Fill in all the required fields.");
+            return false;
+        }
+
+        if (validateEmpty(title)) {
+            Alert.alert("Empty Title Field", "The title field must be filled properly.");
+            setError("The title field must be filled properly.");
+            return false;
+        }
+
+        if (validateEmpty(amount)) {
+            Alert.alert("Empty Amount Field", "The amount field must be filled properly.");
+            setError("The amount field must be filled properly.");
+            return false;
+        }
+
+        if (!isNumeric(amount)) {
+            Alert.alert("Amount Field Not Numeric", "The amount field must be a number.");
+            setError("The amount field must be a number.");
+            return false;
+        }
+
+        if (!isValidDate(date)) {
+            Alert.alert("Date Field Invalid", "Please select a date.");
+            setError("Please select a date.");
+            return false;
+        }
+
+        if (!isTodayOrBefore(date)) {
+            Alert.alert("Date Field Invalid", "Please select a date that is today or before today.");
+            setError("Please select a date that is today or before today.");
+            return false;
+        }
+
+        setError("");
+        return true;
+    };
 
     const handleEditIncome = () => {
-        if (!title || !amount || !date) {
-            Alert.alert('Please fill in all required fields.')
-            setError("Fill in all the required fields.")
-            return;
+        if (validateForm()) {
+            try {
+                registry.updateIncome(id as string, title, parseFloat(amount), date, notes);
+                Alert.alert('Success', 'Income updated successfully!');
+                router.replace("/listTransactionsPage");
+            } catch (err: any) {
+                Alert.alert("Error", err.message);
+            }
         }
-
-        else if (validateEmpty(title)) {
-            Alert.alert("Empty Title Field", "The title field must be filled properly.")
-            setError("The title field must be filled properly.")
-            return
-        }
-
-        else if (validateEmpty(amount)) {
-            Alert.alert("Empty Amount Field", "The amount field must be filled properly.")
-            setError("The amount field must be filled properly.")
-            return
-        }
-
-        else if (!isNumeric(amount)) {
-            Alert.alert("Amount Field Not Numeric", "The amount field must be a number.")
-            setError("The amount field must be a number.")
-            return
-        }
-
-        else if (!isValidDate(date)) {
-            Alert.alert("Date Field Invalid", "Please select a date.")
-            setError("Please select a date.")
-            return
-        }
-
-        else if (!isTodayOrBefore(date)) {
-            Alert.alert("Date Field Invalid", "Please select a date that is today or before today.")
-            setError("Please select a date that is today or before today.")
-            return
-        }
-
-        Alert.alert('Success', 'Expense added successfully!')
-        setError("")
-        router.replace("/viewIncomeDetailsPage")
-        
-        return
-    }
+    };
 
     return (
         <ScrollView contentContainerStyle={styles.container}>
@@ -93,7 +117,6 @@ export default function EditIncome() {
     )
 }
 
-
 const styles = StyleSheet.create({
     container: {
         rowGap: 20,
@@ -103,10 +126,6 @@ const styles = StyleSheet.create({
     },
     incomeForm: {
         marginBottom: 40,
-    },
-    scanText: {
-        color: '#777',
-        textDecorationLine: 'underline',
     },
     addButton: {
         backgroundColor: '#007BFF',
@@ -127,4 +146,4 @@ const styles = StyleSheet.create({
         color: 'red',
         fontSize: 14,
     },
-})
+});

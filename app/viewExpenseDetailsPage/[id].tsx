@@ -1,43 +1,57 @@
 import setPageTitle from '@/components/pageTitle/setPageTitle';
 import TopBar from '@/components/topBars/topBar';
-import Expense from '@/models/Expense';
-import ExpenseCategory from '@/models/ExpenseCategory';
-import User from '@/models/User';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
-
+import Registry from '@/models/Registry';
 
 
 export default function ExpenseDetailsScreen() {
-
     const { id } = useLocalSearchParams();
 
-    const user = new User("", "")
-    const expense = new Expense(user, "Expense Name", -25.5, new Date(), "", new ExpenseCategory(user, "Food", 250, 1000))
-    
+    const registry = Registry.getInstance();
+    const authenticatedUser = registry.getAuthenticatedUser();
 
-    setPageTitle(expense.title)
+    const router = useRouter();
 
-    const router = useRouter()
+    if (!authenticatedUser) {
+        Alert.alert("Error", "You must be logged in to view this expense.");
+        router.replace("/loginPage");
+        return null;
+    }
+
+    const expense = registry.getAllExpensesByUser(authenticatedUser).find(exp => exp.getID() === id);
+
+
+    if (!expense) {
+        Alert.alert("Error", "Expense not found.");
+        router.replace("/listTransactionsPage");
+        return null;
+    }
+
+    setPageTitle(expense.title);
 
     const handleEdit = () => {
-        router.navigate("/editExpensePage/" + expense.getID())
-        return
+        router.navigate("/editExpensePage/" + expense.getID());
     }
 
     const handleDelete = () => {
         Alert.alert('Delete Expense', 'Are you sure you want to delete this expense?', [
             { text: 'Cancel', style: 'cancel' },
             { text: 'Delete', style: 'destructive', onPress: () => {
-                console.log('Expense deleted')
-                router.replace("/listTransactionsPage")
+                try {
+                    registry.deleteExpense(expense.getID());
+                    Alert.alert('Success', 'Expense deleted successfully!');
+                    router.replace("/listTransactionsPage");
+                } catch (err: any) {
+                    Alert.alert('Error', err.message);
+                }
             } },
-        ])
+        ]);
     }
 
     const handleViewReceipt = () => {
-        Alert.alert("Needs Implementing")
+        Alert.alert("Feature Coming Soon", "Receipt viewing is not yet implemented.");
     }
 
     return (
@@ -78,12 +92,6 @@ const styles = StyleSheet.create({
     container: {
         backgroundColor: '#fff',
         rowGap: 20
-    },
-    name: {
-        fontSize: 24,
-        fontWeight: 'bold',
-        textAlign: 'center',
-        marginBottom: 20,
     },
     detail: {
         fontSize: 16,
@@ -130,4 +138,4 @@ const styles = StyleSheet.create({
         color: '#fff',
         fontWeight: 'bold',
     },
-})
+});

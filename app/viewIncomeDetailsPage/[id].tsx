@@ -1,35 +1,54 @@
 import setPageTitle from '@/components/pageTitle/setPageTitle';
 import TopBar from '@/components/topBars/topBar';
-import Income from '@/models/Income';
-import User from '@/models/User';
-import { useRouter } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
-
-
+import Registry from '@/models/Registry';
 
 export default function IncomeDetailsScreen() {
+    const { id } = useLocalSearchParams();
 
-    const user = new User("", "")
-    const income = new Income(user, "Income Name", 1250, new Date(), "")
+    const registry = Registry.getInstance();
+    const authenticatedUser = registry.getAuthenticatedUser();
 
-    setPageTitle(income.title)
+    const router = useRouter();
 
-    const router = useRouter()
+
+    if (!authenticatedUser) {
+        Alert.alert("Error", "You must be logged in to view this income source.");
+        router.replace("/loginPage");
+        return null;
+    }
+
+
+    const income = registry.getAllIncomesByUser(authenticatedUser).find(inc => inc.getID() === id);
+
+
+    if (!income) {
+        Alert.alert("Error", "Income source not found.");
+        router.replace("/listTransactionsPage");
+        return null;
+    }
+
+    setPageTitle(income.title);
 
     const handleEdit = () => {
-        router.navigate("/editIncomePage")
-        return
+        router.navigate("/editIncomePage/" + income.getID());
     }
 
     const handleDelete = () => {
         Alert.alert('Delete Income', 'Are you sure you want to delete this income source?', [
             { text: 'Cancel', style: 'cancel' },
             { text: 'Delete', style: 'destructive', onPress: () => {
-                console.log('Income source deleted')
-                router.replace("/listTransactionsPage")
+                try {
+                    registry.deleteIncome(income.getID());
+                    Alert.alert('Success', 'Income source deleted successfully!');
+                    router.replace("/listTransactionsPage");
+                } catch (err: any) {
+                    Alert.alert('Error', err.message);
+                }
             } },
-        ])
+        ]);
     }
 
     return (
@@ -42,7 +61,6 @@ export default function IncomeDetailsScreen() {
                     <Text style={styles.notesTitle}>Notes:</Text>
                     <Text style={styles.notes}>{income.notes}</Text>
                 </View>
-
 
                 <View style={styles.buttonContainer}>
                     <TouchableOpacity style={[styles.button, styles.editButton]} onPress={handleEdit}>
@@ -67,12 +85,6 @@ const styles = StyleSheet.create({
     container: {
         backgroundColor: '#fff',
         rowGap: 20
-    },
-    name: {
-        fontSize: 24,
-        fontWeight: 'bold',
-        textAlign: 'center',
-        marginBottom: 20,
     },
     detail: {
         fontSize: 16,
@@ -112,4 +124,4 @@ const styles = StyleSheet.create({
         color: '#fff',
         fontWeight: 'bold',
     },
-})
+});
