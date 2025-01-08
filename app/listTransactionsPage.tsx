@@ -5,6 +5,9 @@ import setPageTitle from '@/components/pageTitle/setPageTitle';
 import TopBar from '@/components/topBars/topBar';
 import uuid from 'react-native-uuid';
 import Registry from '@/models/Registry';
+import ExpenseItem from '@/components/listItems/expenseItem';
+import Transaction from '@/models/Transaction';
+import IncomeItem from '@/components/listItems/incomeItem';
 
 export default function ViewTransactionsList() {
 
@@ -22,21 +25,33 @@ export default function ViewTransactionsList() {
         return null // Redirect logic can be added later if needed
     }
 
-    const transactions = [
+    const expenses = [
         ...registry.getAllExpensesByUser(user),
+    ]
+
+    const incomes = [
         ...registry.getAllIncomesByUser(user)
     ]
 
-    const handleTransactionClick = (transaction: any) => {
+    const handleTransactionClick = (transaction: Transaction) => {
         router.push(transaction.getPageURL())
     }
 
     let transactionDisplayElements = []
 
-    for (let transaction of transactions) {
+    for (let expense of expenses) {
         transactionDisplayElements.push(
-            <TouchableOpacity key={uuid.v4()} onPress={() => handleTransactionClick(transaction)}>
-                {transaction.getListItemDisplay()}
+            <TouchableOpacity key={uuid.v4()} onPress={() => handleTransactionClick(expense)}>
+                <ExpenseItem registry={registry} expense={expense} key={uuid.v4()} />
+            </TouchableOpacity>
+        )
+        transactionDisplayElements.push(<View style={styles.divider} key={uuid.v4()} />)
+    }
+
+    for (let income of incomes) {
+        transactionDisplayElements.push(
+            <TouchableOpacity key={uuid.v4()} onPress={() => handleTransactionClick(income)}>
+                <IncomeItem registry={registry} income={income} key={uuid.v4()} />
             </TouchableOpacity>
         )
         transactionDisplayElements.push(<View style={styles.divider} key={uuid.v4()} />)

@@ -8,12 +8,12 @@ import Registry from '@/models/Registry';
 
 interface ExpenseItemProps {
     expense: Expense
+    registry: Registry
 }
 
 export default function ExpenseItem(props: ExpenseItemProps) {
 
     const router = useRouter()
-    const registry = Registry.getInstance();
 
     const handleEdit = (id: string) => {
         router.navigate(props.expense.getEditURL())
@@ -24,7 +24,7 @@ export default function ExpenseItem(props: ExpenseItemProps) {
             { text: 'Cancel', style: 'cancel' },
             { text: 'Delete', style: 'destructive', onPress: () => {
                 try {
-                    registry.deleteExpense(id);
+                    props.registry.deleteExpense(id);
                     Alert.alert('Success', 'Expense deleted successfully!');
                     router.replace("/listTransactionsPage");
                 } catch (err: any) {

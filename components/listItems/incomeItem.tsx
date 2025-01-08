@@ -8,12 +8,12 @@ import Registry from '@/models/Registry';
 
 interface IncomeItemProps {
     income: Income
+    registry: Registry
 }
 
 export default function IncomeItem(props: IncomeItemProps) {
 
     const router = useRouter()
-    const registry = Registry.getInstance();
 
     const handleEdit = (id: string) => {
         router.navigate(props.income.getEditURL())
@@ -24,7 +24,7 @@ export default function IncomeItem(props: IncomeItemProps) {
         Alert.alert('Delete Income', 'Are you sure you want to delete this income source?', [
             { text: 'Cancel', style: 'cancel' },
             { text: 'Delete', style: 'destructive', onPress: () => {
-                registry.deleteIncome(props.income.getID())
+                props.registry.deleteIncome(props.income.getID())
                 Alert.alert('Success', 'Income deleted successfully!');
                 router.replace("/listTransactionsPage")
             } },
