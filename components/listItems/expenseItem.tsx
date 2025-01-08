@@ -4,6 +4,7 @@ import Expense from '@/models/Expense';
 import { useRouter } from 'expo-router';
 import ListItemEditButton from './listItemEditButton';
 import ListItemDeleteButton from './listItemDeleteButton';
+import Registry from '@/models/Registry';
 
 interface ExpenseItemProps {
     expense: Expense
@@ -12,6 +13,7 @@ interface ExpenseItemProps {
 export default function ExpenseItem(props: ExpenseItemProps) {
 
     const router = useRouter()
+    const registry = Registry.getInstance();
 
     const handleEdit = (id: string) => {
         router.navigate(props.expense.getEditURL())
@@ -21,8 +23,13 @@ export default function ExpenseItem(props: ExpenseItemProps) {
         Alert.alert('Delete Expense', 'Are you sure you want to delete this expense?', [
             { text: 'Cancel', style: 'cancel' },
             { text: 'Delete', style: 'destructive', onPress: () => {
-                console.log('Expense deleted')
-                router.replace("/listTransactionsPage")
+                try {
+                    registry.deleteExpense(id);
+                    Alert.alert('Success', 'Expense deleted successfully!');
+                    router.replace("/listTransactionsPage");
+                } catch (err: any) {
+                    Alert.alert('Error', err.message);
+                }
             } },
         ])
     }

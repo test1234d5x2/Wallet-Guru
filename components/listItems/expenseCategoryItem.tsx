@@ -5,6 +5,7 @@ import ExpenseCategory from '@/models/ExpenseCategory';
 import { useRouter } from 'expo-router';
 import ListItemDeleteButton from './listItemDeleteButton';
 import ListItemEditButton from './listItemEditButton';
+import Registry from '@/models/Registry';
 
 
 interface ExpenseCategoryProps {
@@ -15,16 +16,19 @@ interface ExpenseCategoryProps {
 export default function ExpenseCategoryItem(props: ExpenseCategoryProps) {
 
     const router = useRouter()
+    const registry = Registry.getInstance()
 
     const handleEdit = (id: string) => {
-        router.navigate("/editExpenseCategoryPage")
+        router.navigate("/editExpenseCategoryPage/" + props.category.getID())
         return
     }
     const handleDelete = (id: string) => {
         Alert.alert('Delete Expense Category', 'Are you sure you want to delete this expense category?', [
             { text: 'Cancel', style: 'cancel' },
             { text: 'Delete', style: 'destructive', onPress: () => {
+                registry.deleteExpenseCategory(props.category.getID())
                 console.log('Expense category deleted')
+                Alert.alert('Success', 'Expense category deleted successfully!');
                 router.replace("/expenseCategoriesOverviewPage")
             } },
         ])

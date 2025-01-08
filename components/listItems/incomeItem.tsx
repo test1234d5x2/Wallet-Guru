@@ -4,6 +4,7 @@ import Income from '@/models/Income';
 import { useRouter } from 'expo-router';
 import ListItemEditButton from './listItemEditButton';
 import ListItemDeleteButton from './listItemDeleteButton';
+import Registry from '@/models/Registry';
 
 interface IncomeItemProps {
     income: Income
@@ -12,16 +13,19 @@ interface IncomeItemProps {
 export default function IncomeItem(props: IncomeItemProps) {
 
     const router = useRouter()
+    const registry = Registry.getInstance();
 
     const handleEdit = (id: string) => {
         router.navigate(props.income.getEditURL())
+        return
     }
 
     const handleDeleteTransaction = (id: string) => {
         Alert.alert('Delete Income', 'Are you sure you want to delete this income source?', [
             { text: 'Cancel', style: 'cancel' },
             { text: 'Delete', style: 'destructive', onPress: () => {
-                console.log('Income deleted')
+                registry.deleteIncome(props.income.getID())
+                Alert.alert('Success', 'Income deleted successfully!');
                 router.replace("/listTransactionsPage")
             } },
         ])

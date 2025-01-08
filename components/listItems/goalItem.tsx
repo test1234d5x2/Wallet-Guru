@@ -4,6 +4,7 @@ import * as Progress from 'react-native-progress';
 import { useRouter } from "expo-router";
 import ListItemEditButton from "./listItemEditButton";
 import ListItemDeleteButton from "./listItemDeleteButton";
+import Registry from "@/models/Registry";
 
 
 interface GoalItemProps {
@@ -14,9 +15,10 @@ interface GoalItemProps {
 export default function GoalItem(props: GoalItemProps) {
 
     const router = useRouter()
+    const registry = Registry.getInstance();
 
     const handleUpdate = (id: string) => {
-        router.navigate("/updateGoalPage")
+        router.navigate("/updateGoalPage/" + props.goal.getID())
         return
     }
 
@@ -24,8 +26,10 @@ export default function GoalItem(props: GoalItemProps) {
         Alert.alert('Delete Goal', 'Are you sure you want to delete this goal?', [
             { text: 'Cancel', style: 'cancel' },
             { text: 'Delete', style: 'destructive', onPress: () => {
-                console.log('Goal deleted')
+                registry.deleteGoal(props.goal.getID())
+                Alert.alert('Success', 'Goal deleted successfully!');
                 router.replace("/allGoalsPage")
+                return
             } },
         ])
     }
