@@ -6,6 +6,7 @@ import TopBar from '@/components/topBars/topBar';
 import uuid from 'react-native-uuid';
 import ExpenseCategoryItem from '@/components/listItems/expenseCategoryItem';
 import Registry from '@/models/Registry';
+import ExpenseItem from '@/components/listItems/expenseItem';
 
 export default function Dashboard() {
 
@@ -18,14 +19,21 @@ export default function Dashboard() {
         return null // Redirect logic can be added later if needed
     }
 
-    const transactions = [...registry.getAllExpensesByUser(user), ...registry.getAllIncomesByUser(user)]
+    const incomes = [...registry.getAllIncomesByUser(user)]
+    const expenses = [...registry.getAllExpensesByUser(user)]
     const categories = registry.getAllExpenseCategoriesByUser(user)
 
     const transactionItemsList = []
-    for (let transaction of transactions) {
-        transactionItemsList.push(transaction.getListItemDisplay())
+    for (let expense of expenses) {
+        transactionItemsList.push(<ExpenseItem registry={registry} expense={expense} key={uuid.v4()} />)
         transactionItemsList.push(<View style={styles.dividerLine} key={uuid.v4()} />)
     }
+    for (let income of incomes) {
+        transactionItemsList.push(<ExpenseItem registry={registry} expense={income} key={uuid.v4()} />)
+        transactionItemsList.push(<View style={styles.dividerLine} key={uuid.v4()} />)
+    }
+
+
 
     const expenseCategoryItemsList = []
     for (let expenseCategory of categories) {
@@ -33,8 +41,8 @@ export default function Dashboard() {
         expenseCategoryItemsList.push(<View style={styles.dividerLine} key={uuid.v4()} />)
     }
 
-    const incomeTotal = registry.getAllIncomesByUser(user).reduce((sum, income) => sum + income.amount, 0)
-    const expenseTotal = registry.getAllExpensesByUser(user).reduce((sum, expense) => sum + expense.amount, 0)
+    const incomeTotal = incomes.reduce((sum, income) => sum + income.amount, 0)
+    const expenseTotal = expenses.reduce((sum, expense) => sum + expense.amount, 0)
 
     return (
         <ScrollView contentContainerStyle={styles.container}>

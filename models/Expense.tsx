@@ -40,20 +40,11 @@ class Expense implements Transaction {
     }
 
     getPageURL(): string {
-        return "/viewExpenseDetailsPage"
+        return "/viewExpenseDetailsPage/" + this.id
     }
 
     getEditURL(): string {
         return "/editExpensePage/" + this.id
-    }
-
-    getListItemDisplay(): React.ReactElement {
-        return <ExpenseItem expense={this} key={uuid.v4()} />
-    }
-
-    getFullDisplay(): React.ReactElement {
-        // Needs Completing
-        return <div></div>
     }
 }
 

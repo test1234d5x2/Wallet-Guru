@@ -34,20 +34,11 @@ class Income implements Transaction {
     }
 
     getPageURL(): string {
-        return "/viewIncomeDetailsPage"
+        return "/viewIncomeDetailsPage/" + this.id
     }
 
     getEditURL(): string {
         return "/editIncomePage/" + this.id
-    }
-
-    getListItemDisplay(): React.ReactElement {
-        return <IncomeItem income={this} key={uuid.v4()} />
-    }
-
-    getFullDisplay(): React.ReactElement {
-        // Needs Completing
-        return <div></div>
     }
 }
 
