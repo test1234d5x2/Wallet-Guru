@@ -2,35 +2,41 @@ import React from "react";
 import { View, Text, TouchableOpacity, StyleSheet, Alert } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import setPageTitle from "@/components/pageTitle/setPageTitle";
-import { useRouter, useNavigation } from "expo-router";
-import User from "@/models/User";
+import { useRouter } from "expo-router";
+import Registry from "@/models/Registry";
 
 export default function AccountOverview() {
 
     setPageTitle("Account Overview")
 
-    const router = useRouter()
+    const router = useRouter();
+    const registry = Registry.getInstance();
+    const user = registry.getAuthenticatedUser();
 
-    const user = new User("UserEmail@email.com", "")
+    if (!user) {
+        router.replace("/loginPage");
+        return null;
+    }
 
     const handleChangePassword = () => {
-        console.log("Change Password Pressed")
+        console.log("Change Password Pressed");
     }
 
     const handleLogOut = () => {
-        while (router.canGoBack()) {router.back()}
-        router.replace("/loginPage")
+        while (router.canGoBack()) {router.back();}
+        router.replace("/loginPage");
     }
 
     const handleDeleteAccount = () => {
         Alert.alert('Delete Account', 'Are you sure you want to delete your account?', [
             { text: 'Cancel', style: 'cancel' },
             { text: 'Delete', style: 'destructive', onPress: () => {
-                console.log("Account Deleted")
-                router.dismissAll()
-                router.navigate("/")
+                registry.deleteUser(user.getUserID());
+                console.log("Account Deleted");
+                router.dismissAll();
+                router.navigate("/");
             } },
-        ])
+        ]);
     }
 
     return (
@@ -88,4 +94,4 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: "bold",
     },
-})
+});

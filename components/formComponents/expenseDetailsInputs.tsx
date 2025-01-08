@@ -4,19 +4,20 @@ import StandardInputField from './inputFields/standardInputField';
 import NumericInputField from './inputFields/numericInputField';
 import ModalSelection from '../modalSelection/modalSelection';
 import DateInputField from './inputFields/dateInputField';
+import ExpenseCategory from '@/models/ExpenseCategory';
 
 
 interface ExpenseDetailsInputsProps {
     title: string,
     amount: string,
     date: Date,
-    category: string,
+    category: ExpenseCategory,
     notes: string,
     categoriesList: Array<string>,
     setTitle: (text: string) => void,
     setAmount: (text: string) => void,
     setDate: (text: Date) => void,
-    setCategory: (text: string) => void,
+    setCategory: (text: ExpenseCategory) => void,
     setNotes: (text: string) => void,
 }
 

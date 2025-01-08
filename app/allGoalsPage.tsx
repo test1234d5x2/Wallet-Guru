@@ -1,13 +1,11 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, ScrollView, TouchableOpacity, Alert } from 'react-native';
 import setPageTitle from '@/components/pageTitle/setPageTitle';
 import TopBar from '@/components/topBars/topBar';
 import uuid from 'react-native-uuid';
-import Goal from '@/models/Goal';
-import GoalStatus from '@/enums/GoalStatus';
-import User from '@/models/User';
 import GoalItem from '@/components/listItems/goalItem';
 import { useRouter } from 'expo-router';
+import Registry from '@/models/Registry';
 
 export default function AllGoals() {
 
@@ -15,31 +13,37 @@ export default function AllGoals() {
 
     const [selectedSort, setSelectedSort] = useState<string>("")
     const router = useRouter()
+    const registry = Registry.getInstance()
+    const user = registry.getAuthenticatedUser()
 
-    const handleGoalClick = (id: string) => {
-        router.navigate("/viewGoalDetailsPage")
+    if (!user) {
+        router.replace("/loginPage")
+        return null
     }
 
-    // This is filler. Remove when the app is fully working.
-    const user = new User("", "")
-    const goals = [
-        new Goal("Goal Title", user, "khdfbjhdasjhdajshb", 2500, GoalStatus.Active),
-        new Goal("Goal Title", user, "khdfbjhdasjhdajshb", 2500, GoalStatus.Active),
-        new Goal("Goal Title", user, "khdfbjhdasjhdajshb", 2500, GoalStatus.Active),
-    ]
-    for (let x = 0; x < goals.length; x++) {
-        goals[x].updateCurrent(goals[x].target * 0.2 * (x+1))
+    const goals = registry.getAllGoalsByUser(user)
+
+    const handleGoalClick = (id: string) => {
+        router.navigate(`/viewGoalDetailsPage?id=${id}`)
+    }
+
+    const handleNoGoals = () => {
+        Alert.alert("No Goals", "You currently have no goals set.")
     }
 
     let displayElements = []
 
-    for (let goal of goals) {
-        displayElements.push(
-            <TouchableOpacity key={uuid.v4()} onPress={() => handleGoalClick(goal.getID())}>
-                <GoalItem goal={goal} />
-            </TouchableOpacity>
-        )
-        displayElements.push(<View style={styles.divider} key={uuid.v4()} />)
+    if (goals.length === 0) {
+        handleNoGoals()
+    } else {
+        for (let goal of goals) {
+            displayElements.push(
+                <TouchableOpacity key={uuid.v4()} onPress={() => handleGoalClick(goal.getID())}>
+                    <GoalItem goal={goal} />
+                </TouchableOpacity>
+            )
+            displayElements.push(<View style={styles.divider} key={uuid.v4()} />)
+        }
     }
 
     return (
@@ -47,7 +51,6 @@ export default function AllGoals() {
             <TopBar />
 
             {displayElements}
-            
         </ScrollView>
     )
 }

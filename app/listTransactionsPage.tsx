@@ -3,13 +3,8 @@ import { useRouter } from 'expo-router';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import setPageTitle from '@/components/pageTitle/setPageTitle';
 import TopBar from '@/components/topBars/topBar';
-import Income from '@/models/Income';
-import Expense from '@/models/Expense';
-import User from '@/models/User';
-import ExpenseCategory from '@/models/ExpenseCategory';
 import uuid from 'react-native-uuid';
-import Transaction from '@/models/Transaction';
-
+import Registry from '@/models/Registry';
 
 export default function ViewTransactionsList() {
 
@@ -20,21 +15,21 @@ export default function ViewTransactionsList() {
     const [startDate, setStartDate] = useState<string>("")
     const [endDate, setEndDate] = useState<string>("")
 
+    const registry = Registry.getInstance()
+    const user = registry.getAuthenticatedUser()
 
-    const handleTransactionClick = (transaction: Transaction) => {
-        router.push(transaction.getPageURL())
+    if (!user) {
+        return null // Redirect logic can be added later if needed
     }
 
-    // This is filler data. Remove once app fully working.
-    const user = new User("", "")
     const transactions = [
-        new Expense(user, "Expense Name", -25.5, new Date(), "", new ExpenseCategory(user, "Food", 1000)),
-        new Income(user, "Income Name", 1250, new Date(), ""),
-        new Expense(user, "Expense Name", -25.5, new Date(), "", new ExpenseCategory(user, "Travel", 1000)),
+        ...registry.getAllExpensesByUser(user),
+        ...registry.getAllIncomesByUser(user)
     ]
 
-    
-
+    const handleTransactionClick = (transaction: any) => {
+        router.push(transaction.getPageURL())
+    }
 
     let transactionDisplayElements = []
 
@@ -51,7 +46,6 @@ export default function ViewTransactionsList() {
         <ScrollView contentContainerStyle={styles.container}>
             <TopBar />
 
-            
             <View style={styles.filtersContainer}>
                 <Text style={styles.filterTitle}>Filters:</Text>
             </View>

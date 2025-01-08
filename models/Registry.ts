@@ -29,11 +29,32 @@ class Registry {
         return this.authenticatedUser !== null;
     }
 
+    public setAuthenticatedUser(user: User): void {
+        this.authenticatedUser = user
+    }
+
     public getAuthenticatedUser(): User | null {
         return this.authenticatedUser;
     }
 
-    // Expense Category Methods
+    public userExists(email: string): boolean {
+        return this.users.some(user => user.getEmail() === email);
+    }
+
+    public authenticateUser(email: string, password: string): boolean {
+        const user = this.users.find(user => user.getEmail() === email && user.getPassword() === password);
+        if (user) {
+            this.authenticatedUser = user;
+            return true;
+        }
+        return false;
+    }
+
+    public logoutUser(): void {
+        this.authenticatedUser = null;
+    }
+
+
     public addExpenseCategory(user: User, name: string, monthlyBudget: number): void {
         const category = new ExpenseCategory(user, name, monthlyBudget);
         const exists = this.expenseCategories.some(cat => cat.getID() === category.getID());
@@ -64,7 +85,6 @@ class Registry {
         return this.expenseCategories.filter(cat => cat.getUser().getUserID() === user.getUserID());
     }
 
-    // Expense Methods
     public addExpense(user: User, title: string, amount: number, date: Date, notes: string, category: ExpenseCategory, receipt?: string): void {
         const expense = new Expense(user, title, amount, date, notes, category, receipt);
         const exists = this.expenses.some(exp => exp.getID() === expense.getID());
@@ -99,7 +119,7 @@ class Registry {
         return this.expenses.filter(exp => exp.getUser().getUserID() === user.getUserID());
     }
 
-    // Income Methods
+
     public addIncome(user: User, title: string, amount: number, date: Date, notes: string): void {
         const income = new Income(user, title, amount, date, notes);
         const exists = this.incomes.some(inc => inc.getID() === income.getID());
@@ -132,7 +152,7 @@ class Registry {
         return this.incomes.filter(inc => inc.getUser().getUserID() === user.getUserID());
     }
 
-    // Goal Methods
+
     public addGoal(user: User, title: string, description: string, target: number, status: GoalStatus): void {
         const goal = new Goal(title, user, description, target, status);
         const exists = this.goals.some(g => g.getID() === goal.getID());
@@ -166,7 +186,7 @@ class Registry {
         return this.goals.filter(g => g.getUser().getUserID() === user.getUserID());
     }
 
-    // User Methods
+
     public addUser(username: string, password: string): void {
         const user = new User(username, password);
         const exists = this.users.some(u => u.getUserID() === user.getUserID());

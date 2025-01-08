@@ -1,11 +1,12 @@
+import ExpenseCategory from '@/models/ExpenseCategory';
 import React, { useState } from 'react';
 import { View, Text, FlatList, TouchableOpacity, StyleSheet, Modal, Pressable, SafeAreaView } from 'react-native';
 
 
 interface ModalSelectionProps {
     choices: Array<string>
-    value: string
-    setValue: (text: string) => void
+    value: ExpenseCategory
+    setValue: (text: ExpenseCategory) => void
 }
 
 const ModalSelection = (props: ModalSelectionProps) => {
@@ -15,7 +16,7 @@ const ModalSelection = (props: ModalSelectionProps) => {
     return (
         <View style={styles.container}>
             <TouchableOpacity style={styles.dropdown} onPress={() => setShowDropdown(true)}>
-                <Text style={styles.dropdownText}>{props.value}</Text>
+                <Text style={styles.dropdownText}>{props.value.name}</Text>
             </TouchableOpacity>
 
             <Modal visible={showDropdown} transparent={true} onRequestClose={() => setShowDropdown(false)}>
@@ -28,11 +29,11 @@ const ModalSelection = (props: ModalSelectionProps) => {
                                 <TouchableOpacity
                                     style={styles.dropdownOption}
                                     onPress={() => {
-                                        props.setValue(item);
+                                        props.setValue(props.value);
                                         setShowDropdown(false);
                                     }}
                                 >
-                                    <Text style={styles.optionText}>{item}</Text>
+                                    <Text style={styles.optionText}>{props.value.name}</Text>
                                 </TouchableOpacity>
                             )}
                         />

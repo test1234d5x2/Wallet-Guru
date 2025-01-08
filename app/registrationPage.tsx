@@ -4,9 +4,9 @@ import AuthenticationInputs from "@/components/formComponents/authenticationInpu
 import setPageTitle from "@/components/pageTitle/setPageTitle";
 import { useRouter } from "expo-router";
 import isValidEmail from "@/utils/validateEmail";
+import Registry from "@/models/Registry";
 
-
-export default function Login() {
+export default function Register() {
 
     setPageTitle("Create User")
 
@@ -15,12 +15,13 @@ export default function Login() {
     const [error, setError] = useState<string>('')
     const router = useRouter()
 
-
     const handleRedirection = () => {
         router.replace("/loginPage")
     }
 
     const handleRegistration = () => {
+        const registry = Registry.getInstance();
+
         if (!email || !password) {
             setError("Please input both email and password")
             Alert.alert("Please input both email and password")
@@ -33,8 +34,18 @@ export default function Login() {
             return
         }
 
-        setError("")
+        if (registry.userExists(email)) {
+            setError("User already exists.");
+            Alert.alert("Error", "User already exists.");
+            return;
+        }
 
+        // Register the user
+        registry.addUser(email, password);
+
+        Alert.alert("Success", "User registered successfully!");
+        setError("")
+        router.replace("/loginPage");
         return
     }
 

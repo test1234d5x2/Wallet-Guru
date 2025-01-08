@@ -7,63 +7,88 @@ import validateEmpty from '@/utils/validateEmpty';
 import isNumeric from '@/utils/validateNumeric';
 import { useRouter } from 'expo-router';
 import { isTodayOrBefore, isValidDate } from '@/utils/validateDate';
-
+import Registry from '@/models/Registry';
+import ExpenseCategory from '@/models/ExpenseCategory';
 
 export default function AddExpense() {
 
     setPageTitle("Add Expense")
 
+    const router = useRouter()
+    const registry = Registry.getInstance()
+    const user = registry.getAuthenticatedUser()
+
+    if (!user) {
+        router.replace("/loginPage")
+        return null
+    }
+
+    const categories = registry.getAllExpenseCategoriesByUser(user)
+
     const [title, setTitle] = useState<string>('')
     const [amount, setAmount] = useState<string>('')
     const [date, setDate] = useState<Date>(new Date())
-    const [category, setCategory] = useState<string>('Select Category')
+    const [category, setCategory] = useState<ExpenseCategory>(new ExpenseCategory(user, "Other", 10000))
     const [notes, setNotes] = useState<string>('')
     const [error, setError] = useState<string>('')
-    const router = useRouter()
 
-    const handleAddExpense = () => {
-        if (!title || !amount || !date || category === 'Select Category') {
+    const validateForm = () => {
+        if (!title || !amount || !date || !category) {
             Alert.alert('Please fill in all required fields.')
             setError("Fill in all the required fields.")
-            return
+            return false
         }
 
         else if (validateEmpty(title)) {
             Alert.alert("Empty Title Field", "The title field must be filled properly.")
             setError("The title field must be filled properly.")
-            return
+            return false
         }
 
         else if (validateEmpty(amount)) {
             Alert.alert("Empty Amount Field", "The amount field must be filled properly.")
             setError("The amount field must be filled properly.")
-            return
+            return false
         }
 
         else if (!isNumeric(amount)) {
             Alert.alert("Amount Field Not Numeric", "The amount field must be a number.")
             setError("The amount field must be a number.")
-            return
+            return false
         }
 
         else if (!isValidDate(date)) {
             Alert.alert("Date Field Invalid", "Please select a date.")
             setError("Please select a date.")
-            return
+            return false
         }
 
         else if (!isTodayOrBefore(date)) {
             Alert.alert("Date Field Invalid", "Please select a date that is today or before today.")
             setError("Please select a date that is today or before today.")
-            return
+            return false
         }
 
-        Alert.alert('Success', 'Expense added successfully!')
         setError("")
+        return true
+    }
 
-        router.replace("/listTransactionsPage")
+    const handleAddExpense = () => {
+        if (validateForm()) {
+            try {
 
-        return
+                registry.addExpense(user, title, parseFloat(amount), date, notes, category)
+                Alert.alert('Success', 'Expense added successfully!')
+                setTitle('')
+                setAmount('')
+                setDate(new Date())
+                setCategory(categories[0])
+                setNotes('')
+                router.replace("/listTransactionsPage")
+            } catch (error: any) {
+                Alert.alert("Error", error.message)
+            }
+        }
     }
 
     const handleScanReceipt = () => {
@@ -81,7 +106,7 @@ export default function AddExpense() {
                     date={date}
                     category={category}
                     notes={notes}
-                    categoriesList={["1", "2"]}
+                    categoriesList={categories.map((category => category.name))}
                     setTitle={setTitle}
                     setAmount={setAmount}
                     setDate={setDate}
@@ -93,11 +118,10 @@ export default function AddExpense() {
             {error ? <View style={styles.centeredTextContainer}><Text style={styles.errorText}>{error}</Text></View> : null}
 
             <View style={styles.centeredTextContainer}>
-                <TouchableOpacity>
+                <TouchableOpacity onPress={handleScanReceipt}>
                     <Text style={styles.scanText}>Scan Receipt</Text>
                 </TouchableOpacity>
             </View>
-            
 
             <TouchableOpacity style={styles.addButton} onPress={handleAddExpense}>
                 <Text style={styles.addButtonText}>Add Expense</Text>
@@ -105,7 +129,6 @@ export default function AddExpense() {
         </ScrollView>
     )
 }
-
 
 const styles = StyleSheet.create({
     container: {

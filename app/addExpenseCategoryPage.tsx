@@ -6,6 +6,7 @@ import TopBar from '@/components/topBars/topBar';
 import validateEmpty from '@/utils/validateEmpty';
 import isNumeric from '@/utils/validateNumeric';
 import { useRouter } from 'expo-router';
+import Registry from '@/models/Registry';
 
 export default function AddExpenseCategory() {
 
@@ -15,6 +16,13 @@ export default function AddExpenseCategory() {
     const [monthlyLimit, setMonthlyLimit] = useState<string>('')
     const [error, setError] = useState<string>('')
     const router = useRouter()
+    const registry = Registry.getInstance()
+    const user = registry.getAuthenticatedUser()
+
+    if (!user) {
+        router.replace("/loginPage")
+        return null
+    }
 
     const validateForm = () => {
 
@@ -48,11 +56,15 @@ export default function AddExpenseCategory() {
 
     const handleAddCategory = () => {
         if (validateForm()) {
-            Alert.alert('Success', `Category "${categoryName}" added with a limit of £${monthlyLimit}`)
-            setCategoryName('')
-            setMonthlyLimit('')
-            router.replace("/expenseCategoriesOverviewPage")
-            return
+            try {
+                registry.addExpenseCategory(user, categoryName, parseFloat(monthlyLimit))
+                Alert.alert('Success', `Category "${categoryName}" added with a limit of £${monthlyLimit}`)
+                setCategoryName('')
+                setMonthlyLimit('')
+                router.replace("/expenseCategoriesOverviewPage")
+            } catch (error: any) {
+                Alert.alert("Error", error.message)
+            }
         }
     }
 

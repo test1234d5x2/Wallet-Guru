@@ -7,8 +7,7 @@ import validateEmpty from '@/utils/validateEmpty';
 import isNumeric from '@/utils/validateNumeric';
 import { useRouter } from 'expo-router';
 import { isValidDate, isTodayOrBefore } from '@/utils/validateDate';
-
-
+import Registry from '@/models/Registry';
 
 export default function AddIncome() {
 
@@ -21,49 +20,69 @@ export default function AddIncome() {
     const [error, setError] = useState<string>('')
     const router = useRouter()
 
-    const handleAddIncome = () => {
+    const registry = Registry.getInstance()
+    const user = registry.getAuthenticatedUser()
+
+    if (!user) {
+        router.replace("/loginPage")
+        return null
+    }
+
+    const validateForm = () => {
         if (!title || !amount || !date) {
             Alert.alert('Please fill in all required fields.')
             setError("Fill in all the required fields.")
-            return;
+            return false;
         }
 
         else if (validateEmpty(title)) {
             Alert.alert("Empty Title Field", "The title field must be filled properly.")
             setError("The title field must be filled properly.")
-            return
+            return false
         }
 
         else if (validateEmpty(amount)) {
             Alert.alert("Empty Amount Field", "The amount field must be filled properly.")
             setError("The amount field must be filled properly.")
-            return
+            return false
         }
 
         else if (!isNumeric(amount)) {
             Alert.alert("Amount Field Not Numeric", "The amount field must be a number.")
             setError("The amount field must be a number.")
-            return
+            return false
         }
 
         else if (!isValidDate(date)) {
             Alert.alert("Date Field Invalid", "Please select a date.")
             setError("Please select a date.")
-            return
+            return false
         }
 
         else if (!isTodayOrBefore(date)) {
             Alert.alert("Date Field Invalid", "Please select a date that is today or before today.")
             setError("Please select a date that is today or before today.")
-            return
+            return false
         }
 
-        Alert.alert('Success', 'Income added successfully!')
         setError("")
+        return true
+    }
 
-        router.replace("/listTransactionsPage")
-
-        return
+    const handleAddIncome = () => {
+        if (validateForm()) {
+            try {
+                registry.addIncome(user, title, parseFloat(amount), date, notes)
+                Alert.alert('Success', 'Income added successfully!')
+                setTitle('')
+                setAmount('')
+                setDate(new Date())
+                setNotes('')
+                router.replace("/listTransactionsPage")
+            } catch (error: any) {
+                Alert.alert("Error", error.message)
+            }
+        }
     }
 
     return (
@@ -84,7 +103,6 @@ export default function AddIncome() {
             </View>
 
             {error ? <View style={styles.centeredTextContainer}><Text style={styles.errorText}>{error}</Text></View> : null}
-            
 
             <TouchableOpacity style={styles.addButton} onPress={handleAddIncome}>
                 <Text style={styles.addButtonText}>Add Income</Text>
@@ -92,7 +110,6 @@ export default function AddIncome() {
         </ScrollView>
     )
 }
-
 
 const styles = StyleSheet.create({
     container: {
@@ -104,10 +121,6 @@ const styles = StyleSheet.create({
     },
     incomeForm: {
         marginBottom: 40,
-    },
-    scanText: {
-        color: '#777',
-        textDecorationLine: 'underline',
     },
     addButton: {
         backgroundColor: '#007BFF',

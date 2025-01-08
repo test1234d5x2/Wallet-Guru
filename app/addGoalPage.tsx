@@ -7,7 +7,8 @@ import validateEmpty from '@/utils/validateEmpty';
 import isNumeric from '@/utils/validateNumeric';
 import { useRouter } from 'expo-router';
 import { isValidDate, isTodayOrAfter } from '@/utils/validateDate';
-
+import Registry from '@/models/Registry';
+import GoalStatus from '@/enums/GoalStatus';
 
 export default function AddGoal() {
 
@@ -20,17 +21,25 @@ export default function AddGoal() {
     const [error, setError] = useState<string>('')
     const router = useRouter()
 
-    const handleAddGoal = () => {
+    const registry = Registry.getInstance()
+    const user = registry.getAuthenticatedUser()
+
+    if (!user) {
+        router.replace("/loginPage")
+        return null
+    }
+
+    const validateForm = () => {
         if (!title || !target || !date) {
             Alert.alert('Please fill in all required fields.')
             setError("Fill in all the required fields.")
-            return;
+            return false;
         }
 
         else if (validateEmpty(title)) {
             Alert.alert("Empty Title Field", "The title field must be filled properly.")
             setError("The title field must be filled properly.")
-            return
+            return false
         }
 
         else if (validateEmpty(target)) {
@@ -48,21 +57,33 @@ export default function AddGoal() {
         else if (!isValidDate(date)) {
             Alert.alert("Date Field Invalid", "Please select a date.")
             setError("Please select a date.")
-            return
+            return false
         }
 
         else if (!isTodayOrAfter(date)) {
             Alert.alert("Date Field Invalid", "Please select a date that is today or after today.")
             setError("Please select a date that is today or after today.")
-            return
+            return false
         }
 
-        Alert.alert('Success', 'Goal added successfully!')
         setError("")
+        return true
+    }
 
-        router.replace("/allGoalsPage")
-
-        return
+    const handleAddGoal = () => {
+        if (validateForm()) {
+            try {
+                registry.addGoal(user, title, description, parseFloat(target), GoalStatus.Active)
+                Alert.alert('Success', 'Goal added successfully!')
+                setTitle('')
+                setTarget('')
+                setDate(new Date())
+                setDesc('')
+                router.replace("/allGoalsPage")
+            } catch (error: any) {
+                Alert.alert("Error", error.message)
+            }
+        }
     }
 
     return (
@@ -83,7 +104,6 @@ export default function AddGoal() {
             </View>
 
             {error ? <View style={styles.centeredTextContainer}><Text style={styles.errorText}>{error}</Text></View> : null}
-            
 
             <TouchableOpacity style={styles.addButton} onPress={handleAddGoal}>
                 <Text style={styles.addButtonText}>Add Goal</Text>
@@ -91,7 +111,6 @@ export default function AddGoal() {
         </ScrollView>
     )
 }
-
 
 const styles = StyleSheet.create({
     container: {
@@ -103,10 +122,6 @@ const styles = StyleSheet.create({
     },
     goalForm: {
         marginBottom: 40,
-    },
-    scanText: {
-        color: '#777',
-        textDecorationLine: 'underline',
     },
     addButton: {
         backgroundColor: '#007BFF',

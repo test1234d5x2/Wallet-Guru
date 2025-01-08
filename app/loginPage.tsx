@@ -3,6 +3,7 @@ import { useState } from "react";
 import { Link, useRouter } from "expo-router";
 import setPageTitle from "@/components/pageTitle/setPageTitle";
 import AuthenticationInputs from "@/components/formComponents/authenticationInputs";
+import Registry from '@/models/Registry';
 
 export default function Login() {
 
@@ -14,21 +15,30 @@ export default function Login() {
     const router = useRouter()
 
     const handleLogin = () => {
+
         if (!email || !password) {
-            setError("Please input both email and password")
-            Alert.alert("Please input both email and password")
-            return
+            setError("Please input both email and password");
+            Alert.alert("Please input both email and password");
+            return;
         }
 
-        setError("")
-        router.replace("/dashboardPage")
-        return
+        const registry = Registry.getInstance();
+        const isAuthenticated = registry.authenticateUser(email, password);
+
+        if (!isAuthenticated) {
+            setError("Invalid email or password");
+            Alert.alert("Invalid email or password");
+            return;
+        }
+
+        setError("");
+        router.replace("/dashboardPage");
+        return;
     }
 
     return (
         <View style={styles.container}>
             <AuthenticationInputs email={email} password={password} setEmail={setEmail} setPassword={setPassword} />
-
 
             {error ? <View style={styles.errorTextContainer}><Text style={styles.errorText}>{error}</Text></View> : null}
 

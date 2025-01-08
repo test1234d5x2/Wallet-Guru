@@ -3,21 +3,21 @@ import { View, StyleSheet } from 'react-native';
 import setPageTitle from '@/components/pageTitle/setPageTitle';
 import TopBar from '@/components/topBars/topBar';
 import uuid from 'react-native-uuid';
-import ExpenseCategory from '@/models/ExpenseCategory';
-import User from '@/models/User';
 import ExpenseCategoryItem from '@/components/listItems/expenseCategoryItem';
-
+import Registry from '@/models/Registry';
 
 export default function ViewExpenseCategories() {
 
     setPageTitle("Expense Categories")
 
-    // This is filler data. Remove once the application is working.
-    const user = new User("", "")
-    const categories = [
-        new ExpenseCategory(user, "Category Name", 1000),
-        new ExpenseCategory(user, "Category Name", 1000),
-    ]
+    const registry = Registry.getInstance()
+    const user = registry.getAuthenticatedUser()
+
+    if (!user) {
+        return null // Redirect logic can be added later if needed
+    }
+
+    const categories = registry.getAllExpenseCategoriesByUser(user)
 
     let displayElements = []
 
@@ -28,7 +28,6 @@ export default function ViewExpenseCategories() {
 
         displayElements.push(<View style={styles.divider} key={uuid.v4()} />)
     }
-
 
     return (
         <View style={styles.container}>

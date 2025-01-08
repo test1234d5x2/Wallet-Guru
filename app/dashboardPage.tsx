@@ -3,32 +3,23 @@ import { View, Text, TouchableOpacity, StyleSheet, ScrollView } from 'react-nati
 import { Link } from 'expo-router';
 import setPageTitle from '@/components/pageTitle/setPageTitle';
 import TopBar from '@/components/topBars/topBar';
-import Expense from '@/models/Expense';
-import ExpenseCategory from '@/models/ExpenseCategory';
-import Income from '@/models/Income';
-import User from '@/models/User';
 import uuid from 'react-native-uuid';
 import ExpenseCategoryItem from '@/components/listItems/expenseCategoryItem';
-
-
+import Registry from '@/models/Registry';
 
 export default function Dashboard() {
 
     setPageTitle("Dashboard")
 
-    // This is filler data. Remove once app fully working.
-    const user = new User("", "")
-    const transactions = [
-        new Expense(user, "Expense Name", -25.5, new Date(), "", new ExpenseCategory(user, "Food", 250, 1000)),
-        new Income(user, "Income Name", 1250, new Date(), ""),
-        new Expense(user, "Expense Name", -25.5, new Date(), "", new ExpenseCategory(user, "Travel", 500, 1000)),
-    ]
+    const registry = Registry.getInstance()
+    const user = registry.getAuthenticatedUser()
 
-    const categories = [
-        new ExpenseCategory(user, "Category Name", 400, 1000),
-        new ExpenseCategory(user, "Category Name", 400, 1000),
-    ]
+    if (!user) {
+        return null // Redirect logic can be added later if needed
+    }
 
+    const transactions = [...registry.getAllExpensesByUser(user), ...registry.getAllIncomesByUser(user)]
+    const categories = registry.getAllExpenseCategoriesByUser(user)
 
     const transactionItemsList = []
     for (let transaction of transactions) {
@@ -42,6 +33,8 @@ export default function Dashboard() {
         expenseCategoryItemsList.push(<View style={styles.dividerLine} key={uuid.v4()} />)
     }
 
+    const incomeTotal = registry.getAllIncomesByUser(user).reduce((sum, income) => sum + income.amount, 0)
+    const expenseTotal = registry.getAllExpensesByUser(user).reduce((sum, expense) => sum + expense.amount, 0)
 
     return (
         <ScrollView contentContainerStyle={styles.container}>
@@ -59,12 +52,12 @@ export default function Dashboard() {
                 <View style={styles.summaryContainer}>
                     <View>
                         <Text style={styles.label}>Income</Text>
-                        <Text style={styles.value}>£1000.00</Text>
+                        <Text style={styles.value}>£{incomeTotal.toFixed(2)}</Text>
                     </View>
                     <View style={styles.divider} />
                     <View>
                         <Text style={styles.label}>Spending</Text>
-                        <Text style={styles.value}>£750.00</Text>
+                        <Text style={styles.value}>£{expenseTotal.toFixed(2)}</Text>
                     </View>
                 </View>
             </View>
@@ -169,5 +162,4 @@ const styles = StyleSheet.create({
     budgetPercentage: {
         fontSize: 16,
     },
-
 });
