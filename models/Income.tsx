@@ -1,4 +1,3 @@
-import IncomeItem from "@/components/listItems/incomeItem";
 import Transaction from "./Transaction";
 import User from "./User";
 import uuid from 'react-native-uuid';

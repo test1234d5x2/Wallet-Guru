@@ -7,6 +7,7 @@ import uuid from 'react-native-uuid';
 import ExpenseCategoryItem from '@/components/listItems/expenseCategoryItem';
 import Registry from '@/models/Registry';
 import ExpenseItem from '@/components/listItems/expenseItem';
+import IncomeItem from '@/components/listItems/incomeItem';
 
 export default function Dashboard() {
 
@@ -29,7 +30,7 @@ export default function Dashboard() {
         transactionItemsList.push(<View style={styles.dividerLine} key={uuid.v4()} />)
     }
     for (let income of incomes) {
-        transactionItemsList.push(<ExpenseItem registry={registry} expense={income} key={uuid.v4()} />)
+        transactionItemsList.push(<IncomeItem registry={registry} income={income} key={uuid.v4()} />)
         transactionItemsList.push(<View style={styles.dividerLine} key={uuid.v4()} />)
     }
 

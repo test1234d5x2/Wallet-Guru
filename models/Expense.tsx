@@ -2,7 +2,6 @@ import Transaction from "./Transaction";
 import User from "./User";
 import ExpenseCategory from "./ExpenseCategory";
 import uuid from 'react-native-uuid';
-import ExpenseItem from "@/components/listItems/expenseItem";
 
 
 class Expense implements Transaction {
