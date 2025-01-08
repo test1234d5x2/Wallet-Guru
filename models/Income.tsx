@@ -38,7 +38,7 @@ class Income implements Transaction {
     }
 
     getEditURL(): string {
-        return "/editIncomePage"
+        return "/editIncomePage/" + this.id
     }
 
     getListItemDisplay(): React.ReactElement {

@@ -3,12 +3,14 @@ import { View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import ExpenseCategoryInputs from '@/components/formComponents/expenseCategoryInputs';
 import setPageTitle from '@/components/pageTitle/setPageTitle';
 import TopBar from '@/components/topBars/topBar';
-import { useRouter } from 'expo-router';
+import { useRouter, useLocalSearchParams } from 'expo-router';
 import validateEmpty from '@/utils/validateEmpty';
 import isNumeric from '@/utils/validateNumeric';
 
 
 export default function EditExpenseCategory() {
+
+    const { id } = useLocalSearchParams();
 
     setPageTitle("Edit Expense Category")
 

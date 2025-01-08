@@ -44,7 +44,7 @@ class Expense implements Transaction {
     }
 
     getEditURL(): string {
-        return "/editExpensePage"
+        return "/editExpensePage/" + this.id
     }
 
     getListItemDisplay(): React.ReactElement {

@@ -3,13 +3,15 @@ import TopBar from '@/components/topBars/topBar';
 import Expense from '@/models/Expense';
 import ExpenseCategory from '@/models/ExpenseCategory';
 import User from '@/models/User';
-import { useRouter } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 
 
 
 export default function ExpenseDetailsScreen() {
+
+    const { id } = useLocalSearchParams();
 
     const user = new User("", "")
     const expense = new Expense(user, "Expense Name", -25.5, new Date(), "", new ExpenseCategory(user, "Food", 250, 1000))
@@ -20,7 +22,7 @@ export default function ExpenseDetailsScreen() {
     const router = useRouter()
 
     const handleEdit = () => {
-        router.navigate("/editExpensePage")
+        router.navigate("/editExpensePage/" + expense.getID())
         return
     }
 
