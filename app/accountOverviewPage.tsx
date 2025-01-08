@@ -23,6 +23,7 @@ export default function AccountOverview() {
     }
 
     const handleLogOut = () => {
+        registry.logoutUser();
         while (router.canGoBack()) {router.back();}
         router.replace("/loginPage");
     }

@@ -32,18 +32,13 @@ export default function AllGoals() {
     }
 
     let displayElements = []
-
-    if (goals.length === 0) {
-        handleNoGoals()
-    } else {
-        for (let goal of goals) {
-            displayElements.push(
-                <TouchableOpacity key={uuid.v4()} onPress={() => handleGoalClick(goal.getID())}>
-                    <GoalItem goal={goal} />
-                </TouchableOpacity>
-            )
-            displayElements.push(<View style={styles.divider} key={uuid.v4()} />)
-        }
+    for (let goal of goals) {
+        displayElements.push(
+            <TouchableOpacity key={uuid.v4()} onPress={() => handleGoalClick(goal.getID())}>
+                <GoalItem goal={goal} />
+            </TouchableOpacity>
+        )
+        displayElements.push(<View style={styles.divider} key={uuid.v4()} />)
     }
 
     return (
