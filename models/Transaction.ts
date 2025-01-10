@@ -1,7 +1,8 @@
-import User from "./User"
-
 interface Transaction {
+    title: string
     date: Date
+    amount: number
+    notes: string
     deleteTransaction(): boolean
     getPageURL(): string
     getEditURL(): string
