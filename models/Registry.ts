@@ -4,6 +4,8 @@ import ExpenseCategory from "./ExpenseCategory";
 import Goal from "./Goal";
 import User from "./User";
 import GoalStatus from "@/enums/GoalStatus";
+import filterTransactionByMonth from "@/utils/filterTransactionByMonth";
+import TransactionType from "@/enums/TransactionType";
 
 class Registry {
     private static instance: Registry;
@@ -118,6 +120,24 @@ class Registry {
     public getAllExpensesByUser(user: User): Expense[] {
         return this.expenses.filter(exp => exp.getUser().getUserID() === user.getUserID());
     }
+
+    public calculateMonthlyTransactionsTotal(user: User, month: Date, type: TransactionType): number {
+        
+        let transactions = type === TransactionType.EXPENSE ? 
+        this.getAllExpensesByUser(user)
+        : this.getAllIncomesByUser(user)
+
+        let monthlyTransactions = filterTransactionByMonth(transactions, month);
+
+        const totalExpenses = monthlyTransactions.reduce((total, transaction) => {
+
+            const transactionAmount = (transaction as any).amount || 0;
+            return total + transactionAmount;
+        }, 0);
+
+        return totalExpenses;
+    }
+
 
 
     public addIncome(user: User, title: string, amount: number, date: Date, notes: string): void {
