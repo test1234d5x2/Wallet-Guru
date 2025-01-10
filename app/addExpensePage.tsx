@@ -33,7 +33,7 @@ export default function AddExpense() {
     const [title, setTitle] = useState<string>('');
     const [amount, setAmount] = useState<string>('');
     const [date, setDate] = useState<Date>(new Date());
-    const [category, setCategory] = useState<ExpenseCategory>(categories[0] || new ExpenseCategory(user, "Other", 10000));
+    const [category, setCategory] = useState<ExpenseCategory>(new ExpenseCategory(user, "Other", 10000));
     const [notes, setNotes] = useState<string>('');
     const [error, setError] = useState<string>('');
 
