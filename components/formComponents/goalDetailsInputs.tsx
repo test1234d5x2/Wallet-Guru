@@ -18,7 +18,6 @@ interface GoalDetailsInputsProps {
 
 
 export default function GoalDetailsInputs(props: GoalDetailsInputsProps) {
-
     return (
         <ScrollView contentContainerStyle={styles.container}>
 

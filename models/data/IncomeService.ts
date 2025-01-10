@@ -1,6 +1,7 @@
 import Income from "../Income";
 import IncomeRepository from "./IncomeRepository";
 import User from "../User";
+import filterTransactionByMonth from "@/utils/filterTransactionByMonth";
 
 class IncomeService {
     private repository: IncomeRepository;
@@ -33,6 +34,13 @@ class IncomeService {
 
     public getAllIncomesByUser(user: User): Income[] {
         return this.repository.findByUser(user.getUserID());
+    }
+
+    public calculateMonthlyTransactionsTotal(user: User, month: Date): number {
+        const transactions = this.repository.findByUser(user.getUserID());
+        const monthlyTransactions = filterTransactionByMonth(transactions, month);
+
+        return monthlyTransactions.reduce((sum, expense) => sum + expense.amount, 0);
     }
 }
 

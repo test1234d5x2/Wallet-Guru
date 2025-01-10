@@ -4,43 +4,41 @@ import setPageTitle from '@/components/pageTitle/setPageTitle';
 import TopBar from '@/components/topBars/topBar';
 import uuid from 'react-native-uuid';
 import ExpenseCategoryItem from '@/components/listItems/expenseCategoryItem';
-import Registry from '@/models/Registry';
+import Registry from '@/models/data/Registry';
 import { useRouter } from 'expo-router';
 import clearRouterHistory from '@/utils/clearRouterHistory';
 
 export default function ViewExpenseCategories() {
+    setPageTitle("Expense Categories");
 
-    setPageTitle("Expense Categories")
+    const registry = Registry.getInstance();
+    const authService = registry.authService;
+    const categoryService = registry.expenseCategoryService;
+    const router = useRouter();
 
-    const registry = Registry.getInstance()
-    const user = registry.getAuthenticatedUser()
-    const router = useRouter()
+    const user = authService.getAuthenticatedUser();
 
     if (!user) {
         clearRouterHistory(router);
-        router.replace("/loginPage")
-        return
+        router.replace("/loginPage");
+        return;
     }
 
-    const categories = registry.getAllExpenseCategoriesByUser(user)
+    const categories = [...categoryService.getAllCategoriesByUser(user)];
 
-    let displayElements = []
-
-    for (let category of categories) {
-        displayElements.push(
-            <ExpenseCategoryItem key={uuid.v4()} category={category} />
-        )
-
-        displayElements.push(<View style={styles.divider} key={uuid.v4()} />)
-    }
+    const displayElements = categories.map((category) => (
+        <React.Fragment key={uuid.v4() as string}>
+            <ExpenseCategoryItem category={category} />
+            <View style={styles.divider} />
+        </React.Fragment>
+    ));
 
     return (
         <View style={styles.container}>
             <TopBar />
-
             {displayElements}
         </View>
-    )
+    );
 }
 
 const styles = StyleSheet.create({
@@ -50,40 +48,8 @@ const styles = StyleSheet.create({
         flex: 1,
         rowGap: 20,
     },
-    categoryContainer: {
-        rowGap: 10,
-    },
-    categoryName: {
-        fontSize: 16,
-        fontWeight: "bold",
-    },
-    label: {
-        fontSize: 14,
-    },
-    progressBar: {
-        height: 10,
-        borderRadius: 5,
-    },
-    actionsContainer: {
-        flexDirection: "row",
-        justifyContent: "space-between",
-    },
-    editButton: {
-        backgroundColor: "#007BFF",
-        padding: 10,
-        borderRadius: 5,
-        alignItems: "center",
-        justifyContent: "center",
-    },
-    deleteButton: {
-        backgroundColor: "#FF4C4C",
-        padding: 10,
-        borderRadius: 5,
-        alignItems: "center",
-        justifyContent: "center",
-    },
     divider: {
         height: 1,
         backgroundColor: "#ccc",
     },
-})
+});

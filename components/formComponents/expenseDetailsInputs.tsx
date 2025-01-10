@@ -23,9 +23,6 @@ interface ExpenseDetailsInputsProps {
 
 
 export default function ExpenseDetailsInputs(props: ExpenseDetailsInputsProps) {
-
-    
-
     return (
         <ScrollView contentContainerStyle={styles.container}>
 

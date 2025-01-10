@@ -4,56 +4,58 @@ import * as Progress from 'react-native-progress';
 import setPageTitle from '@/components/pageTitle/setPageTitle';
 import TopBar from '@/components/topBars/topBar';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import Registry from '@/models/Registry';
+import Registry from '@/models/data/Registry';
 import clearRouterHistory from '@/utils/clearRouterHistory';
 
 export default function ViewGoalDetails() {
     const { id } = useLocalSearchParams();
 
     const registry = Registry.getInstance();
-    const authenticatedUser = registry.getAuthenticatedUser();
-    const router = useRouter();
+    const authService = registry.authService;
+    const goalService = registry.goalService;
 
+    const authenticatedUser = authService.getAuthenticatedUser();
+    const router = useRouter();
 
     if (!authenticatedUser) {
         Alert.alert("Error", "You must be logged in to view this goal.");
         clearRouterHistory(router);
         router.replace("/loginPage");
-        return null;
+        return;
     }
 
-
-    const goal = registry.getAllGoalsByUser(authenticatedUser).find(g => g.getID() === id);
-
+    const goal = goalService.getAllGoalsByUser(authenticatedUser).find(g => g.getID() === id);
 
     if (!goal) {
         Alert.alert("Error", "Goal not found.");
         clearRouterHistory(router);
         router.replace("/allGoalsPage");
-        return null;
+        return;
     }
 
     setPageTitle(goal.title);
 
     const handleUpdateProgress = () => {
         router.navigate("/updateGoalPage/" + goal.getID());
-    }
+    };
 
     const handleDeleteGoal = () => {
         Alert.alert('Delete Goal', 'Are you sure you want to delete this goal?', [
             { text: 'Cancel', style: 'cancel' },
-            { text: 'Delete', style: 'destructive', onPress: () => {
-                try {
-                    registry.deleteGoal(goal.getID());
-                    Alert.alert('Success', 'Goal deleted successfully!');
-                    clearRouterHistory(router);
-                    router.replace("/allGoalsPage");
-                } catch (err: any) {
-                    Alert.alert('Error', err.message);
-                }
-            } },
-        ])
-    }
+            {
+                text: 'Delete', style: 'destructive', onPress: () => {
+                    try {
+                        goalService.deleteGoal(goal.getID());
+                        Alert.alert('Success', 'Goal deleted successfully!');
+                        clearRouterHistory(router);
+                        router.replace("/allGoalsPage");
+                    } catch (err: any) {
+                        Alert.alert('Error', err.message);
+                    }
+                },
+            },
+        ]);
+    };
 
     return (
         <View style={styles.container}>
@@ -77,7 +79,7 @@ export default function ViewGoalDetails() {
                 </TouchableOpacity>
             </View>
         </View>
-    )
+    );
 }
 
 const styles = StyleSheet.create({
@@ -93,8 +95,8 @@ const styles = StyleSheet.create({
     actionsContainer: {
         flexDirection: "row",
         justifyContent: "space-between",
-      },
-      editButton: {
+    },
+    editButton: {
         flex: 1,
         backgroundColor: "#007BFF",
         paddingVertical: 15,
@@ -102,8 +104,8 @@ const styles = StyleSheet.create({
         alignItems: "center",
         marginHorizontal: 10,
         marginLeft: 0,
-      },
-      deleteButton: {
+    },
+    deleteButton: {
         flex: 1,
         backgroundColor: "#FF4C4C",
         paddingVertical: 15,
@@ -111,10 +113,10 @@ const styles = StyleSheet.create({
         alignItems: "center",
         marginHorizontal: 10,
         marginRight: 0,
-      },
-      buttonText: {
+    },
+    buttonText: {
         color: "#fff",
         fontSize: 16,
         fontWeight: "bold",
-      },
+    },
 });

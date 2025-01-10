@@ -3,7 +3,7 @@ import TopBar from '@/components/topBars/topBar';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
-import Registry from '@/models/Registry';
+import Registry from '@/models/data/Registry';
 import clearRouterHistory from '@/utils/clearRouterHistory';
 
 export default function IncomeDetailsScreen() {

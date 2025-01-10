@@ -4,23 +4,26 @@ import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-nati
 import setPageTitle from '@/components/pageTitle/setPageTitle';
 import TopBar from '@/components/topBars/topBar';
 import uuid from 'react-native-uuid';
-import Registry from '@/models/Registry';
+import Registry from '@/models/data/Registry';
 import ExpenseItem from '@/components/listItems/expenseItem';
 import Transaction from '@/models/Transaction';
 import IncomeItem from '@/components/listItems/incomeItem';
 import clearRouterHistory from '@/utils/clearRouterHistory';
 
 export default function ViewTransactionsList() {
+    setPageTitle("Transactions");
 
-    setPageTitle("Transactions")
-    const router = useRouter()
+    const router = useRouter();
+    const [selectedType, setSelectedType] = useState<string>("");
+    const [startDate, setStartDate] = useState<string>("");
+    const [endDate, setEndDate] = useState<string>("");
 
-    const [selectedType, setSelectedType] = useState<string>("")
-    const [startDate, setStartDate] = useState<string>("")
-    const [endDate, setEndDate] = useState<string>("")
+    const registry = Registry.getInstance();
+    const authService = registry.authService;
+    const expenseService = registry.expenseService;
+    const incomeService = registry.incomeService;
 
-    const registry = Registry.getInstance()
-    const user = registry.getAuthenticatedUser()
+    const user = authService.getAuthenticatedUser();
 
     if (!user) {
         clearRouterHistory(router);
@@ -28,38 +31,31 @@ export default function ViewTransactionsList() {
         return;
     }
 
-    const expenses = [
-        ...registry.getAllExpensesByUser(user),
-    ]
-
-    const incomes = [
-        ...registry.getAllIncomesByUser(user)
-    ]
+    const expenses = expenseService.getAllExpensesByUser(user);
+    const incomes = incomeService.getAllIncomesByUser(user);
 
     const handleTransactionClick = (transaction: Transaction) => {
         router.push(transaction.getPageURL());
-        return;
-    }
+    };
 
-    let transactionDisplayElements = []
-
-    for (let expense of expenses) {
-        transactionDisplayElements.push(
-            <TouchableOpacity key={uuid.v4()} onPress={() => handleTransactionClick(expense)}>
-                <ExpenseItem registry={registry} expense={expense} key={uuid.v4()} />
-            </TouchableOpacity>
-        )
-        transactionDisplayElements.push(<View style={styles.divider} key={uuid.v4()} />)
-    }
-
-    for (let income of incomes) {
-        transactionDisplayElements.push(
-            <TouchableOpacity key={uuid.v4()} onPress={() => handleTransactionClick(income)}>
-                <IncomeItem registry={registry} income={income} key={uuid.v4()} />
-            </TouchableOpacity>
-        )
-        transactionDisplayElements.push(<View style={styles.divider} key={uuid.v4()} />)
-    }
+    const transactionDisplayElements = [
+        ...expenses.map((expense) => (
+            <React.Fragment key={uuid.v4() as string}>
+                <TouchableOpacity onPress={() => handleTransactionClick(expense)}>
+                    <ExpenseItem registry={registry} expense={expense} />
+                </TouchableOpacity>
+                <View style={styles.divider} />
+            </React.Fragment>
+        )),
+        ...incomes.map((income) => (
+            <React.Fragment key={uuid.v4() as string}>
+                <TouchableOpacity onPress={() => handleTransactionClick(income)}>
+                    <IncomeItem registry={registry} income={income} />
+                </TouchableOpacity>
+                <View style={styles.divider} />
+            </React.Fragment>
+        )),
+    ];
 
     return (
         <ScrollView contentContainerStyle={styles.container}>
@@ -71,7 +67,7 @@ export default function ViewTransactionsList() {
 
             {transactionDisplayElements}
         </ScrollView>
-    )
+    );
 }
 
 const styles = StyleSheet.create({
@@ -93,4 +89,4 @@ const styles = StyleSheet.create({
         height: 1,
         backgroundColor: "#ccc",
     },
-})
+});

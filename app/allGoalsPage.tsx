@@ -5,52 +5,48 @@ import TopBar from '@/components/topBars/topBar';
 import uuid from 'react-native-uuid';
 import GoalItem from '@/components/listItems/goalItem';
 import { useRouter } from 'expo-router';
-import Registry from '@/models/Registry';
+import Registry from '@/models/data/Registry';
 import clearRouterHistory from '@/utils/clearRouterHistory';
 
 export default function AllGoals() {
+    setPageTitle("All Goals");
 
-    setPageTitle("All Goals")
+    const [selectedSort, setSelectedSort] = useState<string>("");
+    const router = useRouter();
 
-    const [selectedSort, setSelectedSort] = useState<string>("")
-    const router = useRouter()
-    const registry = Registry.getInstance()
-    const user = registry.getAuthenticatedUser()
+    const registry = Registry.getInstance();
+    const authService = registry.authService;
+    const goalService = registry.goalService;
+
+    const user = authService.getAuthenticatedUser();
 
     if (!user) {
         clearRouterHistory(router);
-        router.replace("/loginPage")
-        return null
+        router.replace("/loginPage");
+        return;
     }
 
-    const goals = registry.getAllGoalsByUser(user)
+    const goals = [...goalService.getAllGoalsByUser(user)];
 
     const handleGoalClick = (id: string) => {
-        router.navigate(`/viewGoalDetailsPage/${id}`)
-        return
-    }
+        router.navigate(`/viewGoalDetailsPage/${id}`);
+    };
 
-    const handleNoGoals = () => {
-        Alert.alert("No Goals", "You currently have no goals set.")
-    }
-
-    let displayElements = []
-    for (let goal of goals) {
-        displayElements.push(
-            <TouchableOpacity key={uuid.v4()} onPress={() => handleGoalClick(goal.getID())}>
+    const displayElements = goals.map((goal) => (
+        <React.Fragment key={uuid.v4()}>
+            <TouchableOpacity onPress={() => handleGoalClick(goal.getID())}>
                 <GoalItem goal={goal} />
             </TouchableOpacity>
-        )
-        displayElements.push(<View style={styles.divider} key={uuid.v4()} />)
-    }
+            <View style={styles.divider} />
+        </React.Fragment>
+    ));
 
     return (
         <ScrollView contentContainerStyle={styles.container}>
             <TopBar />
-
             {displayElements}
         </ScrollView>
-    )
+    );
 }
 
 const styles = StyleSheet.create({
@@ -64,4 +60,4 @@ const styles = StyleSheet.create({
         height: 1,
         backgroundColor: "#ccc",
     },
-})
+});

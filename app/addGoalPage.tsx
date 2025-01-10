@@ -7,94 +7,96 @@ import validateEmpty from '@/utils/validateEmpty';
 import isNumeric from '@/utils/validateNumeric';
 import { useRouter } from 'expo-router';
 import { isValidDate, isTodayOrAfter } from '@/utils/validateDate';
-import Registry from '@/models/Registry';
+import Registry from '@/models/data/Registry';
 import GoalStatus from '@/enums/GoalStatus';
 import clearRouterHistory from '@/utils/clearRouterHistory';
 
 export default function AddGoal() {
+    setPageTitle("Add Goal");
 
-    setPageTitle("Add Goal")
+    const [title, setTitle] = useState<string>('');
+    const [target, setTarget] = useState<string>('');
+    const [date, setDate] = useState<Date>(new Date());
+    const [description, setDesc] = useState<string>('');
+    const [error, setError] = useState<string>('');
+    const router = useRouter();
 
-    const [title, setTitle] = useState<string>('')
-    const [target, setTarget] = useState<string>('')
-    const [date, setDate] = useState<Date>(new Date())
-    const [description, setDesc] = useState<string>('')
-    const [error, setError] = useState<string>('')
-    const router = useRouter()
+    const registry = Registry.getInstance();
+    const authService = registry.authService;
+    const goalService = registry.goalService;
 
-    const registry = Registry.getInstance()
-    const user = registry.getAuthenticatedUser()
+    const user = authService.getAuthenticatedUser();
 
     if (!user) {
         clearRouterHistory(router);
-        router.replace("/loginPage")
-        return null
+        router.replace("/loginPage");
+        return;
     }
 
     const validateForm = () => {
         if (!title || !target || !date) {
-            Alert.alert('Please fill in all required fields.')
-            setError("Fill in all the required fields.")
+            Alert.alert('Please fill in all required fields.');
+            setError("Fill in all the required fields.");
             return false;
         }
 
-        else if (validateEmpty(title)) {
-            Alert.alert("Empty Title Field", "The title field must be filled properly.")
-            setError("The title field must be filled properly.")
-            return false
+        if (validateEmpty(title)) {
+            Alert.alert("Empty Title Field", "The title field must be filled properly.");
+            setError("The title field must be filled properly.");
+            return false;
         }
 
-        else if (validateEmpty(target)) {
-            Alert.alert("Empty Target Field", "The target field must be filled properly.")
-            setError("The target field must be filled properly.")
-            return false
+        if (validateEmpty(target)) {
+            Alert.alert("Empty Target Field", "The target field must be filled properly.");
+            setError("The target field must be filled properly.");
+            return false;
         }
 
-        else if (!isNumeric(target)) {
-            Alert.alert("Target Field Not Numeric", "The target field must be a number.")
-            setError("The target field must be a number.")
-            return false
+        if (!isNumeric(target)) {
+            Alert.alert("Target Field Not Numeric", "The target field must be a number.");
+            setError("The target field must be a number.");
+            return false;
         }
 
-        else if (!isValidDate(date)) {
-            Alert.alert("Date Field Invalid", "Please select a date.")
-            setError("Please select a date.")
-            return false
+        if (!isValidDate(date)) {
+            Alert.alert("Date Field Invalid", "Please select a date.");
+            setError("Please select a date.");
+            return false;
         }
 
-        else if (!isTodayOrAfter(date)) {
-            Alert.alert("Date Field Invalid", "Please select a date that is today or after today.")
-            setError("Please select a date that is today or after today.")
-            return false
+        if (!isTodayOrAfter(date)) {
+            Alert.alert("Date Field Invalid", "Please select a date that is today or after today.");
+            setError("Please select a date that is today or after today.");
+            return false;
         }
 
-        setError("")
-        return true
-    }
+        setError("");
+        return true;
+    };
 
     const handleAddGoal = () => {
         if (validateForm()) {
             try {
-                registry.addGoal(user, title, description, parseFloat(target), GoalStatus.Active)
-                Alert.alert('Success', 'Goal added successfully!')
-                setTitle('')
-                setTarget('')
-                setDate(new Date())
-                setDesc('')
+                goalService.addGoal(user, title, description, parseFloat(target), GoalStatus.Active);
+                Alert.alert('Success', 'Goal added successfully!');
+                setTitle('');
+                setTarget('');
+                setDate(new Date());
+                setDesc('');
                 clearRouterHistory(router);
-                router.replace("/allGoalsPage")
+                router.replace("/allGoalsPage");
             } catch (error: any) {
-                Alert.alert("Error", error.message)
+                Alert.alert("Error", error.message);
             }
         }
-    }
+    };
 
     return (
         <ScrollView contentContainerStyle={styles.container}>
             <TopBar />
 
             <View style={styles.goalForm}>
-                <GoalDetailsInputs 
+                <GoalDetailsInputs
                     title={title}
                     target={target}
                     date={date}
@@ -112,7 +114,7 @@ export default function AddGoal() {
                 <Text style={styles.addButtonText}>Add Goal</Text>
             </TouchableOpacity>
         </ScrollView>
-    )
+    );
 }
 
 const styles = StyleSheet.create({
@@ -145,4 +147,4 @@ const styles = StyleSheet.create({
         color: 'red',
         fontSize: 14,
     },
-})
+});

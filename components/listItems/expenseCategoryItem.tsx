@@ -5,20 +5,17 @@ import ExpenseCategory from '@/models/ExpenseCategory';
 import { useRouter } from 'expo-router';
 import ListItemDeleteButton from './listItemDeleteButton';
 import ListItemEditButton from './listItemEditButton';
-import Registry from '@/models/Registry';
+import Registry from '@/models/data/Registry';
 import clearRouterHistory from '@/utils/clearRouterHistory';
 
-
 interface ExpenseCategoryProps {
-    category: ExpenseCategory
+    category: ExpenseCategory;
 }
 
-
 export default function ExpenseCategoryItem(props: ExpenseCategoryProps) {
-
-    const router = useRouter()
-    const registry = Registry.getInstance()
-    const user = registry.getAuthenticatedUser()
+    const router = useRouter();
+    const registry = Registry.getInstance();
+    const user = registry.authService.getAuthenticatedUser();
 
     if (!user) {
         clearRouterHistory(router);
@@ -26,31 +23,42 @@ export default function ExpenseCategoryItem(props: ExpenseCategoryProps) {
         return;
     }
 
-    const totalMonthlyExpense = registry.calculateMonthlyCategoryTotal(user, new Date(), props.category)
+    const totalMonthlyExpense = registry.expenseService.calculateMonthlyCategoryTotal(user, new Date(), props.category);
 
     const handleEdit = (id: string) => {
-        router.navigate("/editExpenseCategoryPage/" + props.category.getID())
-        return
-    }
+        router.navigate("/editExpenseCategoryPage/" + props.category.getID());
+    };
+
     const handleDelete = (id: string) => {
         Alert.alert('Delete Expense Category', 'Are you sure you want to delete this expense category?', [
             { text: 'Cancel', style: 'cancel' },
-            { text: 'Delete', style: 'destructive', onPress: () => {
-                registry.deleteExpenseCategory(props.category.getID())
-                Alert.alert('Success', 'Expense category deleted successfully!');
-                clearRouterHistory(router);
-                router.replace("/expenseCategoriesOverviewPage");
-                return;
-            } },
-        ])
-    }
+            {
+                text: 'Delete',
+                style: 'destructive',
+                onPress: () => {
+                    try {
+                        registry.expenseCategoryService.deleteExpenseCategory(props.category.getID());
+                        Alert.alert('Success', 'Expense category deleted successfully!');
+                        clearRouterHistory(router);
+                        router.replace("/expenseCategoriesOverviewPage");
+                    } catch (err: any) {
+                        Alert.alert('Error', err.message);
+                    }
+                },
+            },
+        ]);
+    };
 
     return (
         <View style={styles.categoryContainer}>
             <Text style={styles.categoryName}>{props.category.name}</Text>
 
             <Text style={styles.label}>Spending: £{totalMonthlyExpense.toFixed(2)}</Text>
-            <Progress.Bar progress={props.category.calculateBudgetUsed(totalMonthlyExpense)} color="#007BFF" width={null} />
+            <Progress.Bar
+                progress={props.category.calculateBudgetUsed(totalMonthlyExpense)}
+                color="#007BFF"
+                width={null}
+            />
             <Text style={styles.label}>Budget: £{props.category.monthlyBudget.toFixed(2)}</Text>
 
             <View style={styles.actionsContainer}>
@@ -58,11 +66,8 @@ export default function ExpenseCategoryItem(props: ExpenseCategoryProps) {
                 <ListItemDeleteButton id={props.category.getID()} handleDelete={handleDelete} />
             </View>
         </View>
-    )
+    );
 }
-
-
-
 
 const styles = StyleSheet.create({
     categoryContainer: {
@@ -70,7 +75,7 @@ const styles = StyleSheet.create({
     },
     categoryName: {
         fontSize: 16,
-        fontWeight: "bold",
+        fontWeight: 'bold',
     },
     label: {
         fontSize: 14,
@@ -80,7 +85,7 @@ const styles = StyleSheet.create({
         borderRadius: 5,
     },
     actionsContainer: {
-        flexDirection: "row",
-        justifyContent: "space-between",
+        flexDirection: 'row',
+        justifyContent: 'space-between',
     },
-})
+});

@@ -7,93 +7,95 @@ import validateEmpty from '@/utils/validateEmpty';
 import isNumeric from '@/utils/validateNumeric';
 import { useRouter } from 'expo-router';
 import { isValidDate, isTodayOrBefore } from '@/utils/validateDate';
-import Registry from '@/models/Registry';
+import Registry from '@/models/data/Registry';
 import clearRouterHistory from '@/utils/clearRouterHistory';
 
 export default function AddIncome() {
+    setPageTitle("Add Income");
 
-    setPageTitle("Add Income")
+    const [title, setTitle] = useState<string>('');
+    const [amount, setAmount] = useState<string>('');
+    const [date, setDate] = useState<Date>(new Date());
+    const [notes, setNotes] = useState<string>('');
+    const [error, setError] = useState<string>('');
+    const router = useRouter();
 
-    const [title, setTitle] = useState<string>('')
-    const [amount, setAmount] = useState<string>('')
-    const [date, setDate] = useState<Date>(new Date())
-    const [notes, setNotes] = useState<string>('')
-    const [error, setError] = useState<string>('')
-    const router = useRouter()
+    const registry = Registry.getInstance();
+    const authService = registry.authService;
+    const incomeService = registry.incomeService;
 
-    const registry = Registry.getInstance()
-    const user = registry.getAuthenticatedUser()
+    const user = authService.getAuthenticatedUser();
 
     if (!user) {
-        clearRouterHistory(router)
-        router.replace("/loginPage")
-        return null
+        clearRouterHistory(router);
+        router.replace("/loginPage");
+        return;
     }
 
     const validateForm = () => {
         if (!title || !amount || !date) {
-            Alert.alert('Please fill in all required fields.')
-            setError("Fill in all the required fields.")
+            Alert.alert('Please fill in all required fields.');
+            setError("Fill in all the required fields.");
             return false;
         }
 
-        else if (validateEmpty(title)) {
-            Alert.alert("Empty Title Field", "The title field must be filled properly.")
-            setError("The title field must be filled properly.")
-            return false
+        if (validateEmpty(title)) {
+            Alert.alert("Empty Title Field", "The title field must be filled properly.");
+            setError("The title field must be filled properly.");
+            return false;
         }
 
-        else if (validateEmpty(amount)) {
-            Alert.alert("Empty Amount Field", "The amount field must be filled properly.")
-            setError("The amount field must be filled properly.")
-            return false
+        if (validateEmpty(amount)) {
+            Alert.alert("Empty Amount Field", "The amount field must be filled properly.");
+            setError("The amount field must be filled properly.");
+            return false;
         }
 
-        else if (!isNumeric(amount)) {
-            Alert.alert("Amount Field Not Numeric", "The amount field must be a number.")
-            setError("The amount field must be a number.")
-            return false
+        if (!isNumeric(amount)) {
+            Alert.alert("Amount Field Not Numeric", "The amount field must be a number.");
+            setError("The amount field must be a number.");
+            return false;
         }
 
-        else if (!isValidDate(date)) {
-            Alert.alert("Date Field Invalid", "Please select a date.")
-            setError("Please select a date.")
-            return false
+        if (!isValidDate(date)) {
+            Alert.alert("Date Field Invalid", "Please select a date.");
+            setError("Please select a date.");
+            return false;
         }
 
-        else if (!isTodayOrBefore(date)) {
-            Alert.alert("Date Field Invalid", "Please select a date that is today or before today.")
-            setError("Please select a date that is today or before today.")
-            return false
+        if (!isTodayOrBefore(date)) {
+            Alert.alert("Date Field Invalid", "Please select a date that is today or before today.");
+            setError("Please select a date that is today or before today.");
+            return false;
         }
 
-        setError("")
-        return true
-    }
+        setError("");
+        return true;
+    };
 
     const handleAddIncome = () => {
         if (validateForm()) {
             try {
-                registry.addIncome(user, title, parseFloat(amount), date, notes)
-                Alert.alert('Success', 'Income added successfully!')
-                setTitle('')
-                setAmount('')
-                setDate(new Date())
-                setNotes('')
+                incomeService.addIncome(user, title, parseFloat(amount), date, notes);
+                Alert.alert('Success', 'Income added successfully!');
+                setTitle('');
+                setAmount('');
+                setDate(new Date());
+                setNotes('');
                 clearRouterHistory(router);
-                router.replace("/listTransactionsPage")
+                router.replace("/listTransactionsPage");
             } catch (error: any) {
-                Alert.alert("Error", error.message)
+                Alert.alert("Error", error.message);
             }
         }
-    }
+    };
 
     return (
         <ScrollView contentContainerStyle={styles.container}>
             <TopBar />
 
             <View style={styles.incomeForm}>
-                <IncomeDetailsInputs 
+                <IncomeDetailsInputs
                     title={title}
                     amount={amount}
                     date={date}
@@ -111,7 +113,7 @@ export default function AddIncome() {
                 <Text style={styles.addButtonText}>Add Income</Text>
             </TouchableOpacity>
         </ScrollView>
-    )
+    );
 }
 
 const styles = StyleSheet.create({
@@ -144,4 +146,4 @@ const styles = StyleSheet.create({
         color: 'red',
         fontSize: 14,
     },
-})
+});

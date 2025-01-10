@@ -3,15 +3,17 @@ import TopBar from '@/components/topBars/topBar';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
-import Registry from '@/models/Registry';
 import clearRouterHistory from '@/utils/clearRouterHistory';
-
+import Registry from '@/models/data/Registry';
 
 export default function ExpenseDetailsScreen() {
     const { id } = useLocalSearchParams();
 
     const registry = Registry.getInstance();
-    const authenticatedUser = registry.getAuthenticatedUser();
+    const authService = registry.authService;
+    const expenseService = registry.expenseService;
+
+    const authenticatedUser = authService.getAuthenticatedUser();
 
     const router = useRouter();
 
@@ -19,44 +21,45 @@ export default function ExpenseDetailsScreen() {
         Alert.alert("Error", "You must be logged in to view this expense.");
         clearRouterHistory(router);
         router.replace("/loginPage");
-        return null;
+        return;
     }
 
-    const expense = registry.getAllExpensesByUser(authenticatedUser).find(exp => exp.getID() === id);
-
+    const expense = expenseService.getAllExpensesByUser(authenticatedUser).find(exp => exp.getID() === id);
 
     if (!expense) {
         Alert.alert("Error", "Expense not found.");
         clearRouterHistory(router);
         router.replace("/listTransactionsPage");
-        return null;
+        return;
     }
 
     setPageTitle(expense.title);
 
     const handleEdit = () => {
         router.navigate("/editExpensePage/" + expense.getID());
-    }
+    };
 
     const handleDelete = () => {
         Alert.alert('Delete Expense', 'Are you sure you want to delete this expense?', [
             { text: 'Cancel', style: 'cancel' },
-            { text: 'Delete', style: 'destructive', onPress: () => {
-                try {
-                    registry.deleteExpense(expense.getID());
-                    Alert.alert('Success', 'Expense deleted successfully!');
-                    clearRouterHistory(router);
-                    router.replace("/listTransactionsPage");
-                } catch (err: any) {
-                    Alert.alert('Error', err.message);
-                }
-            } },
+            {
+                text: 'Delete', style: 'destructive', onPress: () => {
+                    try {
+                        expenseService.deleteExpense(expense.getID());
+                        Alert.alert('Success', 'Expense deleted successfully!');
+                        clearRouterHistory(router);
+                        router.replace("/listTransactionsPage");
+                    } catch (err: any) {
+                        Alert.alert('Error', err.message);
+                    }
+                },
+            },
         ]);
-    }
+    };
 
     const handleViewReceipt = () => {
         Alert.alert("Feature Coming Soon", "Receipt viewing is not yet implemented.");
-    }
+    };
 
     return (
         <View style={styles.mainContainer}>
@@ -69,7 +72,7 @@ export default function ExpenseDetailsScreen() {
                     <Text style={styles.notesTitle}>Notes:</Text>
                     <Text style={styles.notes}>{expense.notes}</Text>
                 </View>
-                
+
                 <TouchableOpacity onPress={handleViewReceipt}>
                     <Text style={styles.viewReceipt}>View Receipt</Text>
                 </TouchableOpacity>
@@ -83,7 +86,7 @@ export default function ExpenseDetailsScreen() {
                 </View>
             </View>
         </View>
-    )
+    );
 }
 
 const styles = StyleSheet.create({

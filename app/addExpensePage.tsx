@@ -7,103 +7,106 @@ import validateEmpty from '@/utils/validateEmpty';
 import isNumeric from '@/utils/validateNumeric';
 import { useRouter } from 'expo-router';
 import { isTodayOrBefore, isValidDate } from '@/utils/validateDate';
-import Registry from '@/models/Registry';
+import Registry from '@/models/data/Registry';
 import ExpenseCategory from '@/models/ExpenseCategory';
 import clearRouterHistory from '@/utils/clearRouterHistory';
 
 export default function AddExpense() {
+    setPageTitle("Add Expense");
 
-    setPageTitle("Add Expense")
+    const router = useRouter();
+    const registry = Registry.getInstance();
+    const authService = registry.authService;
+    const expenseService = registry.expenseService;
+    const expenseCategoryService = registry.expenseCategoryService;
 
-    const router = useRouter()
-    const registry = Registry.getInstance()
-    const user = registry.getAuthenticatedUser()
+    const user = authService.getAuthenticatedUser();
 
     if (!user) {
         clearRouterHistory(router);
-        router.replace("/loginPage")
-        return null
+        router.replace("/loginPage");
+        return;
     }
 
-    const categories = registry.getAllExpenseCategoriesByUser(user)
+    const categories = expenseCategoryService.getAllCategoriesByUser(user);
 
-    const [title, setTitle] = useState<string>('')
-    const [amount, setAmount] = useState<string>('')
-    const [date, setDate] = useState<Date>(new Date())
-    const [category, setCategory] = useState<ExpenseCategory>(new ExpenseCategory(user, "Other", 10000))
-    const [notes, setNotes] = useState<string>('')
-    const [error, setError] = useState<string>('')
+    const [title, setTitle] = useState<string>('');
+    const [amount, setAmount] = useState<string>('');
+    const [date, setDate] = useState<Date>(new Date());
+    const [category, setCategory] = useState<ExpenseCategory>(categories[0] || new ExpenseCategory(user, "Other", 10000));
+    const [notes, setNotes] = useState<string>('');
+    const [error, setError] = useState<string>('');
 
     const validateForm = () => {
         if (!title || !amount || !date || !category) {
-            Alert.alert('Please fill in all required fields.')
-            setError("Fill in all the required fields.")
-            return false
+            Alert.alert('Please fill in all required fields.');
+            setError("Fill in all the required fields.");
+            return false;
         }
 
-        else if (validateEmpty(title)) {
-            Alert.alert("Empty Title Field", "The title field must be filled properly.")
-            setError("The title field must be filled properly.")
-            return false
+        if (validateEmpty(title)) {
+            Alert.alert("Empty Title Field", "The title field must be filled properly.");
+            setError("The title field must be filled properly.");
+            return false;
         }
 
-        else if (validateEmpty(amount)) {
-            Alert.alert("Empty Amount Field", "The amount field must be filled properly.")
-            setError("The amount field must be filled properly.")
-            return false
+        if (validateEmpty(amount)) {
+            Alert.alert("Empty Amount Field", "The amount field must be filled properly.");
+            setError("The amount field must be filled properly.");
+            return false;
         }
 
-        else if (!isNumeric(amount)) {
-            Alert.alert("Amount Field Not Numeric", "The amount field must be a number.")
-            setError("The amount field must be a number.")
-            return false
+        if (!isNumeric(amount)) {
+            Alert.alert("Amount Field Not Numeric", "The amount field must be a number.");
+            setError("The amount field must be a number.");
+            return false;
         }
 
-        else if (!isValidDate(date)) {
-            Alert.alert("Date Field Invalid", "Please select a date.")
-            setError("Please select a date.")
-            return false
+        if (!isValidDate(date)) {
+            Alert.alert("Date Field Invalid", "Please select a date.");
+            setError("Please select a date.");
+            return false;
         }
 
-        else if (!isTodayOrBefore(date)) {
-            Alert.alert("Date Field Invalid", "Please select a date that is today or before today.")
-            setError("Please select a date that is today or before today.")
-            return false
+        if (!isTodayOrBefore(date)) {
+            Alert.alert("Date Field Invalid", "Please select a date that is today or before today.");
+            setError("Please select a date that is today or before today.");
+            return false;
         }
 
-        setError("")
-        return true
-    }
+        setError("");
+        return true;
+    };
 
     const handleAddExpense = () => {
         if (validateForm()) {
             try {
-
-                registry.addExpense(user, title, parseFloat(amount), date, notes, category)
-                Alert.alert('Success', 'Expense added successfully!')
-                setTitle('')
-                setAmount('')
-                setDate(new Date())
-                setCategory(categories[0])
-                setNotes('')
+                expenseService.addExpense(user, title, parseFloat(amount), date, notes, category);
+                Alert.alert('Success', 'Expense added successfully!');
+                setTitle('');
+                setAmount('');
+                setDate(new Date());
+                setCategory(categories[0] || new ExpenseCategory(user, "Other", 10000));
+                setNotes('');
                 clearRouterHistory(router);
-                router.replace("/listTransactionsPage")
+                router.replace("/listTransactionsPage");
             } catch (error: any) {
-                Alert.alert("Error", error.message)
+                Alert.alert("Error", error.message);
             }
         }
-    }
+    };
 
     const handleScanReceipt = () => {
-        Alert.alert('Feature Coming Soon', 'Receipt scanning is not yet implemented.')
-    }
+        Alert.alert('Feature Coming Soon', 'Receipt scanning is not yet implemented.');
+        return;
+    };
 
     return (
         <ScrollView contentContainerStyle={styles.container}>
             <TopBar />
 
             <View style={styles.expenseForm}>
-                <ExpenseDetailsInputs 
+                <ExpenseDetailsInputs
                     title={title}
                     amount={amount}
                     date={date}
@@ -130,7 +133,7 @@ export default function AddExpense() {
                 <Text style={styles.addButtonText}>Add Expense</Text>
             </TouchableOpacity>
         </ScrollView>
-    )
+    );
 }
 
 const styles = StyleSheet.create({
@@ -167,4 +170,4 @@ const styles = StyleSheet.create({
         color: 'red',
         fontSize: 14,
     },
-})
+});

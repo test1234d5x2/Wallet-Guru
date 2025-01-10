@@ -6,86 +6,93 @@ import TopBar from '@/components/topBars/topBar';
 import validateEmpty from '@/utils/validateEmpty';
 import isNumeric from '@/utils/validateNumeric';
 import { useRouter } from 'expo-router';
-import Registry from '@/models/Registry';
+import Registry from '@/models/data/Registry';
 import clearRouterHistory from '@/utils/clearRouterHistory';
 
 export default function AddExpenseCategory() {
+    setPageTitle("Add Expense Category");
 
-    setPageTitle("Add Expense Category")
+    const [categoryName, setCategoryName] = useState<string>('');
+    const [monthlyLimit, setMonthlyLimit] = useState<string>('');
+    const [error, setError] = useState<string>('');
+    const router = useRouter();
 
-    const [categoryName, setCategoryName] = useState<string>('')
-    const [monthlyLimit, setMonthlyLimit] = useState<string>('')
-    const [error, setError] = useState<string>('')
-    const router = useRouter()
-    const registry = Registry.getInstance()
-    const user = registry.getAuthenticatedUser()
+    const registry = Registry.getInstance();
+    const authService = registry.authService;
+    const expenseCategoryService = registry.expenseCategoryService;
+
+    const user = authService.getAuthenticatedUser();
 
     if (!user) {
         clearRouterHistory(router);
-        router.replace("/loginPage")
-        return null
+        router.replace("/loginPage");
+        return;
     }
 
     const validateForm = () => {
-
         if (!categoryName || !monthlyLimit) {
-            Alert.alert("Please fill in all the fields.")
-            setError("Please fill in all the fields.")
-            return false
+            Alert.alert("Please fill in all the fields.");
+            setError("Please fill in all the fields.");
+            return false;
         }
 
-        else if (validateEmpty(categoryName)) {
-            Alert.alert("Empty Category Name Field", "The category name field must be filled properly.")
-            setError("The category name field must be filled properly.")
-            return false
+        if (validateEmpty(categoryName)) {
+            Alert.alert("Empty Category Name Field", "The category name field must be filled properly.");
+            setError("The category name field must be filled properly.");
+            return false;
         }
 
-        else if (validateEmpty(monthlyLimit)) {
-            Alert.alert("Empty Monthly Limit Field", "The monthly limit field must be filled properly.")
-            setError("The monthly limit field must be filled properly.")
-            return false
+        if (validateEmpty(monthlyLimit)) {
+            Alert.alert("Empty Monthly Limit Field", "The monthly limit field must be filled properly.");
+            setError("The monthly limit field must be filled properly.");
+            return false;
         }
 
-        else if (!isNumeric(monthlyLimit)) {
-            Alert.alert("Monthly Limit Field Not Numeric", "The monthly limit field must be a number.")
-            setError("The monthly limit field must be a number.")
-            return false
+        if (!isNumeric(monthlyLimit)) {
+            Alert.alert("Monthly Limit Field Not Numeric", "The monthly limit field must be a number.");
+            setError("The monthly limit field must be a number.");
+            return false;
         }
-        
-        setError('')
-        return true
-    }
+
+        setError('');
+        return true;
+    };
 
     const handleAddCategory = () => {
         if (validateForm()) {
             try {
-                registry.addExpenseCategory(user, categoryName, parseFloat(monthlyLimit))
-                Alert.alert('Success', `Category "${categoryName}" added with a limit of £${monthlyLimit}`)
-                setCategoryName('')
-                setMonthlyLimit('')
+                expenseCategoryService.addExpenseCategory(user, categoryName, parseFloat(monthlyLimit));
+                Alert.alert('Success', `Category "${categoryName}" added with a limit of £${monthlyLimit}`);
+                setCategoryName('');
+                setMonthlyLimit('');
                 clearRouterHistory(router);
-                router.replace("/expenseCategoriesOverviewPage")
+                router.replace("/expenseCategoriesOverviewPage");
             } catch (error: any) {
-                Alert.alert("Error", error.message)
+                Alert.alert("Error", error.message);
             }
         }
-    }
+    };
 
     return (
         <View style={styles.container}>
             <TopBar />
 
             <View style={styles.expenseCategoryForm}>
-                <ExpenseCategoryInputs categoryName={categoryName} monthlyLimit={monthlyLimit} setCategoryName={setCategoryName} setMonthlyLimit={setMonthlyLimit} />
+                <ExpenseCategoryInputs
+                    categoryName={categoryName}
+                    monthlyLimit={monthlyLimit}
+                    setCategoryName={setCategoryName}
+                    setMonthlyLimit={setMonthlyLimit}
+                />
             </View>
 
-            {error === '' ? null: <Text style={styles.errorText}>{error}</Text>}
+            {error === '' ? null : <Text style={styles.errorText}>{error}</Text>}
 
             <TouchableOpacity style={styles.addButton} onPress={handleAddCategory}>
                 <Text style={styles.addButtonText}>Add Category</Text>
             </TouchableOpacity>
         </View>
-    )
+    );
 }
 
 const styles = StyleSheet.create({

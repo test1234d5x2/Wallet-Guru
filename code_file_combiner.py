@@ -11,7 +11,7 @@ def combine_files_from_directories(base_folder, directories, output_file):
                         for filename in files:
                             file_path = os.path.join(root, filename)
                             
-                            if os.path.isfile(file_path) and filename != os.path.basename(output_file):
+                            if os.path.isfile(file_path) and filename != os.path.basename(output_file) and str(filename).find(".DS_Store") == -1:
                                 with open(file_path, 'r') as infile:
                                     outfile.write(f"\n--- Content from {filename} ---\n")
                                     outfile.write(infile.read())

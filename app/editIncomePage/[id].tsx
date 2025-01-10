@@ -7,17 +7,20 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import validateEmpty from '@/utils/validateEmpty';
 import isNumeric from '@/utils/validateNumeric';
 import { isValidDate, isTodayOrBefore } from '@/utils/validateDate';
-import Registry from '@/models/Registry';
+import Registry from '@/models/data/Registry';
 import clearRouterHistory from '@/utils/clearRouterHistory';
 
 export default function EditIncome() {
     const { id } = useLocalSearchParams();
 
     const router = useRouter();
-    setPageTitle("Edit Income")
+    setPageTitle("Edit Income");
 
     const registry = Registry.getInstance();
-    const authenticatedUser = registry.getAuthenticatedUser();
+    const authService = registry.authService;
+    const incomeService = registry.incomeService;
+
+    const authenticatedUser = authService.getAuthenticatedUser();
     if (!authenticatedUser) {
         Alert.alert("Error", "You must be logged in to edit income.");
         clearRouterHistory(router);
@@ -25,7 +28,7 @@ export default function EditIncome() {
         return;
     }
 
-    const income = registry.getAllIncomesByUser(authenticatedUser).find(inc => inc.getID() === id);
+    const income = incomeService.getAllIncomesByUser(authenticatedUser).find(inc => inc.getID() === id);
     if (!income) {
         Alert.alert("Error", "Income not found.");
         clearRouterHistory(router);
@@ -83,7 +86,7 @@ export default function EditIncome() {
     const handleEditIncome = () => {
         if (validateForm()) {
             try {
-                registry.updateIncome(id as string, title, parseFloat(amount), date, notes);
+                incomeService.updateIncome(id as string, title, parseFloat(amount), date, notes);
                 Alert.alert('Success', 'Income updated successfully!');
                 clearRouterHistory(router);
                 router.replace("/listTransactionsPage");
@@ -111,13 +114,12 @@ export default function EditIncome() {
             </View>
 
             {error ? <View style={styles.centeredTextContainer}><Text style={styles.errorText}>{error}</Text></View> : null}
-            
 
             <TouchableOpacity style={styles.addButton} onPress={handleEditIncome}>
                 <Text style={styles.addButtonText}>Edit Income</Text>
             </TouchableOpacity>
         </ScrollView>
-    )
+    );
 }
 
 const styles = StyleSheet.create({

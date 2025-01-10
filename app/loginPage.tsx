@@ -3,28 +3,28 @@ import { useState } from "react";
 import { Link, useRouter } from "expo-router";
 import setPageTitle from "@/components/pageTitle/setPageTitle";
 import AuthenticationInputs from "@/components/formComponents/authenticationInputs";
-import Registry from '@/models/Registry';
+import Registry from '@/models/data/Registry';
 import clearRouterHistory from "@/utils/clearRouterHistory";
 
 export default function Login() {
+    setPageTitle("Login");
 
-    setPageTitle("Login")
+    const [email, setEmail] = useState<string>('');
+    const [password, setPassword] = useState<string>('');
+    const [error, setError] = useState<string>('');
+    const router = useRouter();
 
-    const [email, setEmail] = useState<string>('')
-    const [password, setPassword] = useState<string>('')
-    const [error, setError] = useState<string>('')
-    const router = useRouter()
+    const registry = Registry.getInstance();
+    const authService = registry.authService;
 
     const handleLogin = () => {
-
         if (!email || !password) {
             setError("Please input both email and password");
             Alert.alert("Please input both email and password");
             return;
         }
 
-        const registry = Registry.getInstance();
-        const isAuthenticated = registry.authenticateUser(email, password);
+        const isAuthenticated = authService.authenticate(email, password);
 
         if (!isAuthenticated) {
             setError("Invalid email or password");
@@ -36,13 +36,17 @@ export default function Login() {
         clearRouterHistory(router);
         router.replace("/dashboardPage");
         return;
-    }
+    };
 
     return (
         <View style={styles.container}>
             <AuthenticationInputs email={email} password={password} setEmail={setEmail} setPassword={setPassword} />
 
-            {error ? <View style={styles.errorTextContainer}><Text style={styles.errorText}>{error}</Text></View> : null}
+            {error ? (
+                <View style={styles.errorTextContainer}>
+                    <Text style={styles.errorText}>{error}</Text>
+                </View>
+            ) : null}
 
             <View style={styles.newUserTextContainer}>
                 <TouchableOpacity>
@@ -56,7 +60,7 @@ export default function Login() {
                 <Text style={styles.loginButtonText}>Login</Text>
             </TouchableOpacity>
         </View>
-    )
+    );
 }
 
 const styles = StyleSheet.create({
@@ -80,20 +84,20 @@ const styles = StyleSheet.create({
     },
     newUserTextContainer: {
         justifyContent: "center",
-        alignItems: "center"
+        alignItems: "center",
     },
     newUserText: {
         fontSize: 14,
         color: 'rgba(0,0,0,0.5)',
         textDecorationLine: 'underline',
-        textAlign: "center"
+        textAlign: "center",
     },
     errorTextContainer: {
         justifyContent: "center",
-        alignItems: "center"
+        alignItems: "center",
     },
     errorText: {
         color: 'red',
         fontSize: 14,
     },
-})
+});

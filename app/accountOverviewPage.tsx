@@ -3,44 +3,51 @@ import { View, Text, TouchableOpacity, StyleSheet, Alert } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import setPageTitle from "@/components/pageTitle/setPageTitle";
 import { useRouter } from "expo-router";
-import Registry from "@/models/Registry";
+import Registry from "@/models/data/Registry";
 import clearRouterHistory from "@/utils/clearRouterHistory";
 
 export default function AccountOverview() {
-
-    setPageTitle("Account Overview")
+    setPageTitle("Account Overview");
 
     const router = useRouter();
     const registry = Registry.getInstance();
-    const user = registry.getAuthenticatedUser();
+    const authService = registry.authService;
+    const userService = registry.userService;
+
+    const user = authService.getAuthenticatedUser();
 
     if (!user) {
         clearRouterHistory(router);
         router.replace("/loginPage");
-        return null;
+        return;
     }
 
     const handleChangePassword = () => {
         console.log("Change Password Pressed");
-    }
+        return;
+    };
 
     const handleLogOut = () => {
-        registry.logoutUser();
+        authService.logout();
         clearRouterHistory(router);
         router.replace("/loginPage");
-    }
+        return;
+    };
 
     const handleDeleteAccount = () => {
         Alert.alert('Delete Account', 'Are you sure you want to delete your account?', [
             { text: 'Cancel', style: 'cancel' },
-            { text: 'Delete', style: 'destructive', onPress: () => {
-                registry.logoutUser();
-                registry.deleteUser(user.getUserID());
-                clearRouterHistory(router);
-                router.replace("/");
-            } },
+            {
+                text: 'Delete', style: 'destructive', onPress: () => {
+                    authService.logout();
+                    userService.deleteUser(user.getUserID());
+                    clearRouterHistory(router);
+                    router.replace("/");
+                    return;
+                },
+            },
         ]);
-    }
+    };
 
     return (
         <View style={styles.container}>
@@ -60,7 +67,7 @@ export default function AccountOverview() {
                 <Text style={styles.buttonText}>Delete Account</Text>
             </TouchableOpacity>
         </View>
-    )
+    );
 }
 
 const styles = StyleSheet.create({

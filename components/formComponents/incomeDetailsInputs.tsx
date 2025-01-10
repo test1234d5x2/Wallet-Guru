@@ -18,7 +18,6 @@ interface IncomeDetailsInputsProps {
 
 
 export default function IncomeDetailsInputs(props: IncomeDetailsInputsProps) {
-
     return (
         <ScrollView contentContainerStyle={styles.container}>
 

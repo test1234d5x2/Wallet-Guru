@@ -4,60 +4,62 @@ import AuthenticationInputs from "@/components/formComponents/authenticationInpu
 import setPageTitle from "@/components/pageTitle/setPageTitle";
 import { useRouter } from "expo-router";
 import isValidEmail from "@/utils/validateEmail";
-import Registry from "@/models/Registry";
+import Registry from "@/models/data/Registry";
 import clearRouterHistory from "@/utils/clearRouterHistory";
 
 export default function Register() {
+    setPageTitle("Create User");
 
-    setPageTitle("Create User")
+    const [email, setEmail] = useState<string>('');
+    const [password, setPassword] = useState<string>('');
+    const [error, setError] = useState<string>('');
+    const router = useRouter();
 
-    const [email, setEmail] = useState<string>('')
-    const [password, setPassword] = useState<string>('')
-    const [error, setError] = useState<string>('')
-    const router = useRouter()
+    const registry = Registry.getInstance();
+    const userService = registry.userService;
 
     const handleRedirection = () => {
         clearRouterHistory(router);
         router.replace("/loginPage");
         return;
-    }
+    };
 
     const handleRegistration = () => {
-        const registry = Registry.getInstance();
-
         if (!email || !password) {
-            setError("Please input both email and password")
-            Alert.alert("Please input both email and password")
-            return
+            setError("Please input both email and password");
+            Alert.alert("Please input both email and password");
+            return;
         }
 
         if (!isValidEmail(email)) {
-            setError("Please enter a valid email.")
-            Alert.alert("Invalid Email", "Please enter a valid email.")
-            return
+            setError("Please enter a valid email.");
+            Alert.alert("Invalid Email", "Please enter a valid email.");
+            return;
         }
 
-        if (registry.userExists(email)) {
+        const existingUser = userService.userExists(email);
+        if (existingUser) {
             setError("User already exists.");
             Alert.alert("Error", "User already exists.");
             return;
         }
 
-
-        registry.addUser(email, password);
+        userService.addUser(email, password);
 
         Alert.alert("Success", "User registered successfully!");
         setError("");
-        clearRouterHistory(router);
-        router.replace("/loginPage");
-        return
-    }
+        handleRedirection();
+    };
 
     return (
         <View style={styles.container}>
             <AuthenticationInputs email={email} password={password} setEmail={setEmail} setPassword={setPassword} />
 
-            {error ? <View style={styles.errorTextContainer}><Text style={styles.errorText}>{error}</Text></View> : null}
+            {error ? (
+                <View style={styles.errorTextContainer}>
+                    <Text style={styles.errorText}>{error}</Text>
+                </View>
+            ) : null}
 
             <View style={styles.registeredUserTextContainer}>
                 <TouchableOpacity onPress={handleRedirection}>
@@ -69,7 +71,7 @@ export default function Register() {
                 <Text style={styles.loginButtonText}>Register</Text>
             </TouchableOpacity>
         </View>
-    )
+    );
 }
 
 const styles = StyleSheet.create({
@@ -93,7 +95,7 @@ const styles = StyleSheet.create({
     },
     registeredUserTextContainer: {
         justifyContent: "center",
-        alignItems: "center"
+        alignItems: "center",
     },
     registeredUserText: {
         fontSize: 14,
@@ -104,10 +106,10 @@ const styles = StyleSheet.create({
     },
     errorTextContainer: {
         justifyContent: "center",
-        alignItems: "center"
+        alignItems: "center",
     },
     errorText: {
         color: 'red',
         fontSize: 14,
     },
-})
+});

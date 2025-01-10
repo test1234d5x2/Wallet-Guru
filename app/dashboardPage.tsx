@@ -5,50 +5,58 @@ import setPageTitle from '@/components/pageTitle/setPageTitle';
 import TopBar from '@/components/topBars/topBar';
 import uuid from 'react-native-uuid';
 import ExpenseCategoryItem from '@/components/listItems/expenseCategoryItem';
-import Registry from '@/models/Registry';
 import ExpenseItem from '@/components/listItems/expenseItem';
 import IncomeItem from '@/components/listItems/incomeItem';
 import TransactionType from '@/enums/TransactionType';
+import Registry from '@/models/data/Registry';
 import clearRouterHistory from '@/utils/clearRouterHistory';
 
 export default function Dashboard() {
+    setPageTitle("Dashboard");
 
-    setPageTitle("Dashboard")
-
-    const registry = Registry.getInstance()
-    const user = registry.getAuthenticatedUser()
     const router = useRouter();
+    const registry = Registry.getInstance();
+    const authService = registry.authService;
+    const incomeService = registry.incomeService;
+    const expenseService = registry.expenseService;
+    const categoryService = registry.expenseCategoryService;
+
+    const user = authService.getAuthenticatedUser();
 
     if (!user) {
         clearRouterHistory(router);
-        router.replace("/loginPage")
-        return
+        router.replace("/loginPage");
+        return;
     }
 
-    const incomes = [...registry.getAllIncomesByUser(user)]
-    const expenses = [...registry.getAllExpensesByUser(user)]
-    const categories = registry.getAllExpenseCategoriesByUser(user)
+    const incomes = incomeService.getAllIncomesByUser(user);
+    const expenses = expenseService.getAllExpensesByUser(user);
+    const categories = categoryService.getAllCategoriesByUser(user);
 
-    const transactionItemsList = []
-    for (let expense of expenses) {
-        transactionItemsList.push(<ExpenseItem registry={registry} expense={expense} key={uuid.v4()} />)
-        transactionItemsList.push(<View style={styles.dividerLine} key={uuid.v4()} />)
-    }
-    for (let income of incomes) {
-        transactionItemsList.push(<IncomeItem registry={registry} income={income} key={uuid.v4()} />)
-        transactionItemsList.push(<View style={styles.dividerLine} key={uuid.v4()} />)
-    }
+    const incomeTotal = incomeService.calculateMonthlyTransactionsTotal(user, new Date());
+    const expenseTotal = expenseService.calculateMonthlyTransactionsTotal(user, new Date());
 
+    const transactionItemsList = [
+        ...expenses.map((expense) => (
+            <React.Fragment key={uuid.v4() as string}>
+                <ExpenseItem registry={registry} expense={expense} />
+                <View style={styles.dividerLine} />
+            </React.Fragment>
+        )),
+        ...incomes.map((income) => (
+            <React.Fragment key={uuid.v4() as string}>
+                <IncomeItem registry={registry} income={income} />
+                <View style={styles.dividerLine} />
+            </React.Fragment>
+        )),
+    ];
 
-
-    const expenseCategoryItemsList = []
-    for (let expenseCategory of categories) {
-        expenseCategoryItemsList.push(<ExpenseCategoryItem category={expenseCategory} key={uuid.v4()} />)
-        expenseCategoryItemsList.push(<View style={styles.dividerLine} key={uuid.v4()} />)
-    }
-
-    const incomeTotal = registry.calculateMonthlyTransactionsTotal(user, new Date(), TransactionType.INCOME)
-    const expenseTotal = registry.calculateMonthlyTransactionsTotal(user, new Date(), TransactionType.EXPENSE)
+    const expenseCategoryItemsList = categories.map((category) => (
+        <React.Fragment key={uuid.v4() as string}>
+            <ExpenseCategoryItem category={category} />
+            <View style={styles.dividerLine} />
+        </React.Fragment>
+    ));
 
     return (
         <ScrollView contentContainerStyle={styles.container}>
@@ -58,7 +66,7 @@ export default function Dashboard() {
                 <View style={styles.sectionHeader}>
                     <Text style={styles.sectionTitle}>This Month:</Text>
                     <TouchableOpacity>
-                        <Link href={"/analyticsPage"}>
+                        <Link href="/analyticsPage">
                             <Text style={styles.linkText}>View Analytics</Text>
                         </Link>
                     </TouchableOpacity>
@@ -80,7 +88,7 @@ export default function Dashboard() {
                 <View style={styles.sectionHeader}>
                     <Text style={styles.sectionTitle}>Transactions:</Text>
                     <TouchableOpacity>
-                        <Link href={"/listTransactionsPage"}>
+                        <Link href="/listTransactionsPage">
                             <Text style={styles.linkText}>View All</Text>
                         </Link>
                     </TouchableOpacity>
@@ -92,7 +100,7 @@ export default function Dashboard() {
                 <View style={styles.sectionHeader}>
                     <Text style={styles.sectionTitle}>Budget Overview:</Text>
                     <TouchableOpacity>
-                        <Link href={"/expenseCategoriesOverviewPage"}>
+                        <Link href="/expenseCategoriesOverviewPage">
                             <Text style={styles.linkText}>View</Text>
                         </Link>
                     </TouchableOpacity>
@@ -100,7 +108,7 @@ export default function Dashboard() {
                 {expenseCategoryItemsList}
             </View>
         </ScrollView>
-    )
+    );
 }
 
 const styles = StyleSheet.create({
@@ -145,35 +153,8 @@ const styles = StyleSheet.create({
         color: "#007BFF",
         textDecorationLine: "underline",
     },
-    transaction: {
-        flexDirection: "row",
-        justifyContent: "space-between",
-    },
-    transactionName: {
-        fontSize: 16,
-        color: "#555",
-    },
-    transactionAmount: {
-        fontSize: 16,
-        fontWeight: "bold",
-        color: "#555",
-    },
     dividerLine: {
         height: 1,
         backgroundColor: "#ccc",
-    },
-    progressContainer: {
-        flexDirection: "column",
-        rowGap: 5,
-    },
-    progressTextContainer: {
-        flexDirection: "row",
-        justifyContent: "space-between",
-    },
-    budgetLabel: {
-        fontSize: 16,
-    },
-    budgetPercentage: {
-        fontSize: 16,
     },
 });

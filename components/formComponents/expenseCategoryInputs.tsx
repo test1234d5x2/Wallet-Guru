@@ -13,7 +13,6 @@ interface ExpenseCategoryInputs {
 
 
 export default function ExpenseCategoryInputs(props: ExpenseCategoryInputs) {
-    
     return (
         <View style={styles.container}>
 
