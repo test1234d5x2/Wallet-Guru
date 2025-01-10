@@ -8,6 +8,7 @@ import Registry from '@/models/Registry';
 import ExpenseItem from '@/components/listItems/expenseItem';
 import Transaction from '@/models/Transaction';
 import IncomeItem from '@/components/listItems/incomeItem';
+import clearRouterHistory from '@/utils/clearRouterHistory';
 
 export default function ViewTransactionsList() {
 
@@ -22,7 +23,9 @@ export default function ViewTransactionsList() {
     const user = registry.getAuthenticatedUser()
 
     if (!user) {
-        return null // Redirect logic can be added later if needed
+        clearRouterHistory(router);
+        router.replace("/loginPage");
+        return;
     }
 
     const expenses = [
@@ -34,7 +37,8 @@ export default function ViewTransactionsList() {
     ]
 
     const handleTransactionClick = (transaction: Transaction) => {
-        router.push(transaction.getPageURL())
+        router.push(transaction.getPageURL());
+        return;
     }
 
     let transactionDisplayElements = []

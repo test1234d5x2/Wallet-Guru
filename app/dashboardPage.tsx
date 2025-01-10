@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
-import { Link } from 'expo-router';
+import { Link, useRouter } from 'expo-router';
 import setPageTitle from '@/components/pageTitle/setPageTitle';
 import TopBar from '@/components/topBars/topBar';
 import uuid from 'react-native-uuid';
@@ -9,6 +9,7 @@ import Registry from '@/models/Registry';
 import ExpenseItem from '@/components/listItems/expenseItem';
 import IncomeItem from '@/components/listItems/incomeItem';
 import TransactionType from '@/enums/TransactionType';
+import clearRouterHistory from '@/utils/clearRouterHistory';
 
 export default function Dashboard() {
 
@@ -16,8 +17,10 @@ export default function Dashboard() {
 
     const registry = Registry.getInstance()
     const user = registry.getAuthenticatedUser()
+    const router = useRouter();
 
     if (!user) {
+        clearRouterHistory(router);
         router.replace("/loginPage")
         return
     }

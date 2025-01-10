@@ -9,6 +9,7 @@ import { useRouter } from 'expo-router';
 import { isValidDate, isTodayOrAfter } from '@/utils/validateDate';
 import Registry from '@/models/Registry';
 import GoalStatus from '@/enums/GoalStatus';
+import clearRouterHistory from '@/utils/clearRouterHistory';
 
 export default function AddGoal() {
 
@@ -25,6 +26,7 @@ export default function AddGoal() {
     const user = registry.getAuthenticatedUser()
 
     if (!user) {
+        clearRouterHistory(router);
         router.replace("/loginPage")
         return null
     }
@@ -79,6 +81,7 @@ export default function AddGoal() {
                 setTarget('')
                 setDate(new Date())
                 setDesc('')
+                clearRouterHistory(router);
                 router.replace("/allGoalsPage")
             } catch (error: any) {
                 Alert.alert("Error", error.message)

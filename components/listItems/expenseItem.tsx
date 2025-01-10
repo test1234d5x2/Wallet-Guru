@@ -5,6 +5,7 @@ import { useRouter } from 'expo-router';
 import ListItemEditButton from './listItemEditButton';
 import ListItemDeleteButton from './listItemDeleteButton';
 import Registry from '@/models/Registry';
+import clearRouterHistory from '@/utils/clearRouterHistory';
 
 interface ExpenseItemProps {
     expense: Expense
@@ -26,6 +27,7 @@ export default function ExpenseItem(props: ExpenseItemProps) {
                 try {
                     props.registry.deleteExpense(id);
                     Alert.alert('Success', 'Expense deleted successfully!');
+                    clearRouterHistory(router);
                     router.replace("/listTransactionsPage");
                 } catch (err: any) {
                     Alert.alert('Error', err.message);

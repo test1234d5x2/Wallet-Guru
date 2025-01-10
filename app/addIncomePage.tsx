@@ -8,6 +8,7 @@ import isNumeric from '@/utils/validateNumeric';
 import { useRouter } from 'expo-router';
 import { isValidDate, isTodayOrBefore } from '@/utils/validateDate';
 import Registry from '@/models/Registry';
+import clearRouterHistory from '@/utils/clearRouterHistory';
 
 export default function AddIncome() {
 
@@ -24,6 +25,7 @@ export default function AddIncome() {
     const user = registry.getAuthenticatedUser()
 
     if (!user) {
+        clearRouterHistory(router)
         router.replace("/loginPage")
         return null
     }
@@ -78,6 +80,7 @@ export default function AddIncome() {
                 setAmount('')
                 setDate(new Date())
                 setNotes('')
+                clearRouterHistory(router);
                 router.replace("/listTransactionsPage")
             } catch (error: any) {
                 Alert.alert("Error", error.message)

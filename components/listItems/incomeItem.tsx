@@ -5,6 +5,7 @@ import { useRouter } from 'expo-router';
 import ListItemEditButton from './listItemEditButton';
 import ListItemDeleteButton from './listItemDeleteButton';
 import Registry from '@/models/Registry';
+import clearRouterHistory from '@/utils/clearRouterHistory';
 
 interface IncomeItemProps {
     income: Income
@@ -26,7 +27,8 @@ export default function IncomeItem(props: IncomeItemProps) {
             { text: 'Delete', style: 'destructive', onPress: () => {
                 props.registry.deleteIncome(props.income.getID())
                 Alert.alert('Success', 'Income deleted successfully!');
-                router.replace("/listTransactionsPage")
+                clearRouterHistory(router);
+                router.replace("/listTransactionsPage");
             } },
         ])
     }
@@ -38,7 +40,7 @@ export default function IncomeItem(props: IncomeItemProps) {
                     <Text style={styles.transactionName}>{props.income.title}</Text>
                 </View>
                 <Text style={[styles.transactionAmount, styles.incomeAmount]}>
-                    {props.income.amount < 0 ? "-" : "+"}£{Math.abs(props.income.amount)}
+                    {props.income.amount < 0 ? "-" : "+"}£{Math.abs(props.income.amount).toFixed(2)}
                 </Text>
             </View>
             

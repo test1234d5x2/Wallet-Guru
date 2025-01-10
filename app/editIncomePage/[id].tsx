@@ -8,6 +8,7 @@ import validateEmpty from '@/utils/validateEmpty';
 import isNumeric from '@/utils/validateNumeric';
 import { isValidDate, isTodayOrBefore } from '@/utils/validateDate';
 import Registry from '@/models/Registry';
+import clearRouterHistory from '@/utils/clearRouterHistory';
 
 export default function EditIncome() {
     const { id } = useLocalSearchParams();
@@ -19,7 +20,7 @@ export default function EditIncome() {
     const authenticatedUser = registry.getAuthenticatedUser();
     if (!authenticatedUser) {
         Alert.alert("Error", "You must be logged in to edit income.");
-    
+        clearRouterHistory(router);
         router.replace("/loginPage");
         return;
     }
@@ -27,6 +28,7 @@ export default function EditIncome() {
     const income = registry.getAllIncomesByUser(authenticatedUser).find(inc => inc.getID() === id);
     if (!income) {
         Alert.alert("Error", "Income not found.");
+        clearRouterHistory(router);
         router.replace("/listTransactionsPage");
         return;
     }
@@ -83,6 +85,7 @@ export default function EditIncome() {
             try {
                 registry.updateIncome(id as string, title, parseFloat(amount), date, notes);
                 Alert.alert('Success', 'Income updated successfully!');
+                clearRouterHistory(router);
                 router.replace("/listTransactionsPage");
             } catch (err: any) {
                 Alert.alert("Error", err.message);

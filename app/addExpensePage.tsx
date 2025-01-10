@@ -9,6 +9,7 @@ import { useRouter } from 'expo-router';
 import { isTodayOrBefore, isValidDate } from '@/utils/validateDate';
 import Registry from '@/models/Registry';
 import ExpenseCategory from '@/models/ExpenseCategory';
+import clearRouterHistory from '@/utils/clearRouterHistory';
 
 export default function AddExpense() {
 
@@ -19,6 +20,7 @@ export default function AddExpense() {
     const user = registry.getAuthenticatedUser()
 
     if (!user) {
+        clearRouterHistory(router);
         router.replace("/loginPage")
         return null
     }
@@ -84,6 +86,7 @@ export default function AddExpense() {
                 setDate(new Date())
                 setCategory(categories[0])
                 setNotes('')
+                clearRouterHistory(router);
                 router.replace("/listTransactionsPage")
             } catch (error: any) {
                 Alert.alert("Error", error.message)

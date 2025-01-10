@@ -57,7 +57,6 @@ export default function Analytics() {
                 paddingLeft="15"
             />
 
-            {/* Bar Chart Section */}
             <Text style={styles.header}>Income vs Expenditure</Text>
             <BarChart
                 style={styles.barChart}

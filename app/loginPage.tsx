@@ -4,6 +4,7 @@ import { Link, useRouter } from "expo-router";
 import setPageTitle from "@/components/pageTitle/setPageTitle";
 import AuthenticationInputs from "@/components/formComponents/authenticationInputs";
 import Registry from '@/models/Registry';
+import clearRouterHistory from "@/utils/clearRouterHistory";
 
 export default function Login() {
 
@@ -32,6 +33,7 @@ export default function Login() {
         }
 
         setError("");
+        clearRouterHistory(router);
         router.replace("/dashboardPage");
         return;
     }

@@ -61,8 +61,8 @@ export default function UpdateGoal() {
             <TopBar />
 
             <Text style={styles.label}>Goal: {goal.title}</Text>
-            <Text style={styles.label}>Target: £{goal.target}</Text>
-            <Text style={styles.label}>Current: £{goal.current}</Text>
+            <Text style={styles.label}>Target: £{goal.target.toFixed(2)}</Text>
+            <Text style={styles.label}>Current: £{goal.current.toFixed(2)}</Text>
 
             <View style={styles.inputContainer}>
                 <TextInput

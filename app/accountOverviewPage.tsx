@@ -4,6 +4,7 @@ import { Ionicons } from "@expo/vector-icons";
 import setPageTitle from "@/components/pageTitle/setPageTitle";
 import { useRouter } from "expo-router";
 import Registry from "@/models/Registry";
+import clearRouterHistory from "@/utils/clearRouterHistory";
 
 export default function AccountOverview() {
 
@@ -14,6 +15,7 @@ export default function AccountOverview() {
     const user = registry.getAuthenticatedUser();
 
     if (!user) {
+        clearRouterHistory(router);
         router.replace("/loginPage");
         return null;
     }
@@ -24,7 +26,7 @@ export default function AccountOverview() {
 
     const handleLogOut = () => {
         registry.logoutUser();
-        while (router.canGoBack()) {router.back();}
+        clearRouterHistory(router);
         router.replace("/loginPage");
     }
 
@@ -32,10 +34,10 @@ export default function AccountOverview() {
         Alert.alert('Delete Account', 'Are you sure you want to delete your account?', [
             { text: 'Cancel', style: 'cancel' },
             { text: 'Delete', style: 'destructive', onPress: () => {
+                registry.logoutUser();
                 registry.deleteUser(user.getUserID());
-                console.log("Account Deleted");
-                router.dismissAll();
-                router.navigate("/");
+                clearRouterHistory(router);
+                router.replace("/");
             } },
         ]);
     }

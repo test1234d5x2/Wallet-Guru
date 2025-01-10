@@ -5,6 +5,7 @@ import setPageTitle from "@/components/pageTitle/setPageTitle";
 import { useRouter } from "expo-router";
 import isValidEmail from "@/utils/validateEmail";
 import Registry from "@/models/Registry";
+import clearRouterHistory from "@/utils/clearRouterHistory";
 
 export default function Register() {
 
@@ -16,7 +17,9 @@ export default function Register() {
     const router = useRouter()
 
     const handleRedirection = () => {
-        router.replace("/loginPage")
+        clearRouterHistory(router);
+        router.replace("/loginPage");
+        return;
     }
 
     const handleRegistration = () => {
@@ -40,11 +43,12 @@ export default function Register() {
             return;
         }
 
-        // Register the user
+
         registry.addUser(email, password);
 
         Alert.alert("Success", "User registered successfully!");
-        setError("")
+        setError("");
+        clearRouterHistory(router);
         router.replace("/loginPage");
         return
     }

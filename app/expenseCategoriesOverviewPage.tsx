@@ -6,6 +6,7 @@ import uuid from 'react-native-uuid';
 import ExpenseCategoryItem from '@/components/listItems/expenseCategoryItem';
 import Registry from '@/models/Registry';
 import { useRouter } from 'expo-router';
+import clearRouterHistory from '@/utils/clearRouterHistory';
 
 export default function ViewExpenseCategories() {
 
@@ -16,6 +17,7 @@ export default function ViewExpenseCategories() {
     const router = useRouter()
 
     if (!user) {
+        clearRouterHistory(router);
         router.replace("/loginPage")
         return
     }

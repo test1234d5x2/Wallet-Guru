@@ -4,6 +4,7 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import Registry from '@/models/Registry';
+import clearRouterHistory from '@/utils/clearRouterHistory';
 
 
 export default function ExpenseDetailsScreen() {
@@ -16,6 +17,7 @@ export default function ExpenseDetailsScreen() {
 
     if (!authenticatedUser) {
         Alert.alert("Error", "You must be logged in to view this expense.");
+        clearRouterHistory(router);
         router.replace("/loginPage");
         return null;
     }
@@ -25,6 +27,7 @@ export default function ExpenseDetailsScreen() {
 
     if (!expense) {
         Alert.alert("Error", "Expense not found.");
+        clearRouterHistory(router);
         router.replace("/listTransactionsPage");
         return null;
     }
@@ -42,6 +45,7 @@ export default function ExpenseDetailsScreen() {
                 try {
                     registry.deleteExpense(expense.getID());
                     Alert.alert('Success', 'Expense deleted successfully!');
+                    clearRouterHistory(router);
                     router.replace("/listTransactionsPage");
                 } catch (err: any) {
                     Alert.alert('Error', err.message);

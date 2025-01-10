@@ -7,6 +7,7 @@ import { useRouter, useLocalSearchParams } from 'expo-router';
 import validateEmpty from '@/utils/validateEmpty';
 import isNumeric from '@/utils/validateNumeric';
 import Registry from '@/models/Registry';
+import clearRouterHistory from '@/utils/clearRouterHistory';
 
 export default function EditExpenseCategory() {
     const { id } = useLocalSearchParams();
@@ -20,6 +21,7 @@ export default function EditExpenseCategory() {
 
     if (!authenticatedUser) {
         Alert.alert("Error", "You must be logged in to edit a category.")
+        clearRouterHistory(router)
         router.replace("/loginPage")
         return
     }
@@ -27,6 +29,7 @@ export default function EditExpenseCategory() {
     const category = registry.getAllExpenseCategoriesByUser(authenticatedUser).find(cat => cat.getID() === id);
     if (!category) {
         Alert.alert("Error", "Category not found.")
+        clearRouterHistory(router)
         router.replace("/expenseCategoriesOverviewPage")
         return
     }
@@ -71,6 +74,7 @@ export default function EditExpenseCategory() {
             try {
                 registry.updateExpenseCategory(id as string, categoryName, parseFloat(monthlyLimit))
                 Alert.alert('Success', `Category "${categoryName}" updated with a limit of £${monthlyLimit}`)
+                clearRouterHistory(router)
                 router.replace("/expenseCategoriesOverviewPage")
             } catch (err: any) {
                 Alert.alert("Error", err.message)

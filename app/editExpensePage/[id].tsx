@@ -9,18 +9,19 @@ import isNumeric from '@/utils/validateNumeric';
 import { isValidDate, isTodayOrBefore } from '@/utils/validateDate';
 import Registry from '@/models/Registry';
 import ExpenseCategory from '@/models/ExpenseCategory';
+import clearRouterHistory from '@/utils/clearRouterHistory';
 
 
 export default function EditExpense() {
     const { id } = useLocalSearchParams();
 
     const router = useRouter()
-
     const registry = Registry.getInstance()
     const authenticatedUser = registry.getAuthenticatedUser()
 
     if (!authenticatedUser) {
         Alert.alert("Error", "You must be logged in to edit an expense.")
+        clearRouterHistory(router)
         router.replace("/loginPage")
         return
     }
@@ -32,6 +33,7 @@ export default function EditExpense() {
     if (!expense) {
         Alert.alert("Error", "Expense does not exist.")
         router.replace("/listTransactionsPage")
+        clearRouterHistory(router)
         return
     }
 
@@ -89,6 +91,7 @@ export default function EditExpense() {
             try {
                 registry.updateExpense(id as string, title, parseFloat(amount), date, notes, category as ExpenseCategory)
                 Alert.alert('Success', 'Expense updated successfully!')
+                clearRouterHistory(router)
                 router.replace("/viewExpenseDetailsPage/" + expense.getID())
             } catch (err: any) {
                 Alert.alert("Error", err.message)

@@ -4,6 +4,7 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import Registry from '@/models/Registry';
+import clearRouterHistory from '@/utils/clearRouterHistory';
 
 export default function IncomeDetailsScreen() {
     const { id } = useLocalSearchParams();
@@ -16,6 +17,7 @@ export default function IncomeDetailsScreen() {
 
     if (!authenticatedUser) {
         Alert.alert("Error", "You must be logged in to view this income source.");
+        clearRouterHistory(router);
         router.replace("/loginPage");
         return null;
     }
@@ -26,6 +28,7 @@ export default function IncomeDetailsScreen() {
 
     if (!income) {
         Alert.alert("Error", "Income source not found.");
+        clearRouterHistory(router);
         router.replace("/listTransactionsPage");
         return null;
     }
@@ -43,6 +46,7 @@ export default function IncomeDetailsScreen() {
                 try {
                     registry.deleteIncome(income.getID());
                     Alert.alert('Success', 'Income source deleted successfully!');
+                    clearRouterHistory(router);
                     router.replace("/listTransactionsPage");
                 } catch (err: any) {
                     Alert.alert('Error', err.message);

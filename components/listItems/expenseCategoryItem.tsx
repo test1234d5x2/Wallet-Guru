@@ -6,9 +6,7 @@ import { useRouter } from 'expo-router';
 import ListItemDeleteButton from './listItemDeleteButton';
 import ListItemEditButton from './listItemEditButton';
 import Registry from '@/models/Registry';
-import TransactionType from '@/enums/TransactionType';
-import filterExpensesByCategory from '@/utils/filterExpensesByCategory';
-import filterTransactionByMonth from '@/utils/filterTransactionByMonth';
+import clearRouterHistory from '@/utils/clearRouterHistory';
 
 
 interface ExpenseCategoryProps {
@@ -23,8 +21,9 @@ export default function ExpenseCategoryItem(props: ExpenseCategoryProps) {
     const user = registry.getAuthenticatedUser()
 
     if (!user) {
-        router.replace("/loginPage")
-        return
+        clearRouterHistory(router);
+        router.replace("/loginPage");
+        return;
     }
 
     const totalMonthlyExpense = registry.calculateMonthlyCategoryTotal(user, new Date(), props.category)
@@ -38,9 +37,10 @@ export default function ExpenseCategoryItem(props: ExpenseCategoryProps) {
             { text: 'Cancel', style: 'cancel' },
             { text: 'Delete', style: 'destructive', onPress: () => {
                 registry.deleteExpenseCategory(props.category.getID())
-                console.log('Expense category deleted')
                 Alert.alert('Success', 'Expense category deleted successfully!');
-                router.replace("/expenseCategoriesOverviewPage")
+                clearRouterHistory(router);
+                router.replace("/expenseCategoriesOverviewPage");
+                return;
             } },
         ])
     }
@@ -49,9 +49,9 @@ export default function ExpenseCategoryItem(props: ExpenseCategoryProps) {
         <View style={styles.categoryContainer}>
             <Text style={styles.categoryName}>{props.category.name}</Text>
 
-            <Text style={styles.label}>Spending: £{totalMonthlyExpense}</Text>
+            <Text style={styles.label}>Spending: £{totalMonthlyExpense.toFixed(2)}</Text>
             <Progress.Bar progress={props.category.calculateBudgetUsed(totalMonthlyExpense)} color="#007BFF" width={null} />
-            <Text style={styles.label}>Budget: £{props.category.monthlyBudget}</Text>
+            <Text style={styles.label}>Budget: £{props.category.monthlyBudget.toFixed(2)}</Text>
 
             <View style={styles.actionsContainer}>
                 <ListItemEditButton id={props.category.getID()} handleEdit={handleEdit} />

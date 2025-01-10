@@ -5,6 +5,7 @@ import { useRouter } from "expo-router";
 import ListItemEditButton from "./listItemEditButton";
 import ListItemDeleteButton from "./listItemDeleteButton";
 import Registry from "@/models/Registry";
+import clearRouterHistory from "@/utils/clearRouterHistory";
 
 
 interface GoalItemProps {
@@ -28,7 +29,8 @@ export default function GoalItem(props: GoalItemProps) {
             { text: 'Delete', style: 'destructive', onPress: () => {
                 registry.deleteGoal(props.goal.getID())
                 Alert.alert('Success', 'Goal deleted successfully!');
-                router.replace("/allGoalsPage")
+                clearRouterHistory(router);
+                router.replace("/allGoalsPage");
                 return
             } },
         ])
@@ -38,7 +40,7 @@ export default function GoalItem(props: GoalItemProps) {
         <View style={styles.goalContainer}>
             <View style={styles.goalHeader}>
                 <Text style={styles.goalTitle}>{props.goal.title}</Text>
-                <Text style={styles.goalTarget}>Target: £{props.goal.target}</Text>
+                <Text style={styles.goalTarget}>Target: £{props.goal.target.toFixed(2)}</Text>
             </View>
             <Text style={styles.progressLabel}>Progress</Text>
             <Progress.Bar progress={props.goal.calculateProgress()} color="#007BFF" width={null} />

@@ -7,6 +7,7 @@ import validateEmpty from '@/utils/validateEmpty';
 import isNumeric from '@/utils/validateNumeric';
 import { useRouter } from 'expo-router';
 import Registry from '@/models/Registry';
+import clearRouterHistory from '@/utils/clearRouterHistory';
 
 export default function AddExpenseCategory() {
 
@@ -20,6 +21,7 @@ export default function AddExpenseCategory() {
     const user = registry.getAuthenticatedUser()
 
     if (!user) {
+        clearRouterHistory(router);
         router.replace("/loginPage")
         return null
     }
@@ -61,6 +63,7 @@ export default function AddExpenseCategory() {
                 Alert.alert('Success', `Category "${categoryName}" added with a limit of £${monthlyLimit}`)
                 setCategoryName('')
                 setMonthlyLimit('')
+                clearRouterHistory(router);
                 router.replace("/expenseCategoriesOverviewPage")
             } catch (error: any) {
                 Alert.alert("Error", error.message)

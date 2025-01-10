@@ -5,6 +5,7 @@ import setPageTitle from '@/components/pageTitle/setPageTitle';
 import TopBar from '@/components/topBars/topBar';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import Registry from '@/models/Registry';
+import clearRouterHistory from '@/utils/clearRouterHistory';
 
 export default function ViewGoalDetails() {
     const { id } = useLocalSearchParams();
@@ -13,19 +14,21 @@ export default function ViewGoalDetails() {
     const authenticatedUser = registry.getAuthenticatedUser();
     const router = useRouter();
 
-    // Ensure user is authenticated
+
     if (!authenticatedUser) {
         Alert.alert("Error", "You must be logged in to view this goal.");
+        clearRouterHistory(router);
         router.replace("/loginPage");
         return null;
     }
 
-    // Fetch goal from registry
+
     const goal = registry.getAllGoalsByUser(authenticatedUser).find(g => g.getID() === id);
 
-    // Handle case where goal is not found
+
     if (!goal) {
         Alert.alert("Error", "Goal not found.");
+        clearRouterHistory(router);
         router.replace("/allGoalsPage");
         return null;
     }
@@ -43,6 +46,7 @@ export default function ViewGoalDetails() {
                 try {
                     registry.deleteGoal(goal.getID());
                     Alert.alert('Success', 'Goal deleted successfully!');
+                    clearRouterHistory(router);
                     router.replace("/allGoalsPage");
                 } catch (err: any) {
                     Alert.alert('Error', err.message);
@@ -55,10 +59,10 @@ export default function ViewGoalDetails() {
         <View style={styles.container}>
             <TopBar />
 
-            <Text style={styles.label}>Target: £{goal.target}</Text>
+            <Text style={styles.label}>Target: £{goal.target.toFixed(2)}</Text>
 
             <View style={{ rowGap: 5 }}>
-                <Text style={styles.label}>Current: £{goal.current}</Text>
+                <Text style={styles.label}>Current: £{goal.current.toFixed(2)}</Text>
                 <Progress.Bar progress={goal.calculateProgress()} color="#007BFF" width={null} />
             </View>
 

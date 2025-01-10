@@ -6,6 +6,7 @@ import uuid from 'react-native-uuid';
 import GoalItem from '@/components/listItems/goalItem';
 import { useRouter } from 'expo-router';
 import Registry from '@/models/Registry';
+import clearRouterHistory from '@/utils/clearRouterHistory';
 
 export default function AllGoals() {
 
@@ -17,6 +18,7 @@ export default function AllGoals() {
     const user = registry.getAuthenticatedUser()
 
     if (!user) {
+        clearRouterHistory(router);
         router.replace("/loginPage")
         return null
     }

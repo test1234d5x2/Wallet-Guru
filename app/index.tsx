@@ -13,7 +13,7 @@ export default function Index() {
     useEffect(() => {
         const timer = setTimeout(() => {
             setIsReady(true)
-        }, 0)
+        }, 1000)
 
         return () => clearTimeout(timer)
     }, [])
