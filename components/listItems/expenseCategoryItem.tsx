@@ -7,6 +7,8 @@ import ListItemDeleteButton from './listItemDeleteButton';
 import ListItemEditButton from './listItemEditButton';
 import Registry from '@/models/Registry';
 import TransactionType from '@/enums/TransactionType';
+import filterExpensesByCategory from '@/utils/filterExpensesByCategory';
+import filterTransactionByMonth from '@/utils/filterTransactionByMonth';
 
 
 interface ExpenseCategoryProps {
@@ -25,7 +27,7 @@ export default function ExpenseCategoryItem(props: ExpenseCategoryProps) {
         return
     }
 
-    const totalExpenses = registry.calculateMonthlyTransactionsTotal(user, new Date(), TransactionType.EXPENSE)
+    const totalMonthlyExpense = registry.calculateMonthlyCategoryTotal(user, new Date(), props.category)
 
     const handleEdit = (id: string) => {
         router.navigate("/editExpenseCategoryPage/" + props.category.getID())
@@ -47,8 +49,8 @@ export default function ExpenseCategoryItem(props: ExpenseCategoryProps) {
         <View style={styles.categoryContainer}>
             <Text style={styles.categoryName}>{props.category.name}</Text>
 
-            <Text style={styles.label}>Spending: £{totalExpenses}</Text>
-            <Progress.Bar progress={props.category.calculateBudgetUsed(totalExpenses)} color="#007BFF" width={null} />
+            <Text style={styles.label}>Spending: £{totalMonthlyExpense}</Text>
+            <Progress.Bar progress={props.category.calculateBudgetUsed(totalMonthlyExpense)} color="#007BFF" width={null} />
             <Text style={styles.label}>Budget: £{props.category.monthlyBudget}</Text>
 
             <View style={styles.actionsContainer}>

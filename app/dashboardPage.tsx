@@ -18,7 +18,8 @@ export default function Dashboard() {
     const user = registry.getAuthenticatedUser()
 
     if (!user) {
-        return null // Redirect logic can be added later if needed
+        router.replace("/loginPage")
+        return
     }
 
     const incomes = [...registry.getAllIncomesByUser(user)]

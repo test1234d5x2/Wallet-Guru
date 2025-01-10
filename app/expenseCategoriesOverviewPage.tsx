@@ -13,9 +13,10 @@ export default function ViewExpenseCategories() {
 
     const registry = Registry.getInstance()
     const user = registry.getAuthenticatedUser()
+    const router = useRouter()
 
     if (!user) {
-        useRouter().replace("/loginPage")
+        router.replace("/loginPage")
         return
     }
 

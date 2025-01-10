@@ -13,13 +13,10 @@ export default function EditExpenseCategory() {
 
     setPageTitle("Edit Expense Category")
 
-    const [categoryName, setCategoryName] = useState<string>('')
-    const [monthlyLimit, setMonthlyLimit] = useState<string>('')
-    const [error, setError] = useState<string>('')
-    const router = useRouter()
 
     const registry = Registry.getInstance()
     const authenticatedUser = registry.getAuthenticatedUser()
+    const router = useRouter()
 
     if (!authenticatedUser) {
         Alert.alert("Error", "You must be logged in to edit a category.")
@@ -34,8 +31,9 @@ export default function EditExpenseCategory() {
         return
     }
 
-    setCategoryName(category.name)
-    setMonthlyLimit(category.monthlyBudget.toString())
+    const [categoryName, setCategoryName] = useState<string>(category.name)
+    const [monthlyLimit, setMonthlyLimit] = useState<string>(category.monthlyBudget.toString())
+    const [error, setError] = useState<string>('')
 
 
     
