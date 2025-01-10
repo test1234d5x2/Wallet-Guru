@@ -5,6 +5,7 @@ import TopBar from '@/components/topBars/topBar';
 import uuid from 'react-native-uuid';
 import ExpenseCategoryItem from '@/components/listItems/expenseCategoryItem';
 import Registry from '@/models/Registry';
+import { useRouter } from 'expo-router';
 
 export default function ViewExpenseCategories() {
 
@@ -14,7 +15,8 @@ export default function ViewExpenseCategories() {
     const user = registry.getAuthenticatedUser()
 
     if (!user) {
-        return null // Redirect logic can be added later if needed
+        useRouter().replace("/loginPage")
+        return
     }
 
     const categories = registry.getAllExpenseCategoriesByUser(user)

@@ -6,6 +6,7 @@ import { useRouter } from 'expo-router';
 import ListItemDeleteButton from './listItemDeleteButton';
 import ListItemEditButton from './listItemEditButton';
 import Registry from '@/models/Registry';
+import TransactionType from '@/enums/TransactionType';
 
 
 interface ExpenseCategoryProps {
@@ -19,9 +20,12 @@ export default function ExpenseCategoryItem(props: ExpenseCategoryProps) {
     const registry = Registry.getInstance()
     const user = registry.getAuthenticatedUser()
 
-    if (!user) {return router.replace("/loginPage")}
+    if (!user) {
+        router.replace("/loginPage")
+        return
+    }
 
-    const totalExpenses = registry.calculateMonthlyTransactionsTotal(user, new Date())
+    const totalExpenses = registry.calculateMonthlyTransactionsTotal(user, new Date(), TransactionType.EXPENSE)
 
     const handleEdit = (id: string) => {
         router.navigate("/editExpenseCategoryPage/" + props.category.getID())

@@ -8,6 +8,7 @@ import ExpenseCategoryItem from '@/components/listItems/expenseCategoryItem';
 import Registry from '@/models/Registry';
 import ExpenseItem from '@/components/listItems/expenseItem';
 import IncomeItem from '@/components/listItems/incomeItem';
+import TransactionType from '@/enums/TransactionType';
 
 export default function Dashboard() {
 
@@ -42,8 +43,8 @@ export default function Dashboard() {
         expenseCategoryItemsList.push(<View style={styles.dividerLine} key={uuid.v4()} />)
     }
 
-    const incomeTotal = incomes.reduce((sum, income) => sum + income.amount, 0)
-    const expenseTotal = expenses.reduce((sum, expense) => sum + expense.amount, 0)
+    const incomeTotal = registry.calculateMonthlyTransactionsTotal(user, new Date(), TransactionType.INCOME)
+    const expenseTotal = registry.calculateMonthlyTransactionsTotal(user, new Date(), TransactionType.EXPENSE)
 
     return (
         <ScrollView contentContainerStyle={styles.container}>
