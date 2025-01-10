@@ -4,7 +4,7 @@ import { View, Text, FlatList, TouchableOpacity, StyleSheet, Modal, Pressable, S
 
 
 interface ModalSelectionProps {
-    choices: Array<string>
+    choices: Array<ExpenseCategory>
     value: ExpenseCategory
     setValue: (text: ExpenseCategory) => void
 }
