@@ -1,6 +1,6 @@
 import ExpenseCategory from '@/models/ExpenseCategory';
 import React, { useState } from 'react';
-import { View, Text, FlatList, TouchableOpacity, StyleSheet, Modal, Pressable, SafeAreaView } from 'react-native';
+import { View, Text, FlatList, TouchableOpacity, StyleSheet, Modal, Pressable, SafeAreaView, Alert } from 'react-native';
 
 
 interface ModalSelectionProps {
@@ -15,7 +15,9 @@ const ModalSelection = (props: ModalSelectionProps) => {
 
     return (
         <View style={styles.container}>
-            <TouchableOpacity style={styles.dropdown} onPress={() => setShowDropdown(true)}>
+            <TouchableOpacity style={styles.dropdown} onPress={() => {
+                if (props.choices.length > 0) {setShowDropdown(true)} else {Alert.alert("No Expense Categories", "You have not created any expense categories to pick from.")}
+            }}>
                 <Text style={styles.dropdownText}>{props.value.name}</Text>
             </TouchableOpacity>
 
