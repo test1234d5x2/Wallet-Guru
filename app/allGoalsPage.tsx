@@ -24,7 +24,8 @@ export default function AllGoals() {
     const goals = registry.getAllGoalsByUser(user)
 
     const handleGoalClick = (id: string) => {
-        router.navigate(`/viewGoalDetailsPage?id=${id}`)
+        router.navigate(`/viewGoalDetailsPage/${id}`)
+        return
     }
 
     const handleNoGoals = () => {
