@@ -114,7 +114,7 @@ export default function EditExpense() {
                     date={date}
                     category={category}
                     notes={notes}
-                    categoriesList={registry.getAllExpenseCategoriesByUser(authenticatedUser).map(cat => cat.name)}
+                    categoriesList={registry.getAllExpenseCategoriesByUser(authenticatedUser)}
                     setTitle={setTitle}
                     setAmount={setAmount}
                     setDate={setDate}
