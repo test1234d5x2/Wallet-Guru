@@ -17,6 +17,11 @@ export default function ExpenseCategoryItem(props: ExpenseCategoryProps) {
 
     const router = useRouter()
     const registry = Registry.getInstance()
+    const user = registry.getAuthenticatedUser()
+
+    if (!user) {return router.replace("/loginPage")}
+
+    const totalExpenses = registry.calculateMonthlyTransactionsTotal(user, new Date())
 
     const handleEdit = (id: string) => {
         router.navigate("/editExpenseCategoryPage/" + props.category.getID())
@@ -38,8 +43,8 @@ export default function ExpenseCategoryItem(props: ExpenseCategoryProps) {
         <View style={styles.categoryContainer}>
             <Text style={styles.categoryName}>{props.category.name}</Text>
 
-            <Text style={styles.label}>Spending: £200</Text>
-            <Progress.Bar progress={props.category.calculateBudgetUsed(200)} color="#007BFF" width={null} />
+            <Text style={styles.label}>Spending: £{totalExpenses}</Text>
+            <Progress.Bar progress={props.category.calculateBudgetUsed(totalExpenses)} color="#007BFF" width={null} />
             <Text style={styles.label}>Budget: £{props.category.monthlyBudget}</Text>
 
             <View style={styles.actionsContainer}>

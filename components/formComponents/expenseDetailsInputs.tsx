@@ -2,7 +2,7 @@ import React from 'react';
 import { View, StyleSheet, ScrollView } from 'react-native';
 import StandardInputField from './inputFields/standardInputField';
 import NumericInputField from './inputFields/numericInputField';
-import ModalSelection from '../modalSelection/modalSelection';
+import ModalSelection from '../modalSelection/modalSelectionExpenseCategories';
 import DateInputField from './inputFields/dateInputField';
 import ExpenseCategory from '@/models/ExpenseCategory';
 
@@ -13,7 +13,7 @@ interface ExpenseDetailsInputsProps {
     date: Date,
     category: ExpenseCategory,
     notes: string,
-    categoriesList: Array<string>,
+    categoriesList: Array<ExpenseCategory>,
     setTitle: (text: string) => void,
     setAmount: (text: string) => void,
     setDate: (text: Date) => void,
@@ -43,9 +43,7 @@ export default function ExpenseDetailsInputs(props: ExpenseDetailsInputsProps) {
 
             <DateInputField date={props.date} setDate={props.setDate} />
 
-            <View style={styles.input}>
-                <ModalSelection choices={props.categoriesList} value={props.category} setValue={props.setCategory} />
-            </View>
+            <ModalSelection choices={props.categoriesList} value={props.category} setValue={props.setCategory} />
 
             <StandardInputField
                 placeholder="Notes"
@@ -60,13 +58,5 @@ const styles = StyleSheet.create({
     container: {
         backgroundColor: '#fff',
         rowGap: 20,
-    },
-    input: {
-        width: '100%',
-        borderColor: '#ccc',
-        borderWidth: 1,
-        borderRadius: 10,
-        paddingLeft: 15,
-        fontSize: 16,
     },
 })

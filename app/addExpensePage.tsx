@@ -106,7 +106,7 @@ export default function AddExpense() {
                     date={date}
                     category={category}
                     notes={notes}
-                    categoriesList={categories.map((category => category.name))}
+                    categoriesList={categories}
                     setTitle={setTitle}
                     setAmount={setAmount}
                     setDate={setDate}

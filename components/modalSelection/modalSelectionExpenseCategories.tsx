@@ -15,37 +15,52 @@ const ModalSelection = (props: ModalSelectionProps) => {
 
     return (
         <View style={styles.container}>
-            <TouchableOpacity style={styles.dropdown} onPress={() => {
-                if (props.choices.length > 0) {setShowDropdown(true)} else {Alert.alert("No Expense Categories", "You have not created any expense categories to pick from.")}
+            <TouchableOpacity style={styles.input} onPress={() => {
+                if (props.choices.length > 0) {
+                    setShowDropdown(true)
+                }
+                else {
+                    Alert.alert("No Expense Categories", "You have not created any expense categories to pick from.")
+                }
             }}>
-                <Text style={styles.dropdownText}>{props.value.name}</Text>
-            </TouchableOpacity>
+                <TouchableOpacity style={styles.dropdown} onPress={() => {
+                    if (props.choices.length > 0) {
+                        setShowDropdown(true)
+                    }
+                    else {
+                        Alert.alert("No Expense Categories", "You have not created any expense categories to pick from.")
+                    }
+                }}>
+                    <Text style={styles.dropdownText}>{props.value.name}</Text>
+                </TouchableOpacity>
 
-            <Modal visible={showDropdown} transparent={true} onRequestClose={() => setShowDropdown(false)}>
-                <SafeAreaView style={styles.modalOverlay}>
-                    <View style={styles.modalContainer}>
-                        <FlatList
-                            data={props.choices}
-                            keyExtractor={(item, index) => index.toString()}
-                            renderItem={({ item }) => (
-                                <TouchableOpacity
-                                    style={styles.dropdownOption}
-                                    onPress={() => {
-                                        props.setValue(props.value);
-                                        setShowDropdown(false);
-                                    }}
-                                >
-                                    <Text style={styles.optionText}>{props.value.name}</Text>
-                                </TouchableOpacity>
-                            )}
+                <Modal visible={showDropdown} transparent={true} onRequestClose={() => setShowDropdown(false)}>
+                    <SafeAreaView style={styles.modalOverlay}>
+                        <View style={styles.modalContainer}>
+                            <FlatList
+                                data={props.choices}
+                                keyExtractor={(item, index) => index.toString()}
+                                renderItem={({ item }) => (
+                                    <TouchableOpacity
+                                        style={styles.dropdownOption}
+                                        onPress={() => {
+                                            props.setValue(item);
+                                            setShowDropdown(false);
+                                        }}
+                                    >
+                                        <Text style={styles.optionText}>{item.name}</Text>
+                                    </TouchableOpacity>
+                                )}
+                            />
+                        </View>
+                        <Pressable
+                            style={styles.modalDismissArea}
+                            onPress={() => setShowDropdown(false)}
                         />
-                    </View>
-                    <Pressable
-                        style={styles.modalDismissArea}
-                        onPress={() => setShowDropdown(false)}
-                    />
-                </SafeAreaView>
-            </Modal>
+                    </SafeAreaView>
+                </Modal>
+            </TouchableOpacity>
+            
         </View>
     )
 }
@@ -53,7 +68,15 @@ const ModalSelection = (props: ModalSelectionProps) => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
+    },
+    input: {
         paddingVertical: 20,
+        width: '100%',
+        borderColor: '#ccc',
+        borderWidth: 1,
+        borderRadius: 10,
+        paddingLeft: 15,
+        fontSize: 16,
     },
     dropdown: {
         backgroundColor: '#fff',
