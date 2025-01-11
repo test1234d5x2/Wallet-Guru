@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, StyleSheet, Alert } from 'react-native';
+import { View, StyleSheet, Alert, ScrollView } from 'react-native';
 import setPageTitle from '@/components/pageTitle/setPageTitle';
 import TopBar from '@/components/topBars/topBar';
 import uuid from 'react-native-uuid';
@@ -37,7 +37,9 @@ export default function ViewExpenseCategories() {
     return (
         <View style={styles.container}>
             <TopBar />
-            {displayElements}
+            <ScrollView contentContainerStyle={{rowGap: 20}} showsVerticalScrollIndicator={false}>
+                {displayElements}
+            </ScrollView>
         </View>
     );
 }
@@ -47,7 +49,7 @@ const styles = StyleSheet.create({
         padding: 20,
         backgroundColor: '#fff',
         flex: 1,
-        rowGap: 20,
+        rowGap: 30,
     },
     divider: {
         height: 1,

@@ -56,7 +56,7 @@ export default function ExpenseCategoryItem(props: ExpenseCategoryProps) {
             <Text style={styles.label}>Spending: £{totalMonthlyExpense.toFixed(2)}</Text>
             <Progress.Bar
                 progress={props.category.calculateBudgetUsed(totalMonthlyExpense)}
-                color="#007BFF"
+                color={props.category.calculateBudgetUsed(totalMonthlyExpense) < 0.8 ? "#007BFF": "#FF4C4C"}
                 width={null}
             />
             <Text style={styles.label}>Budget: £{props.category.monthlyBudget.toFixed(2)}</Text>

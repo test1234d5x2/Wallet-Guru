@@ -2,7 +2,7 @@ import React from 'react';
 import { View, StyleSheet, Text, Dimensions, Alert } from 'react-native';
 import setPageTitle from '@/components/pageTitle/setPageTitle';
 import TopBar from '@/components/topBars/topBar';
-import { PieChart, BarChart } from 'react-native-chart-kit';
+import { PieChart, LineChart } from 'react-native-chart-kit';
 import Registry from '@/models/data/Registry';
 import { useRouter } from 'expo-router';
 import clearRouterHistory from '@/utils/clearRouterHistory';
@@ -30,7 +30,7 @@ export default function Analytics() {
 
 
     const categoryTotals = registry.analyticsService.getCategoryDistribution(user, new Date());
-    const categoryDistribution = categoryTotals.map(({name, total}, index) => ({
+    const categoryDistribution = categoryTotals.map(({ name, total }, index) => ({
         name,
         population: total,
         color: getColor(index),
@@ -40,7 +40,7 @@ export default function Analytics() {
 
 
     const currentDate = new Date();
-    const lastFourMonths = Array.from({ length: 4 }, (_, i) => {
+    const lastFourMonths = Array.from({ length: 5 }, (_, i) => {
         const date = new Date(currentDate);
         date.setMonth(currentDate.getMonth() - i);
         return date;
@@ -53,6 +53,7 @@ export default function Analytics() {
     const labels = lastFourMonths.map((date) =>
         date.toLocaleString('default', { month: 'short', year: '2-digit' })
     );
+
 
     return (
         <View style={styles.container}>
@@ -76,29 +77,47 @@ export default function Analytics() {
             />
 
             <Text style={styles.header}>Income vs Expenditure</Text>
-            <BarChart
+            <LineChart
                 data={{
                     labels,
                     datasets: [
-                        { data: incomeTrends, color: () => 'green' },
-                        { data: expenseTrends, color: () => 'red' },
-                        { data: savingsTrend, color: () => 'blue' },
+                        {
+                            data: incomeTrends,
+                            color: () => 'green',
+                            strokeWidth: 2,
+                        },
+                        {
+                            data: expenseTrends,
+                            color: () => 'red',
+                            strokeWidth: 2,
+                        },
                     ],
+                    legend: ['Income', 'Expense'],
                 }}
                 width={screenWidth - 30}
                 height={300}
+                yAxisLabel="£"
                 chartConfig={{
                     backgroundGradientFrom: '#fff',
                     backgroundGradientTo: '#fff',
                     decimalPlaces: 2,
                     color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
                     labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+                    fillShadowGradient: 'white',
+                    fillShadowGradientFrom: "white",
+                    fillShadowGradientTo: "white",
+                    propsForDots: {
+                        r: 0,
+                    },
+                    propsForBackgroundLines: {
+                        strokeWidth: 0.5,
+                        strokeDasharray: '2 4', // Smaller dashes
+                        stroke: 'rgba(0, 0, 0, 0.3)',
+                    }
+                    
                 }}
-                verticalLabelRotation={0}
-                showBarTops={false}
-                yAxisLabel="£"
-                yAxisSuffix=""
             />
+
         </View>
     );
 }

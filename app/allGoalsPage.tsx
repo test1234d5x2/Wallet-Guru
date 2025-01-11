@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, ScrollView, TouchableOpacity, Alert } from 'react-native';
+import { View, StyleSheet, ScrollView, TouchableOpacity, Alert, Text } from 'react-native';
 import setPageTitle from '@/components/pageTitle/setPageTitle';
 import TopBar from '@/components/topBars/topBar';
 import uuid from 'react-native-uuid';
@@ -43,10 +43,12 @@ export default function AllGoals() {
     ));
 
     return (
-        <ScrollView contentContainerStyle={styles.container}>
+        <View style={styles.container}>
             <TopBar />
-            {displayElements}
-        </ScrollView>
+            <ScrollView contentContainerStyle={{rowGap: 30}}>
+                {displayElements.length === 0 ? <Text style={styles.message}>You currently haven't set any goals.</Text>: displayElements}
+            </ScrollView>
+        </View>
     );
 }
 
@@ -61,4 +63,7 @@ const styles = StyleSheet.create({
         height: 1,
         backgroundColor: "#ccc",
     },
+    message: {
+        textAlign: "center",
+    }
 });

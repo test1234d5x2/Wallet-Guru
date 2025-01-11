@@ -59,15 +59,17 @@ export default function ViewTransactionsList() {
     ];
 
     return (
-        <ScrollView contentContainerStyle={styles.container}>
+        <View style={styles.container}>
             <TopBar />
 
             <View style={styles.filtersContainer}>
                 <Text style={styles.filterTitle}>Filters:</Text>
             </View>
 
-            {transactionDisplayElements}
-        </ScrollView>
+            <ScrollView contentContainerStyle={{rowGap: 30}} showsVerticalScrollIndicator={false}>
+                {transactionDisplayElements}
+            </ScrollView>
+        </View>
     );
 }
 
