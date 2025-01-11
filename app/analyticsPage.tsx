@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, StyleSheet, Text, Dimensions, Alert } from 'react-native';
+import { View, StyleSheet, Text, Dimensions, Alert, ScrollView } from 'react-native';
 import setPageTitle from '@/components/pageTitle/setPageTitle';
 import TopBar from '@/components/topBars/topBar';
 import { PieChart, LineChart } from 'react-native-chart-kit';
@@ -28,7 +28,6 @@ export default function Analytics() {
         return colors[index % colors.length];
     };
 
-
     const categoryTotals = registry.analyticsService.getCategoryDistribution(user, new Date());
     const categoryDistribution = categoryTotals.map(({ name, total }, index) => ({
         name,
@@ -37,7 +36,6 @@ export default function Analytics() {
         legendFontColor: '#7F7F7F',
         legendFontSize: 12,
     }));
-
 
     const currentDate = new Date();
     const lastFourMonths = Array.from({ length: 5 }, (_, i) => {
@@ -54,70 +52,105 @@ export default function Analytics() {
         date.toLocaleString('default', { month: 'short', year: '2-digit' })
     );
 
-
     return (
         <View style={styles.container}>
             <TopBar />
 
-            <Text style={styles.header}>Category Distribution: {getMonthName(new Date())} {new Date().getFullYear()}</Text>
-            <PieChart
-                data={categoryDistribution}
-                width={screenWidth}
-                height={220}
-                chartConfig={{
-                    backgroundGradientFrom: '#fff',
-                    backgroundGradientTo: '#fff',
-                    decimalPlaces: 2,
-                    color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
-                    labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
-                }}
-                accessor="population"
-                backgroundColor="transparent"
-                paddingLeft="15"
-            />
+            <ScrollView contentContainerStyle={{ rowGap: 20 }} showsVerticalScrollIndicator={false}>
+                <Text style={styles.header}>Category Distribution: {getMonthName(new Date())} {new Date().getFullYear()}</Text>
+                <PieChart
+                    data={categoryDistribution}
+                    width={screenWidth}
+                    height={220}
+                    chartConfig={{
+                        backgroundGradientFrom: '#fff',
+                        backgroundGradientTo: '#fff',
+                        decimalPlaces: 2,
+                        color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+                        labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+                    }}
+                    accessor="population"
+                    backgroundColor="transparent"
+                    paddingLeft="15"
+                />
 
-            <Text style={styles.header}>Income vs Expenditure</Text>
-            <LineChart
-                data={{
-                    labels,
-                    datasets: [
-                        {
-                            data: incomeTrends,
-                            color: () => 'green',
-                            strokeWidth: 2,
+                <Text style={styles.header}>Income vs Expenditure</Text>
+                <LineChart
+                    data={{
+                        labels,
+                        datasets: [
+                            {
+                                data: incomeTrends,
+                                color: () => 'green',
+                                strokeWidth: 2,
+                            },
+                            {
+                                data: expenseTrends,
+                                color: () => 'red',
+                                strokeWidth: 2,
+                            },
+                        ],
+                        legend: ['Income', 'Expense'],
+                    }}
+                    width={screenWidth - 30}
+                    height={300}
+                    yAxisLabel="£"
+                    chartConfig={{
+                        backgroundGradientFrom: '#fff',
+                        backgroundGradientTo: '#fff',
+                        decimalPlaces: 2,
+                        color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+                        labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+                        fillShadowGradient: 'white',
+                        fillShadowGradientFrom: "white",
+                        fillShadowGradientTo: "white",
+                        propsForDots: {
+                            r: 0,
                         },
-                        {
-                            data: expenseTrends,
-                            color: () => 'red',
-                            strokeWidth: 2,
-                        },
-                    ],
-                    legend: ['Income', 'Expense'],
-                }}
-                width={screenWidth - 30}
-                height={300}
-                yAxisLabel="£"
-                chartConfig={{
-                    backgroundGradientFrom: '#fff',
-                    backgroundGradientTo: '#fff',
-                    decimalPlaces: 2,
-                    color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
-                    labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
-                    fillShadowGradient: 'white',
-                    fillShadowGradientFrom: "white",
-                    fillShadowGradientTo: "white",
-                    propsForDots: {
-                        r: 0,
-                    },
-                    propsForBackgroundLines: {
-                        strokeWidth: 0.5,
-                        strokeDasharray: '2 4', // Smaller dashes
-                        stroke: 'rgba(0, 0, 0, 0.3)',
-                    }
-                    
-                }}
-            />
+                        propsForBackgroundLines: {
+                            strokeWidth: 0.5,
+                            strokeDasharray: '2 4',
+                            stroke: 'rgba(0, 0, 0, 0.3)',
+                        }
+                    }}
+                />
 
+                <Text style={styles.header}>Savings Trends</Text>
+                <LineChart
+                    data={{
+                        labels,
+                        datasets: [
+                            {
+                                data: savingsTrend,
+                                color: () => 'blue',
+                                strokeWidth: 2,
+                            },
+                        ],
+                        legend: ['Savings'],
+                    }}
+                    width={screenWidth - 30}
+                    height={300}
+                    yAxisLabel="£"
+                    chartConfig={{
+                        backgroundGradientFrom: '#fff',
+                        backgroundGradientTo: '#fff',
+                        decimalPlaces: 2,
+                        color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+                        labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+                        fillShadowGradient: 'white',
+                        fillShadowGradientFrom: "white",
+                        fillShadowGradientTo: "white",
+                        propsForDots: {
+                            r: 0,
+                        },
+                        propsForBackgroundLines: {
+                            strokeWidth: 0.5,
+                            strokeDasharray: '2 4',
+                            stroke: 'rgba(0, 0, 0, 0.3)',
+                        }
+                    }}
+                />
+            </ScrollView>
         </View>
     );
 }
@@ -126,7 +159,6 @@ const styles = StyleSheet.create({
     container: {
         padding: 20,
         backgroundColor: '#fff',
-        flex: 1,
         rowGap: 20,
     },
     header: {
