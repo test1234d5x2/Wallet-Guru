@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet, Alert } from 'react-native';
 import setPageTitle from '@/components/pageTitle/setPageTitle';
 import TopBar from '@/components/topBars/topBar';
 import uuid from 'react-native-uuid';
@@ -19,6 +19,7 @@ export default function ViewExpenseCategories() {
     const user = authService.getAuthenticatedUser();
 
     if (!user) {
+        Alert.alert('Error', 'You must be logged in to view your expense categories.');
         clearRouterHistory(router);
         router.replace("/loginPage");
         return;

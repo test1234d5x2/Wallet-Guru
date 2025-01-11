@@ -23,6 +23,7 @@ export default function AddExpense() {
     const user = authService.getAuthenticatedUser();
 
     if (!user) {
+        Alert.alert('Error', 'You must be logged in to add an expense.');
         clearRouterHistory(router);
         router.replace("/loginPage");
         return;

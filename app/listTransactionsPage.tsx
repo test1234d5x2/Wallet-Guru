@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useRouter } from 'expo-router';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert } from 'react-native';
 import setPageTitle from '@/components/pageTitle/setPageTitle';
 import TopBar from '@/components/topBars/topBar';
 import uuid from 'react-native-uuid';
@@ -26,6 +26,7 @@ export default function ViewTransactionsList() {
     const user = authService.getAuthenticatedUser();
 
     if (!user) {
+        Alert.alert('Error', 'You must be logged in to view your transactions.');
         clearRouterHistory(router);
         router.replace("/loginPage");
         return;

@@ -10,7 +10,7 @@ export default function IncomeDetailsScreen() {
     const { id } = useLocalSearchParams();
 
     const registry = Registry.getInstance();
-    const authenticatedUser = registry.getAuthenticatedUser();
+    const authenticatedUser = registry.authService.getAuthenticatedUser();
 
     const router = useRouter();
 
@@ -23,7 +23,7 @@ export default function IncomeDetailsScreen() {
     }
 
 
-    const income = registry.getAllIncomesByUser(authenticatedUser).find(inc => inc.getID() === id);
+    const income = registry.incomeService.getAllIncomesByUser(authenticatedUser).find(inc => inc.getID() === id);
 
 
     if (!income) {
@@ -44,7 +44,7 @@ export default function IncomeDetailsScreen() {
             { text: 'Cancel', style: 'cancel' },
             { text: 'Delete', style: 'destructive', onPress: () => {
                 try {
-                    registry.deleteIncome(income.getID());
+                    registry.incomeService.deleteIncome(income.getID());
                     Alert.alert('Success', 'Income source deleted successfully!');
                     clearRouterHistory(router);
                     router.replace("/listTransactionsPage");

@@ -4,6 +4,7 @@ import GoalService from "./GoalService";
 import UserService from "./UserService";
 import ExpenseCategoryService from "./ExpenseCategoryService";
 import AuthService from "./AuthService";
+import AnalyticsService from "./AnalyticsService";
 
 class Registry {
     private static instance: Registry;
@@ -14,6 +15,7 @@ class Registry {
     public userService: UserService;
     public expenseCategoryService: ExpenseCategoryService;
     public authService: AuthService;
+    public analyticsService: AnalyticsService;
 
     private constructor() {
         this.userService = new UserService();
@@ -22,6 +24,8 @@ class Registry {
         this.goalService = new GoalService();
         this.expenseCategoryService = new ExpenseCategoryService();
         this.authService = new AuthService(this.userService);
+        this.analyticsService = new AnalyticsService(this.expenseService, this.incomeService);
+
     }
 
     public static getInstance(): Registry {

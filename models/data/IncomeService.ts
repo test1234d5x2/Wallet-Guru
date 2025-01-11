@@ -37,10 +37,23 @@ class IncomeService {
     }
 
     public calculateMonthlyTransactionsTotal(user: User, month: Date): number {
-        const transactions = this.repository.findByUser(user.getUserID());
-        const monthlyTransactions = filterTransactionByMonth(transactions, month);
+        const monthlyTransactions = this.getFilteredIncomes(user, month);
+        return this.reduceIncomesToTotal(monthlyTransactions);
+    }
 
-        return monthlyTransactions.reduce((sum, expense) => sum + expense.amount, 0);
+    public getMonthlyIncomeTrends(user: User, months: Date[]): number[] {
+        return months.map(month => {return this.calculateMonthlyTransactionsTotal(user, month)});
+    }
+
+
+    private getFilteredIncomes(user: User, month: Date): Income[] {
+        const incomes = this.getAllIncomesByUser(user);
+        return filterTransactionByMonth(incomes, month) as Income[];
+    }
+
+
+    private reduceIncomesToTotal(incomes: Income[]): number {
+        return incomes.reduce((sum, income) => sum + income.amount, 0);
     }
 }
 

@@ -25,7 +25,7 @@ export default function EditExpenseCategory() {
         Alert.alert("Error", "You must be logged in to edit a category.");
         clearRouterHistory(router);
         router.replace("/loginPage");
-        return null; // Avoid rendering anything
+        return;
     }
 
     const category = expenseCategoryService
@@ -36,7 +36,7 @@ export default function EditExpenseCategory() {
         Alert.alert("Error", "Category not found.");
         clearRouterHistory(router);
         router.replace("/expenseCategoriesOverviewPage");
-        return null; // Avoid rendering anything
+        return;
     }
 
     const [categoryName, setCategoryName] = useState<string>(category.name);

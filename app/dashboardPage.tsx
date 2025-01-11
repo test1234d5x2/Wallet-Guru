@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Alert } from 'react-native';
 import { Link, useRouter } from 'expo-router';
 import setPageTitle from '@/components/pageTitle/setPageTitle';
 import TopBar from '@/components/topBars/topBar';
@@ -24,6 +24,7 @@ export default function Dashboard() {
     const user = authService.getAuthenticatedUser();
 
     if (!user) {
+        Alert.alert('Error', 'You must be logged in to view your dashboard.');
         clearRouterHistory(router);
         router.replace("/loginPage");
         return;

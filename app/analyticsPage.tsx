@@ -1,56 +1,74 @@
 import React from 'react';
-import { View, StyleSheet, Text, Dimensions } from 'react-native';
+import { View, StyleSheet, Text, Dimensions, Alert } from 'react-native';
 import setPageTitle from '@/components/pageTitle/setPageTitle';
 import TopBar from '@/components/topBars/topBar';
-import { PieChart, BarChart } from "react-native-chart-kit";
-
-
-const screenWidth = Dimensions.get("window").width;
-
+import { PieChart, BarChart } from 'react-native-chart-kit';
+import Registry from '@/models/data/Registry';
+import { useRouter } from 'expo-router';
+import clearRouterHistory from '@/utils/clearRouterHistory';
+import getMonthName from '@/utils/getMonthName';
 
 export default function Analytics() {
+    setPageTitle('Spending Analytics');
 
-    setPageTitle("Spending Analytics")
+    const screenWidth = Dimensions.get('window').width;
+    const registry = Registry.getInstance();
+    const user = registry.authService.getAuthenticatedUser();
+    const router = useRouter();
 
-    const pieData = [
-        { name: "Rent", population: 33, color: "#C0C0C0", legendFontColor: "#7F7F7F", legendFontSize: 12 },
-        { name: "Food", population: 21, color: "#A9A9A9", legendFontColor: "#7F7F7F", legendFontSize: 12 },
-        { name: "Entertainment", population: 1, color: "#E5E5E5", legendFontColor: "#7F7F7F", legendFontSize: 12 },
-        { name: "Travel", population: 33, color: "#696969", legendFontColor: "#7F7F7F", legendFontSize: 12 },
-        { name: "Utilities", population: 21, color: "#000000", legendFontColor: "#7F7F7F", legendFontSize: 12 },
-    ];
+    if (!user) {
+        Alert.alert('Error', 'You must be logged in to view analytics.');
+        clearRouterHistory(router);
+        router.replace("/loginPage");
+        return;
+    }
 
-    const barData = {
-        labels: ["Jul-24", "Aug-24", "Sep-24", "Oct-24"],
-        datasets: [
-            {
-                data: [1000, 800, 1000, 750], // Income values
-                color: () => "green",
-            },
-            {
-                data: [750, 1000, 750, 1000], // Expenditure values
-                color: () => "red",
-            },
-        ],
+    const getColor = (index: number) => {
+        const colors = ['#C0C0C0', '#A9A9A9', '#E5E5E5', '#696969', '#000000'];
+        return colors[index % colors.length];
     };
 
+
+    const categoryTotals = registry.analyticsService.getCategoryDistribution(user, new Date());
+    const categoryDistribution = categoryTotals.map(({name, total}, index) => ({
+        name,
+        population: total,
+        color: getColor(index),
+        legendFontColor: '#7F7F7F',
+        legendFontSize: 12,
+    }));
+
+
+    const currentDate = new Date();
+    const lastFourMonths = Array.from({ length: 4 }, (_, i) => {
+        const date = new Date(currentDate);
+        date.setMonth(currentDate.getMonth() - i);
+        return date;
+    }).reverse();
+
+    const incomeTrends = registry.incomeService.getMonthlyIncomeTrends(user, lastFourMonths);
+    const expenseTrends = registry.expenseService.getMonthlyExpenseTrends(user, lastFourMonths);
+    const savingsTrend = registry.analyticsService.getSavingsTrends(user, lastFourMonths);
+
+    const labels = lastFourMonths.map((date) =>
+        date.toLocaleString('default', { month: 'short', year: '2-digit' })
+    );
 
     return (
         <View style={styles.container}>
             <TopBar />
 
-            <Text style={styles.header}>Category Distribution</Text>
+            <Text style={styles.header}>Category Distribution: {getMonthName(new Date())} {new Date().getFullYear()}</Text>
             <PieChart
-                data={pieData}
+                data={categoryDistribution}
                 width={screenWidth}
-                height={200}
+                height={220}
                 chartConfig={{
-                    backgroundGradientFrom: "#fff",
-                    backgroundGradientTo: "#fff",
-                    decimalPlaces: 0,
+                    backgroundGradientFrom: '#fff',
+                    backgroundGradientTo: '#fff',
+                    decimalPlaces: 2,
                     color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
                     labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
-                    barPercentage: 0.5,
                 }}
                 accessor="population"
                 backgroundColor="transparent"
@@ -59,25 +77,30 @@ export default function Analytics() {
 
             <Text style={styles.header}>Income vs Expenditure</Text>
             <BarChart
-                style={styles.barChart}
-                data={barData}
+                data={{
+                    labels,
+                    datasets: [
+                        { data: incomeTrends, color: () => 'green' },
+                        { data: expenseTrends, color: () => 'red' },
+                        { data: savingsTrend, color: () => 'blue' },
+                    ],
+                }}
                 width={screenWidth - 30}
                 height={300}
-                yAxisLabel=""
-                yAxisSuffix=""
                 chartConfig={{
-                    backgroundGradientFrom: "#fff",
-                    backgroundGradientTo: "#fff",
-                    decimalPlaces: 0,
+                    backgroundGradientFrom: '#fff',
+                    backgroundGradientTo: '#fff',
+                    decimalPlaces: 2,
                     color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
                     labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
-                    barPercentage: 0.5,
                 }}
                 verticalLabelRotation={0}
                 showBarTops={false}
+                yAxisLabel="£"
+                yAxisSuffix=""
             />
-        </View >
-    )
+        </View>
+    );
 }
 
 const styles = StyleSheet.create({
@@ -89,12 +112,12 @@ const styles = StyleSheet.create({
     },
     header: {
         fontSize: 18,
-        fontWeight: "bold",
-        textAlign: "center",
+        fontWeight: 'bold',
+        textAlign: 'center',
         marginBottom: 10,
         marginTop: 20,
     },
     barChart: {
         marginTop: 10,
     },
-})
+});

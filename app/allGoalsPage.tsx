@@ -21,6 +21,7 @@ export default function AllGoals() {
     const user = authService.getAuthenticatedUser();
 
     if (!user) {
+        Alert.alert('Error', 'You must be logged in to view all your goals.');
         clearRouterHistory(router);
         router.replace("/loginPage");
         return;

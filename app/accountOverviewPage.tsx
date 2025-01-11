@@ -17,6 +17,7 @@ export default function AccountOverview() {
     const user = authService.getAuthenticatedUser();
 
     if (!user) {
+        Alert.alert('Error', 'You must be logged in to view your account page.');
         clearRouterHistory(router);
         router.replace("/loginPage");
         return;

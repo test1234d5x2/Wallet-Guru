@@ -28,6 +28,7 @@ export default function AddGoal() {
     const user = authService.getAuthenticatedUser();
 
     if (!user) {
+        Alert.alert('Error', 'You must be logged in to add a goal.');
         clearRouterHistory(router);
         router.replace("/loginPage");
         return;
