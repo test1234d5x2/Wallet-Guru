@@ -5,6 +5,7 @@ import React, { useState } from "react";
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from "react-native";
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import Registry from "@/models/data/Registry";
+import clearRouterHistory from "@/utils/clearRouterHistory";
 
 export default function UpdateGoal() {
 
@@ -19,6 +20,7 @@ export default function UpdateGoal() {
     const authenticatedUser = authService.getAuthenticatedUser();
 
     if (!authenticatedUser) {
+        clearRouterHistory(router);
         Alert.alert("Error", "You must be logged in to update a goal.");
         router.replace("/loginPage");
         return;
@@ -27,6 +29,7 @@ export default function UpdateGoal() {
     const goal = goalService.getAllGoalsByUser(authenticatedUser).find(g => g.getID() === id);
 
     if (!goal) {
+        clearRouterHistory(router);
         Alert.alert("Error", "Goal not found.");
         router.replace("/allGoalsPage");
         return;
@@ -53,6 +56,7 @@ export default function UpdateGoal() {
                 goal.status
             );
             Alert.alert("Success", "Goal progress updated successfully!");
+            clearRouterHistory(router);
             router.replace("/allGoalsPage");
         } catch (err: any) {
             Alert.alert("Error", err.message);

@@ -36,7 +36,8 @@ export default function ViewTransactionsList() {
     const incomes = incomeService.getAllIncomesByUser(user);
 
     const handleTransactionClick = (transaction: Transaction) => {
-        router.push(transaction.getPageURL());
+        clearRouterHistory(router);
+        router.navigate(transaction.getPageURL());
     };
 
     const transactionDisplayElements = [

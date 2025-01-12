@@ -30,6 +30,7 @@ export default function AllGoals() {
     const goals = [...goalService.getAllGoalsByUser(user)];
 
     const handleGoalClick = (id: string) => {
+        clearRouterHistory(router);
         router.navigate(`/viewGoalDetailsPage/${id}`);
     };
 
