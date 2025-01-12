@@ -32,7 +32,7 @@ export default function Dashboard() {
 
     for (let x = 0; x < 50; x++) {
         incomeService.addIncome(user, "", 250, new Date(), "")
-        expenseService.addExpense(user, "", 25, new Date(), "", new ExpenseCategory(user, "", 1000))
+        expenseService.addExpense(user, "", 25, new Date(), "", new ExpenseCategory(user, "Other", 1000))
 
     }
 
@@ -101,7 +101,7 @@ export default function Dashboard() {
                             </Link>
                         </TouchableOpacity>
                     </View>
-                    {transactionItemsList}
+                    {transactionItemsList.length > 0 ? transactionItemsList : <Text>There are currently no transactions.</Text>}
                 </View>
 
                 <View style={styles.section}>
@@ -113,7 +113,7 @@ export default function Dashboard() {
                             </Link>
                         </TouchableOpacity>
                     </View>
-                    {expenseCategoryItemsList}
+                    {expenseCategoryItemsList.length > 0 ? expenseCategoryItemsList : <Text>There are currently no expense categories.</Text>}
                 </View>
             </ScrollView>
         </View>

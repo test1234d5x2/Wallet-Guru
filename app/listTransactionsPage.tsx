@@ -67,7 +67,7 @@ export default function ViewTransactionsList() {
             </View>
 
             <ScrollView contentContainerStyle={{rowGap: 30}} showsVerticalScrollIndicator={false}>
-                {transactionDisplayElements}
+                {transactionDisplayElements.length > 0 ? transactionDisplayElements : <Text>There are currently no transactions.</Text>}
             </ScrollView>
         </View>
     );

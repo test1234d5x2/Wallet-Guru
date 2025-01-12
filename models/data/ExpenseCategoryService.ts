@@ -32,6 +32,14 @@ class ExpenseCategoryService {
     public getAllCategoriesByUser(user: User): ExpenseCategory[] {
         return this.repository.findByUser(user.getUserID());
     }
+
+    public getAllCategoriesByUserAndName(user: User, name: string): ExpenseCategory[] {
+        const allCategories = this.repository.findByUser(user.getUserID());
+        return allCategories.filter(category =>
+            category.name.toLowerCase() === name.toLowerCase()
+        );
+    }
+
 }
 
 export default ExpenseCategoryService;

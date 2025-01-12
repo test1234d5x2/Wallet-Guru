@@ -1,15 +1,15 @@
-import ExpenseCategory from '@/models/ExpenseCategory';
+import getMonthName from '@/utils/getMonthName';
 import React, { useState } from 'react';
 import { View, Text, FlatList, TouchableOpacity, StyleSheet, Modal, Pressable, SafeAreaView, Alert } from 'react-native';
 
 
 interface ModalSelectionProps {
-    choices: Array<ExpenseCategory>
-    value: ExpenseCategory
-    setValue: (text: ExpenseCategory) => void
+    choices: Array<Date>
+    value: Date
+    setValue: (text: Date) => void
 }
 
-const ModalSelectionExpenseCategories = (props: ModalSelectionProps) => {
+const ModalSelectionDates = (props: ModalSelectionProps) => {
 
     const [showDropdown, setShowDropdown] = useState<boolean>(false)
 
@@ -20,7 +20,7 @@ const ModalSelectionExpenseCategories = (props: ModalSelectionProps) => {
                     setShowDropdown(true)
                 }
                 else {
-                    Alert.alert("No Expense Categories", "You have not created any expense categories to pick from.")
+                    Alert.alert("No Dates", "There are no dates to pick from.")
                 }
             }}>
                 <TouchableOpacity style={styles.dropdown} onPress={() => {
@@ -28,10 +28,10 @@ const ModalSelectionExpenseCategories = (props: ModalSelectionProps) => {
                         setShowDropdown(true)
                     }
                     else {
-                        Alert.alert("No Expense Categories", "You have not created any expense categories to pick from.")
+                        Alert.alert("No Dates", "There are no dates to pick from.")
                     }
                 }}>
-                    <Text style={styles.dropdownText}>{props.value.name}</Text>
+                    <Text style={styles.dropdownText}>{getMonthName(props.value)} {props.value.getFullYear()}</Text>
                 </TouchableOpacity>
 
                 <Modal visible={showDropdown} transparent={true} onRequestClose={() => setShowDropdown(false)}>
@@ -48,7 +48,7 @@ const ModalSelectionExpenseCategories = (props: ModalSelectionProps) => {
                                             setShowDropdown(false);
                                         }}
                                     >
-                                        <Text style={styles.optionText}>{item.name}</Text>
+                                        <Text style={styles.optionText}>{getMonthName(item)} {item.getFullYear()}</Text>
                                     </TouchableOpacity>
                                 )}
                             />
@@ -113,4 +113,4 @@ const styles = StyleSheet.create({
     },
 })
 
-export default ModalSelectionExpenseCategories;
+export default ModalSelectionDates;

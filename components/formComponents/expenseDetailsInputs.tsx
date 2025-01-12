@@ -2,9 +2,9 @@ import React from 'react';
 import { View, StyleSheet, ScrollView } from 'react-native';
 import StandardInputField from './inputFields/standardInputField';
 import NumericInputField from './inputFields/numericInputField';
-import ModalSelection from '../modalSelection/modalSelectionExpenseCategories';
 import DateInputField from './inputFields/dateInputField';
 import ExpenseCategory from '@/models/ExpenseCategory';
+import ModalSelectionExpenseCategories from '../modalSelection/modalSelectionExpenseCategories';
 
 
 interface ExpenseDetailsInputsProps {
@@ -40,7 +40,7 @@ export default function ExpenseDetailsInputs(props: ExpenseDetailsInputsProps) {
 
             <DateInputField date={props.date} setDate={props.setDate} />
 
-            <ModalSelection choices={props.categoriesList} value={props.category} setValue={props.setCategory} />
+            <ModalSelectionExpenseCategories choices={props.categoriesList} value={props.category} setValue={props.setCategory} />
 
             <StandardInputField
                 placeholder="Notes"

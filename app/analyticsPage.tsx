@@ -1,5 +1,5 @@
-import React from 'react';
-import { View, StyleSheet, Text, Dimensions, Alert, ScrollView } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, Dimensions, Alert, ScrollView } from 'react-native';
 import setPageTitle from '@/components/pageTitle/setPageTitle';
 import TopBar from '@/components/topBars/topBar';
 import { PieChart, LineChart } from 'react-native-chart-kit';
@@ -7,6 +7,8 @@ import Registry from '@/models/data/Registry';
 import { useRouter } from 'expo-router';
 import clearRouterHistory from '@/utils/clearRouterHistory';
 import getMonthName from '@/utils/getMonthName';
+import ModalSelectionDates from '@/components/modalSelection/modalSelectionDates';
+import monthsPassedSinceJoinDate from '@/utils/monthsPassedSinceJoinDate';
 
 export default function Analytics() {
     setPageTitle('Spending Analytics');
@@ -28,7 +30,16 @@ export default function Analytics() {
         return colors[index % colors.length];
     };
 
-    const categoryTotals = registry.analyticsService.getCategoryDistribution(user, new Date());
+    const [selectedMonth, setSelectedMonth] = useState<Date>(new Date());
+
+    const currentDate = selectedMonth;
+    const lastFourMonths = Array.from({ length: 5 }, (_, i) => {
+        const date = new Date(currentDate);
+        date.setMonth(currentDate.getMonth() - i);
+        return date;
+    }).reverse();
+
+    const categoryTotals = registry.analyticsService.getCategoryDistribution(user, selectedMonth);
     const categoryDistribution = categoryTotals.map(({ name, total }, index) => ({
         name,
         population: total,
@@ -36,13 +47,6 @@ export default function Analytics() {
         legendFontColor: '#7F7F7F',
         legendFontSize: 12,
     }));
-
-    const currentDate = new Date();
-    const lastFourMonths = Array.from({ length: 5 }, (_, i) => {
-        const date = new Date(currentDate);
-        date.setMonth(currentDate.getMonth() - i);
-        return date;
-    }).reverse();
 
     const incomeTrends = registry.incomeService.getMonthlyIncomeTrends(user, lastFourMonths);
     const expenseTrends = registry.expenseService.getMonthlyExpenseTrends(user, lastFourMonths);
@@ -56,9 +60,18 @@ export default function Analytics() {
         <View style={styles.container}>
             <TopBar />
 
-            <ScrollView contentContainerStyle={{ rowGap: 20 }} showsVerticalScrollIndicator={false}>
-                <Text style={styles.header}>Category Distribution: {getMonthName(new Date())} {new Date().getFullYear()}</Text>
-                <PieChart
+            <ScrollView contentContainerStyle={{ rowGap: 20, paddingBottom: 40 }} style={{flex: 1}} showsVerticalScrollIndicator={false}>
+                <View>
+                    <Text style={styles.selectMonthText}>Select Month:</Text>
+                    <ModalSelectionDates
+                        choices={monthsPassedSinceJoinDate(user.getDateJoined())}
+                        value={selectedMonth}
+                        setValue={setSelectedMonth}
+                    />
+                </View>
+
+                <Text style={styles.header}>Category Distribution: {getMonthName(selectedMonth)} {selectedMonth.getFullYear()}</Text>
+                {categoryDistribution.filter(distribution => distribution.population !== 0).length === 0 ? <Text style={styles.message}>There were no expenses.</Text> : <PieChart
                     data={categoryDistribution}
                     width={screenWidth}
                     height={220}
@@ -72,9 +85,10 @@ export default function Analytics() {
                     accessor="population"
                     backgroundColor="transparent"
                     paddingLeft="15"
-                />
+                />}
 
                 <Text style={styles.header}>Income vs Expenditure</Text>
+                { expenseTrends.filter(value => value !== 0).length === 0 && incomeTrends.filter(value => value !== 0).length === 0 ? <Text style={styles.message}>There were no expenses or income records.</Text> : 
                 <LineChart
                     data={{
                         labels,
@@ -102,8 +116,8 @@ export default function Analytics() {
                         color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
                         labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
                         fillShadowGradient: 'white',
-                        fillShadowGradientFrom: "white",
-                        fillShadowGradientTo: "white",
+                        fillShadowGradientFrom: 'white',
+                        fillShadowGradientTo: 'white',
                         propsForDots: {
                             r: 0,
                         },
@@ -111,11 +125,12 @@ export default function Analytics() {
                             strokeWidth: 0.5,
                             strokeDasharray: '2 4',
                             stroke: 'rgba(0, 0, 0, 0.3)',
-                        }
+                        },
                     }}
-                />
+                />}
 
                 <Text style={styles.header}>Savings Trends</Text>
+                { expenseTrends.filter(value => value !== 0).length === 0 && incomeTrends.filter(value => value !== 0).length === 0 ? <Text style={styles.message}>There were no expenses or income records.</Text> :
                 <LineChart
                     data={{
                         labels,
@@ -138,8 +153,8 @@ export default function Analytics() {
                         color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
                         labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
                         fillShadowGradient: 'white',
-                        fillShadowGradientFrom: "white",
-                        fillShadowGradientTo: "white",
+                        fillShadowGradientFrom: 'white',
+                        fillShadowGradientTo: 'white',
                         propsForDots: {
                             r: 0,
                         },
@@ -147,9 +162,9 @@ export default function Analytics() {
                             strokeWidth: 0.5,
                             strokeDasharray: '2 4',
                             stroke: 'rgba(0, 0, 0, 0.3)',
-                        }
+                        },
                     }}
-                />
+                />}
             </ScrollView>
         </View>
     );
@@ -160,6 +175,12 @@ const styles = StyleSheet.create({
         padding: 20,
         backgroundColor: '#fff',
         rowGap: 20,
+        flex: 1,
+    },
+    selectMonthText: {
+        fontSize: 16,
+        fontWeight: 'bold',
+        marginBottom: 10,
     },
     header: {
         fontSize: 18,
@@ -168,7 +189,7 @@ const styles = StyleSheet.create({
         marginBottom: 10,
         marginTop: 20,
     },
-    barChart: {
-        marginTop: 10,
-    },
+    message: {
+        textAlign: "center"
+    }
 });

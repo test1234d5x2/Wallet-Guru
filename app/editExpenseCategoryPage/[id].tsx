@@ -68,6 +68,12 @@ export default function EditExpenseCategory() {
             return false;
         }
 
+        if (expenseCategoryService.getAllCategoriesByUserAndName(authenticatedUser, categoryName).length > 0) {
+            Alert.alert("Category Already Exists", "This category already exists.");
+            setError("This category already exists.");
+            return false;
+        }
+
         setError('');
         return true;
     };

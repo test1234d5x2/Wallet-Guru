@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, StyleSheet, Alert, ScrollView } from 'react-native';
+import { View, StyleSheet, Alert, ScrollView, Text } from 'react-native';
 import setPageTitle from '@/components/pageTitle/setPageTitle';
 import TopBar from '@/components/topBars/topBar';
 import uuid from 'react-native-uuid';
@@ -38,7 +38,7 @@ export default function ViewExpenseCategories() {
         <View style={styles.container}>
             <TopBar />
             <ScrollView contentContainerStyle={{rowGap: 20}} showsVerticalScrollIndicator={false}>
-                {displayElements}
+                {displayElements.length > 0 ? displayElements : <Text>There are currently no expense categories.</Text>}
             </ScrollView>
         </View>
     );
