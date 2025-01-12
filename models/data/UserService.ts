@@ -9,6 +9,9 @@ class UserService {
     }
 
     public addUser(username: string, password: string): void {
+        if (this.userExists(username)) {
+            throw new Error("User already exists")
+        }
         const user = new User(username, password);
         this.repository.add(user);
     }
