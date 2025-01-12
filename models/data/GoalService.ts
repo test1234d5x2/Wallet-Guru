@@ -25,8 +25,6 @@ class GoalService {
         goal.target = target;
         goal.current = current;
         goal.status = status;
-
-        this.repository.update(id, goal);
     }
 
     public deleteGoal(id: string): void {

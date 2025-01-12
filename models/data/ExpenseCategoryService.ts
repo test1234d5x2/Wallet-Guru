@@ -21,8 +21,6 @@ class ExpenseCategoryService {
         }
         category.name = name;
         category.monthlyBudget = monthlyBudget;
-
-        this.repository.update(id, category);
     }
 
     public deleteExpenseCategory(id: string): void {

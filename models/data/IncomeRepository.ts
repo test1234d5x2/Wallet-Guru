@@ -11,14 +11,6 @@ class IncomeRepository {
         this.incomes.push(income);
     }
 
-    public update(id: string, updatedIncome: Income): void {
-        const index = this.incomes.findIndex(inc => inc.getID() === id);
-        if (index === -1) {
-            throw new Error(`Income not found`);
-        }
-        this.incomes[index] = updatedIncome;
-    }
-
     public delete(id: string): void {
         const index = this.incomes.findIndex(inc => inc.getID() === id);
         if (index === -1) {

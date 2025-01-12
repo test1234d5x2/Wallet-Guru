@@ -24,8 +24,6 @@ class IncomeService {
         income.amount = amount;
         income.date = date;
         income.notes = notes;
-
-        this.repository.update(id, income);
     }
 
     public deleteIncome(id: string): void {

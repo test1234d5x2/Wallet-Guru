@@ -11,14 +11,6 @@ class ExpenseCategoryRepository {
         this.categories.push(category);
     }
 
-    public update(id: string, updatedCategory: ExpenseCategory): void {
-        const index = this.categories.findIndex(cat => cat.getID() === id);
-        if (index === -1) {
-            throw new Error(`Category not found`);
-        }
-        this.categories[index] = updatedCategory;
-    }
-
     public delete(id: string): void {
         const index = this.categories.findIndex(cat => cat.getID() === id);
         if (index === -1) {

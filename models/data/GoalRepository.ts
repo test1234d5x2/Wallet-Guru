@@ -11,14 +11,6 @@ class GoalRepository {
         this.goals.push(goal);
     }
 
-    public update(id: string, updatedGoal: Goal): void {
-        const index = this.goals.findIndex(g => g.getID() === id);
-        if (index === -1) {
-            throw new Error(`Goal not found`);
-        }
-        this.goals[index] = updatedGoal;
-    }
-
     public delete(id: string): void {
         const index = this.goals.findIndex(g => g.getID() === id);
         if (index === -1) {

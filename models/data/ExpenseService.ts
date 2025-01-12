@@ -27,8 +27,6 @@ class ExpenseService {
         expense.notes = notes;
         expense.expenseCategory = category;
         expense.receipt = receipt || undefined;
-
-        this.repository.update(id, expense);
     }
 
     public deleteExpense(id: string): void {

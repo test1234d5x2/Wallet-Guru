@@ -11,14 +11,6 @@ class ExpenseRepository {
         this.expenses.push(expense);
     }
 
-    public update(id: string, updatedExpense: Expense): void {
-        const index = this.expenses.findIndex(exp => exp.getID() === id);
-        if (index === -1) {
-            throw new Error(`Expense not found`);
-        }
-        this.expenses[index] = updatedExpense;
-    }
-
     public delete(id: string): void {
         const index = this.expenses.findIndex(exp => exp.getID() === id);
         if (index === -1) {
