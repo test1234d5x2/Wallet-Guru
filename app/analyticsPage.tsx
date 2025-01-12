@@ -190,6 +190,7 @@ const styles = StyleSheet.create({
         marginTop: 20,
     },
     message: {
-        textAlign: "center"
+        textAlign: "center",
+        fontSize: 16,
     }
 });

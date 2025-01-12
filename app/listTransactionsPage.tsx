@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useRouter } from 'expo-router';
+import { Link, useRouter } from 'expo-router';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert } from 'react-native';
 import setPageTitle from '@/components/pageTitle/setPageTitle';
 import TopBar from '@/components/topBars/topBar';
@@ -66,8 +66,18 @@ export default function ViewTransactionsList() {
                 <Text style={styles.filterTitle}>Filters:</Text>
             </View>
 
-            <ScrollView contentContainerStyle={{rowGap: 30}} showsVerticalScrollIndicator={false}>
-                {transactionDisplayElements.length > 0 ? transactionDisplayElements : <Text>There are currently no transactions.</Text>}
+            <ScrollView contentContainerStyle={{ rowGap: 30 }} showsVerticalScrollIndicator={false}>
+                {transactionDisplayElements.length > 0 ? transactionDisplayElements :
+                    <View style={styles.messageContainer}>
+                        <Text style={styles.message}>There are currently no transactions.</Text>
+                        <TouchableOpacity>
+                            <Link href="/addExpensePage" replace>
+                                <Text style={styles.linkText}>Add an expense</Text>
+                            </Link>
+                        </TouchableOpacity>
+                    </View>
+
+                }
             </ScrollView>
         </View>
     );
@@ -92,4 +102,17 @@ const styles = StyleSheet.create({
         height: 1,
         backgroundColor: "#ccc",
     },
+    linkText: {
+        fontSize: 16,
+        color: "#007BFF",
+        textDecorationLine: "underline",
+    },
+    messageContainer: {
+        alignItems: "center",
+        rowGap: 10,
+    },
+    message: {
+        textAlign: "center",
+        fontSize: 16,
+    }
 });

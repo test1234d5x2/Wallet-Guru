@@ -9,7 +9,7 @@ import ExpenseItem from '@/components/listItems/expenseItem';
 import IncomeItem from '@/components/listItems/incomeItem';
 import Registry from '@/models/data/Registry';
 import clearRouterHistory from '@/utils/clearRouterHistory';
-import ExpenseCategory from '@/models/ExpenseCategory';
+
 
 export default function Dashboard() {
     setPageTitle("Dashboard");
@@ -28,12 +28,6 @@ export default function Dashboard() {
         clearRouterHistory(router);
         router.replace("/loginPage");
         return;
-    }
-
-    for (let x = 0; x < 50; x++) {
-        incomeService.addIncome(user, "", 250, new Date(), "")
-        expenseService.addExpense(user, "", 25, new Date(), "", new ExpenseCategory(user, "Other", 1000))
-
     }
 
     const incomes = incomeService.getAllIncomesByUser(user);
@@ -69,7 +63,7 @@ export default function Dashboard() {
         <View style={styles.container}>
             <TopBar />
 
-            <ScrollView contentContainerStyle={{ flexGrow: 1, rowGap: 50 }} style={{flex: 1}} showsVerticalScrollIndicator={false}>
+            <ScrollView contentContainerStyle={{ flexGrow: 1, rowGap: 50 }} style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
                 <View style={styles.section}>
                     <View style={styles.sectionHeader}>
                         <Text style={styles.sectionTitle}>This Month:</Text>
@@ -101,7 +95,17 @@ export default function Dashboard() {
                             </Link>
                         </TouchableOpacity>
                     </View>
-                    {transactionItemsList.length > 0 ? transactionItemsList : <Text>There are currently no transactions.</Text>}
+                    {transactionItemsList.length > 0 ? transactionItemsList :
+                        <View style={styles.messageContainer}>
+                            <Text style={styles.message}>There are currently no transactions.</Text>
+                            <TouchableOpacity>
+                                <Link href="/addExpensePage" replace>
+                                    <Text style={styles.linkText}>Add an expense</Text>
+                                </Link>
+                            </TouchableOpacity>
+                        </View>
+
+                    }
                 </View>
 
                 <View style={styles.section}>
@@ -113,7 +117,16 @@ export default function Dashboard() {
                             </Link>
                         </TouchableOpacity>
                     </View>
-                    {expenseCategoryItemsList.length > 0 ? expenseCategoryItemsList : <Text>There are currently no expense categories.</Text>}
+                    {expenseCategoryItemsList.length > 0 ? expenseCategoryItemsList :
+                        <View style={styles.messageContainer}>
+                            <Text style={styles.message}>There are currently no expense categories. </Text>
+                            <TouchableOpacity>
+                                <Link href="/addExpenseCategoryPage" replace>
+                                    <Text style={styles.linkText}>Add an expense category</Text>
+                                </Link>
+                            </TouchableOpacity>
+                        </View>
+                    }
                 </View>
             </ScrollView>
         </View>
@@ -168,4 +181,12 @@ const styles = StyleSheet.create({
         height: 1,
         backgroundColor: "#ccc",
     },
+    messageContainer: {
+        alignItems: "center",
+        rowGap: 10,
+    },
+    message: {
+        textAlign: "center",
+        fontSize: 16,
+    }
 });

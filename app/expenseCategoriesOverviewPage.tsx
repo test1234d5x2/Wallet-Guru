@@ -1,11 +1,11 @@
 import React from 'react';
-import { View, StyleSheet, Alert, ScrollView, Text } from 'react-native';
+import { View, StyleSheet, Alert, ScrollView, Text, TouchableOpacity } from 'react-native';
 import setPageTitle from '@/components/pageTitle/setPageTitle';
 import TopBar from '@/components/topBars/topBar';
 import uuid from 'react-native-uuid';
 import ExpenseCategoryItem from '@/components/listItems/expenseCategoryItem';
 import Registry from '@/models/data/Registry';
-import { useRouter } from 'expo-router';
+import { Link, useRouter } from 'expo-router';
 import clearRouterHistory from '@/utils/clearRouterHistory';
 
 export default function ViewExpenseCategories() {
@@ -37,8 +37,17 @@ export default function ViewExpenseCategories() {
     return (
         <View style={styles.container}>
             <TopBar />
-            <ScrollView contentContainerStyle={{rowGap: 20}} showsVerticalScrollIndicator={false}>
-                {displayElements.length > 0 ? displayElements : <Text>There are currently no expense categories.</Text>}
+            <ScrollView contentContainerStyle={{ rowGap: 20 }} showsVerticalScrollIndicator={false}>
+                {displayElements.length > 0 ? displayElements :
+                    <View style={styles.messageContainer}>
+                        <Text style={styles.message}>There are currently no expense categories. </Text>
+                        <TouchableOpacity>
+                            <Link href="/addExpenseCategoryPage" replace>
+                                <Text style={styles.linkText}>Add an expense category</Text>
+                            </Link>
+                        </TouchableOpacity>
+                    </View>
+                }
             </ScrollView>
         </View>
     );
@@ -54,5 +63,18 @@ const styles = StyleSheet.create({
     divider: {
         height: 1,
         backgroundColor: "#ccc",
+    },
+    message: {
+        textAlign: "center",
+        fontSize: 16,
+    },
+    linkText: {
+        fontSize: 16,
+        color: "#007BFF",
+        textDecorationLine: "underline",
+    },
+    messageContainer: {
+        alignItems: "center",
+        rowGap: 10,
     },
 });
