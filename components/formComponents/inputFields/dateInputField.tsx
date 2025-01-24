@@ -5,6 +5,7 @@ import { Text, View, StyleSheet } from "react-native";
 interface DateInputFieldProps {
     date: Date
     setDate: (text: Date) => void
+    placeholder?: string
 }
 
 
@@ -23,9 +24,12 @@ export default function DateInputField(props: DateInputFieldProps) {
         setShow(true)
     }
 
+    let text = "Date"
+    if (props.placeholder) {text = props.placeholder}
+
     return (
         <View style={styles.dateFieldContainer}>
-            <Text onPress={showPicker}>Date: {props.date.toDateString()}</Text>
+            <Text onPress={showPicker}>{text}: {props.date.toDateString()}</Text>
             {show && <DateTimePicker
                 value={props.date}
                 onChange={handleDateChange}

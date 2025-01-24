@@ -1,6 +1,7 @@
 enum TransactionType {
-    EXPENSE,
-    INCOME
+    EXPENSE = "Expense",
+    INCOME = "Income",
+    UNKNOWN = ""
 }
 
 export default TransactionType;

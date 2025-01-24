@@ -14,7 +14,7 @@ const ModalSelectionExpenseCategories = (props: ModalSelectionProps) => {
     const [showDropdown, setShowDropdown] = useState<boolean>(false)
 
     return (
-        <View style={styles.container}>
+        <View>
             <TouchableOpacity style={styles.input} onPress={() => {
                 if (props.choices.length > 0) {
                     setShowDropdown(true)
@@ -66,9 +66,6 @@ const ModalSelectionExpenseCategories = (props: ModalSelectionProps) => {
 }
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-    },
     input: {
         paddingVertical: 20,
         width: '100%',
