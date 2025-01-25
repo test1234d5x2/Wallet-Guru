@@ -29,7 +29,7 @@ export default function DateInputField(props: DateInputFieldProps) {
 
     return (
         <View style={styles.dateFieldContainer}>
-            <Text onPress={togglePicker}>{text}: {props.date === null ? "": props.date.toDateString()}</Text>
+            <Text style={{fontSize: 16}} onPress={togglePicker}>{text}: {props.date === null ? "": props.date.toDateString()}</Text>
             {show && <DateTimePicker
                 value={props.date || new Date()}
                 onChange={handleDateChange}

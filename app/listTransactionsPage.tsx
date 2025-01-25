@@ -14,6 +14,8 @@ import DateInputField from '@/components/formComponents/inputFields/dateInputFie
 import ModalSelectionExpenseCategories from '@/components/modalSelection/modalSelectionExpenseCategories';
 import ModalSelectionTransactionTypes from '@/components/modalSelection/modalSelectionTransactionTypes';
 import TransactionType from '@/enums/TransactionType';
+import filterTransactionsByDate from '@/utils/filterTransactionsByDate';
+import filterExpensesByCategory from '@/utils/filterExpensesByCategory';
 
 
 export default function ViewTransactionsList() {
@@ -48,24 +50,41 @@ export default function ViewTransactionsList() {
         router.navigate(transaction.getPageURL());
     };
 
-    const transactionDisplayElements = [
-        ...expenses.map((expense) => (
-            <React.Fragment key={uuid.v4() as string}>
-                <TouchableOpacity onPress={() => handleTransactionClick(expense)}>
-                    <ExpenseItem registry={registry} expense={expense} />
-                </TouchableOpacity>
-                <View style={styles.divider} />
-            </React.Fragment>
-        )),
-        ...incomes.map((income) => (
-            <React.Fragment key={uuid.v4() as string}>
-                <TouchableOpacity onPress={() => handleTransactionClick(income)}>
-                    <IncomeItem registry={registry} income={income} />
-                </TouchableOpacity>
-                <View style={styles.divider} />
-            </React.Fragment>
-        )),
-    ];
+    const transactionDisplayElements = [];
+    let transactions = [];
+
+    if (selectedType !== TransactionType.EXPENSE) {
+        let tomorrow = new Date();
+        tomorrow = new Date(tomorrow.setDate(tomorrow.getDate() + 1))
+        transactions = filterTransactionsByDate(incomes, startDate === null ? new Date(1800, 0, 1): startDate, endDate === null ? tomorrow: endDate)
+        transactionDisplayElements.push(
+            ...transactions.map((income) => (
+                <React.Fragment key={uuid.v4() as string}>
+                    <TouchableOpacity onPress={() => handleTransactionClick(income)}>
+                        <IncomeItem registry={registry} income={income} />
+                    </TouchableOpacity>
+                    <View style={styles.divider} />
+                </React.Fragment>
+            )),
+        )
+    }
+
+    if (selectedType !== TransactionType.INCOME) {
+        let tomorrow = new Date();
+        tomorrow = new Date(tomorrow.setDate(tomorrow.getDate() + 1))
+        transactions = filterTransactionsByDate(expenses, startDate === null ? new Date(1800, 0, 1): startDate, endDate === null ? tomorrow: endDate)
+        if (selectedCategory) {transactions = filterExpensesByCategory(transactions, selectedCategory)}
+        transactionDisplayElements.push(
+            ...transactions.map((expense) => (
+                <React.Fragment key={uuid.v4() as string}>
+                    <TouchableOpacity onPress={() => handleTransactionClick(expense)}>
+                        <ExpenseItem registry={registry} expense={expense} />
+                    </TouchableOpacity>
+                    <View style={styles.divider} />
+                </React.Fragment>
+            )),
+        )
+    }
 
     return (
         <View style={styles.container}>
@@ -78,9 +97,7 @@ export default function ViewTransactionsList() {
                     <View>
                         <ModalSelectionTransactionTypes choices={Object.values(TransactionType) as TransactionType[]} value={selectedType} setValue={setSelectedType} />
                     </View>
-                    <View>
-                        <ModalSelectionExpenseCategories choices={categories} value={selectedCategory} setValue={setSelectedCategory} />
-                    </View>
+                    { selectedType === TransactionType.EXPENSE ? <View><ModalSelectionExpenseCategories choices={categories} value={selectedCategory} setValue={setSelectedCategory} /></View>: ""}
                     <View style={{flexDirection: "row", columnGap: 20, justifyContent: "space-between"}}>
                         <DateInputField date={startDate} setDate={setStartDate} placeholder='Start Date' />
                         <DateInputField date={endDate} setDate={setEndDate} placeholder='End Date' />
