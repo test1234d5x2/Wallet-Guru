@@ -16,7 +16,7 @@ export default function AddGoal() {
 
     const [title, setTitle] = useState<string>('');
     const [target, setTarget] = useState<string>('');
-    const [date, setDate] = useState<Date>(new Date());
+    const [date, setDate] = useState<Date | null>(null);
     const [description, setDesc] = useState<string>('');
     const [error, setError] = useState<string>('');
     const router = useRouter();
@@ -82,7 +82,7 @@ export default function AddGoal() {
                 Alert.alert('Success', 'Goal added successfully!');
                 setTitle('');
                 setTarget('');
-                setDate(new Date());
+                setDate(null);
                 setDesc('');
                 clearRouterHistory(router);
                 router.replace("/allGoalsPage");

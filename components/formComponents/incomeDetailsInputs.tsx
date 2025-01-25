@@ -8,7 +8,7 @@ import DateInputField from './inputFields/dateInputField';
 interface IncomeDetailsInputsProps {
     title: string,
     amount: string,
-    date: Date,
+    date: Date | null,
     notes: string,
     setTitle: (text: string) => void,
     setAmount: (text: string) => void,

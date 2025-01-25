@@ -8,7 +8,7 @@ import DateInputField from './inputFields/dateInputField';
 interface GoalDetailsInputsProps {
     title: string,
     target: string,
-    date: Date,
+    date: Date | null,
     description: string,
     setTitle: (text: string) => void,
     setTarget: (text: string) => void,

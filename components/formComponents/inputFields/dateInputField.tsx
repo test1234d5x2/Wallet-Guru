@@ -3,7 +3,7 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import { Text, View, StyleSheet } from "react-native";
 
 interface DateInputFieldProps {
-    date: Date
+    date: Date | null
     setDate: (text: Date) => void
     placeholder?: string
 }
@@ -15,13 +15,13 @@ export default function DateInputField(props: DateInputFieldProps) {
 
     const handleDateChange = (event: any, selectedDate?: Date) => {
         const currentDate = selectedDate || props.date
-        props.setDate(currentDate)
+        if (currentDate !== null) {props.setDate(currentDate)}
         setShow(false)
         
     }
 
-    const showPicker = () => {
-        setShow(true)
+    const togglePicker = () => {
+        setShow(show === true ? false: true)
     }
 
     let text = "Date"
@@ -29,9 +29,9 @@ export default function DateInputField(props: DateInputFieldProps) {
 
     return (
         <View style={styles.dateFieldContainer}>
-            <Text onPress={showPicker}>{text}: {props.date.toDateString()}</Text>
+            <Text onPress={togglePicker}>{text}: {props.date === null ? "": props.date.toDateString()}</Text>
             {show && <DateTimePicker
-                value={props.date}
+                value={props.date || new Date()}
                 onChange={handleDateChange}
                 mode="date" 
                 display="default"
@@ -44,7 +44,7 @@ export default function DateInputField(props: DateInputFieldProps) {
 const styles = StyleSheet.create({
     dateFieldContainer: {
         paddingVertical: 20,
-        paddingLeft: 15,
+        paddingHorizontal: 15,
         borderWidth: 1,
         borderColor: "#ccc",
         borderRadius: 10,

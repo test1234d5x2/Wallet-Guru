@@ -5,13 +5,14 @@ import { View, Text, FlatList, TouchableOpacity, StyleSheet, Modal, Pressable, S
 
 interface ModalSelectionProps {
     choices: Array<ExpenseCategory>
-    value: ExpenseCategory
+    value: ExpenseCategory | null
     setValue: (text: ExpenseCategory) => void
 }
 
 const ModalSelectionExpenseCategories = (props: ModalSelectionProps) => {
 
     const [showDropdown, setShowDropdown] = useState<boolean>(false)
+    let displayText = props.value?.name
 
     return (
         <View>
@@ -31,7 +32,7 @@ const ModalSelectionExpenseCategories = (props: ModalSelectionProps) => {
                         Alert.alert("No Expense Categories", "You have not created any expense categories to pick from.")
                     }
                 }}>
-                    <Text style={styles.dropdownText}>{props.value.name}</Text>
+                    <Text style={styles.dropdownText}>Category: {displayText == undefined ? "": displayText}</Text>
                 </TouchableOpacity>
 
                 <Modal visible={showDropdown} transparent={true} onRequestClose={() => setShowDropdown(false)}>

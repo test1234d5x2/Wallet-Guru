@@ -34,10 +34,10 @@ export default function ViewTransactionsList() {
         return;
     }
 
-    const [selectedType, setSelectedType] = useState<TransactionType>(TransactionType.UNKNOWN);
-    const [selectedCategory, setSelectedCategory] = useState<ExpenseCategory>(new ExpenseCategory(user, "No Filters", 0));
-    const [startDate, setStartDate] = useState<Date>(new Date());
-    const [endDate, setEndDate] = useState<Date>(new Date());
+    const [selectedType, setSelectedType] = useState<TransactionType | null>(null);
+    const [selectedCategory, setSelectedCategory] = useState<ExpenseCategory | null>(null);
+    const [startDate, setStartDate] = useState<Date | null>(null);
+    const [endDate, setEndDate] = useState<Date | null>(null);
 
     const expenses = expenseService.getAllExpensesByUser(user);
     const incomes = incomeService.getAllIncomesByUser(user);
@@ -76,7 +76,7 @@ export default function ViewTransactionsList() {
                 <View style={{flexDirection: "column", rowGap: 20}}>
                     <Text style={styles.filterTitle}>Filters:</Text>
                     <View>
-                        <ModalSelectionTransactionTypes choices={Object.values(TransactionType).filter(item => item !== "") as TransactionType[]} value={selectedType} setValue={setSelectedType} />
+                        <ModalSelectionTransactionTypes choices={Object.values(TransactionType) as TransactionType[]} value={selectedType} setValue={setSelectedType} />
                     </View>
                     <View>
                         <ModalSelectionExpenseCategories choices={categories} value={selectedCategory} setValue={setSelectedCategory} />

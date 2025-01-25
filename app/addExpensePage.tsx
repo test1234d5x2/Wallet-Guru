@@ -33,8 +33,8 @@ export default function AddExpense() {
 
     const [title, setTitle] = useState<string>('');
     const [amount, setAmount] = useState<string>('');
-    const [date, setDate] = useState<Date>(new Date());
-    const [category, setCategory] = useState<ExpenseCategory>(new ExpenseCategory(user, "Other", 10000));
+    const [date, setDate] = useState<Date | null>(null);
+    const [category, setCategory] = useState<ExpenseCategory | null>(null);
     const [notes, setNotes] = useState<string>('');
     const [error, setError] = useState<string>('');
 
@@ -82,12 +82,12 @@ export default function AddExpense() {
     const handleAddExpense = () => {
         if (validateForm()) {
             try {
-                expenseService.addExpense(user, title, parseFloat(amount), date, notes, category);
+                expenseService.addExpense(user, title, parseFloat(amount), date as Date, notes, category as ExpenseCategory);
                 Alert.alert('Success', 'Expense added successfully!');
                 setTitle('');
                 setAmount('');
                 setDate(new Date());
-                setCategory(categories[0] || new ExpenseCategory(user, "Other", 10000));
+                setCategory(null);
                 setNotes('');
                 clearRouterHistory(router);
                 router.replace("/listTransactionsPage");

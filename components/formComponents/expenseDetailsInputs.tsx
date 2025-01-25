@@ -10,8 +10,8 @@ import ModalSelectionExpenseCategories from '../modalSelection/modalSelectionExp
 interface ExpenseDetailsInputsProps {
     title: string,
     amount: string,
-    date: Date,
-    category: ExpenseCategory,
+    date: Date | null,
+    category: ExpenseCategory | null,
     notes: string,
     categoriesList: Array<ExpenseCategory>,
     setTitle: (text: string) => void,

@@ -15,7 +15,7 @@ export default function AddIncome() {
 
     const [title, setTitle] = useState<string>('');
     const [amount, setAmount] = useState<string>('');
-    const [date, setDate] = useState<Date>(new Date());
+    const [date, setDate] = useState<Date | null>(null);
     const [notes, setNotes] = useState<string>('');
     const [error, setError] = useState<string>('');
     const router = useRouter();
@@ -77,11 +77,11 @@ export default function AddIncome() {
     const handleAddIncome = () => {
         if (validateForm()) {
             try {
-                incomeService.addIncome(user, title, parseFloat(amount), date, notes);
+                incomeService.addIncome(user, title, parseFloat(amount), date as Date, notes);
                 Alert.alert('Success', 'Income added successfully!');
                 setTitle('');
                 setAmount('');
-                setDate(new Date());
+                setDate(null);
                 setNotes('');
                 clearRouterHistory(router);
                 router.replace("/listTransactionsPage");

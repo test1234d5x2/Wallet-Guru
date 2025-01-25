@@ -5,7 +5,7 @@ import TransactionType
 
 interface ModalSelectionProps {
     choices: Array<TransactionType>;
-    value: TransactionType;
+    value: TransactionType | null;
     setValue: (type: TransactionType) => void;
 }
 
@@ -24,7 +24,7 @@ const ModalSelectionTransactionTypes = (props: ModalSelectionProps) => {
                     }
                 }}
             >
-                <Text style={styles.dropdownText}>{props.value}</Text>
+                <Text style={styles.dropdownText}>Transaction Type: {props.value !== null ? props.value: ""}</Text>
             </TouchableOpacity>
 
             <Modal visible={showDropdown} transparent={true} onRequestClose={() => setShowDropdown(false)}>
