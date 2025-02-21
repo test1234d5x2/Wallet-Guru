@@ -50,6 +50,7 @@ export default function Login() {
     getToken().then((data) => {
         if (data) {
             Alert.alert("You are already logged in.");
+            clearRouterHistory(router);
             router.replace("/dashboardPage");
             return
         }

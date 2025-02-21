@@ -6,7 +6,6 @@ const registry = Registry.getInstance();
 const expenseCategoryService = registry.expenseCategoryService;
 const expenseService = registry.expenseService;
 
-
 /**
  * Create a new expense.
  * Expected request body:
@@ -86,20 +85,16 @@ export const update: RequestHandler = (req, res) => {
         return;
     }
 
-    try {
-        expenseService.updateExpense(
-            id,
-            title,
-            amount,
-            new Date(date),
-            notes,
-            expenseCategory,
-            receipt
-        );
-        res.status(200).json({ message: "Expense updated" });
-    } catch (err: any) {
-        res.status(500).json({ error: "Error updating expense", details: err.message });
-    }
+    expenseService.updateExpense(
+        id,
+        title,
+        amount,
+        new Date(date),
+        notes,
+        expenseCategory,
+        receipt
+    );
+    res.status(200).json({ message: "Expense updated" });
 };
 
 /**
@@ -121,10 +116,51 @@ export const remove: RequestHandler = (req, res) => {
         return;
     }
 
-    try {
-        expenseService.deleteExpense(id);
-        res.status(200).json({ message: "Expense deleted" });
-    } catch (err: any) {
-        res.status(500).json({ error: "Error deleting expense", details: err.message });
+    expenseService.deleteExpense(id);
+    res.status(200).json({ message: "Expense deleted" });
+};
+
+/**
+ * List all expenses for a given user.
+ * Expected request parameters:
+ * - userId (string): User identifier (taken from the request params)
+ */
+export const listByUser: RequestHandler = (req, res) => {
+    const user = getUserFromToken(req);
+    if (!user) {
+        res.status(401).json({ error: "You must be logged in to view expenses." });
+        return;
     }
+
+
+    const expenses = expenseService.getAllExpensesByUser(user);
+    res.status(200).json({ expenses });
+};
+
+/**
+ * Find an expense by ID.
+ * Expected request parameters:
+ * - id: Expense identifier
+ */
+export const findByID: RequestHandler = (req, res) => {
+    const { id } = req.params;
+
+    const user = getUserFromToken(req);
+    if (!user) {
+        res.status(401).json({ error: "You must be logged in to view an expense." });
+        return;
+    }
+
+    if (!id) {
+        res.status(400).json({ error: "Expense ID is required." });
+        return;
+    }
+
+    const expense = expenseService.findByID(id);
+    if (!expense) {
+        res.status(404).json({ error: "Expense not found." });
+        return;
+    }
+
+    res.status(200).json({ expense });
 };

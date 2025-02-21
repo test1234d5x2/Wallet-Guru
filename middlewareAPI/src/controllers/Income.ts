@@ -6,8 +6,8 @@ const registry = Registry.getInstance();
 const incomeService = registry.incomeService;
 
 /**
- * Create a new income.
- * Expected request body should include:
+ * Create a new income transaction.
+ * Expected request body:
  * - title (string)
  * - amount (number)
  * - date (string, convertible to Date)
@@ -18,12 +18,12 @@ export const create: RequestHandler = (req, res) => {
 
     const user = getUserFromToken(req);
     if (!user) {
-        res.status(401).json({ error: "You must be logged in to create an income transaction." })
+        res.status(401).json({ error: "You must be logged in to create an income transaction." });
         return;
     }
 
     if (!title || amount === undefined || !date || !notes) {
-        res.status(400).json({ error: "Missing required fields: user, title, amount, date, notes" });
+        res.status(400).json({ error: "Missing required fields: title, amount, date, notes" });
         return;
     }
 
@@ -32,10 +32,10 @@ export const create: RequestHandler = (req, res) => {
 };
 
 /**
- * Update an existing income.
+ * Update an existing income transaction.
  * Expected request parameters:
  * - id: Income identifier
- * Expected request body should include:
+ * Expected request body:
  * - title (string)
  * - amount (number)
  * - date (string, convertible to Date)
@@ -47,7 +47,7 @@ export const update: RequestHandler = (req, res) => {
 
     const user = getUserFromToken(req);
     if (!user) {
-        res.status(401).json({ error: "You must be logged in to update your income transaction." })
+        res.status(401).json({ error: "You must be logged in to update your income transaction." });
         return;
     }
 
@@ -61,7 +61,7 @@ export const update: RequestHandler = (req, res) => {
 };
 
 /**
- * Delete an income.
+ * Delete an income transaction.
  * Expected request parameters:
  * - id: Income identifier
  */
@@ -70,7 +70,7 @@ export const remove: RequestHandler = (req, res) => {
 
     const user = getUserFromToken(req);
     if (!user) {
-        res.status(401).json({ error: "You must be logged in to remove your income transaction." })
+        res.status(401).json({ error: "You must be logged in to remove your income transaction." });
         return;
     }
 
@@ -81,4 +81,48 @@ export const remove: RequestHandler = (req, res) => {
 
     incomeService.deleteIncome(id);
     res.status(200).json({ message: "Income deleted" });
+};
+
+/**
+ * List all income transactions for a given user.
+ * Expected request parameters:
+ * - userId (string): User identifier (taken from request params)
+ */
+export const listByUser: RequestHandler = (req, res) => {
+    const user = getUserFromToken(req);
+    if (!user) {
+        res.status(401).json({ error: "You must be logged in to view income transactions." });
+        return;
+    }
+
+    const incomes = incomeService.getAllIncomesByUser(user);
+    res.status(200).json({ incomes });
+};
+
+/**
+ * Find an income transaction by ID.
+ * Expected request parameters:
+ * - id: Income identifier
+ */
+export const findByID: RequestHandler = (req, res) => {
+    const { id } = req.params;
+
+    const user = getUserFromToken(req);
+    if (!user) {
+        res.status(401).json({ error: "You must be logged in to view an income transaction." });
+        return;
+    }
+
+    if (!id) {
+        res.status(400).json({ error: "Income ID is required." });
+        return;
+    }
+
+    const income = incomeService.findByID(id);
+    if (!income) {
+        res.status(404).json({ error: "Income transaction not found." });
+        return;
+    }
+
+    res.status(200).json({ income });
 };

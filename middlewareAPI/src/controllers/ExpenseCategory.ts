@@ -16,12 +16,12 @@ export const create: RequestHandler = (req, res) => {
 
     const user = getUserFromToken(req);
     if (!user) {
-        res.status(401).json({ error: "You must be logged in to create an expense category." })
+        res.status(401).json({ error: "You must be logged in to create an expense category." });
         return;
     }
 
     if (!name || monthlyBudget === undefined) {
-        res.status(400).json({ error: "Missing required fields: user, name, monthlyBudget" });
+        res.status(400).json({ error: "Missing required fields: name, monthlyBudget" });
         return;
     }
 
@@ -43,7 +43,7 @@ export const update: RequestHandler = (req, res) => {
 
     const user = getUserFromToken(req);
     if (!user) {
-        res.status(401).json({ error: "You must be logged in to update an expense category." })
+        res.status(401).json({ error: "You must be logged in to update an expense category." });
         return;
     }
 
@@ -66,7 +66,7 @@ export const remove: RequestHandler = (req, res) => {
 
     const user = getUserFromToken(req);
     if (!user) {
-        res.status(401).json({ error: "You must be logged in to delete an expense category." })
+        res.status(401).json({ error: "You must be logged in to delete an expense category." });
         return;
     }
 
@@ -77,4 +77,47 @@ export const remove: RequestHandler = (req, res) => {
 
     expenseCategoryService.deleteExpenseCategory(id);
     res.status(200).json({ message: "Expense category deleted" });
+};
+
+/**
+ * List all expense categories for a given user.
+ * Retrieves all categories associated with the authenticated user.
+ */
+export const listByUser: RequestHandler = (req, res) => {
+    const user = getUserFromToken(req);
+    if (!user) {
+        res.status(401).json({ error: "You must be logged in to view expense categories." });
+        return;
+    }
+
+    const categories = expenseCategoryService.getAllCategoriesByUser(user);
+    res.status(200).json({ categories });
+};
+
+/**
+ * Find an expense category by ID.
+ * Expected request parameters:
+ * - id: ExpenseCategory identifier
+ */
+export const findByID: RequestHandler = (req, res) => {
+    const { id } = req.params;
+
+    const user = getUserFromToken(req);
+    if (!user) {
+        res.status(401).json({ error: "You must be logged in to view an expense category." });
+        return;
+    }
+
+    if (!id) {
+        res.status(400).json({ error: "Expense category id is required" });
+        return;
+    }
+
+    const category = expenseCategoryService.findByID(id);
+    if (!category) {
+        res.status(404).json({ error: "Expense category not found" });
+        return;
+    }
+
+    res.status(200).json({ category });
 };

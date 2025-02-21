@@ -4,12 +4,10 @@ import Expense from '@/models/Expense';
 import { useRouter } from 'expo-router';
 import ListItemEditButton from './listItemEditButton';
 import ListItemDeleteButton from './listItemDeleteButton';
-import Registry from '@/models/data/Registry';
 import clearRouterHistory from '@/utils/clearRouterHistory';
 
 interface ExpenseItemProps {
     expense: Expense
-    registry: Registry
 }
 
 export default function ExpenseItem(props: ExpenseItemProps) {
@@ -26,7 +24,8 @@ export default function ExpenseItem(props: ExpenseItemProps) {
             { text: 'Cancel', style: 'cancel' },
             { text: 'Delete', style: 'destructive', onPress: () => {
                 try {
-                    props.registry.expenseService.deleteExpense(id);
+                    // props.registry.expenseService.deleteExpense(id);
+                    // USE THE BLOCKCHAIN MIDDLEWARE API TO DELETE AN EXPENSE.
                     Alert.alert('Success', 'Expense deleted successfully!');
                     clearRouterHistory(router);
                     router.replace("/listTransactionsPage");

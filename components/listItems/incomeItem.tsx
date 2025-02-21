@@ -4,12 +4,10 @@ import Income from '@/models/Income';
 import { useRouter } from 'expo-router';
 import ListItemEditButton from './listItemEditButton';
 import ListItemDeleteButton from './listItemDeleteButton';
-import Registry from '@/models/data/Registry';
 import clearRouterHistory from '@/utils/clearRouterHistory';
 
 interface IncomeItemProps {
     income: Income
-    registry: Registry
 }
 
 export default function IncomeItem(props: IncomeItemProps) {
@@ -25,7 +23,8 @@ export default function IncomeItem(props: IncomeItemProps) {
         Alert.alert('Delete Income', 'Are you sure you want to delete this income source?', [
             { text: 'Cancel', style: 'cancel' },
             { text: 'Delete', style: 'destructive', onPress: () => {
-                props.registry.incomeService.deleteIncome(props.income.getID());
+                // props.registry.incomeService.deleteIncome(props.income.getID());
+                // USE THE BLOCKCHAIN MIDDLEWARE API TO DELETE AN INCOME
                 Alert.alert('Success', 'Income deleted successfully!');
                 clearRouterHistory(router);
                 router.replace("/listTransactionsPage");
