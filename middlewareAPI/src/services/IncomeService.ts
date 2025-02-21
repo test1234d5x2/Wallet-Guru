@@ -43,6 +43,10 @@ class IncomeService {
         return months.map(month => {return this.calculateMonthlyTransactionsTotal(user, month)});
     }
 
+    public findByID(id: string): Income | undefined {
+        return this.repository.findById(id);
+    }
+
 
     private getFilteredIncomes(user: User, month: Date): Income[] {
         const incomes = this.getAllIncomesByUser(user);

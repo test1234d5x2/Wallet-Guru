@@ -1,33 +1,30 @@
-import User from "../models/User";
+import jwt from "jsonwebtoken";
 import UserService from "./UserService";
 
 class AuthService {
-    private authenticatedUser: User | null = null;
     private userService: UserService;
+    private JWTSecret: string;
 
     constructor(userService: UserService) {
         this.userService = userService;
+        this.JWTSecret = process.env.JWT_SECRET || "your_default_secret";
     }
 
-    public authenticate(email: string, password: string): boolean {
+    public authenticate(email: string, password: string): string {
         const user = this.userService.authenticateUser(email, password);
-        if (user) {
-            this.authenticatedUser = user;
-            return true;
-        }
-        return false;
-    }
+        if (!user) {
+            throw new Error("Invalid credentials");
+        };
+        
+        const paylod = {userID: user.getUserID() };
 
-    public getAuthenticatedUser(): User | null {
-        return this.authenticatedUser;
-    }
-
-    public isAuthenticated(): boolean {
-        return this.authenticatedUser !== null;
+        const token = jwt.sign(paylod, this.JWTSecret, {expiresIn: "12h"});
+        return token;
     }
 
     public logout(): void {
-        this.authenticatedUser = null;
+        // May need changing.
+        return;
     }
 }
 

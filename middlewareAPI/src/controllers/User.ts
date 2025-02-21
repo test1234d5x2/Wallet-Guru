@@ -42,13 +42,8 @@ export const login: RequestHandler = (req, res) => {
     }
 
     try {
-        const loggedIn = authService.authenticate(username, password);
-        if (loggedIn) {
-            const user = authService.getAuthenticatedUser();
-            res.status(200).json({ message: "Login successful", user });
-        } else {
-            res.status(401).json({ error: "Invalid credentials" });
-        }
+        const token = authService.authenticate(username, password);
+        res.status(200).json({ message: "Login successful", token });
     } catch (err: any) {
         res.status(500).json({ error: "Error logging in", details: err.message });
     }

@@ -31,6 +31,10 @@ class UserService {
     public userExists(email: string): boolean {
         return this.repository.findByEmail(email) !== undefined;
     }
+
+    public findByID(id: string): User | undefined {
+        return this.repository.findById(id);
+    }
 }
 
 export default UserService;

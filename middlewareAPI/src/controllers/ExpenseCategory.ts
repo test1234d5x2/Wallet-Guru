@@ -1,8 +1,8 @@
 import { RequestHandler } from "express";
 import Registry from "../registry/Registry";
+import getUserFromToken from "../utils/getUserFromToken";
 
 const registry = Registry.getInstance();
-const authService = registry.authService;
 const expenseCategoryService = registry.expenseCategoryService;
 
 /**
@@ -14,7 +14,7 @@ const expenseCategoryService = registry.expenseCategoryService;
 export const create: RequestHandler = (req, res) => {
     const { name, monthlyBudget } = req.body;
 
-    const user = authService.getAuthenticatedUser();
+    const user = getUserFromToken(req);
     if (!user) {
         res.status(401).json({error: "You must be logged in to create an expense category."})
         return;
@@ -45,7 +45,7 @@ export const update: RequestHandler = (req, res) => {
     const { id } = req.params;
     const { name, monthlyBudget } = req.body;
 
-    const user = authService.getAuthenticatedUser();
+    const user = getUserFromToken(req);
     if (!user) {
         res.status(401).json({error: "You must be logged in to update an expense category."})
         return;
@@ -72,7 +72,7 @@ export const update: RequestHandler = (req, res) => {
 export const remove: RequestHandler = (req, res) => {
     const { id } = req.params;
 
-    const user = authService.getAuthenticatedUser();
+    const user = getUserFromToken(req);
     if (!user) {
         res.status(401).json({error: "You must be logged in to delete an expense category."})
         return;

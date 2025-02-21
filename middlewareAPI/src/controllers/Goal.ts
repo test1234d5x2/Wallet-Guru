@@ -1,9 +1,9 @@
 import { RequestHandler } from "express";
 import Registry from "../registry/Registry";
 import GoalStatus from "../enums/GoalStatus";
+import getUserFromToken from "../utils/getUserFromToken";
 
 const registry = Registry.getInstance();
-const authService = registry.authService;
 const goalService = registry.goalService;
 
 
@@ -20,7 +20,7 @@ const goalService = registry.goalService;
 export const create: RequestHandler = (req, res) => {
     const { title, description, target, status } = req.body;
 
-    const user = authService.getAuthenticatedUser();
+    const user = getUserFromToken(req);
     if (!user) {
         res.status(401).json({error: "You must be logged in to create a goal."})
         return;
@@ -53,7 +53,7 @@ export const updateProgress: RequestHandler = (req, res) => {
     const { id } = req.params;
     const { current } = req.body;
 
-    const user = authService.getAuthenticatedUser();
+    const user = getUserFromToken(req);
     if (!user) {
         res.status(401).json({error: "You must be logged in to update a goal."})
         return;
@@ -92,7 +92,7 @@ export const updateProgress: RequestHandler = (req, res) => {
 export const archive: RequestHandler = (req, res) => {
     const { id } = req.params;
 
-    const user = authService.getAuthenticatedUser();
+    const user = getUserFromToken(req);
     if (!user) {
         res.status(401).json({error: "You must be logged in to archive a goal."})
         return;
@@ -130,7 +130,7 @@ export const archive: RequestHandler = (req, res) => {
 export const remove: RequestHandler = (req, res) => {
     const { id } = req.params;
 
-    const user = authService.getAuthenticatedUser();
+    const user = getUserFromToken(req);
     if (!user) {
         res.status(401).json({error: "You must be logged in to delete a goal."})
         return;

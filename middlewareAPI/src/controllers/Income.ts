@@ -1,8 +1,8 @@
 import { RequestHandler } from "express";
 import Registry from "../registry/Registry";
+import getUserFromToken from "../utils/getUserFromToken";
 
 const registry = Registry.getInstance();
-const authService = registry.authService;
 const incomeService = registry.incomeService;
 
 /**
@@ -16,7 +16,7 @@ const incomeService = registry.incomeService;
 export const create: RequestHandler = (req, res) => {
     const { title, amount, date, notes } = req.body;
 
-    const user = authService.getAuthenticatedUser();
+    const user = getUserFromToken(req);
     if (!user) {
         res.status(401).json({error: "You must be logged in to create an income transaction."})
         return;
@@ -49,7 +49,7 @@ export const update: RequestHandler = (req, res) => {
     const { id } = req.params;
     const { title, amount, date, notes } = req.body;
 
-    const user = authService.getAuthenticatedUser();
+    const user = getUserFromToken(req);
     if (!user) {
         res.status(401).json({error: "You must be logged in to update your income transaction."})
         return;
@@ -76,7 +76,7 @@ export const update: RequestHandler = (req, res) => {
 export const remove: RequestHandler = (req, res) => {
     const { id } = req.params;
 
-    const user = authService.getAuthenticatedUser();
+    const user = getUserFromToken(req);
     if (!user) {
         res.status(401).json({error: "You must be logged in to remove your income transaction."})
         return;
