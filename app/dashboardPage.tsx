@@ -4,7 +4,7 @@ import { Link, useRouter } from 'expo-router';
 import setPageTitle from '@/components/pageTitle/setPageTitle';
 import TopBar from '@/components/topBars/topBar';
 import uuid from 'react-native-uuid';
-//import ExpenseCategoryItem from '@/components/listItems/expenseCategoryItem';
+import ExpenseCategoryItem from '@/components/listItems/expenseCategoryItem';
 import ExpenseItem from '@/components/listItems/expenseItem';
 import IncomeItem from '@/components/listItems/incomeItem';
 import clearRouterHistory from '@/utils/clearRouterHistory';
@@ -13,91 +13,9 @@ import ExpenseCategory from '@/models/ExpenseCategory';
 import Expense from '@/models/Expense';
 import Income from '@/models/Income';
 import calculateMonthlyTransactionsTotal from '@/utils/calculateMonthlyTransactionsTotal';
-
-
-
-async function getExpenseCategories(token: string): Promise<ExpenseCategory[]> {
-    const API_DOMAIN = process.env.EXPO_PUBLIC_BLOCKCHAIN_MIDDLEWARE_API_IP_ADDRESS;
-    if (!API_DOMAIN) {
-        throw new Error("Domain could not be found.");
-    };
-
-    const GET_EXPENSE_CATEGORIES_URL = `http://${API_DOMAIN}/api/expense-categories`;
-
-    const response = await fetch(GET_EXPENSE_CATEGORIES_URL, {
-        method: "GET",
-        headers: {
-            "Authorization": `Bearer ${token}`,
-            "Content-Type": "application/json",
-        },
-
-    });
-
-    if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.message);
-    }
-
-    const data = await response.json();
-    const categories: ExpenseCategory[] = data.categories;
-    return categories;
-}
-
-
-
-async function getExpenses(token: string): Promise<Expense[]> {
-    const API_DOMAIN = process.env.EXPO_PUBLIC_BLOCKCHAIN_MIDDLEWARE_API_IP_ADDRESS;
-    if (!API_DOMAIN) {
-        throw new Error("Domain could not be found.");
-    };
-
-    const GET_EXPENSES_URL = `http://${API_DOMAIN}/api/expenses/`
-
-    const response = await fetch(GET_EXPENSES_URL, {
-        method: "GET",
-        headers: {
-            "Authorization": `Bearer ${token}`,
-            "Content-Type": "application/json",
-        },
-    });
-
-    if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.message);
-    }
-
-    const data = await response.json();
-    const expenses: Expense[] = data.expenses;
-    return expenses;
-}
-
-
-async function getIncomes(token: string): Promise<Income[]> {
-    const API_DOMAIN = process.env.EXPO_PUBLIC_BLOCKCHAIN_MIDDLEWARE_API_IP_ADDRESS;
-    if (!API_DOMAIN) {
-        throw new Error("Domain could not be found.");
-    };
-
-    const GET_INCOMES_URL = `http://${API_DOMAIN}/api/expenses/`
-
-    const response = await fetch(GET_INCOMES_URL, {
-        method: "GET",
-        headers: {
-            "Authorization": `Bearer ${token}`,
-            "Content-Type": "application/json",
-        },
-    });
-
-    if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.message);
-    }
-
-    const data = await response.json();
-    const incomes: Income[] = data.incomes;
-    return incomes;
-}
-
+import getExpenses from '@/utils/getExpenses';
+import getIncomes from '@/utils/getIncomes';
+import getExpenseCategories from '@/utils/getExpenseCategories';
 
 
 export default function Dashboard() {
@@ -180,12 +98,12 @@ export default function Dashboard() {
         )),
     ];
 
-    // const expenseCategoryItemsList = categories.slice(0, 3).map((category) => (
-    //     <React.Fragment key={uuid.v4() as string}>
-    //         <ExpenseCategoryItem category={category} />
-    //         <View style={styles.dividerLine} />
-    //     </React.Fragment>
-    // ));
+    const expenseCategoryItemsList = categories.slice(0, 3).map((category) => (
+        <React.Fragment key={uuid.v4() as string}>
+            <ExpenseCategoryItem expenses={expenses} category={category} />
+            <View style={styles.dividerLine} />
+        </React.Fragment>
+    ));
 
     return (
         <View style={styles.container}>
@@ -245,7 +163,7 @@ export default function Dashboard() {
                             </Link>
                         </TouchableOpacity>
                     </View>
-                    {//expenseCategoryItemsList.length > 0 ? expenseCategoryItemsList :
+                    {expenseCategoryItemsList.length > 0 ? expenseCategoryItemsList :
                         <View style={styles.messageContainer}>
                             <Text style={styles.message}>There are currently no expense categories. </Text>
                             <TouchableOpacity>

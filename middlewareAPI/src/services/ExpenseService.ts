@@ -37,45 +37,9 @@ class ExpenseService {
         return this.repository.findByUser(user.getUserID());
     }
 
-    public calculateMonthlyTransactionsTotal(user: User, month: Date): number {
-        const monthlyTransactions = this.getFilteredExpenses(user, month);
-        return this.reduceExpensesToTotal(monthlyTransactions);
-    }
-
-    public getMonthlyExpenseTrends(user: User, months: Date[]): number[] {
-        return months.map(month => {return this.calculateMonthlyTransactionsTotal(user, month)});
-    }
-
-    public calculateMonthlyCategoryTotal(user: User, month: Date, category: ExpenseCategory): number {
-        const monthlyTransactions = this.getFilteredExpenses(user, month);
-        return this.reduceExpensesToTotal(
-            monthlyTransactions.filter(exp => exp.expenseCategory.getID() === category.getID())
-        );
-    }
-
-    public getTotalExpensesByCategory(user: User, month: Date): Record<string, number> {
-        const monthlyExpenses = this.getFilteredExpenses(user, month);
-        const categoryTotals: Record<string, number> = {};
-
-        monthlyExpenses.forEach(expense => {
-            const category = expense.expenseCategory.name;
-            categoryTotals[category] = (categoryTotals[category] || 0) + expense.amount;
-        });
-
-        return categoryTotals;
-    }
 
     public findByID(id: string): Expense | undefined {
         return this.repository.findById(id);
-    }
-
-    private getFilteredExpenses(user: User, month: Date): Expense[] {
-        const transactions = this.getAllExpensesByUser(user);
-        return filterTransactionByMonth(transactions, month) as Expense[];
-    }
-
-    private reduceExpensesToTotal(expenses: Expense[]): number {
-        return expenses.reduce((sum, expense) => sum + expense.amount, 0);
     }
 
 

@@ -6,59 +6,74 @@ import uuid from 'react-native-uuid';
 import GoalItem from '@/components/listItems/goalItem';
 import { Link, useRouter } from 'expo-router';
 import clearRouterHistory from '@/utils/clearRouterHistory';
+import getToken from '@/utils/tokenAccess/getToken';
+import Goal from '@/models/Goal';
+import getGoals from '@/utils/getGoals';
 
 export default function AllGoals() {
     setPageTitle("All Goals");
 
-    // const [selectedSort, setSelectedSort] = useState<string>("");
-    // const router = useRouter();
+    const router = useRouter();
+    const [token, setToken] = useState<string>('');
+    const [selectedSort, setSelectedSort] = useState<string>("");
+    const [goals, setGoals] = useState<Goal[]>([]);
 
-    // const registry = Registry.getInstance();
-    // const authService = registry.authService;
-    // const goalService = registry.goalService;
 
-    // const user = authService.getAuthenticatedUser();
+    getToken().then((data) => {
+        if (!data) {
+            Alert.alert('Error', 'You must be logged in to view your dashboard.');
+            clearRouterHistory(router);
+            router.replace("/loginPage");
+            return;
+        }
 
-    // if (!user) {
-    //     Alert.alert('Error', 'You must be logged in to view all your goals.');
-    //     clearRouterHistory(router);
-    //     router.replace("/loginPage");
-    //     return;
-    // }
+        setToken(data);
+    });
 
-    // const goals = [...goalService.getAllGoalsByUser(user)];
+    useEffect(() => {
+        async function getGoalsList() {
+            const result = await getGoals(token);
+            if (result) {
+                setGoals(result);
+            } else {
+                console.log("Error with getting goals list")
+            }
+        }
 
-    // const handleGoalClick = (id: string) => {
-    //     clearRouterHistory(router);
-    //     router.navigate(`/viewGoalDetailsPage/${id}`);
-    // };
+        getGoalsList();
+    }, [token]);
 
-    // const displayElements = goals.map((goal) => (
-    //     <React.Fragment key={uuid.v4()}>
-    //         <TouchableOpacity onPress={() => handleGoalClick(goal.getID())}>
-    //             <GoalItem goal={goal} />
-    //         </TouchableOpacity>
-    //         <View style={styles.divider} />
-    //     </React.Fragment>
-    // ));
+    const handleGoalClick = (id: string) => {
+        clearRouterHistory(router);
+        router.navigate(`/viewGoalDetailsPage/${id}`);
+    };
 
-    // return (
-    //     <View style={styles.container}>
-    //         <TopBar />
-    //         <ScrollView contentContainerStyle={{ rowGap: 30 }}>
-    //             {displayElements.length > 0 ? displayElements :
-    //                 <View style={styles.messageContainer}>
-    //                     <Text style={styles.message}>There are currently no goals. </Text>
-    //                     <TouchableOpacity>
-    //                         <Link href="/addGoalPage" replace>
-    //                             <Text style={styles.linkText}>Add a goal</Text>
-    //                         </Link>
-    //                     </TouchableOpacity>
-    //                 </View>
-    //             }
-    //         </ScrollView>
-    //     </View>
-    // );
+    const displayElements = goals.map((goal) => (
+        <React.Fragment key={uuid.v4()}>
+            <TouchableOpacity onPress={() => handleGoalClick(goal.getID())}>
+                <GoalItem goal={goal} />
+            </TouchableOpacity>
+            <View style={styles.divider} />
+        </React.Fragment>
+    ));
+
+    return (
+        <View style={styles.container}>
+            <TopBar />
+            <ScrollView contentContainerStyle={{ rowGap: 30 }}>
+                {displayElements.length > 0 ? displayElements :
+                    <View style={styles.messageContainer}>
+                        <Text style={styles.message}>There are currently no goals. </Text>
+                        <TouchableOpacity>
+                            <Link href="/addGoalPage" replace>
+                                <Text style={styles.linkText}>Add a goal</Text>
+                            </Link>
+                        </TouchableOpacity>
+                    </View>
+                }
+            </ScrollView>
+        </View>
+    );
 }
 
 const styles = StyleSheet.create({
@@ -86,3 +101,7 @@ const styles = StyleSheet.create({
         fontSize: 16,
     }
 });
+function useEffect(arg0: () => void, arg1: string[]) {
+    throw new Error('Function not implemented.');
+}
+

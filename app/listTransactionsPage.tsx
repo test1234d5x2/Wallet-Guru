@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, useRouter } from 'expo-router';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert } from 'react-native';
 import setPageTitle from '@/components/pageTitle/setPageTitle';
@@ -15,116 +15,155 @@ import ModalSelectionTransactionTypes from '@/components/modalSelection/modalSel
 import TransactionType from '@/enums/TransactionType';
 import filterTransactionsByDate from '@/utils/filterTransactionsByDate';
 import filterExpensesByCategory from '@/utils/filterExpensesByCategory';
+import Expense from '@/models/Expense';
+import Income from '@/models/Income';
+import getExpenseCategories from '@/utils/getExpenseCategories';
+import getExpenses from '@/utils/getExpenses';
+import getIncomes from '@/utils/getIncomes';
+import getToken from '@/utils/tokenAccess/getToken';
 
 
 export default function ViewTransactionsList() {
     setPageTitle("Transactions");
 
-    // const router = useRouter();
-    // const registry = Registry.getInstance();
-    // const authService = registry.authService;
-    // const expenseService = registry.expenseService;
-    // const expenseCategoryService = registry.expenseCategoryService;
-    // const incomeService = registry.incomeService;
-    // const user = authService.getAuthenticatedUser();
+    const router = useRouter();
+    const [token, setToken] = useState<string>('');
+    const [selectedType, setSelectedType] = useState<TransactionType | null>(null);
+    const [selectedCategory, setSelectedCategory] = useState<ExpenseCategory | null>(null);
+    const [startDate, setStartDate] = useState<Date | null>(null);
+    const [endDate, setEndDate] = useState<Date | null>(null);
+    const [categories, setCategories] = useState<ExpenseCategory[]>([]);
+    const [expenses, setExpenses] = useState<Expense[]>([]);
+    const [incomes, setIncomes] = useState<Income[]>([]);
 
-    // if (!user) {
-    //     Alert.alert('Error', 'You must be logged in to view your transactions.');
-    //     clearRouterHistory(router);
-    //     router.replace("/loginPage");
-    //     return;
-    // }
+    getToken().then((data) => {
+        if (!data) {
+            Alert.alert('Error', 'You must be logged in to view your dashboard.');
+            clearRouterHistory(router);
+            router.replace("/loginPage");
+            return;
+        }
 
-    // const [selectedType, setSelectedType] = useState<TransactionType | null>(null);
-    // const [selectedCategory, setSelectedCategory] = useState<ExpenseCategory | null>(null);
-    // const [startDate, setStartDate] = useState<Date | null>(null);
-    // const [endDate, setEndDate] = useState<Date | null>(null);
+        setToken(data);
+    });
 
-    // const expenses = expenseService.getAllExpensesByUser(user);
-    // const incomes = incomeService.getAllIncomesByUser(user);
-    // const categories = expenseCategoryService.getAllCategoriesByUser(user);
+    useEffect(() => {
+        async function getCategories() {
+            const result = await getExpenseCategories(token);
+            if (result) {
+                setCategories(result);
+            } else {
+                console.log("Error with getting expense categories list.")
+            }
+        }
 
-    // const handleTransactionClick = (transaction: Transaction) => {
-    //     clearRouterHistory(router);
-    //     router.navigate(transaction.getPageURL());
-    // };
+        getCategories();
+    }, [token]);
 
-    // const transactionDisplayElements = [];
-    // let transactions = [];
+    useEffect(() => {
+        async function getExpenseList() {
+            const result = await getExpenses(token);
+            if (result) {
+                setExpenses(result);
+            } else {
+                console.log("Error with getting expense list")
+            }
+        }
 
-    // if (selectedType !== TransactionType.EXPENSE) {
-    //     let tomorrow = new Date();
-    //     tomorrow = new Date(tomorrow.setDate(tomorrow.getDate() + 1))
-    //     transactions = filterTransactionsByDate(incomes, startDate === null ? new Date(1800, 0, 1): startDate, endDate === null ? tomorrow: endDate)
-    //     transactionDisplayElements.push(
-    //         ...transactions.map((income) => (
-    //             <React.Fragment key={uuid.v4() as string}>
-    //                 <TouchableOpacity onPress={() => handleTransactionClick(income)}>
-    //                     <IncomeItem registry={registry} income={income} />
-    //                 </TouchableOpacity>
-    //                 <View style={styles.divider} />
-    //             </React.Fragment>
-    //         )),
-    //     )
-    // }
+        getExpenseList();
+    }, [token]);
 
-    // if (selectedType !== TransactionType.INCOME) {
-    //     let tomorrow = new Date();
-    //     tomorrow = new Date(tomorrow.setDate(tomorrow.getDate() + 1))
-    //     transactions = filterTransactionsByDate(expenses, startDate === null ? new Date(1800, 0, 1): startDate, endDate === null ? tomorrow: endDate)
-    //     if (selectedCategory) {transactions = filterExpensesByCategory(transactions, selectedCategory)}
-    //     transactionDisplayElements.push(
-    //         ...transactions.map((expense) => (
-    //             <React.Fragment key={uuid.v4() as string}>
-    //                 <TouchableOpacity onPress={() => handleTransactionClick(expense)}>
-    //                     <ExpenseItem registry={registry} expense={expense} />
-    //                 </TouchableOpacity>
-    //                 <View style={styles.divider} />
-    //             </React.Fragment>
-    //         )),
-    //     )
-    // }
+    useEffect(() => {
+        async function getIncomesList() {
+            const result = await getIncomes(token);
+            if (result) {
+                setIncomes(result);
+            } else {
+                console.log("Error with getting incomes list")
+            }
+        }
 
-    // return (
-    //     <View style={styles.container}>
-    //         <TopBar />
+        getIncomesList();
+    }, [token]);
 
-    //         <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{rowGap: 30}}>
 
-    //             <View style={{flexDirection: "column", rowGap: 20}}>
-    //                 <Text style={styles.filterTitle}>Filters:</Text>
-    //                 <View>
-    //                     <ModalSelectionTransactionTypes choices={Object.values(TransactionType) as TransactionType[]} value={selectedType} setValue={setSelectedType} />
-    //                 </View>
-    //                 { selectedType === TransactionType.EXPENSE ? <View><ModalSelectionExpenseCategories choices={categories} value={selectedCategory} setValue={setSelectedCategory} /></View>: ""}
-    //                 <View style={{flexDirection: "row", columnGap: 20, justifyContent: "space-between"}}>
-    //                     <DateInputField date={startDate} setDate={setStartDate} placeholder='Start Date' />
-    //                     <DateInputField date={endDate} setDate={setEndDate} placeholder='End Date' />
-    //                 </View>
+    const handleTransactionClick = (transaction: Transaction) => {
+        clearRouterHistory(router);
+        router.navigate(transaction.getPageURL());
+    };
 
-    //             </View>
+    const transactionDisplayElements = [];
+    let transactions = [];
 
-    //             <View style={{ rowGap: 30 }}>
-    //                 {transactionDisplayElements.length > 0 ? transactionDisplayElements :
-    //                     <View style={styles.messageContainer}>
-    //                         <Text style={styles.message}>There are currently no transactions.</Text>
-    //                         <TouchableOpacity>
-    //                             <Link href="/addExpensePage" replace>
-    //                                 <Text style={styles.linkText}>Add an expense</Text>
-    //                             </Link>
-    //                         </TouchableOpacity>
-    //                     </View>
-
-    //                 }
-    //             </View>
-
-    //         </ScrollView>
-    //     </View>
-    // );
-
-    return {
-
+    if (selectedType !== TransactionType.EXPENSE) {
+        let tomorrow = new Date();
+        tomorrow = new Date(tomorrow.setDate(tomorrow.getDate() + 1))
+        transactions = filterTransactionsByDate(incomes, startDate === null ? new Date(1800, 0, 1): startDate, endDate === null ? tomorrow: endDate)
+        transactionDisplayElements.push(
+            ...transactions.map((income) => (
+                <React.Fragment key={uuid.v4() as string}>
+                    <TouchableOpacity onPress={() => handleTransactionClick(income)}>
+                        <IncomeItem income={income} />
+                    </TouchableOpacity>
+                    <View style={styles.divider} />
+                </React.Fragment>
+            )),
+        )
     }
+
+    if (selectedType !== TransactionType.INCOME) {
+        let tomorrow = new Date();
+        tomorrow = new Date(tomorrow.setDate(tomorrow.getDate() + 1))
+        transactions = filterTransactionsByDate(expenses, startDate === null ? new Date(1800, 0, 1): startDate, endDate === null ? tomorrow: endDate)
+        if (selectedCategory) {transactions = filterExpensesByCategory(transactions, selectedCategory)}
+        transactionDisplayElements.push(
+            ...transactions.map((expense) => (
+                <React.Fragment key={uuid.v4() as string}>
+                    <TouchableOpacity onPress={() => handleTransactionClick(expense)}>
+                        <ExpenseItem expense={expense} />
+                    </TouchableOpacity>
+                    <View style={styles.divider} />
+                </React.Fragment>
+            )),
+        )
+    }
+
+    return (
+        <View style={styles.container}>
+            <TopBar />
+
+            <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{rowGap: 30}}>
+
+                <View style={{flexDirection: "column", rowGap: 20}}>
+                    <Text style={styles.filterTitle}>Filters:</Text>
+                    <View>
+                        <ModalSelectionTransactionTypes choices={Object.values(TransactionType) as TransactionType[]} value={selectedType} setValue={setSelectedType} />
+                    </View>
+                    { selectedType === TransactionType.EXPENSE ? <View><ModalSelectionExpenseCategories choices={categories} value={selectedCategory} setValue={setSelectedCategory} /></View>: ""}
+                    <View style={{flexDirection: "row", columnGap: 20, justifyContent: "space-between"}}>
+                        <DateInputField date={startDate} setDate={setStartDate} placeholder='Start Date' />
+                        <DateInputField date={endDate} setDate={setEndDate} placeholder='End Date' />
+                    </View>
+
+                </View>
+
+                <View style={{ rowGap: 30 }}>
+                    {transactionDisplayElements.length > 0 ? transactionDisplayElements :
+                        <View style={styles.messageContainer}>
+                            <Text style={styles.message}>There are currently no transactions.</Text>
+                            <TouchableOpacity>
+                                <Link href="/addExpensePage" replace>
+                                    <Text style={styles.linkText}>Add an expense</Text>
+                                </Link>
+                            </TouchableOpacity>
+                        </View>
+
+                    }
+                </View>
+
+            </ScrollView>
+        </View>
+    );
 }
 
 const styles = StyleSheet.create({

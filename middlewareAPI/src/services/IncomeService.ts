@@ -34,28 +34,8 @@ class IncomeService {
         return this.repository.findByUser(user.getUserID());
     }
 
-    public calculateMonthlyTransactionsTotal(user: User, month: Date): number {
-        const monthlyTransactions = this.getFilteredIncomes(user, month);
-        return this.reduceIncomesToTotal(monthlyTransactions);
-    }
-
-    public getMonthlyIncomeTrends(user: User, months: Date[]): number[] {
-        return months.map(month => {return this.calculateMonthlyTransactionsTotal(user, month)});
-    }
-
     public findByID(id: string): Income | undefined {
         return this.repository.findById(id);
-    }
-
-
-    private getFilteredIncomes(user: User, month: Date): Income[] {
-        const incomes = this.getAllIncomesByUser(user);
-        return filterTransactionByMonth(incomes, month) as Income[];
-    }
-
-
-    private reduceIncomesToTotal(incomes: Income[]): number {
-        return incomes.reduce((sum, income) => sum + income.amount, 0);
     }
 }
 

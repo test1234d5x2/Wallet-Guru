@@ -103,7 +103,7 @@ export const archive: RequestHandler = (req, res) => {
         res.status(404).json({ error: "Goal not found" });
         return;
     }
-    
+
     goalService.updateGoal(
         id,
         goal.title,
@@ -139,4 +139,49 @@ export const remove: RequestHandler = (req, res) => {
     } catch (err: any) {
         res.status(500).json({ error: "Error deleting goal", details: err.message });
     }
+};
+
+/**
+ * List all goals for a given user.
+ * Expected request parameters:
+ * - userId: User identifier (provided as a route parameter)
+ */
+export const listByUser: RequestHandler = (req, res) => {
+
+    const user = getUserFromToken(req);
+    if (!user) {
+        res.status(401).json({ error: "You must be logged in to view goals." });
+        return;
+    }
+
+    const goals = goalService.getAllGoalsByUser(user);
+    res.status(200).json({ goals });
+};
+
+/**
+ * Find a goal by its ID.
+ * Expected request parameters:
+ * - id: Goal identifier (provided as a route parameter)
+ */
+export const findByID: RequestHandler = (req, res) => {
+    const { id } = req.params;
+
+    const user = getUserFromToken(req);
+    if (!user) {
+        res.status(401).json({ error: "You must be logged in to view a goal." });
+        return;
+    }
+
+    if (!id) {
+        res.status(400).json({ error: "Goal ID is required." });
+        return;
+    }
+
+    const goal = goalService.findByID(id);
+    if (!goal) {
+        res.status(404).json({ error: "Goal not found." });
+        return;
+    }
+
+    res.status(200).json({ goal });
 };

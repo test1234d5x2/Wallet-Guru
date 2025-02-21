@@ -5,25 +5,27 @@ import ExpenseCategory from '@/models/ExpenseCategory';
 import { useRouter } from 'expo-router';
 import ListItemDeleteButton from './listItemDeleteButton';
 import ListItemEditButton from './listItemEditButton';
-import Registry from '@/models/data/Registry';
 import clearRouterHistory from '@/utils/clearRouterHistory';
+import calculateMonthlyCategoryTotal from '@/utils/calculateMonthlyCategoryTotal';
+import Expense from '@/models/Expense';
 
 interface ExpenseCategoryProps {
     category: ExpenseCategory;
+    expenses: Expense[]
 }
 
 export default function ExpenseCategoryItem(props: ExpenseCategoryProps) {
     const router = useRouter();
-    const registry = Registry.getInstance();
-    const user = registry.authService.getAuthenticatedUser();
 
-    if (!user) {
-        clearRouterHistory(router);
-        router.replace("/loginPage");
-        return;
-    }
+    // if (!user) {
+    //     clearRouterHistory(router);
+    //     router.replace("/loginPage");
+    //     return;
+    // }
 
-    const totalMonthlyExpense = registry.expenseService.calculateMonthlyCategoryTotal(user, new Date(), props.category);
+    const totalMonthlyExpense = calculateMonthlyCategoryTotal(props.expenses, new Date(), props.category);
+
+    
 
     const handleEdit = (id: string) => {
         router.navigate("/editExpenseCategoryPage/" + props.category.getID());
@@ -37,7 +39,8 @@ export default function ExpenseCategoryItem(props: ExpenseCategoryProps) {
                 style: 'destructive',
                 onPress: () => {
                     try {
-                        registry.expenseCategoryService.deleteExpenseCategory(props.category.getID());
+                        //registry.expenseCategoryService.deleteExpenseCategory(props.category.getID());
+                        // USE THE BLOCKCHAIN MIDDLEWARE API TO DELETE AN EXPENSE CATEOGRY.
                         Alert.alert('Success', 'Expense category deleted successfully!');
                         clearRouterHistory(router);
                         router.replace("/expenseCategoriesOverviewPage");
