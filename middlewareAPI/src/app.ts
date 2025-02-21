@@ -11,7 +11,18 @@ import goalRoutes from "./routes/Goal";
 dotenv.config();
 
 const app = express();
-const PORT = process.env.PORT || 5005;
+
+let tempPort = 5005;
+if (process.env.PORT) {
+    tempPort = parseInt(process.env.PORT);
+}
+
+let tempIP = 'localhost';
+if (process.env.IP) {tempIP = process.env.IP}
+
+const IP = tempIP;
+const PORT = tempPort;
+
 
 app.use(cors());
 app.use(express.json());
@@ -22,6 +33,6 @@ app.use("/api/expense-categories", expenseCategoryRoutes);
 app.use("/api/incomes", incomeRoutes);
 app.use("/api/goals", goalRoutes);
 
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+app.listen(PORT, IP, () => console.log(`Server running on  https://${IP}:${PORT}`));
 
 export default app;
