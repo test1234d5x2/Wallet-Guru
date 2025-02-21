@@ -2,6 +2,8 @@ import { RequestHandler } from "express";
 import Registry from "../registry/Registry";
 
 const registry = Registry.getInstance();
+const userService = registry.userService;
+const authService = registry.authService;
 
 /**
  * Create a new user.
@@ -16,13 +18,11 @@ export const create: RequestHandler = (req, res) => {
     }
 
     try {
-        // Check if user already exists via the service method
-        if (registry.userService.userExists(username)) {
+        if (userService.userExists(username)) {
             res.status(400).json({ error: "User already exists" });
             return;
         }
-        // Add the new user
-        registry.userService.addUser(username, password);
+        userService.addUser(username, password);
         res.status(201).json({ message: "User created" });
     } catch (err: any) {
         res.status(500).json({ error: "Error creating user", details: err.message });
@@ -42,8 +42,9 @@ export const login: RequestHandler = (req, res) => {
     }
 
     try {
-        const user = registry.userService.authenticateUser(username, password);
-        if (user) {
+        const loggedIn = authService.authenticate(username, password);
+        if (loggedIn) {
+            const user = authService.getAuthenticatedUser();
             res.status(200).json({ message: "Login successful", user });
         } else {
             res.status(401).json({ error: "Invalid credentials" });
@@ -53,13 +54,6 @@ export const login: RequestHandler = (req, res) => {
     }
 };
 
-/**
- * Update user details.
- * (Not implemented in the UserService; returns a 501 Not Implemented.)
- */
-export const update: RequestHandler = (req, res) => {
-    res.status(501).json({ error: "Update user not implemented" });
-};
 
 /**
  * Delete a user.
@@ -74,7 +68,8 @@ export const remove: RequestHandler = (req, res) => {
     }
 
     try {
-        registry.userService.deleteUser(id);
+        userService.deleteUser(id);
+        authService.logout()
         res.status(200).json({ message: "User deleted" });
     } catch (err: any) {
         res.status(500).json({ error: "Error deleting user", details: err.message });

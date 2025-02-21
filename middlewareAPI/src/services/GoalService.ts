@@ -34,6 +34,10 @@ class GoalService {
     public getAllGoalsByUser(user: User): Goal[] {
         return this.repository.findByUser(user.getUserID());
     }
+
+    public findByID(id: string): Goal | undefined {
+        return this.repository.findById(id);
+    }
 }
 
 export default GoalService;

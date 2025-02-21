@@ -38,6 +38,10 @@ class ExpenseCategoryService {
         );
     }
 
+    public findByID(id: string): ExpenseCategory | undefined {
+        return this.repository.findByID(id);
+    }
+
 }
 
 export default ExpenseCategoryService;

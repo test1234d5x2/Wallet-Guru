@@ -1,24 +1,16 @@
 import { RequestHandler } from "express";
 import Registry from "../registry/Registry";
-import Goal from "../models/Goal";
 import GoalStatus from "../enums/GoalStatus";
 
 const registry = Registry.getInstance();
+const authService = registry.authService;
+const goalService = registry.goalService;
 
-/**
- * Helper to get a goal by its ID.
- * This workaround accesses the repository from GoalService (which is a private member)
- * by casting the service to any. In production, add a proper getGoalById method to GoalService.
- */
-const getGoalById = (id: string): Goal | undefined => {
-    return (registry.goalService as any).repository.findById(id);
-};
 
 /**
  * Create a new goal.
  * Expected request body:
  * {
- *   "user": { ... },
  *   "title": "Save for a Car",
  *   "description": "Saving money for a new car",
  *   "target": 10000,
@@ -26,13 +18,20 @@ const getGoalById = (id: string): Goal | undefined => {
  * }
  */
 export const create: RequestHandler = (req, res) => {
-    const { user, title, description, target, status } = req.body;
-    if (!user || !title || !description || target === undefined) {
+    const { title, description, target, status } = req.body;
+
+    const user = authService.getAuthenticatedUser();
+    if (!user) {
+        res.status(401).json({error: "You must be logged in to create a goal."})
+        return;
+    }
+
+    if (!title || !description || target === undefined) {
         res.status(400).json({ error: "Missing required fields: user, title, description, target" });
         return;
     }
     try {
-        registry.goalService.addGoal(user, title, description, target, status || GoalStatus.Active);
+        goalService.addGoal(user, title, description, target, status || GoalStatus.Active);
         res.status(201).json({ message: "Goal created" });
     } catch (err: any) {
         res.status(500).json({ error: "Error creating goal", details: err.message });
@@ -53,17 +52,24 @@ export const create: RequestHandler = (req, res) => {
 export const updateProgress: RequestHandler = (req, res) => {
     const { id } = req.params;
     const { current } = req.body;
+
+    const user = authService.getAuthenticatedUser();
+    if (!user) {
+        res.status(401).json({error: "You must be logged in to update a goal."})
+        return;
+    }
+
     if (!id || current === undefined) {
         res.status(400).json({ error: "Missing required fields: id, current" });
         return;
     }
     try {
-        const goal = getGoalById(id);
+        const goal = goalService.findByID(id);
         if (!goal) {
             res.status(404).json({ error: "Goal not found" });
             return;
         }
-        registry.goalService.updateGoal(
+        goalService.updateGoal(
             id,
             goal.title,
             goal.description,
@@ -85,17 +91,24 @@ export const updateProgress: RequestHandler = (req, res) => {
  */
 export const archive: RequestHandler = (req, res) => {
     const { id } = req.params;
+
+    const user = authService.getAuthenticatedUser();
+    if (!user) {
+        res.status(401).json({error: "You must be logged in to archive a goal."})
+        return;
+    }
+
     if (!id) {
         res.status(400).json({ error: "Goal id is required" });
         return;
     }
     try {
-        const goal = getGoalById(id);
+        const goal = goalService.findByID(id);
         if (!goal) {
             res.status(404).json({ error: "Goal not found" });
             return;
         }
-        registry.goalService.updateGoal(
+        goalService.updateGoal(
             id,
             goal.title,
             goal.description,
@@ -116,12 +129,19 @@ export const archive: RequestHandler = (req, res) => {
  */
 export const remove: RequestHandler = (req, res) => {
     const { id } = req.params;
+
+    const user = authService.getAuthenticatedUser();
+    if (!user) {
+        res.status(401).json({error: "You must be logged in to delete a goal."})
+        return;
+    }
+
     if (!id) {
         res.status(400).json({ error: "Goal id is required" });
         return;
     }
     try {
-        registry.goalService.deleteGoal(id);
+        goalService.deleteGoal(id);
         res.status(200).json({ message: "Goal deleted" });
     } catch (err: any) {
         res.status(500).json({ error: "Error deleting goal", details: err.message });

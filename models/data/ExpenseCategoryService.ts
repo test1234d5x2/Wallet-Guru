@@ -38,6 +38,14 @@ class ExpenseCategoryService {
         );
     }
 
+    public findByID(id: string): ExpenseCategory | null {
+        try {
+            return this.repository.findByID(id);
+        } catch (err: any) {
+            return null;
+        }
+    }
+
 }
 
 export default ExpenseCategoryService;

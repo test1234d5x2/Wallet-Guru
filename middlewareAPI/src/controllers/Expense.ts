@@ -2,28 +2,42 @@ import { RequestHandler } from "express";
 import Registry from "../registry/Registry";
 
 const registry = Registry.getInstance();
+const authService = registry.authService;
+const expenseCategoryService = registry.expenseCategoryService;
+const expenseService = registry.expenseService;
 
 /**
  * Create a new expense.
  * Expected request body should contain:
- * - user (object)
  * - title (string)
  * - amount (number)
  * - date (string, convertible to Date)
  * - notes (string)
- * - expenseCategory (object)
+ * - expenseCategoryID (string)
  * - receipt (optional string)
  */
 export const create: RequestHandler = (req, res) => {
-    const { user, title, amount, date, notes, expenseCategory, receipt } = req.body;
+    const { title, amount, date, notes, expenseCategoryID, receipt } = req.body;
 
-    if (!user || !title || amount === undefined || !date || !notes || !expenseCategory) {
+    const user = authService.getAuthenticatedUser();
+    if (!user) {
+        res.status(401).json({error: "You must be logged in to create an expense."})
+        return;
+    }
+
+    const expenseCategory = expenseCategoryService.findByID(expenseCategoryID);
+    if (!expenseCategory) {
+        res.status(404).json({error: "The expense category could not be found."});
+        return;
+    }
+
+    if (!title || amount === undefined || !date || !notes || !expenseCategoryID) {
         res.status(400).json({ error: "Missing required fields" });
         return;
     }
 
     try {
-        registry.expenseService.addExpense(
+        expenseService.addExpense(
             user,
             title,
             amount,
@@ -47,14 +61,26 @@ export const create: RequestHandler = (req, res) => {
  * - amount (number)
  * - date (string, convertible to Date)
  * - notes (string)
- * - expenseCategory (object)
+ * - expenseCategoryID (string)
  * - receipt (optional string)
  */
 export const update: RequestHandler = (req, res) => {
     const { id } = req.params;
-    const { title, amount, date, notes, expenseCategory, receipt } = req.body;
+    const { title, amount, date, notes, expenseCategoryID, receipt } = req.body;
 
-    if (!id || !title || amount === undefined || !date || !notes || !expenseCategory) {
+    const user = authService.getAuthenticatedUser();
+    if (!user) {
+        res.status(401).json({error: "You must be logged in to update an expense."})
+        return;
+    }
+
+    const expenseCategory = expenseCategoryService.findByID(expenseCategoryID);
+    if (!expenseCategory) {
+        res.status(404).json({error: "The expense category could not be found."});
+        return;
+    }
+
+    if (!id || !title || amount === undefined || !date || !notes || !expenseCategoryID) {
         res.status(400).json({ error: "Missing required fields" });
         return;
     }
@@ -82,6 +108,12 @@ export const update: RequestHandler = (req, res) => {
  */
 export const remove: RequestHandler = (req, res) => {
     const { id } = req.params;
+
+    const user = authService.getAuthenticatedUser();
+    if (!user) {
+        res.status(401).json({error: "You must be logged in to delete an expense."})
+        return;
+    }
 
     if (!id) {
         res.status(400).json({ error: "Expense id is required" });

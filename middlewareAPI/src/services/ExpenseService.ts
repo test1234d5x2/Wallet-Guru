@@ -65,6 +65,10 @@ class ExpenseService {
         return categoryTotals;
     }
 
+    public findByID(id: string): Expense | undefined {
+        return this.repository.findById(id);
+    }
+
     private getFilteredExpenses(user: User, month: Date): Expense[] {
         const transactions = this.getAllExpensesByUser(user);
         return filterTransactionByMonth(transactions, month) as Expense[];
