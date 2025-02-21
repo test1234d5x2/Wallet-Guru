@@ -3,8 +3,41 @@ import { useState } from "react";
 import { Link, useRouter } from "expo-router";
 import setPageTitle from "@/components/pageTitle/setPageTitle";
 import AuthenticationInputs from "@/components/formComponents/authenticationInputs";
-import Registry from '@/models/data/Registry';
 import clearRouterHistory from "@/utils/clearRouterHistory";
+import saveToken from "@/utils/tokenAccess/saveToken";
+import getToken from '@/utils/tokenAccess/getToken';
+
+interface LoginResponse {
+    message: string;
+    token: string;
+}
+
+
+async function login(email: string, password: string): Promise<LoginResponse> {
+    const API_DOMAIN = process.env.EXPO_PUBLIC_BLOCKCHAIN_MIDDLEWARE_API_IP_ADDRESS;
+    if (!API_DOMAIN) {
+        throw new Error("Domain could not be found.")
+    };
+
+    const LOGIN_URL = `http://${API_DOMAIN}/api/users/login`;
+
+    const response = await fetch(LOGIN_URL, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ username: email, password }),
+    })
+
+    if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message);
+    }
+
+    const data: LoginResponse = await response.json();
+    return data;
+}
+
 
 export default function Login() {
     setPageTitle("Login");
@@ -14,27 +47,37 @@ export default function Login() {
     const [error, setError] = useState<string>('');
     const router = useRouter();
 
-    const registry = Registry.getInstance();
-    const authService = registry.authService;
+    getToken().then((data) => {
+        if (data) {
+            Alert.alert("You are already logged in.");
+            router.replace("/dashboardPage");
+            return
+        }
+    });
 
-    const handleLogin = () => {
+    const handleLogin = async () => {
         if (!email || !password) {
             setError("Please input both email and password");
             Alert.alert("Please input both email and password");
             return;
         }
 
-        const isAuthenticated = authService.authenticate(email, password);
+        await login(email, password).then((data) => {
+            const token = data.token;
 
-        if (!isAuthenticated) {
-            setError("Invalid email or password");
-            Alert.alert("Invalid email or password");
-            return;
-        }
+            saveToken(token).then((data2) => {
+                setError("");
+                clearRouterHistory(router);
+                router.replace("/dashboardPage");
+            }).catch((error) => {
+                setError("Failed to login. Please try again.");
+                Alert.alert("Failed to login. Please try again.");
+            })
+        }).catch((error: Error) => {
+            setError(error.message);
+            Alert.alert(error.message);
+        });
 
-        setError("");
-        clearRouterHistory(router);
-        router.replace("/dashboardPage");
         return;
     };
 

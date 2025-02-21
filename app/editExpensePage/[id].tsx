@@ -7,136 +7,135 @@ import { useRouter, useLocalSearchParams } from 'expo-router';
 import validateEmpty from '@/utils/validateEmpty';
 import isNumeric from '@/utils/validateNumeric';
 import { isValidDate, isTodayOrBefore } from '@/utils/validateDate';
-import Registry from '@/models/data/Registry';
 import ExpenseCategory from '@/models/ExpenseCategory';
 import clearRouterHistory from '@/utils/clearRouterHistory';
 
 export default function EditExpense() {
-    const { id } = useLocalSearchParams();
-
-    const router = useRouter();
-    const registry = Registry.getInstance();
-    const authService = registry.authService;
-    const expenseService = registry.expenseService;
-    const expenseCategoryService = registry.expenseCategoryService;
-
-    const authenticatedUser = authService.getAuthenticatedUser();
-
-    if (!authenticatedUser) {
-        Alert.alert("Error", "You must be logged in to edit an expense.");
-        clearRouterHistory(router);
-        router.replace("/loginPage");
-        return;
-    }
-
     setPageTitle("Edit Expense");
 
-    const expense = expenseService.getAllExpensesByUser(authenticatedUser).find(exp => exp.getID() === id);
-    if (!expense) {
-        Alert.alert("Error", "Expense does not exist.");
-        router.replace("/listTransactionsPage");
-        clearRouterHistory(router);
-        return;
-    }
+    const { id } = useLocalSearchParams();
 
-    const [title, setTitle] = useState<string>(expense.title);
-    const [amount, setAmount] = useState<string>(expense.amount.toString());
-    const [date, setDate] = useState<Date>(expense.date);
-    const [category, setCategory] = useState<ExpenseCategory>(expense.expenseCategory);
-    const [notes, setNotes] = useState<string>(expense.notes);
-    const [error, setError] = useState<string>('');
+    // const router = useRouter();
+    // const registry = Registry.getInstance();
+    // const authService = registry.authService;
+    // const expenseService = registry.expenseService;
+    // const expenseCategoryService = registry.expenseCategoryService;
 
-    const validateForm = () => {
-        if (!title || !amount || !date || !category) {
-            Alert.alert('Please fill in all required fields.');
-            setError("Fill in all the required fields.");
-            return false;
-        }
+    // const authenticatedUser = authService.getAuthenticatedUser();
 
-        if (validateEmpty(title)) {
-            Alert.alert("Empty Title Field", "The title field must be filled properly.");
-            setError("The title field must be filled properly.");
-            return false;
-        }
+    // if (!authenticatedUser) {
+    //     Alert.alert("Error", "You must be logged in to edit an expense.");
+    //     clearRouterHistory(router);
+    //     router.replace("/loginPage");
+    //     return;
+    // }
 
-        if (validateEmpty(amount)) {
-            Alert.alert("Empty Amount Field", "The amount field must be filled properly.");
-            setError("The amount field must be filled properly.");
-            return false;
-        }
+    // const expense = expenseService.getAllExpensesByUser(authenticatedUser).find(exp => exp.getID() === id);
+    // if (!expense) {
+    //     Alert.alert("Error", "Expense does not exist.");
+    //     router.replace("/listTransactionsPage");
+    //     clearRouterHistory(router);
+    //     return;
+    // }
 
-        if (!isNumeric(amount)) {
-            Alert.alert("Amount Field Not Numeric", "The amount field must be a number.");
-            setError("The amount field must be a number.");
-            return false;
-        }
+    // const [title, setTitle] = useState<string>(expense.title);
+    // const [amount, setAmount] = useState<string>(expense.amount.toString());
+    // const [date, setDate] = useState<Date>(expense.date);
+    // const [category, setCategory] = useState<ExpenseCategory>(expense.expenseCategory);
+    // const [notes, setNotes] = useState<string>(expense.notes);
+    // const [error, setError] = useState<string>('');
 
-        if (!isValidDate(date)) {
-            Alert.alert("Date Field Invalid", "Please select a date.");
-            setError("Please select a date.");
-            return false;
-        }
+    // const validateForm = () => {
+    //     if (!title || !amount || !date || !category) {
+    //         Alert.alert('Please fill in all required fields.');
+    //         setError("Fill in all the required fields.");
+    //         return false;
+    //     }
 
-        if (!isTodayOrBefore(date)) {
-            Alert.alert("Date Field Invalid", "Please select a date that is today or before today.");
-            setError("Please select a date that is today or before today.");
-            return false;
-        }
+    //     if (validateEmpty(title)) {
+    //         Alert.alert("Empty Title Field", "The title field must be filled properly.");
+    //         setError("The title field must be filled properly.");
+    //         return false;
+    //     }
 
-        setError("");
-        return true;
-    };
+    //     if (validateEmpty(amount)) {
+    //         Alert.alert("Empty Amount Field", "The amount field must be filled properly.");
+    //         setError("The amount field must be filled properly.");
+    //         return false;
+    //     }
 
-    const handleEditExpense = () => {
-        if (validateForm()) {
-            try {
-                expenseService.updateExpense(id as string, title, parseFloat(amount), date, notes, category as ExpenseCategory);
-                Alert.alert('Success', 'Expense updated successfully!');
-                clearRouterHistory(router);
-                router.replace("/viewExpenseDetailsPage/" + expense.getID());
-            } catch (err: any) {
-                Alert.alert("Error", err.message);
-            }
-        }
-    };
+    //     if (!isNumeric(amount)) {
+    //         Alert.alert("Amount Field Not Numeric", "The amount field must be a number.");
+    //         setError("The amount field must be a number.");
+    //         return false;
+    //     }
 
-    const handleScanReceipt = () => {
-        Alert.alert('Feature Coming Soon', 'Receipt scanning is not yet implemented.');
-    };
+    //     if (!isValidDate(date)) {
+    //         Alert.alert("Date Field Invalid", "Please select a date.");
+    //         setError("Please select a date.");
+    //         return false;
+    //     }
 
-    return (
-        <ScrollView contentContainerStyle={styles.container}>
-            <TopBar />
+    //     if (!isTodayOrBefore(date)) {
+    //         Alert.alert("Date Field Invalid", "Please select a date that is today or before today.");
+    //         setError("Please select a date that is today or before today.");
+    //         return false;
+    //     }
 
-            <View style={styles.expenseForm}>
-                <ExpenseDetailsInputs
-                    title={title}
-                    amount={amount}
-                    date={date}
-                    category={category}
-                    notes={notes}
-                    categoriesList={expenseCategoryService.getAllCategoriesByUser(authenticatedUser)}
-                    setTitle={setTitle}
-                    setAmount={setAmount}
-                    setDate={setDate}
-                    setCategory={setCategory}
-                    setNotes={setNotes}
-                />
-            </View>
+    //     setError("");
+    //     return true;
+    // };
 
-            {error ? <View style={styles.centeredTextContainer}><Text style={styles.errorText}>{error}</Text></View> : null}
+    // const handleEditExpense = () => {
+    //     if (validateForm()) {
+    //         try {
+    //             expenseService.updateExpense(id as string, title, parseFloat(amount), date, notes, category as ExpenseCategory);
+    //             Alert.alert('Success', 'Expense updated successfully!');
+    //             clearRouterHistory(router);
+    //             router.replace("/viewExpenseDetailsPage/" + expense.getID());
+    //         } catch (err: any) {
+    //             Alert.alert("Error", err.message);
+    //         }
+    //     }
+    // };
 
-            <View style={styles.centeredTextContainer}>
-                <TouchableOpacity onPress={handleScanReceipt}>
-                    <Text style={styles.scanText}>Scan Receipt</Text>
-                </TouchableOpacity>
-            </View>
+    // const handleScanReceipt = () => {
+    //     Alert.alert('Feature Coming Soon', 'Receipt scanning is not yet implemented.');
+    // };
 
-            <TouchableOpacity style={styles.addButton} onPress={handleEditExpense}>
-                <Text style={styles.addButtonText}>Edit Expense</Text>
-            </TouchableOpacity>
-        </ScrollView>
-    );
+    // return (
+    //     <ScrollView contentContainerStyle={styles.container}>
+    //         <TopBar />
+
+    //         <View style={styles.expenseForm}>
+    //             <ExpenseDetailsInputs
+    //                 title={title}
+    //                 amount={amount}
+    //                 date={date}
+    //                 category={category}
+    //                 notes={notes}
+    //                 categoriesList={expenseCategoryService.getAllCategoriesByUser(authenticatedUser)}
+    //                 setTitle={setTitle}
+    //                 setAmount={setAmount}
+    //                 setDate={setDate}
+    //                 setCategory={setCategory}
+    //                 setNotes={setNotes}
+    //             />
+    //         </View>
+
+    //         {error ? <View style={styles.centeredTextContainer}><Text style={styles.errorText}>{error}</Text></View> : null}
+
+    //         <View style={styles.centeredTextContainer}>
+    //             <TouchableOpacity onPress={handleScanReceipt}>
+    //                 <Text style={styles.scanText}>Scan Receipt</Text>
+    //             </TouchableOpacity>
+    //         </View>
+
+    //         <TouchableOpacity style={styles.addButton} onPress={handleEditExpense}>
+    //             <Text style={styles.addButtonText}>Edit Expense</Text>
+    //         </TouchableOpacity>
+    //     </ScrollView>
+    // );
 }
 
 const styles = StyleSheet.create({

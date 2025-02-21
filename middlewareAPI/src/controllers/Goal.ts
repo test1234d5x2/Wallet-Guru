@@ -22,7 +22,7 @@ export const create: RequestHandler = (req, res) => {
 
     const user = getUserFromToken(req);
     if (!user) {
-        res.status(401).json({error: "You must be logged in to create a goal."})
+        res.status(401).json({ error: "You must be logged in to create a goal." })
         return;
     }
 
@@ -30,12 +30,9 @@ export const create: RequestHandler = (req, res) => {
         res.status(400).json({ error: "Missing required fields: user, title, description, target" });
         return;
     }
-    try {
-        goalService.addGoal(user, title, description, target, status || GoalStatus.Active);
-        res.status(201).json({ message: "Goal created" });
-    } catch (err: any) {
-        res.status(500).json({ error: "Error creating goal", details: err.message });
-    }
+
+    goalService.addGoal(user, title, description, target, status || GoalStatus.Active);
+    res.status(201).json({ message: "Goal created" });
 };
 
 /**
@@ -55,7 +52,7 @@ export const updateProgress: RequestHandler = (req, res) => {
 
     const user = getUserFromToken(req);
     if (!user) {
-        res.status(401).json({error: "You must be logged in to update a goal."})
+        res.status(401).json({ error: "You must be logged in to update a goal." })
         return;
     }
 
@@ -63,24 +60,22 @@ export const updateProgress: RequestHandler = (req, res) => {
         res.status(400).json({ error: "Missing required fields: id, current" });
         return;
     }
-    try {
-        const goal = goalService.findByID(id);
-        if (!goal) {
-            res.status(404).json({ error: "Goal not found" });
-            return;
-        }
-        goalService.updateGoal(
-            id,
-            goal.title,
-            goal.description,
-            goal.target,
-            current,
-            goal.status
-        );
-        res.status(200).json({ message: "Goal progress updated" });
-    } catch (err: any) {
-        res.status(500).json({ error: "Error updating goal progress", details: err.message });
+
+    const goal = goalService.findByID(id);
+    if (!goal) {
+        res.status(404).json({ error: "Goal not found" });
+        return;
     }
+
+    goalService.updateGoal(
+        id,
+        goal.title,
+        goal.description,
+        goal.target,
+        current,
+        goal.status
+    );
+    res.status(200).json({ message: "Goal progress updated" });
 };
 
 /**
@@ -94,7 +89,7 @@ export const archive: RequestHandler = (req, res) => {
 
     const user = getUserFromToken(req);
     if (!user) {
-        res.status(401).json({error: "You must be logged in to archive a goal."})
+        res.status(401).json({ error: "You must be logged in to archive a goal." })
         return;
     }
 
@@ -102,24 +97,22 @@ export const archive: RequestHandler = (req, res) => {
         res.status(400).json({ error: "Goal id is required" });
         return;
     }
-    try {
-        const goal = goalService.findByID(id);
-        if (!goal) {
-            res.status(404).json({ error: "Goal not found" });
-            return;
-        }
-        goalService.updateGoal(
-            id,
-            goal.title,
-            goal.description,
-            goal.target,
-            goal.current,
-            GoalStatus.Archived
-        );
-        res.status(200).json({ message: "Goal archived" });
-    } catch (err: any) {
-        res.status(500).json({ error: "Error archiving goal", details: err.message });
+
+    const goal = goalService.findByID(id);
+    if (!goal) {
+        res.status(404).json({ error: "Goal not found" });
+        return;
     }
+    
+    goalService.updateGoal(
+        id,
+        goal.title,
+        goal.description,
+        goal.target,
+        goal.current,
+        GoalStatus.Archived
+    );
+    res.status(200).json({ message: "Goal archived" });
 };
 
 /**
@@ -132,7 +125,7 @@ export const remove: RequestHandler = (req, res) => {
 
     const user = getUserFromToken(req);
     if (!user) {
-        res.status(401).json({error: "You must be logged in to delete a goal."})
+        res.status(401).json({ error: "You must be logged in to delete a goal." })
         return;
     }
 

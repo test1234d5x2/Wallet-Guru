@@ -13,20 +13,17 @@ export const create: RequestHandler = (req, res) => {
     const { username, password } = req.body;
 
     if (!username || !password) {
-        res.status(400).json({ error: "Username and password are required" });
+        res.status(400).json({ error: "Username and password are required", message: "Username and password are required" });
         return;
     }
 
-    try {
-        if (userService.userExists(username)) {
-            res.status(400).json({ error: "User already exists" });
-            return;
-        }
-        userService.addUser(username, password);
-        res.status(201).json({ message: "User created" });
-    } catch (err: any) {
-        res.status(500).json({ error: "Error creating user", details: err.message });
+    if (userService.userExists(username)) {
+        res.status(400).json({ error: "User already exists", message: "User already exists." });
+        return;
     }
+    
+    userService.addUser(username, password);
+    res.status(201).json({ message: "User created" });
 };
 
 /**
@@ -41,12 +38,8 @@ export const login: RequestHandler = (req, res) => {
         return;
     }
 
-    try {
-        const token = authService.authenticate(username, password);
-        res.status(200).json({ message: "Login successful", token });
-    } catch (err: any) {
-        res.status(500).json({ error: "Error logging in", details: err.message });
-    }
+    const token = authService.authenticate(username, password);
+    res.status(200).json({ message: "Login successful", token: token });
 };
 
 
@@ -58,15 +51,11 @@ export const remove: RequestHandler = (req, res) => {
     const { id } = req.params;
 
     if (!id) {
-        res.status(400).json({ error: "User id is required" });
+        res.status(400).json({ error: "User ID is required", message: "User ID is required." });
         return;
     }
 
-    try {
-        userService.deleteUser(id);
-        authService.logout()
-        res.status(200).json({ message: "User deleted" });
-    } catch (err: any) {
-        res.status(500).json({ error: "Error deleting user", details: err.message });
-    }
+    userService.deleteUser(id);
+    authService.logout()
+    res.status(200).json({ message: "User deleted" });
 };

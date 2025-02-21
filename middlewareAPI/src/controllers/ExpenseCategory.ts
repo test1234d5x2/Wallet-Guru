@@ -16,7 +16,7 @@ export const create: RequestHandler = (req, res) => {
 
     const user = getUserFromToken(req);
     if (!user) {
-        res.status(401).json({error: "You must be logged in to create an expense category."})
+        res.status(401).json({ error: "You must be logged in to create an expense category." })
         return;
     }
 
@@ -25,12 +25,8 @@ export const create: RequestHandler = (req, res) => {
         return;
     }
 
-    try {
-        expenseCategoryService.addExpenseCategory(user, name, monthlyBudget);
-        res.status(201).json({ message: "Expense category created" });
-    } catch (err: any) {
-        res.status(500).json({ error: "Error creating expense category", details: err.message });
-    }
+    expenseCategoryService.addExpenseCategory(user, name, monthlyBudget);
+    res.status(201).json({ message: "Expense category created" });
 };
 
 /**
@@ -47,7 +43,7 @@ export const update: RequestHandler = (req, res) => {
 
     const user = getUserFromToken(req);
     if (!user) {
-        res.status(401).json({error: "You must be logged in to update an expense category."})
+        res.status(401).json({ error: "You must be logged in to update an expense category." })
         return;
     }
 
@@ -56,12 +52,8 @@ export const update: RequestHandler = (req, res) => {
         return;
     }
 
-    try {
-        expenseCategoryService.updateExpenseCategory(id, name, monthlyBudget);
-        res.status(200).json({ message: "Expense category updated" });
-    } catch (err: any) {
-        res.status(500).json({ error: "Error updating expense category", details: err.message });
-    }
+    expenseCategoryService.updateExpenseCategory(id, name, monthlyBudget);
+    res.status(200).json({ message: "Expense category updated" });
 };
 
 /**
@@ -74,7 +66,7 @@ export const remove: RequestHandler = (req, res) => {
 
     const user = getUserFromToken(req);
     if (!user) {
-        res.status(401).json({error: "You must be logged in to delete an expense category."})
+        res.status(401).json({ error: "You must be logged in to delete an expense category." })
         return;
     }
 
@@ -83,10 +75,6 @@ export const remove: RequestHandler = (req, res) => {
         return;
     }
 
-    try {
-        expenseCategoryService.deleteExpenseCategory(id);
-        res.status(200).json({ message: "Expense category deleted" });
-    } catch (err: any) {
-        res.status(500).json({ error: "Error deleting expense category", details: err.message });
-    }
+    expenseCategoryService.deleteExpenseCategory(id);
+    res.status(200).json({ message: "Expense category deleted" });
 };

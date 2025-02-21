@@ -4,89 +4,88 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import clearRouterHistory from '@/utils/clearRouterHistory';
-import Registry from '@/models/data/Registry';
 
 export default function ExpenseDetailsScreen() {
     const { id } = useLocalSearchParams();
 
-    const registry = Registry.getInstance();
-    const authService = registry.authService;
-    const expenseService = registry.expenseService;
+    // const registry = Registry.getInstance();
+    // const authService = registry.authService;
+    // const expenseService = registry.expenseService;
 
-    const authenticatedUser = authService.getAuthenticatedUser();
+    // const authenticatedUser = authService.getAuthenticatedUser();
 
-    const router = useRouter();
+    // const router = useRouter();
 
-    if (!authenticatedUser) {
-        Alert.alert("Error", "You must be logged in to view this expense.");
-        clearRouterHistory(router);
-        router.replace("/loginPage");
-        return;
-    }
+    // if (!authenticatedUser) {
+    //     Alert.alert("Error", "You must be logged in to view this expense.");
+    //     clearRouterHistory(router);
+    //     router.replace("/loginPage");
+    //     return;
+    // }
 
-    const expense = expenseService.getAllExpensesByUser(authenticatedUser).find(exp => exp.getID() === id);
+    // const expense = expenseService.getAllExpensesByUser(authenticatedUser).find(exp => exp.getID() === id);
 
-    if (!expense) {
-        Alert.alert("Error", "Expense not found.");
-        clearRouterHistory(router);
-        router.replace("/listTransactionsPage");
-        return;
-    }
+    // if (!expense) {
+    //     Alert.alert("Error", "Expense not found.");
+    //     clearRouterHistory(router);
+    //     router.replace("/listTransactionsPage");
+    //     return;
+    // }
 
-    setPageTitle(expense.title);
+    // setPageTitle(expense.title);
 
-    const handleEdit = () => {
-        router.navigate("/editExpensePage/" + expense.getID());
-    };
+    // const handleEdit = () => {
+    //     router.navigate("/editExpensePage/" + expense.getID());
+    // };
 
-    const handleDelete = () => {
-        Alert.alert('Delete Expense', 'Are you sure you want to delete this expense?', [
-            { text: 'Cancel', style: 'cancel' },
-            {
-                text: 'Delete', style: 'destructive', onPress: () => {
-                    try {
-                        expenseService.deleteExpense(expense.getID());
-                        Alert.alert('Success', 'Expense deleted successfully!');
-                        clearRouterHistory(router);
-                        router.replace("/listTransactionsPage");
-                    } catch (err: any) {
-                        Alert.alert('Error', err.message);
-                    }
-                },
-            },
-        ]);
-    };
+    // const handleDelete = () => {
+    //     Alert.alert('Delete Expense', 'Are you sure you want to delete this expense?', [
+    //         { text: 'Cancel', style: 'cancel' },
+    //         {
+    //             text: 'Delete', style: 'destructive', onPress: () => {
+    //                 try {
+    //                     expenseService.deleteExpense(expense.getID());
+    //                     Alert.alert('Success', 'Expense deleted successfully!');
+    //                     clearRouterHistory(router);
+    //                     router.replace("/listTransactionsPage");
+    //                 } catch (err: any) {
+    //                     Alert.alert('Error', err.message);
+    //                 }
+    //             },
+    //         },
+    //     ]);
+    // };
 
-    const handleViewReceipt = () => {
-        Alert.alert("Feature Coming Soon", "Receipt viewing is not yet implemented.");
-    };
+    // const handleViewReceipt = () => {
+    //     Alert.alert("Feature Coming Soon", "Receipt viewing is not yet implemented.");
+    // };
 
-    return (
-        <View style={styles.mainContainer}>
-            <TopBar />
-            <View style={styles.container}>
-                <Text style={styles.detail}>Category: {expense.expenseCategory.name}</Text>
-                <Text style={styles.detail}>Amount: £{Math.abs(expense.amount).toFixed(2)}</Text>
-                <Text style={styles.detail}>Date: {expense.date.toDateString()}</Text>
-                <View>
-                    <Text style={styles.notesTitle}>Notes:</Text>
-                    <Text style={styles.notes}>{expense.notes}</Text>
-                </View>
+    // return (
+    //     <View style={styles.mainContainer}>
+    //         <TopBar />
+    //         <View style={styles.container}>
+    //             <Text style={styles.detail}>Category: {expense.expenseCategory.name}</Text>
+    //             <Text style={styles.detail}>Amount: £{Math.abs(expense.amount).toFixed(2)}</Text>
+    //             <Text style={styles.detail}>Date: {expense.date.toDateString()}</Text>
+    //             <View>
+    //                 <Text style={styles.notesTitle}>Notes:</Text>
+    //                 <Text style={styles.notes}>{expense.notes}</Text>
+    //             </View>
 
-                <TouchableOpacity onPress={handleViewReceipt}>
-                    <Text style={styles.viewReceipt}>View Receipt</Text>
-                </TouchableOpacity>
-                <View style={styles.buttonContainer}>
-                    <TouchableOpacity style={[styles.button, styles.editButton]} onPress={handleEdit}>
-                        <Text style={styles.buttonText}>Edit</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity style={[styles.button, styles.deleteButton]} onPress={handleDelete}>
-                        <Text style={styles.buttonText}>Delete</Text>
-                    </TouchableOpacity>
-                </View>
-            </View>
-        </View>
-    );
+    //             <TouchableOpacity onPress={handleViewReceipt}>
+    //                 <Text style={styles.viewReceipt}>View Receipt</Text>
+    //             </TouchableOpacity>
+    //             <View style={styles.buttonContainer}>
+    //                 <TouchableOpacity style={[styles.button, styles.editButton]} onPress={handleEdit}>
+    //                     <Text style={styles.buttonText}>Edit</Text>
+    //                 </TouchableOpacity>
+    //                 <TouchableOpacity style={[styles.button, styles.deleteButton]} onPress={handleDelete}>
+    //                     <Text style={styles.buttonText}>Delete</Text>
+    //                 </TouchableOpacity>
+    //             </View>
+    //         </View>
+    //     </View>
+    // );
 }
 
 const styles = StyleSheet.create({

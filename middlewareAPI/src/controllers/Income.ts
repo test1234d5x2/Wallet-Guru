@@ -18,7 +18,7 @@ export const create: RequestHandler = (req, res) => {
 
     const user = getUserFromToken(req);
     if (!user) {
-        res.status(401).json({error: "You must be logged in to create an income transaction."})
+        res.status(401).json({ error: "You must be logged in to create an income transaction." })
         return;
     }
 
@@ -27,12 +27,8 @@ export const create: RequestHandler = (req, res) => {
         return;
     }
 
-    try {
-        incomeService.addIncome(user, title, amount, new Date(date), notes);
-        res.status(201).json({ message: "Income created" });
-    } catch (err: any) {
-        res.status(500).json({ error: "Error creating income", details: err.message });
-    }
+    incomeService.addIncome(user, title, amount, new Date(date), notes);
+    res.status(201).json({ message: "Income created" });
 };
 
 /**
@@ -51,7 +47,7 @@ export const update: RequestHandler = (req, res) => {
 
     const user = getUserFromToken(req);
     if (!user) {
-        res.status(401).json({error: "You must be logged in to update your income transaction."})
+        res.status(401).json({ error: "You must be logged in to update your income transaction." })
         return;
     }
 
@@ -60,12 +56,8 @@ export const update: RequestHandler = (req, res) => {
         return;
     }
 
-    try {
-        incomeService.updateIncome(id, title, amount, new Date(date), notes);
-        res.status(200).json({ message: "Income updated" });
-    } catch (err: any) {
-        res.status(500).json({ error: "Error updating income", details: err.message });
-    }
+    incomeService.updateIncome(id, title, amount, new Date(date), notes);
+    res.status(200).json({ message: "Income updated" });
 };
 
 /**
@@ -78,7 +70,7 @@ export const remove: RequestHandler = (req, res) => {
 
     const user = getUserFromToken(req);
     if (!user) {
-        res.status(401).json({error: "You must be logged in to remove your income transaction."})
+        res.status(401).json({ error: "You must be logged in to remove your income transaction." })
         return;
     }
 
@@ -87,10 +79,6 @@ export const remove: RequestHandler = (req, res) => {
         return;
     }
 
-    try {
-        incomeService.deleteIncome(id);
-        res.status(200).json({ message: "Income deleted" });
-    } catch (err: any) {
-        res.status(500).json({ error: "Error deleting income", details: err.message });
-    }
+    incomeService.deleteIncome(id);
+    res.status(200).json({ message: "Income deleted" });
 };

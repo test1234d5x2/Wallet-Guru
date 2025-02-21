@@ -7,114 +7,113 @@ import { useRouter, useLocalSearchParams } from 'expo-router';
 import validateEmpty from '@/utils/validateEmpty';
 import isNumeric from '@/utils/validateNumeric';
 import clearRouterHistory from '@/utils/clearRouterHistory';
-import Registry from '@/models/data/Registry';
 
 export default function EditExpenseCategory() {
-    const { id } = useLocalSearchParams();
-
     setPageTitle("Edit Expense Category");
 
-    const registry = Registry.getInstance();
-    const authService = registry.authService;
-    const expenseCategoryService = registry.expenseCategoryService;
+    // const { id } = useLocalSearchParams();
 
-    const authenticatedUser = authService.getAuthenticatedUser();
-    const router = useRouter();
+    // const registry = Registry.getInstance();
+    // const authService = registry.authService;
+    // const expenseCategoryService = registry.expenseCategoryService;
 
-    if (!authenticatedUser) {
-        Alert.alert("Error", "You must be logged in to edit a category.");
-        clearRouterHistory(router);
-        router.replace("/loginPage");
-        return;
-    }
+    // const authenticatedUser = authService.getAuthenticatedUser();
+    // const router = useRouter();
 
-    const category = expenseCategoryService
-        .getAllCategoriesByUser(authenticatedUser)
-        .find(cat => cat.getID() === id);
+    // if (!authenticatedUser) {
+    //     Alert.alert("Error", "You must be logged in to edit a category.");
+    //     clearRouterHistory(router);
+    //     router.replace("/loginPage");
+    //     return;
+    // }
 
-    if (!category) {
-        Alert.alert("Error", "Category not found.");
-        clearRouterHistory(router);
-        router.replace("/expenseCategoriesOverviewPage");
-        return;
-    }
+    // const category = expenseCategoryService
+    //     .getAllCategoriesByUser(authenticatedUser)
+    //     .find(cat => cat.getID() === id);
 
-    const [categoryName, setCategoryName] = useState<string>(category.name);
-    const [monthlyLimit, setMonthlyLimit] = useState<string>(category.monthlyBudget.toString());
-    const [error, setError] = useState<string>('');
+    // if (!category) {
+    //     Alert.alert("Error", "Category not found.");
+    //     clearRouterHistory(router);
+    //     router.replace("/expenseCategoriesOverviewPage");
+    //     return;
+    // }
 
-    const validateForm = () => {
-        if (!categoryName || !monthlyLimit) {
-            Alert.alert("Please fill in all the fields.");
-            setError("Please fill in all the fields.");
-            return false;
-        }
+    // const [categoryName, setCategoryName] = useState<string>(category.name);
+    // const [monthlyLimit, setMonthlyLimit] = useState<string>(category.monthlyBudget.toString());
+    // const [error, setError] = useState<string>('');
 
-        if (validateEmpty(categoryName)) {
-            Alert.alert("Empty Category Name Field", "The category name field must be filled properly.");
-            setError("The category name field must be filled properly.");
-            return false;
-        }
+    // const validateForm = () => {
+    //     if (!categoryName || !monthlyLimit) {
+    //         Alert.alert("Please fill in all the fields.");
+    //         setError("Please fill in all the fields.");
+    //         return false;
+    //     }
 
-        if (validateEmpty(monthlyLimit)) {
-            Alert.alert("Empty Monthly Limit Field", "The monthly limit field must be filled properly.");
-            setError("The monthly limit field must be filled properly.");
-            return false;
-        }
+    //     if (validateEmpty(categoryName)) {
+    //         Alert.alert("Empty Category Name Field", "The category name field must be filled properly.");
+    //         setError("The category name field must be filled properly.");
+    //         return false;
+    //     }
 
-        if (!isNumeric(monthlyLimit)) {
-            Alert.alert("Monthly Limit Field Not Numeric", "The monthly limit field must be a number.");
-            setError("The monthly limit field must be a number.");
-            return false;
-        }
+    //     if (validateEmpty(monthlyLimit)) {
+    //         Alert.alert("Empty Monthly Limit Field", "The monthly limit field must be filled properly.");
+    //         setError("The monthly limit field must be filled properly.");
+    //         return false;
+    //     }
 
-        if (expenseCategoryService.getAllCategoriesByUserAndName(authenticatedUser, categoryName).length > 0) {
-            Alert.alert("Category Already Exists", "This category already exists.");
-            setError("This category already exists.");
-            return false;
-        }
+    //     if (!isNumeric(monthlyLimit)) {
+    //         Alert.alert("Monthly Limit Field Not Numeric", "The monthly limit field must be a number.");
+    //         setError("The monthly limit field must be a number.");
+    //         return false;
+    //     }
 
-        setError('');
-        return true;
-    };
+    //     if (expenseCategoryService.getAllCategoriesByUserAndName(authenticatedUser, categoryName).length > 0) {
+    //         Alert.alert("Category Already Exists", "This category already exists.");
+    //         setError("This category already exists.");
+    //         return false;
+    //     }
 
-    const handleEditCategory = () => {
-        if (validateForm()) {
-            try {
-                expenseCategoryService.updateExpenseCategory(
-                    id as string,
-                    categoryName,
-                    parseFloat(monthlyLimit)
-                );
-                Alert.alert('Success', `Category "${categoryName}" updated with a limit of £${monthlyLimit}`);
-                clearRouterHistory(router);
-                router.replace("/expenseCategoriesOverviewPage");
-            } catch (err: any) {
-                Alert.alert("Error", err.message);
-            }
-        }
-    };
+    //     setError('');
+    //     return true;
+    // };
 
-    return (
-        <View style={styles.container}>
-            <TopBar />
+    // const handleEditCategory = () => {
+    //     if (validateForm()) {
+    //         try {
+    //             expenseCategoryService.updateExpenseCategory(
+    //                 id as string,
+    //                 categoryName,
+    //                 parseFloat(monthlyLimit)
+    //             );
+    //             Alert.alert('Success', `Category "${categoryName}" updated with a limit of £${monthlyLimit}`);
+    //             clearRouterHistory(router);
+    //             router.replace("/expenseCategoriesOverviewPage");
+    //         } catch (err: any) {
+    //             Alert.alert("Error", err.message);
+    //         }
+    //     }
+    // };
 
-            <View style={styles.expenseCategoryForm}>
-                <ExpenseCategoryInputs
-                    categoryName={categoryName}
-                    monthlyLimit={monthlyLimit}
-                    setCategoryName={setCategoryName}
-                    setMonthlyLimit={setMonthlyLimit}
-                />
-            </View>
+    // return (
+    //     <View style={styles.container}>
+    //         <TopBar />
 
-            {error === '' ? null : <Text style={styles.errorText}>{error}</Text>}
+    //         <View style={styles.expenseCategoryForm}>
+    //             <ExpenseCategoryInputs
+    //                 categoryName={categoryName}
+    //                 monthlyLimit={monthlyLimit}
+    //                 setCategoryName={setCategoryName}
+    //                 setMonthlyLimit={setMonthlyLimit}
+    //             />
+    //         </View>
 
-            <TouchableOpacity style={styles.editButton} onPress={handleEditCategory}>
-                <Text style={styles.editButtonText}>Edit Category</Text>
-            </TouchableOpacity>
-        </View>
-    );
+    //         {error === '' ? null : <Text style={styles.errorText}>{error}</Text>}
+
+    //         <TouchableOpacity style={styles.editButton} onPress={handleEditCategory}>
+    //             <Text style={styles.editButtonText}>Edit Category</Text>
+    //         </TouchableOpacity>
+    //     </View>
+    // );
 }
 
 const styles = StyleSheet.create({

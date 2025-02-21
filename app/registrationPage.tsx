@@ -4,8 +4,44 @@ import AuthenticationInputs from "@/components/formComponents/authenticationInpu
 import setPageTitle from "@/components/pageTitle/setPageTitle";
 import { useRouter } from "expo-router";
 import isValidEmail from "@/utils/validateEmail";
-import Registry from "@/models/data/Registry";
 import clearRouterHistory from "@/utils/clearRouterHistory";
+
+
+
+interface CreateUserResponse {
+    message: string;
+
+}
+
+
+
+async function createUser(email: string, password: string): Promise<CreateUserResponse> {
+    const API_DOMAIN = process.env.EXPO_PUBLIC_BLOCKCHAIN_MIDDLEWARE_API_IP_ADDRESS;
+    if (!API_DOMAIN) {
+        throw new Error("Domain could not be found.")
+    };
+
+    const CREATE_USER_URL = `http://${API_DOMAIN}/api/users/`;
+
+    const response = await fetch(CREATE_USER_URL, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ username: email, password }),
+    });
+
+    if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message);
+    }
+
+    const data: CreateUserResponse = await response.json();
+    return data;
+}
+
+
+
 
 export default function Register() {
     setPageTitle("Create User");
@@ -15,8 +51,6 @@ export default function Register() {
     const [error, setError] = useState<string>('');
     const router = useRouter();
 
-    const registry = Registry.getInstance();
-    const userService = registry.userService;
 
     const handleRedirection = () => {
         clearRouterHistory(router);
@@ -24,7 +58,7 @@ export default function Register() {
         return;
     };
 
-    const handleRegistration = () => {
+    const handleRegistration = async () => {
         if (!email || !password) {
             setError("Please input both email and password");
             Alert.alert("Please input both email and password");
@@ -37,18 +71,16 @@ export default function Register() {
             return;
         }
 
-        const existingUser = userService.userExists(email);
-        if (existingUser) {
-            setError("User already exists.");
-            Alert.alert("Error", "User already exists.");
-            return;
-        }
+        await createUser(email, password).then((data) => {
+            Alert.alert("Success", "User registered successfully!");
+            setError("");
+            handleRedirection();
+        }).catch((error: Error) => {
+            setError(error.message);
+            Alert.alert(error.message);
+        });
 
-        userService.addUser(email, password);
-
-        Alert.alert("Success", "User registered successfully!");
-        setError("");
-        handleRedirection();
+        return;
     };
 
     return (

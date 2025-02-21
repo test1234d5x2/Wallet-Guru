@@ -3,9 +3,6 @@ import ExpenseService from "./ExpenseService";
 import IncomeService from "./IncomeService";
 
 class AnalyticsService {
-    getAnalyticsService() {
-        throw new Error('Method not implemented.');
-    }
     private expenseService: ExpenseService;
     private incomeService: IncomeService;
 
