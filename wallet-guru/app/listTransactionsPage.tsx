@@ -44,7 +44,7 @@ export default function ViewTransactionsList() {
             return;
         }
 
-        setToken(data);
+        setToken(data.token);
     });
 
     useEffect(() => {

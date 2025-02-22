@@ -11,9 +11,6 @@ import clearRouterHistory from '@/utils/clearRouterHistory';
 import getToken from '@/utils/tokenAccess/getToken';
 
 
-
-
-
 async function addIncome(token: string, title: string, amount: number, date: Date, notes: string) {
     const API_DOMAIN = process.env.EXPO_PUBLIC_BLOCKCHAIN_MIDDLEWARE_API_IP_ADDRESS;
     if (!API_DOMAIN) {
@@ -35,8 +32,6 @@ async function addIncome(token: string, title: string, amount: number, date: Dat
             notes
         })
     });
-
-    console.log(response.status)
 
     if (!response.ok) {
         const error = await response.json();
@@ -68,6 +63,7 @@ export default function AddIncome() {
         }
 
         setToken(data.token);
+        setEmail(data.email);
     });
 
     const validateForm = () => {
@@ -124,7 +120,7 @@ export default function AddIncome() {
             }).catch((error: Error) => {
                 Alert.alert("Error Adding Income");
                 console.log(error.message)
-            })
+            });
 
         }
     };

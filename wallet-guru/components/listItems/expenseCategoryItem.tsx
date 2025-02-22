@@ -8,6 +8,7 @@ import ListItemEditButton from './listItemEditButton';
 import clearRouterHistory from '@/utils/clearRouterHistory';
 
 
+
 interface ExpenseCategoryProps {
     category: ExpenseCategory;
     currentSpending: number

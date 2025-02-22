@@ -1,4 +1,4 @@
-import { v4 as uuidv4 } from "uuid";
+import { v4 } from "uuid";
 import UserStatus from "../enums/UserStatus";
 
 class User {
@@ -9,7 +9,7 @@ class User {
     private status: UserStatus;
 
     constructor(username: string, password: string) {
-        this.id = uuidv4();
+        this.id = v4();
         this.username = username;
         this.password = password;  // In real systems, hash this!
         this.dateJoined = new Date();

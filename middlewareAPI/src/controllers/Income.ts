@@ -17,13 +17,11 @@ export const create: RequestHandler = (req, res) => {
     const { title, amount, date, notes } = req.body;
 
     const userID = getUserFromToken(req);
-    console.log(userID)
     if (!userID) {
         res.status(401).json({ message: "You must be logged in to create an income transaction." });
         return;
     }
 
-    console.log(title, amount, date, notes)
     if (!title || amount === undefined || !date) {
         res.status(400).json({ message: "Missing required fields: title, amount, date" });
         return;
@@ -111,18 +109,18 @@ export const findByID: RequestHandler = (req, res) => {
 
     const userID = getUserFromToken(req);
     if (!userID) {
-        res.status(401).json({ error: "You must be logged in to view an income transaction." });
+        res.status(401).json({ message: "You must be logged in to view an income transaction." });
         return;
     }
 
     if (!id) {
-        res.status(400).json({ error: "Income ID is required." });
+        res.status(400).json({ message: "Income ID is required." });
         return;
     }
 
     const income = incomeService.findByID(id);
     if (!income) {
-        res.status(404).json({ error: "Income transaction not found." });
+        res.status(404).json({ message: "Income transaction not found." });
         return;
     }
 

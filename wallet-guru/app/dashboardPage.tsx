@@ -52,7 +52,7 @@ export default function Dashboard() {
         }
 
         getCategories();
-    }, [token]);
+    }, [token, expenses]);
 
     useEffect(() => {
         async function getExpenseList() {
@@ -99,12 +99,14 @@ export default function Dashboard() {
         )),
     ];
 
-    const expenseCategoryItemsList = categories.slice(0, 3).map((category) => (
-        <React.Fragment key={uuid.v4() as string}>
-            <ExpenseCategoryItem currentSpending={calculateMonthlyCategoryTotal(expenses, new Date(), category)} category={category} />
-            <View style={styles.dividerLine} />
-        </React.Fragment>
-    ));
+    const expenseCategoryItemsList = [
+        ...categories.slice(0, 3).map((category) => (
+            <React.Fragment key={uuid.v4() as string}>
+                <ExpenseCategoryItem currentSpending={calculateMonthlyCategoryTotal(expenses, new Date(), category)} category={category} />
+                <View style={styles.dividerLine} />
+            </React.Fragment>
+        ))
+    ];
 
     return (
         <View style={styles.container}>

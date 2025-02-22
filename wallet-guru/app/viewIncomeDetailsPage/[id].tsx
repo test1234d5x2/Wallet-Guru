@@ -1,81 +1,127 @@
 import setPageTitle from '@/components/pageTitle/setPageTitle';
 import TopBar from '@/components/topBars/topBar';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import clearRouterHistory from '@/utils/clearRouterHistory';
+import Income from '@/models/Income';
+import getToken from '@/utils/tokenAccess/getToken';
+
+
+
+async function getIncomeByID(token: string, id: string): Promise<Income> {
+    const API_DOMAIN = process.env.EXPO_PUBLIC_BLOCKCHAIN_MIDDLEWARE_API_IP_ADDRESS;
+    if (!API_DOMAIN) {
+        throw new Error("Domain could not be found.");
+    };
+
+    const GET_INCOME_URL = `http://${API_DOMAIN}/api/incomes/${id}`;
+
+    const response = await fetch(GET_INCOME_URL, {
+        method: "GET",
+        headers: {
+            "Authorization": `Bearer ${token}`,
+            "Content-Type": "application/json",
+        },
+    });
+
+    if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message);
+    };
+
+    const data: any = await response.json();
+    return new Income(data.userID, data.title, data.amount, data.date, data.notes, data.id);
+}
+
+
 
 export default function IncomeDetailsScreen() {
+    setPageTitle("");
     const { id } = useLocalSearchParams();
 
-    // const registry = Registry.getInstance();
-    // const authenticatedUser = registry.authService.getAuthenticatedUser();
-
-    // const router = useRouter();
-
-
-    // if (!authenticatedUser) {
-    //     Alert.alert("Error", "You must be logged in to view this income source.");
-    //     clearRouterHistory(router);
-    //     router.replace("/loginPage");
-    //     return null;
-    // }
+    const router = useRouter();
+    const [token, setToken] = useState<string>('');
+    const [email, setEmail] = useState<string>('');
+    const [income, setIncome] = useState<Income>();
 
 
-    // const income = registry.incomeService.getAllIncomesByUser(authenticatedUser).find(inc => inc.getID() === id);
+    getToken().then((data) => {
+        if (!data) {
+            Alert.alert('Error', 'You must be logged in to view your dashboard.');
+            clearRouterHistory(router);
+            router.replace("/loginPage");
+            return;
+        }
+
+        setToken(data.token);
+        setEmail(data.email);
+    });
+
+    useEffect(() => {
+        async function getIncome() {
+            getIncomeByID(token, id as string).then((data) => {
+                setIncome(data);
+                setPageTitle(data.title)
+            }).catch((error: Error) => {
+                Alert.alert("Income Not Found")
+                console.log(error.message);
+                clearRouterHistory(router);
+                router.replace("/listTransactionsPage");
+            })
+        }
+
+        getIncome();
+    }, [token]);
 
 
-    // if (!income) {
-    //     Alert.alert("Error", "Income source not found.");
-    //     clearRouterHistory(router);
-    //     router.replace("/listTransactionsPage");
-    //     return null;
-    // }
+    const handleEdit = () => {
+        if (!income) {
+            clearRouterHistory(router);
+            router.navigate("/loginPage");
+            return;
+        }
+        router.navigate("/editIncomePage/" + income.getID());
+    }
 
-    // setPageTitle(income.title);
+    const handleDelete = () => {
+        Alert.alert('Delete Income', 'Are you sure you want to delete this income source?', [
+            { text: 'Cancel', style: 'cancel' },
+            { text: 'Delete', style: 'destructive', onPress: () => {
+                try {
+                    // HANDLE DELETE INCOME. USE TOKEN AND EMAIL.
+                    Alert.alert('Success', 'Income source deleted successfully!');
+                    clearRouterHistory(router);
+                    router.replace("/listTransactionsPage");
+                } catch (err: any) {
+                    Alert.alert('Error', err.message);
+                }
+            } },
+        ]);
+    }
 
-    // const handleEdit = () => {
-    //     router.navigate("/editIncomePage/" + income.getID());
-    // }
+    return (
+        <View style={styles.mainContainer}>
+            <TopBar />
+            {!income ? "": <View style={styles.container}>
+                <Text style={styles.detail}>Amount: £{income.amount.toFixed(2)}</Text>
+                <Text style={styles.detail}>Date: {income.date.toDateString()}</Text>
+                <View>
+                    <Text style={styles.notesTitle}>Notes:</Text>
+                    <Text style={styles.notes}>{income.notes}</Text>
+                </View>
 
-    // const handleDelete = () => {
-    //     Alert.alert('Delete Income', 'Are you sure you want to delete this income source?', [
-    //         { text: 'Cancel', style: 'cancel' },
-    //         { text: 'Delete', style: 'destructive', onPress: () => {
-    //             try {
-    //                 registry.incomeService.deleteIncome(income.getID());
-    //                 Alert.alert('Success', 'Income source deleted successfully!');
-    //                 clearRouterHistory(router);
-    //                 router.replace("/listTransactionsPage");
-    //             } catch (err: any) {
-    //                 Alert.alert('Error', err.message);
-    //             }
-    //         } },
-    //     ]);
-    // }
-
-    // return (
-    //     <View style={styles.mainContainer}>
-    //         <TopBar />
-    //         <View style={styles.container}>
-    //             <Text style={styles.detail}>Amount: £{income.amount.toFixed(2)}</Text>
-    //             <Text style={styles.detail}>Date: {income.date.toDateString()}</Text>
-    //             <View>
-    //                 <Text style={styles.notesTitle}>Notes:</Text>
-    //                 <Text style={styles.notes}>{income.notes}</Text>
-    //             </View>
-
-    //             <View style={styles.buttonContainer}>
-    //                 <TouchableOpacity style={[styles.button, styles.editButton]} onPress={handleEdit}>
-    //                     <Text style={styles.buttonText}>Edit</Text>
-    //                 </TouchableOpacity>
-    //                 <TouchableOpacity style={[styles.button, styles.deleteButton]} onPress={handleDelete}>
-    //                     <Text style={styles.buttonText}>Delete</Text>
-    //                 </TouchableOpacity>
-    //             </View>
-    //         </View>
-    //     </View>
-    // )
+                <View style={styles.buttonContainer}>
+                    <TouchableOpacity style={[styles.button, styles.editButton]} onPress={handleEdit}>
+                        <Text style={styles.buttonText}>Edit</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={[styles.button, styles.deleteButton]} onPress={handleDelete}>
+                        <Text style={styles.buttonText}>Delete</Text>
+                    </TouchableOpacity>
+                </View>
+            </View>}
+        </View>
+    )
 }
 
 const styles = StyleSheet.create({

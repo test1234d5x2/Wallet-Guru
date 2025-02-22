@@ -1,5 +1,5 @@
 import Transaction from "./Transaction";
-import uuid from 'uuid';
+import {v4} from 'uuid';
 
 class Income implements Transaction {
     private id: string;
@@ -10,7 +10,7 @@ class Income implements Transaction {
     notes: string;
 
     constructor(userID: string, title: string, amount: number, date: Date, notes: string) {
-        this.id = uuid.v4();
+        this.id = v4();
         this.userID = userID;
         this.title = title;
         this.amount = amount;

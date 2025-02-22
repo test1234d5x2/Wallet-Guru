@@ -22,6 +22,6 @@ export default async function getExpenses(token: string): Promise<Expense[]> {
     }
 
     const data = await response.json();
-    const expenses: Expense[] = data.expenses;
+    const expenses: Expense[] = data.expenses.map((e: any) => new Expense(e.userID, e.title, e.amount, e.date, e.notes, e.expenseCategoryID, e.receipt, e.id));
     return expenses;
 }

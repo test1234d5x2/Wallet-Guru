@@ -1,4 +1,4 @@
 export default interface IncomeExpenseSet {
-    incomeTotal: number
-    expenseTotal: number
+    incomeTotals: number[]
+    expenseTotals: number[]
 }

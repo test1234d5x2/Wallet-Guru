@@ -27,7 +27,7 @@ export const create: RequestHandler = (req, res) => {
     }
 
     if (!title || !description || target === undefined) {
-        res.status(400).json({ error: "Missing required fields: user, title, description, target" });
+        res.status(400).json({ error: "Missing required fields: title, description, target" });
         return;
     }
 

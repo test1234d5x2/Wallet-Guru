@@ -1,4 +1,4 @@
-import uuid from 'uuid';
+import {v4} from 'uuid';
 
 class ExpenseCategory {
     private id: string;
@@ -7,7 +7,7 @@ class ExpenseCategory {
     monthlyBudget: number;
 
     constructor(userID: string, name: string, monthlyBudget: number) {
-        this.id = uuid.v4();
+        this.id = v4();
         this.userID = userID;
         this.name = name;
         this.monthlyBudget = monthlyBudget;

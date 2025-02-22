@@ -21,18 +21,18 @@ export const create: RequestHandler = (req, res) => {
 
     const userID = getUserFromToken(req);
     if (!userID) {
-        res.status(401).json({ error: "You must be logged in to create an expense." });
+        res.status(401).json({ message: "You must be logged in to create an expense." });
         return;
     }
 
     const expenseCategory = expenseCategoryService.findByID(expenseCategoryID);
     if (!expenseCategory) {
-        res.status(404).json({ error: "The expense category could not be found." });
+        res.status(404).json({ message: "The expense category could not be found." });
         return;
     }
 
-    if (!title || amount === undefined || !date || !notes || !expenseCategoryID) {
-        res.status(400).json({ error: "Missing required fields" });
+    if (!title || amount === undefined || !date || !expenseCategoryID) {
+        res.status(400).json({ message: "Missing required fields" });
         return;
     }
 
@@ -76,7 +76,7 @@ export const update: RequestHandler = (req, res) => {
         return;
     }
 
-    if (!id || !title || amount === undefined || !date || !notes || !expenseCategoryID) {
+    if (!id || !title || amount === undefined || !date || !expenseCategoryID) {
         res.status(400).json({ error: "Missing required fields" });
         return;
     }

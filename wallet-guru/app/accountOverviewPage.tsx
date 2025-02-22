@@ -1,73 +1,77 @@
-import React from "react";
+import React, { useState } from "react";
 import { View, Text, TouchableOpacity, StyleSheet, Alert } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import setPageTitle from "@/components/pageTitle/setPageTitle";
 import { useRouter } from "expo-router";
 import clearRouterHistory from "@/utils/clearRouterHistory";
+import getToken from "@/utils/tokenAccess/getToken";
+import removeToken from "@/utils/tokenAccess/deleteToken";
 
 export default function AccountOverview() {
     setPageTitle("Account Overview");
 
-    // const router = useRouter();
-    // const registry = Registry.getInstance();
-    // const authService = registry.authService;
-    // const userService = registry.userService;
+    const router = useRouter();
+    const [token, setToken] = useState<string>('');
+    const [email, setEmail] = useState<string>('');
 
-    // const user = authService.getAuthenticatedUser();
+    getToken().then((data) => {
+        if (!data) {
+            Alert.alert('Error', 'You must be logged in to view your dashboard.');
+            clearRouterHistory(router);
+            router.replace("/loginPage");
+            return;
+        }
 
-    // if (!user) {
-    //     Alert.alert('Error', 'You must be logged in to view your account page.');
-    //     clearRouterHistory(router);
-    //     router.replace("/loginPage");
-    //     return;
-    // }
+        setToken(data.token);
+        setEmail(data.email);
+    });
 
-    // const handleChangePassword = () => {
-    //     console.log("Change Password Pressed");
-    //     return;
-    // };
+    const handleChangePassword = () => {
+        console.log("Change Password Pressed");
+        return;
+    };
 
-    // const handleLogOut = () => {
-    //     authService.logout();
-    //     clearRouterHistory(router);
-    //     router.replace("/loginPage");
-    //     return;
-    // };
+    const handleLogOut = () => {
+        removeToken();
+        clearRouterHistory(router);
+        router.replace("/loginPage");
+        return;
+    };
 
-    // const handleDeleteAccount = () => {
-    //     Alert.alert('Delete Account', 'Are you sure you want to delete your account?', [
-    //         { text: 'Cancel', style: 'cancel' },
-    //         {
-    //             text: 'Delete', style: 'destructive', onPress: () => {
-    //                 authService.logout();
-    //                 userService.deleteUser(user.getUserID());
-    //                 clearRouterHistory(router);
-    //                 router.replace("/");
-    //                 return;
-    //             },
-    //         },
-    //     ]);
-    // };
+    const handleDeleteAccount = () => {
+        Alert.alert('Delete Account', 'Are you sure you want to delete your account?', [
+            { text: 'Cancel', style: 'cancel' },
+            {
+                text: 'Delete', style: 'destructive', onPress: () => {
+                    // TODO: Implementation Required
+                    removeToken();
+                    clearRouterHistory(router);
+                    router.replace("/");
+                    return;
+                },
+            },
+        ]);
+    };
 
-    // return (
-    //     <View style={styles.container}>
-    //         <Ionicons name="person-circle-outline" size={100} color="black" />
+    return (
+        <View style={styles.container}>
+            <Ionicons name="person-circle-outline" size={100} color="black" />
 
-    //         <Text style={styles.emailText}>{user.getEmail()}</Text>
+            <Text style={styles.emailText}>{email}</Text>
 
-    //         <TouchableOpacity style={styles.buttonPrimary} onPress={handleChangePassword}>
-    //             <Text style={styles.buttonText}>Change Password</Text>
-    //         </TouchableOpacity>
+            <TouchableOpacity style={styles.buttonPrimary} onPress={handleChangePassword}>
+                <Text style={styles.buttonText}>Change Password</Text>
+            </TouchableOpacity>
 
-    //         <TouchableOpacity style={styles.buttonPrimary} onPress={handleLogOut}>
-    //             <Text style={styles.buttonText}>Log Out</Text>
-    //         </TouchableOpacity>
+            <TouchableOpacity style={styles.buttonPrimary} onPress={handleLogOut}>
+                <Text style={styles.buttonText}>Log Out</Text>
+            </TouchableOpacity>
 
-    //         <TouchableOpacity style={styles.buttonDanger} onPress={handleDeleteAccount}>
-    //             <Text style={styles.buttonText}>Delete Account</Text>
-    //         </TouchableOpacity>
-    //     </View>
-    // );
+            <TouchableOpacity style={styles.buttonDanger} onPress={handleDeleteAccount}>
+                <Text style={styles.buttonText}>Delete Account</Text>
+            </TouchableOpacity>
+        </View>
+    );
 }
 
 const styles = StyleSheet.create({

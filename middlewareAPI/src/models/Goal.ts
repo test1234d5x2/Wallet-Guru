@@ -1,5 +1,5 @@
 import GoalStatus from "../enums/GoalStatus";
-import uuid from 'uuid';
+import {v4} from 'uuid';
 
 export default class Goal {
     private id: string;
@@ -11,7 +11,7 @@ export default class Goal {
     status: GoalStatus;
 
     constructor(title: string, userID: string, description: string, target: number, status: GoalStatus) {
-        this.id = uuid.v4();
+        this.id = v4();
         this.userID = userID;
         this.title = title;
         this.description = description;

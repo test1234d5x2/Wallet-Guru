@@ -6,8 +6,8 @@ class ExpenseCategory {
     name: string;
     monthlyBudget: number;
 
-    constructor(userID: string, name: string, monthlyBudget: number) {
-        this.id = uuid.v4();
+    constructor(userID: string, name: string, monthlyBudget: number, id?: string) {
+        this.id = id || uuid.v4();
         this.userID = userID;
         this.name = name;
         this.monthlyBudget = monthlyBudget;

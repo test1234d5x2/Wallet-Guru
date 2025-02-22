@@ -10,8 +10,8 @@ export default class Goal {
     current: number;
     status: GoalStatus;
 
-    constructor(title: string, userID: string, description: string, target: number, status: GoalStatus) {
-        this.id = uuid.v4();
+    constructor(title: string, userID: string, description: string, target: number, status: GoalStatus, id?: string) {
+        this.id = id || uuid.v4();
         this.userID = userID;
         this.title = title;
         this.description = description;

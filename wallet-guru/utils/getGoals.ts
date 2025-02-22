@@ -8,7 +8,7 @@ export default async function getGoals(token: string): Promise<Goal[]> {
 
     const GET_GOALS_URL = `http://${API_DOMAIN}/api/goals`;
 
-    const response = await fetch(GET_EXPENSE_CATEGORIES_URL, {
+    const response = await fetch(GET_GOALS_URL, {
         method: "GET",
         headers: {
             "Authorization": `Bearer ${token}`,
@@ -23,6 +23,6 @@ export default async function getGoals(token: string): Promise<Goal[]> {
     }
 
     const data = await response.json();
-    const categories: Goal[] = data.categories;
+    const categories: Goal[] = data.categories.map((goal: any) => new Goal(goal.title, goal.userID, goal.description, goal.target, goal.status, goal.id));
     return categories;
 }

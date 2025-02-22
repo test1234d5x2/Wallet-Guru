@@ -23,6 +23,6 @@ export default async function getExpenseCategories(token: string): Promise<Expen
     }
 
     const data = await response.json();
-    const categories: ExpenseCategory[] = data.categories;
+    const categories: ExpenseCategory[] = data.categories.map((category: any) => new ExpenseCategory(category.userID, category.name, category.monthlyBudget, category.id));
     return categories;
 }

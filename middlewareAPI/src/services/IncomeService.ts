@@ -1,6 +1,5 @@
 import Income from "../models/Income";
 import IncomeRepository from "../repositories/IncomeRepository";
-import User from "../models/User";
 
 class IncomeService {
     private repository: IncomeRepository;

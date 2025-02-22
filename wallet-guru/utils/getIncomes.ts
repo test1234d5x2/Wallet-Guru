@@ -6,7 +6,7 @@ export default async function getIncomes(token: string): Promise<Income[]> {
         throw new Error("Domain could not be found.");
     };
 
-    const GET_INCOMES_URL = `http://${API_DOMAIN}/api/expenses/`
+    const GET_INCOMES_URL = `http://${API_DOMAIN}/api/incomes/`
 
     const response = await fetch(GET_INCOMES_URL, {
         method: "GET",
@@ -22,6 +22,6 @@ export default async function getIncomes(token: string): Promise<Income[]> {
     }
 
     const data = await response.json();
-    const incomes: Income[] = data.incomes;
+    const incomes: Income[] = data.incomes.map((i: any) => new Income(i.userID, i.title, i.amount, i.date, i.notes, i.id));
     return incomes;
 }

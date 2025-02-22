@@ -8,165 +8,177 @@ import clearRouterHistory from '@/utils/clearRouterHistory';
 import getMonthName from '@/utils/getMonthName';
 import ModalSelectionDates from '@/components/modalSelection/modalSelectionDates';
 import monthsPassedSinceJoinDate from '@/utils/monthsPassedSinceJoinDate';
+import getToken from '@/utils/tokenAccess/getToken';
+import Expense from '@/models/Expense';
+import Income from '@/models/Income';
+import getCategoryDistribution from '@/utils/analytics/getCategoryDistribution';
+import ExpenseCategory from '@/models/ExpenseCategory';
+import getIncomeVsExpenses from '@/utils/analytics/getIncomeVsExpenses';
+import getSavingsTrends from '@/utils/analytics/getSavingsTrends';
 
 export default function Analytics() {
     setPageTitle('Spending Analytics');
 
-    // const screenWidth = Dimensions.get('window').width;
-    // const registry = Registry.getInstance();
-    // const user = registry.authService.getAuthenticatedUser();
-    // const router = useRouter();
+    const screenWidth = Dimensions.get('window').width;
+    const router = useRouter();
+    const [token, setToken] = useState<string>('');
+    const [selectedMonth, setSelectedMonth] = useState<Date>(new Date());
+    const [expenses, setExpenses] = useState<Expense[]>([]);
+    const [incomes, setIncomes] = useState<Income[]>([]);
+    const [categories, setCategories] = useState<ExpenseCategory[]>([]);
 
-    // if (!user) {
-    //     Alert.alert('Error', 'You must be logged in to view analytics.');
-    //     clearRouterHistory(router);
-    //     router.replace("/loginPage");
-    //     return;
-    // }
+    getToken().then((data) => {
+        if (!data) {
+            Alert.alert('Error', 'You must be logged in to view your dashboard.');
+            clearRouterHistory(router);
+            router.replace("/loginPage");
+            return;
+        }
 
-    // const getColor = (index: number) => {
-    //     const colors = ['#C0C0C0', '#A9A9A9', '#E5E5E5', '#696969', '#000000'];
-    //     return colors[index % colors.length];
-    // };
+        setToken(data.token);
+    });
 
-    // const [selectedMonth, setSelectedMonth] = useState<Date>(new Date());
+    const getColor = (index: number) => {
+        const colors = ['#C0C0C0', '#A9A9A9', '#E5E5E5', '#696969', '#000000'];
+        return colors[index % colors.length];
+    };
 
-    // const currentDate = selectedMonth;
-    // const lastFourMonths = Array.from({ length: 5 }, (_, i) => {
-    //     const date = new Date(currentDate);
-    //     date.setMonth(currentDate.getMonth() - i);
-    //     return date;
-    // }).reverse();
 
-    // const categoryTotals = registry.analyticsService.getCategoryDistribution(user, selectedMonth);
-    // const categoryDistribution = categoryTotals.map(({ name, total }, index) => ({
-    //     name,
-    //     population: total,
-    //     color: getColor(index),
-    //     legendFontColor: '#7F7F7F',
-    //     legendFontSize: 12,
-    // }));
+    const currentDate = selectedMonth;
+    const lastFourMonths = Array.from({ length: 5 }, (_, i) => {
+        const date = new Date(currentDate);
+        date.setMonth(currentDate.getMonth() - i);
+        return date;
+    }).reverse();
 
-    // const incomeTrends = registry.incomeService.getMonthlyIncomeTrends(user, lastFourMonths);
-    // const expenseTrends = registry.expenseService.getMonthlyExpenseTrends(user, lastFourMonths);
-    // const savingsTrend = registry.analyticsService.getSavingsTrends(user, lastFourMonths);
+    const categoryTotals = getCategoryDistribution(expenses, selectedMonth, categories);
+    const categoryDistribution = categoryTotals.map(({ name, total }, index) => ({
+        name,
+        population: total,
+        color: getColor(index),
+        legendFontColor: '#7F7F7F',
+        legendFontSize: 12,
+    }));
 
-    // const labels = lastFourMonths.map((date) =>
-    //     date.toLocaleString('default', { month: 'short', year: '2-digit' })
-    // );
+    const {incomeTotals, expenseTotals} = getIncomeVsExpenses(expenses, incomes, lastFourMonths)
+    const savingsTrend = getSavingsTrends(expenses, incomes, lastFourMonths);
 
-    // return (
-    //     <View style={styles.container}>
-    //         <TopBar />
+    const labels = lastFourMonths.map((date) =>
+        date.toLocaleString('default', { month: 'short', year: '2-digit' })
+    );
 
-    //         <ScrollView contentContainerStyle={{ rowGap: 20, paddingBottom: 40 }} style={{flex: 1}} showsVerticalScrollIndicator={false}>
-    //             <View>
-    //                 <Text style={styles.selectMonthText}>Select Month:</Text>
-    //                 <ModalSelectionDates
-    //                     choices={monthsPassedSinceJoinDate(user.getDateJoined())}
-    //                     value={selectedMonth}
-    //                     setValue={setSelectedMonth}
-    //                 />
-    //             </View>
+    return (
+        <View style={styles.container}>
+            <TopBar />
 
-    //             <Text style={styles.header}>Category Distribution: {getMonthName(selectedMonth)} {selectedMonth.getFullYear()}</Text>
-    //             {categoryDistribution.filter(distribution => distribution.population !== 0).length === 0 ? <Text style={styles.message}>There were no expenses.</Text> : <PieChart
-    //                 data={categoryDistribution}
-    //                 width={screenWidth}
-    //                 height={220}
-    //                 chartConfig={{
-    //                     backgroundGradientFrom: '#fff',
-    //                     backgroundGradientTo: '#fff',
-    //                     decimalPlaces: 2,
-    //                     color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
-    //                     labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
-    //                 }}
-    //                 accessor="population"
-    //                 backgroundColor="transparent"
-    //                 paddingLeft="15"
-    //             />}
+            <ScrollView contentContainerStyle={{ rowGap: 20, paddingBottom: 40 }} style={{flex: 1}} showsVerticalScrollIndicator={false}>
+                <View>
+                    <Text style={styles.selectMonthText}>Select Month:</Text>
+                    {/*<ModalSelectionDates
+                        choices={monthsPassedSinceJoinDate(user.getDateJoined())}
+                        value={selectedMonth}
+                        setValue={setSelectedMonth}
+                    /> */}
+                </View>
 
-    //             <Text style={styles.header}>Income vs Expenditure</Text>
-    //             { expenseTrends.filter(value => value !== 0).length === 0 && incomeTrends.filter(value => value !== 0).length === 0 ? <Text style={styles.message}>There were no expenses or income records.</Text> : 
-    //             <LineChart
-    //                 data={{
-    //                     labels,
-    //                     datasets: [
-    //                         {
-    //                             data: incomeTrends,
-    //                             color: () => 'green',
-    //                             strokeWidth: 2,
-    //                         },
-    //                         {
-    //                             data: expenseTrends,
-    //                             color: () => 'red',
-    //                             strokeWidth: 2,
-    //                         },
-    //                     ],
-    //                     legend: ['Income', 'Expense'],
-    //                 }}
-    //                 width={screenWidth - 30}
-    //                 height={300}
-    //                 yAxisLabel="£"
-    //                 chartConfig={{
-    //                     backgroundGradientFrom: '#fff',
-    //                     backgroundGradientTo: '#fff',
-    //                     decimalPlaces: 2,
-    //                     color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
-    //                     labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
-    //                     fillShadowGradient: 'white',
-    //                     fillShadowGradientFrom: 'white',
-    //                     fillShadowGradientTo: 'white',
-    //                     propsForDots: {
-    //                         r: 0,
-    //                     },
-    //                     propsForBackgroundLines: {
-    //                         strokeWidth: 0.5,
-    //                         strokeDasharray: '2 4',
-    //                         stroke: 'rgba(0, 0, 0, 0.3)',
-    //                     },
-    //                 }}
-    //             />}
+                <Text style={styles.header}>Category Distribution: {getMonthName(selectedMonth)} {selectedMonth.getFullYear()}</Text>
+                {categoryDistribution.filter(distribution => distribution.population !== 0).length === 0 ? <Text style={styles.message}>There were no expenses.</Text> : <PieChart
+                    data={categoryDistribution}
+                    width={screenWidth}
+                    height={220}
+                    chartConfig={{
+                        backgroundGradientFrom: '#fff',
+                        backgroundGradientTo: '#fff',
+                        decimalPlaces: 2,
+                        color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+                        labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+                    }}
+                    accessor="population"
+                    backgroundColor="transparent"
+                    paddingLeft="15"
+                />}
 
-    //             <Text style={styles.header}>Savings Trends</Text>
-    //             { expenseTrends.filter(value => value !== 0).length === 0 && incomeTrends.filter(value => value !== 0).length === 0 ? <Text style={styles.message}>There were no expenses or income records.</Text> :
-    //             <LineChart
-    //                 data={{
-    //                     labels,
-    //                     datasets: [
-    //                         {
-    //                             data: savingsTrend,
-    //                             color: () => 'blue',
-    //                             strokeWidth: 2,
-    //                         },
-    //                     ],
-    //                     legend: ['Savings'],
-    //                 }}
-    //                 width={screenWidth - 30}
-    //                 height={300}
-    //                 yAxisLabel="£"
-    //                 chartConfig={{
-    //                     backgroundGradientFrom: '#fff',
-    //                     backgroundGradientTo: '#fff',
-    //                     decimalPlaces: 2,
-    //                     color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
-    //                     labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
-    //                     fillShadowGradient: 'white',
-    //                     fillShadowGradientFrom: 'white',
-    //                     fillShadowGradientTo: 'white',
-    //                     propsForDots: {
-    //                         r: 0,
-    //                     },
-    //                     propsForBackgroundLines: {
-    //                         strokeWidth: 0.5,
-    //                         strokeDasharray: '2 4',
-    //                         stroke: 'rgba(0, 0, 0, 0.3)',
-    //                     },
-    //                 }}
-    //             />}
-    //         </ScrollView>
-    //     </View>
-    // );
+                <Text style={styles.header}>Income vs Expenditure</Text>
+                { expenseTotals.filter(value => value !== 0).length === 0 && incomeTotals.filter(value => value !== 0).length === 0 ? <Text style={styles.message}>There were no expenses or income records.</Text> : 
+                <LineChart
+                    data={{
+                        labels,
+                        datasets: [
+                            {
+                                data: incomeTotals,
+                                color: () => 'green',
+                                strokeWidth: 2,
+                            },
+                            {
+                                data: expenseTotals,
+                                color: () => 'red',
+                                strokeWidth: 2,
+                            },
+                        ],
+                        legend: ['Income', 'Expense'],
+                    }}
+                    width={screenWidth - 30}
+                    height={300}
+                    yAxisLabel="£"
+                    chartConfig={{
+                        backgroundGradientFrom: '#fff',
+                        backgroundGradientTo: '#fff',
+                        decimalPlaces: 2,
+                        color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+                        labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+                        fillShadowGradient: 'white',
+                        fillShadowGradientFrom: 'white',
+                        fillShadowGradientTo: 'white',
+                        propsForDots: {
+                            r: 0,
+                        },
+                        propsForBackgroundLines: {
+                            strokeWidth: 0.5,
+                            strokeDasharray: '2 4',
+                            stroke: 'rgba(0, 0, 0, 0.3)',
+                        },
+                    }}
+                />}
+
+                <Text style={styles.header}>Savings Trends</Text>
+                { expenseTotals.filter(value => value !== 0).length === 0 && incomeTotals.filter(value => value !== 0).length === 0 ? <Text style={styles.message}>There were no expenses or income records.</Text> :
+                <LineChart
+                    data={{
+                        labels,
+                        datasets: [
+                            {
+                                data: savingsTrend,
+                                color: () => 'blue',
+                                strokeWidth: 2,
+                            },
+                        ],
+                        legend: ['Savings'],
+                    }}
+                    width={screenWidth - 30}
+                    height={300}
+                    yAxisLabel="£"
+                    chartConfig={{
+                        backgroundGradientFrom: '#fff',
+                        backgroundGradientTo: '#fff',
+                        decimalPlaces: 2,
+                        color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+                        labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+                        fillShadowGradient: 'white',
+                        fillShadowGradientFrom: 'white',
+                        fillShadowGradientTo: 'white',
+                        propsForDots: {
+                            r: 0,
+                        },
+                        propsForBackgroundLines: {
+                            strokeWidth: 0.5,
+                            strokeDasharray: '2 4',
+                            stroke: 'rgba(0, 0, 0, 0.3)',
+                        },
+                    }}
+                />}
+            </ScrollView>
+        </View>
+    );
 }
 
 const styles = StyleSheet.create({
