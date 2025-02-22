@@ -1,6 +1,4 @@
 import User from "../models/User";
-import ExpenseCategory from "../models/ExpenseCategory";
-import filterTransactionByMonth from "../utils/filterTransactionByMonth";
 import Expense from "../models/Expense";
 import ExpenseRepository from "../repositories/ExpenseRepository";
 
@@ -11,12 +9,12 @@ class ExpenseService {
         this.repository = new ExpenseRepository();
     }
 
-    public addExpense(user: User, title: string, amount: number, date: Date, notes: string, category: ExpenseCategory, receipt?: string): void {
-        const expense = new Expense(user, title, amount, date, notes, category, receipt);
+    public addExpense(userID: string, title: string, amount: number, date: Date, notes: string, categoryID: string, receipt?: string): void {
+        const expense = new Expense(userID, title, amount, date, notes, categoryID, receipt);
         this.repository.add(expense);
     }
 
-    public updateExpense(id: string, title: string, amount: number, date: Date, notes: string, category: ExpenseCategory, receipt?: string): void {
+    public updateExpense(id: string, title: string, amount: number, date: Date, notes: string, categoryID: string, receipt?: string): void {
         const expense = this.repository.findById(id);
         if (!expense) {
             throw new Error(`The expense does not exist`);
@@ -25,7 +23,7 @@ class ExpenseService {
         expense.amount = amount;
         expense.date = date;
         expense.notes = notes;
-        expense.expenseCategory = category;
+        expense.categoryID = categoryID;
         expense.receipt = receipt || undefined;
     }
 
@@ -33,16 +31,13 @@ class ExpenseService {
         this.repository.delete(id);
     }
 
-    public getAllExpensesByUser(user: User): Expense[] {
-        return this.repository.findByUser(user.getUserID());
+    public getAllExpensesByUser(userID: string): Expense[] {
+        return this.repository.findByUser(userID);
     }
-
-
+    
     public findByID(id: string): Expense | undefined {
         return this.repository.findById(id);
     }
-
-
 }
 
 export default ExpenseService;

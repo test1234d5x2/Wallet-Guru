@@ -20,7 +20,7 @@ class ExpenseCategoryRepository {
     }
 
     public findByUser(userID: string): ExpenseCategory[] {
-        return this.categories.filter(cat => cat.getUser().getUserID() === userID);
+        return this.categories.filter(cat => cat.getUserID() === userID);
     }
 
     public findByID(id: string): ExpenseCategory | undefined {

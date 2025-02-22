@@ -1,21 +1,25 @@
 import Transaction from "./Transaction";
-import uuid from 'uuid';
+import uuid from 'react-native-uuid';
 
-class Income implements Transaction {
+class Expense implements Transaction {
     private id: string;
     private userID: string;
     title: string;
     amount: number;
     date: Date;
     notes: string;
+    categoryID: string;
+    receipt?: string;
 
-    constructor(userID: string, title: string, amount: number, date: Date, notes: string) {
+    constructor(userID: string, title: string, amount: number, date: Date, notes: string, categoryID: string, receipt?: string) {
         this.id = uuid.v4();
         this.userID = userID;
         this.title = title;
         this.amount = amount;
         this.date = date;
         this.notes = notes;
+        this.categoryID = categoryID;
+        this.receipt = receipt;
     }
 
     getID(): string {
@@ -26,18 +30,22 @@ class Income implements Transaction {
         return this.userID;
     }
 
+    getCategoryID(): string {
+        return this.categoryID;
+    }
+
     deleteTransaction(): boolean {
-        console.log("Delete Income");
+        console.log("Delete Expense");
         return false;
     }
 
     getPageURL(): string {
-        return "/viewIncomeDetailsPage/" + this.id;
+        return "/viewExpenseDetailsPage/" + this.id;
     }
 
     getEditURL(): string {
-        return "/editIncomePage/" + this.id;
+        return "/editExpensePage/" + this.id;
     }
 }
 
-export default Income;
+export default Expense;

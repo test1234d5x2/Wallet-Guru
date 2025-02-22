@@ -19,8 +19,8 @@ const expenseService = registry.expenseService;
 export const create: RequestHandler = (req, res) => {
     const { title, amount, date, notes, expenseCategoryID, receipt } = req.body;
 
-    const user = getUserFromToken(req);
-    if (!user) {
+    const userID = getUserFromToken(req);
+    if (!userID) {
         res.status(401).json({ error: "You must be logged in to create an expense." });
         return;
     }
@@ -36,20 +36,16 @@ export const create: RequestHandler = (req, res) => {
         return;
     }
 
-    try {
-        expenseService.addExpense(
-            user,
-            title,
-            amount,
-            new Date(date),
-            notes,
-            expenseCategory,
-            receipt
-        );
-        res.status(201).json({ message: "Expense created" });
-    } catch (err: any) {
-        res.status(500).json({ error: "Error creating expense", details: err.message });
-    }
+    expenseService.addExpense(
+        userID,
+        title,
+        amount,
+        new Date(date),
+        notes,
+        expenseCategoryID,
+        receipt
+    );
+    res.status(201).json({ message: "Expense created" });
 };
 
 /**
@@ -68,8 +64,8 @@ export const update: RequestHandler = (req, res) => {
     const { id } = req.params;
     const { title, amount, date, notes, expenseCategoryID, receipt } = req.body;
 
-    const user = getUserFromToken(req);
-    if (!user) {
+    const userID = getUserFromToken(req);
+    if (!userID) {
         res.status(401).json({ error: "You must be logged in to update an expense." });
         return;
     }
@@ -91,7 +87,7 @@ export const update: RequestHandler = (req, res) => {
         amount,
         new Date(date),
         notes,
-        expenseCategory,
+        expenseCategoryID,
         receipt
     );
     res.status(200).json({ message: "Expense updated" });
@@ -105,8 +101,8 @@ export const update: RequestHandler = (req, res) => {
 export const remove: RequestHandler = (req, res) => {
     const { id } = req.params;
 
-    const user = getUserFromToken(req);
-    if (!user) {
+    const userID = getUserFromToken(req);
+    if (!userID) {
         res.status(401).json({ error: "You must be logged in to delete an expense." });
         return;
     }
@@ -126,14 +122,14 @@ export const remove: RequestHandler = (req, res) => {
  * - userId (string): User identifier (taken from the request params)
  */
 export const listByUser: RequestHandler = (req, res) => {
-    const user = getUserFromToken(req);
-    if (!user) {
+    const userID = getUserFromToken(req);
+    if (!userID) {
         res.status(401).json({ error: "You must be logged in to view expenses." });
         return;
     }
 
 
-    const expenses = expenseService.getAllExpensesByUser(user);
+    const expenses = expenseService.getAllExpensesByUser(userID);
     res.status(200).json({ expenses });
 };
 
@@ -145,8 +141,8 @@ export const listByUser: RequestHandler = (req, res) => {
 export const findByID: RequestHandler = (req, res) => {
     const { id } = req.params;
 
-    const user = getUserFromToken(req);
-    if (!user) {
+    const userID = getUserFromToken(req);
+    if (!userID) {
         res.status(401).json({ error: "You must be logged in to view an expense." });
         return;
     }

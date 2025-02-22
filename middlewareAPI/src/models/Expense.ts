@@ -1,26 +1,24 @@
 import Transaction from "./Transaction";
-import User from "./User";
-import ExpenseCategory from "./ExpenseCategory";
 import uuid from 'uuid';
 
 class Expense implements Transaction {
     private id: string;
-    private user: User;
+    private userID: string;
     title: string;
     amount: number;
     date: Date;
     notes: string;
-    expenseCategory: ExpenseCategory;
+    categoryID: string;
     receipt?: string;
 
-    constructor(user: User, title: string, amount: number, date: Date, notes: string, expenseCategory: ExpenseCategory, receipt?: string) {
+    constructor(userID: string, title: string, amount: number, date: Date, notes: string, categoryID: string, receipt?: string) {
         this.id = uuid.v4();
-        this.user = user;
+        this.userID = userID;
         this.title = title;
         this.amount = amount;
         this.date = date;
         this.notes = notes;
-        this.expenseCategory = expenseCategory;
+        this.categoryID = categoryID;
         this.receipt = receipt;
     }
 
@@ -28,8 +26,12 @@ class Expense implements Transaction {
         return this.id;
     }
 
-    getUser(): User {
-        return this.user;
+    getUserID(): string {
+        return this.userID;
+    }
+
+    getCategoryID(): string {
+        return this.categoryID;
     }
 
     deleteTransaction(): boolean {

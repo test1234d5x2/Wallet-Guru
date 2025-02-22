@@ -1,5 +1,5 @@
 import GoalStatus from "../enums/GoalStatus";
-import uuid from 'uuid';
+import uuid from 'react-native-uuid';
 
 export default class Goal {
     private id: string;

@@ -16,18 +16,20 @@ const incomeService = registry.incomeService;
 export const create: RequestHandler = (req, res) => {
     const { title, amount, date, notes } = req.body;
 
-    const user = getUserFromToken(req);
-    if (!user) {
-        res.status(401).json({ error: "You must be logged in to create an income transaction." });
+    const userID = getUserFromToken(req);
+    console.log(userID)
+    if (!userID) {
+        res.status(401).json({ message: "You must be logged in to create an income transaction." });
         return;
     }
 
-    if (!title || amount === undefined || !date || !notes) {
-        res.status(400).json({ error: "Missing required fields: title, amount, date, notes" });
+    console.log(title, amount, date, notes)
+    if (!title || amount === undefined || !date) {
+        res.status(400).json({ message: "Missing required fields: title, amount, date" });
         return;
     }
 
-    incomeService.addIncome(user, title, amount, new Date(date), notes);
+    incomeService.addIncome(userID, title, amount, new Date(date), notes);
     res.status(201).json({ message: "Income created" });
 };
 
@@ -45,8 +47,8 @@ export const update: RequestHandler = (req, res) => {
     const { id } = req.params;
     const { title, amount, date, notes } = req.body;
 
-    const user = getUserFromToken(req);
-    if (!user) {
+    const userID = getUserFromToken(req);
+    if (!userID) {
         res.status(401).json({ error: "You must be logged in to update your income transaction." });
         return;
     }
@@ -68,8 +70,8 @@ export const update: RequestHandler = (req, res) => {
 export const remove: RequestHandler = (req, res) => {
     const { id } = req.params;
 
-    const user = getUserFromToken(req);
-    if (!user) {
+    const userID = getUserFromToken(req);
+    if (!userID) {
         res.status(401).json({ error: "You must be logged in to remove your income transaction." });
         return;
     }
@@ -89,13 +91,13 @@ export const remove: RequestHandler = (req, res) => {
  * - userId (string): User identifier (taken from request params)
  */
 export const listByUser: RequestHandler = (req, res) => {
-    const user = getUserFromToken(req);
-    if (!user) {
+    const userID = getUserFromToken(req);
+    if (!userID) {
         res.status(401).json({ error: "You must be logged in to view income transactions." });
         return;
     }
 
-    const incomes = incomeService.getAllIncomesByUser(user);
+    const incomes = incomeService.getAllIncomesByUser(userID);
     res.status(200).json({ incomes });
 };
 
@@ -107,8 +109,8 @@ export const listByUser: RequestHandler = (req, res) => {
 export const findByID: RequestHandler = (req, res) => {
     const { id } = req.params;
 
-    const user = getUserFromToken(req);
-    if (!user) {
+    const userID = getUserFromToken(req);
+    if (!userID) {
         res.status(401).json({ error: "You must be logged in to view an income transaction." });
         return;
     }

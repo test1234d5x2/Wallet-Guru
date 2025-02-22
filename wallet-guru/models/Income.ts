@@ -1,5 +1,5 @@
 import Transaction from "./Transaction";
-import uuid from 'uuid';
+import uuid from 'react-native-uuid';
 
 class Income implements Transaction {
     private id: string;

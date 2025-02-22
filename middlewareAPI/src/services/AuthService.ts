@@ -15,10 +15,10 @@ class AuthService {
         if (!user) {
             throw new Error("Invalid credentials");
         };
-        
-        const paylod = {userID: user.getUserID() };
 
-        const token = jwt.sign(paylod, this.JWTSecret, {expiresIn: "12h"});
+        const paylod = { userID: user.getUserID() };
+
+        const token = jwt.sign(paylod, this.JWTSecret, { expiresIn: "12h" });
         return token;
     }
 

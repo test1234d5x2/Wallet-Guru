@@ -1,4 +1,4 @@
-import uuid from 'uuid';
+import uuid from 'react-native-uuid';
 
 class ExpenseCategory {
     private id: string;

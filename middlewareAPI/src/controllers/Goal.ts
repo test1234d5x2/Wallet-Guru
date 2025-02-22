@@ -20,8 +20,8 @@ const goalService = registry.goalService;
 export const create: RequestHandler = (req, res) => {
     const { title, description, target, status } = req.body;
 
-    const user = getUserFromToken(req);
-    if (!user) {
+    const userID = getUserFromToken(req);
+    if (!userID) {
         res.status(401).json({ error: "You must be logged in to create a goal." })
         return;
     }
@@ -31,7 +31,7 @@ export const create: RequestHandler = (req, res) => {
         return;
     }
 
-    goalService.addGoal(user, title, description, target, status || GoalStatus.Active);
+    goalService.addGoal(userID, title, description, target, status || GoalStatus.Active);
     res.status(201).json({ message: "Goal created" });
 };
 
@@ -50,8 +50,8 @@ export const updateProgress: RequestHandler = (req, res) => {
     const { id } = req.params;
     const { current } = req.body;
 
-    const user = getUserFromToken(req);
-    if (!user) {
+    const userID = getUserFromToken(req);
+    if (!userID) {
         res.status(401).json({ error: "You must be logged in to update a goal." })
         return;
     }
@@ -87,8 +87,8 @@ export const updateProgress: RequestHandler = (req, res) => {
 export const archive: RequestHandler = (req, res) => {
     const { id } = req.params;
 
-    const user = getUserFromToken(req);
-    if (!user) {
+    const userID = getUserFromToken(req);
+    if (!userID) {
         res.status(401).json({ error: "You must be logged in to archive a goal." })
         return;
     }
@@ -123,8 +123,8 @@ export const archive: RequestHandler = (req, res) => {
 export const remove: RequestHandler = (req, res) => {
     const { id } = req.params;
 
-    const user = getUserFromToken(req);
-    if (!user) {
+    const userID = getUserFromToken(req);
+    if (!userID) {
         res.status(401).json({ error: "You must be logged in to delete a goal." })
         return;
     }
@@ -148,13 +148,13 @@ export const remove: RequestHandler = (req, res) => {
  */
 export const listByUser: RequestHandler = (req, res) => {
 
-    const user = getUserFromToken(req);
-    if (!user) {
+    const userID = getUserFromToken(req);
+    if (!userID) {
         res.status(401).json({ error: "You must be logged in to view goals." });
         return;
     }
 
-    const goals = goalService.getAllGoalsByUser(user);
+    const goals = goalService.getAllGoalsByUser(userID);
     res.status(200).json({ goals });
 };
 
@@ -166,8 +166,8 @@ export const listByUser: RequestHandler = (req, res) => {
 export const findByID: RequestHandler = (req, res) => {
     const { id } = req.params;
 
-    const user = getUserFromToken(req);
-    if (!user) {
+    const userID = getUserFromToken(req);
+    if (!userID) {
         res.status(401).json({ error: "You must be logged in to view a goal." });
         return;
     }

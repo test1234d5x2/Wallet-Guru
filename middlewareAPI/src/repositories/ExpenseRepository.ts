@@ -20,7 +20,7 @@ class ExpenseRepository {
     }
 
     public findByUser(userID: string): Expense[] {
-        return this.expenses.filter(exp => exp.getUser().getUserID() === userID);
+        return this.expenses.filter(exp => exp.getUserID() === userID);
     }
 
     public findById(id: string): Expense | undefined {

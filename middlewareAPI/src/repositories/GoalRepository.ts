@@ -20,7 +20,7 @@ class GoalRepository {
     }
 
     public findByUser(userID: string): Goal[] {
-        return this.goals.filter(g => g.getUser().getUserID() === userID);
+        return this.goals.filter(g => g.getUserID() === userID);
     }
 
     public findById(id: string): Goal | undefined {

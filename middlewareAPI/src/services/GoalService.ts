@@ -1,6 +1,5 @@
 import Goal from "../models/Goal";
 import GoalRepository from "../repositories/GoalRepository";
-import User from "../models/User";
 import GoalStatus from "../enums/GoalStatus";
 
 class GoalService {
@@ -10,8 +9,8 @@ class GoalService {
         this.repository = new GoalRepository();
     }
 
-    public addGoal(user: User, title: string, description: string, target: number, status: GoalStatus): void {
-        const goal = new Goal(title, user, description, target, status);
+    public addGoal(userID: string, title: string, description: string, target: number, status: GoalStatus): void {
+        const goal = new Goal(title, userID, description, target, status);
         this.repository.add(goal);
     }
 
@@ -31,8 +30,8 @@ class GoalService {
         this.repository.delete(id);
     }
 
-    public getAllGoalsByUser(user: User): Goal[] {
-        return this.repository.findByUser(user.getUserID());
+    public getAllGoalsByUser(userID: string): Goal[] {
+        return this.repository.findByUser(userID);
     }
 
     public findByID(id: string): Goal | undefined {

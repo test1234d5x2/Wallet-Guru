@@ -9,8 +9,8 @@ class ExpenseCategoryService {
         this.repository = new ExpenseCategoryRepository();
     }
 
-    public addExpenseCategory(user: User, name: string, monthlyBudget: number): void {
-        const category = new ExpenseCategory(user, name, monthlyBudget);
+    public addExpenseCategory(userID: string, name: string, monthlyBudget: number): void {
+        const category = new ExpenseCategory(userID, name, monthlyBudget);
         this.repository.add(category);
     }
 
@@ -27,8 +27,8 @@ class ExpenseCategoryService {
         this.repository.delete(id);
     }
 
-    public getAllCategoriesByUser(user: User): ExpenseCategory[] {
-        return this.repository.findByUser(user.getUserID());
+    public getAllCategoriesByUser(userID: string): ExpenseCategory[] {
+        return this.repository.findByUser(userID);
     }
 
     public getAllCategoriesByUserAndName(user: User, name: string): ExpenseCategory[] {

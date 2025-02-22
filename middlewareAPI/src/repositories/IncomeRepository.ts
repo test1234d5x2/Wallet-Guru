@@ -20,7 +20,7 @@ class IncomeRepository {
     }
 
     public findByUser(userID: string): Income[] {
-        return this.incomes.filter(inc => inc.getUser().getUserID() === userID);
+        return this.incomes.filter(inc => inc.getUserID() === userID);
     }
 
     public findById(id: string): Income | undefined {

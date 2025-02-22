@@ -1,7 +1,6 @@
 import Income from "../models/Income";
 import IncomeRepository from "../repositories/IncomeRepository";
 import User from "../models/User";
-import filterTransactionByMonth from "../utils/filterTransactionByMonth";
 
 class IncomeService {
     private repository: IncomeRepository;
@@ -10,8 +9,8 @@ class IncomeService {
         this.repository = new IncomeRepository();
     }
 
-    public addIncome(user: User, title: string, amount: number, date: Date, notes: string): void {
-        const income = new Income(user, title, amount, date, notes);
+    public addIncome(userID: string, title: string, amount: number, date: Date, notes: string): void {
+        const income = new Income(userID, title, amount, date, notes);
         this.repository.add(income);
     }
 
@@ -30,10 +29,10 @@ class IncomeService {
         this.repository.delete(id);
     }
 
-    public getAllIncomesByUser(user: User): Income[] {
-        return this.repository.findByUser(user.getUserID());
+    public getAllIncomesByUser(userID: string): Income[] {
+        return this.repository.findByUser(userID);
     }
-
+    
     public findByID(id: string): Income | undefined {
         return this.repository.findById(id);
     }

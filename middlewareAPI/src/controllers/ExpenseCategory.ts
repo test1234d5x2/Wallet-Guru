@@ -14,8 +14,8 @@ const expenseCategoryService = registry.expenseCategoryService;
 export const create: RequestHandler = (req, res) => {
     const { name, monthlyBudget } = req.body;
 
-    const user = getUserFromToken(req);
-    if (!user) {
+    const userID = getUserFromToken(req);
+    if (!userID) {
         res.status(401).json({ error: "You must be logged in to create an expense category." });
         return;
     }
@@ -25,7 +25,7 @@ export const create: RequestHandler = (req, res) => {
         return;
     }
 
-    expenseCategoryService.addExpenseCategory(user, name, monthlyBudget);
+    expenseCategoryService.addExpenseCategory(userID, name, monthlyBudget);
     res.status(201).json({ message: "Expense category created" });
 };
 
@@ -41,8 +41,8 @@ export const update: RequestHandler = (req, res) => {
     const { id } = req.params;
     const { name, monthlyBudget } = req.body;
 
-    const user = getUserFromToken(req);
-    if (!user) {
+    const userID = getUserFromToken(req);
+    if (!userID) {
         res.status(401).json({ error: "You must be logged in to update an expense category." });
         return;
     }
@@ -64,8 +64,8 @@ export const update: RequestHandler = (req, res) => {
 export const remove: RequestHandler = (req, res) => {
     const { id } = req.params;
 
-    const user = getUserFromToken(req);
-    if (!user) {
+    const userID = getUserFromToken(req);
+    if (!userID) {
         res.status(401).json({ error: "You must be logged in to delete an expense category." });
         return;
     }
@@ -84,13 +84,13 @@ export const remove: RequestHandler = (req, res) => {
  * Retrieves all categories associated with the authenticated user.
  */
 export const listByUser: RequestHandler = (req, res) => {
-    const user = getUserFromToken(req);
-    if (!user) {
+    const userID = getUserFromToken(req);
+    if (!userID) {
         res.status(401).json({ error: "You must be logged in to view expense categories." });
         return;
     }
 
-    const categories = expenseCategoryService.getAllCategoriesByUser(user);
+    const categories = expenseCategoryService.getAllCategoriesByUser(userID);
     res.status(200).json({ categories });
 };
 
@@ -102,8 +102,8 @@ export const listByUser: RequestHandler = (req, res) => {
 export const findByID: RequestHandler = (req, res) => {
     const { id } = req.params;
 
-    const user = getUserFromToken(req);
-    if (!user) {
+    const userID = getUserFromToken(req);
+    if (!userID) {
         res.status(401).json({ error: "You must be logged in to view an expense category." });
         return;
     }
