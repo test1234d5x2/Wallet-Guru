@@ -5,9 +5,11 @@ import { useRouter } from 'expo-router';
 import ListItemEditButton from './listItemEditButton';
 import ListItemDeleteButton from './listItemDeleteButton';
 import clearRouterHistory from '@/utils/clearRouterHistory';
+import deleteIncome from '@/utils/apiCalls/deleteIncome';
 
 interface IncomeItemProps {
     income: Income
+    token: string
 }
 
 export default function IncomeItem(props: IncomeItemProps) {
@@ -22,14 +24,20 @@ export default function IncomeItem(props: IncomeItemProps) {
     const handleDeleteTransaction = (id: string) => {
         Alert.alert('Delete Income', 'Are you sure you want to delete this income source?', [
             { text: 'Cancel', style: 'cancel' },
-            { text: 'Delete', style: 'destructive', onPress: () => {
-                // props.registry.incomeService.deleteIncome(props.income.getID());
-                // USE THE BLOCKCHAIN MIDDLEWARE API TO DELETE AN INCOME
-                Alert.alert('Success', 'Income deleted successfully!');
-                clearRouterHistory(router);
-                router.replace("/listTransactionsPage");
-                return;
-            } },
+            {
+                text: 'Delete', style: 'destructive', onPress: () => {
+                    deleteIncome(props.token, id).then((complete) => {
+                        if (complete) {
+                            Alert.alert('Success', 'Income deleted successfully!');
+                            clearRouterHistory(router);
+                            router.replace("/listTransactionsPage");
+                        }
+                    }).catch((err: Error) => {
+                        Alert.alert("Failed", "Failed to delete income.");
+                        console.log(err.message);
+                    })
+                }
+            },
         ])
     }
 
@@ -43,7 +51,7 @@ export default function IncomeItem(props: IncomeItemProps) {
                     {props.income.amount < 0 ? "-" : "+"}£{Math.abs(props.income.amount).toFixed(2)}
                 </Text>
             </View>
-            
+
 
             <View style={styles.actionsContainer}>
                 <ListItemEditButton id={props.income.getID()} handleEdit={handleEdit} />

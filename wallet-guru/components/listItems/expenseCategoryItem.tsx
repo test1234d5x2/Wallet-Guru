@@ -6,12 +6,14 @@ import { useRouter } from 'expo-router';
 import ListItemDeleteButton from './listItemDeleteButton';
 import ListItemEditButton from './listItemEditButton';
 import clearRouterHistory from '@/utils/clearRouterHistory';
+import deleteExpenseCategory from '@/utils/apiCalls/deleteExpenseCategory';
 
 
 
 interface ExpenseCategoryProps {
     category: ExpenseCategory;
     currentSpending: number
+    token: string
 }
 
 export default function ExpenseCategoryItem(props: ExpenseCategoryProps) {
@@ -28,15 +30,16 @@ export default function ExpenseCategoryItem(props: ExpenseCategoryProps) {
                 text: 'Delete',
                 style: 'destructive',
                 onPress: () => {
-                    try {
-                        //registry.expenseCategoryService.deleteExpenseCategory(props.category.getID());
-                        // USE THE BLOCKCHAIN MIDDLEWARE API TO DELETE AN EXPENSE CATEOGRY.
-                        Alert.alert('Success', 'Expense category deleted successfully!');
-                        clearRouterHistory(router);
-                        router.replace("/expenseCategoriesOverviewPage");
-                    } catch (err: any) {
-                        Alert.alert('Error', err.message);
-                    }
+                    deleteExpenseCategory(props.token, id).then((complete) => {
+                        if (complete) {
+                            Alert.alert('Success', 'Expense category deleted successfully!');
+                            clearRouterHistory(router);
+                            router.replace("/expenseCategoriesOverviewPage");
+                        }
+                    }).catch((err: Error) => {
+                        Alert.alert("Failed", "Failed to delete expense category.");
+                        console.log(err.message);
+                    })
                 },
             },
         ]);
@@ -49,7 +52,7 @@ export default function ExpenseCategoryItem(props: ExpenseCategoryProps) {
             <Text style={styles.label}>Spending: £{props.currentSpending.toFixed(2)}</Text>
             <Progress.Bar
                 progress={props.category.calculateBudgetUsed(props.currentSpending)}
-                color={props.category.calculateBudgetUsed(props.currentSpending) < 0.8 ? "#007BFF": "#FF4C4C"}
+                color={props.category.calculateBudgetUsed(props.currentSpending) < 0.8 ? "#007BFF" : "#FF4C4C"}
                 width={null}
             />
             <Text style={styles.label}>Budget: £{props.category.monthlyBudget.toFixed(2)}</Text>

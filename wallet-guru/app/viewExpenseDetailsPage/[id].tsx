@@ -7,6 +7,7 @@ import clearRouterHistory from '@/utils/clearRouterHistory';
 import Expense from '@/models/Expense';
 import getToken from '@/utils/tokenAccess/getToken';
 import getExpenseByID from '@/utils/apiCalls/getExpensesByID';
+import deleteExpense from '@/utils/apiCalls/deleteExpense';
 
 
 
@@ -18,7 +19,7 @@ export default function ExpenseDetailsScreen() {
     const [email, setEmail] = useState<string>('');
     const [expense, setExpense] = useState<Expense>();
 
-    setPageTitle(!expense ? "": expense.title)
+    setPageTitle(!expense ? "" : expense.title)
 
 
     useEffect(() => {
@@ -64,14 +65,16 @@ export default function ExpenseDetailsScreen() {
             { text: 'Cancel', style: 'cancel' },
             {
                 text: 'Delete', style: 'destructive', onPress: () => {
-                    try {
-                        // USE EMAIL AND TOKEN TO DELETE VIA API.
-                        Alert.alert('Success', 'Expense deleted successfully!');
-                        clearRouterHistory(router);
-                        router.replace("/listTransactionsPage");
-                    } catch (err: any) {
-                        Alert.alert('Error', err.message);
-                    }
+                    deleteExpense(token, id as string).then((complete) => {
+                        if (complete) {
+                            Alert.alert('Success', 'Expense deleted successfully!');
+                            clearRouterHistory(router);
+                            router.replace("/listTransactionsPage");
+                        }
+                    }).catch((err: Error) => {
+                        Alert.alert("Failed", "Failed to delete expense.");
+                        console.log(err.message);
+                    })
                 },
             },
         ]);

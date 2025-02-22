@@ -103,7 +103,7 @@ export default function ViewTransactionsList() {
             ...transactions.map((income) => (
                 <React.Fragment key={uuid.v4() as string}>
                     <TouchableOpacity onPress={() => handleTransactionClick(income)}>
-                        <IncomeItem income={income} />
+                        <IncomeItem token={token} income={income} />
                     </TouchableOpacity>
                     <View style={styles.divider} />
                 </React.Fragment>
@@ -120,7 +120,7 @@ export default function ViewTransactionsList() {
             ...transactions.map((expense) => (
                 <React.Fragment key={uuid.v4() as string}>
                     <TouchableOpacity onPress={() => handleTransactionClick(expense)}>
-                        <ExpenseItem expense={expense} />
+                        <ExpenseItem token={token} expense={expense} />
                     </TouchableOpacity>
                     <View style={styles.divider} />
                 </React.Fragment>

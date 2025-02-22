@@ -52,7 +52,7 @@ export default function AllGoals() {
     const displayElements = goals.map((goal) => (
         <React.Fragment key={uuid.v4()}>
             <TouchableOpacity onPress={() => handleGoalClick(goal.getID())}>
-                <GoalItem goal={goal} />
+                <GoalItem token={token} goal={goal} />
             </TouchableOpacity>
             <View style={styles.divider} />
         </React.Fragment>

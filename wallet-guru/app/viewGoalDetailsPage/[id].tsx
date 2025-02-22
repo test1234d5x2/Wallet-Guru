@@ -8,6 +8,7 @@ import clearRouterHistory from '@/utils/clearRouterHistory';
 import Goal from '@/models/Goal';
 import getToken from '@/utils/tokenAccess/getToken';
 import getGoalByID from '@/utils/apiCalls/getGoalByID';
+import deleteGoal from '@/utils/apiCalls/deleteGoal';
 
 
 export default function ViewGoalDetails() {
@@ -18,7 +19,7 @@ export default function ViewGoalDetails() {
     const [email, setEmail] = useState<string>('');
     const [goal, setGoal] = useState<Goal>();
 
-    setPageTitle(!goal ? "": goal.title);
+    setPageTitle(!goal ? "" : goal.title);
 
     getToken().then((data) => {
         if (!data) {
@@ -63,14 +64,17 @@ export default function ViewGoalDetails() {
             { text: 'Cancel', style: 'cancel' },
             {
                 text: 'Delete', style: 'destructive', onPress: () => {
-                    try {
-                        // DELETE GOAL USING TOKEN AND EMAIL VIA API.
-                        Alert.alert('Success', 'Goal deleted successfully!');
-                        clearRouterHistory(router);
-                        router.replace("/allGoalsPage");
-                    } catch (err: any) {
-                        Alert.alert('Error', err.message);
-                    }
+                    deleteGoal(token, id as string).then((complete) => {
+                        if (complete) {
+                            Alert.alert('Success', 'Goal deleted successfully!');
+                            clearRouterHistory(router);
+                            router.replace("/allGoalsPage");
+                        }
+                    }).catch((err: Error) => {
+                        Alert.alert("Failed", "Failed to delete goal.");
+                        console.log(err.message);
+                    })
+
                 },
             },
         ]);
@@ -80,7 +84,7 @@ export default function ViewGoalDetails() {
         <View style={styles.mainContainer}>
             <TopBar />
 
-            {!goal ? "": <View style={styles.container}>
+            {!goal ? "" : <View style={styles.container}>
                 <Text style={styles.label}>Target: £{goal.target.toFixed(2)}</Text>
 
                 <View style={{ rowGap: 5 }}>

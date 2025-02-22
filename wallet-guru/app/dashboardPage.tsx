@@ -87,13 +87,13 @@ export default function Dashboard() {
     const transactionItemsList = [
         expenses.slice(0, 3).map((expense) => (
             <React.Fragment key={uuid.v4() as string}>
-                <ExpenseItem expense={expense} />
+                <ExpenseItem token={token} expense={expense} />
                 <View style={styles.dividerLine} />
             </React.Fragment>
         )),
         incomes.slice(0, 3).map((income) => (
             <React.Fragment key={uuid.v4() as string}>
-                <IncomeItem income={income} />
+                <IncomeItem token={token} income={income} />
                 <View style={styles.dividerLine} />
             </React.Fragment>
         )),
@@ -102,7 +102,7 @@ export default function Dashboard() {
     const expenseCategoryItemsList = [
         categories.slice(0, 3).map((category) => (
             <React.Fragment key={uuid.v4() as string}>
-                <ExpenseCategoryItem currentSpending={calculateMonthlyCategoryTotal(expenses, new Date(), category)} category={category} />
+                <ExpenseCategoryItem token={token} currentSpending={calculateMonthlyCategoryTotal(expenses, new Date(), category)} category={category} />
                 <View style={styles.dividerLine} />
             </React.Fragment>
         ))

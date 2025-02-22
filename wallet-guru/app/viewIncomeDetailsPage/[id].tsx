@@ -7,6 +7,7 @@ import clearRouterHistory from '@/utils/clearRouterHistory';
 import Income from '@/models/Income';
 import getToken from '@/utils/tokenAccess/getToken';
 import getIncomeByID from '@/utils/apiCalls/getIncomeByID';
+import deleteIncome from '@/utils/apiCalls/deleteIncome';
 
 
 
@@ -22,7 +23,7 @@ export default function IncomeDetailsScreen() {
     const [email, setEmail] = useState<string>('');
     const [income, setIncome] = useState<Income>();
 
-    setPageTitle(!income ? "": income.title);
+    setPageTitle(!income ? "" : income.title);
 
 
     getToken().then((data) => {
@@ -65,23 +66,27 @@ export default function IncomeDetailsScreen() {
     const handleDelete = () => {
         Alert.alert('Delete Income', 'Are you sure you want to delete this income source?', [
             { text: 'Cancel', style: 'cancel' },
-            { text: 'Delete', style: 'destructive', onPress: () => {
-                try {
-                    // HANDLE DELETE INCOME. USE TOKEN AND EMAIL.
-                    Alert.alert('Success', 'Income source deleted successfully!');
-                    clearRouterHistory(router);
-                    router.replace("/listTransactionsPage");
-                } catch (err: any) {
-                    Alert.alert('Error', err.message);
+            {
+                text: 'Delete', style: 'destructive', onPress: () => {
+                    deleteIncome(token, id as string).then((complete) => {
+                        if (complete) {
+                            Alert.alert('Success', 'Income deleted successfully!');
+                            clearRouterHistory(router);
+                            router.replace("/listTransactionsPage");
+                        }
+                    }).catch((err: Error) => {
+                        Alert.alert("Failed", "Failed to delete income.");
+                        console.log(err.message);
+                    })
                 }
-            } },
+            },
         ]);
     }
 
     return (
         <View style={styles.mainContainer}>
             <TopBar />
-            {!income ? "": <View style={styles.container}>
+            {!income ? "" : <View style={styles.container}>
                 <Text style={styles.detail}>Amount: £{income.amount.toFixed(2)}</Text>
                 <Text style={styles.detail}>Date: {income.date.toDateString()}</Text>
                 <View>

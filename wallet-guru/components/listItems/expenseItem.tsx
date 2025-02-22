@@ -5,9 +5,11 @@ import { useRouter } from 'expo-router';
 import ListItemEditButton from './listItemEditButton';
 import ListItemDeleteButton from './listItemDeleteButton';
 import clearRouterHistory from '@/utils/clearRouterHistory';
+import deleteExpense from '@/utils/apiCalls/deleteExpense';
 
 interface ExpenseItemProps {
     expense: Expense
+    token: string
 }
 
 export default function ExpenseItem(props: ExpenseItemProps) {
@@ -22,17 +24,20 @@ export default function ExpenseItem(props: ExpenseItemProps) {
     const handleDeleteTransaction = (id: string) => {
         Alert.alert('Delete Expense', 'Are you sure you want to delete this expense?', [
             { text: 'Cancel', style: 'cancel' },
-            { text: 'Delete', style: 'destructive', onPress: () => {
-                try {
-                    // props.registry.expenseService.deleteExpense(id);
-                    // USE THE BLOCKCHAIN MIDDLEWARE API TO DELETE AN EXPENSE.
-                    Alert.alert('Success', 'Expense deleted successfully!');
-                    clearRouterHistory(router);
-                    router.replace("/listTransactionsPage");
-                } catch (err: any) {
-                    Alert.alert('Error', err.message);
+            {
+                text: 'Delete', style: 'destructive', onPress: () => {
+                    deleteExpense(props.token, id).then((complete) => {
+                        if (complete) {
+                            Alert.alert('Success', 'Expense deleted successfully!');
+                            clearRouterHistory(router);
+                            router.replace("/listTransactionsPage");
+                        }
+                    }).catch((err: Error) => {
+                        Alert.alert("Failed", "Failed to delete expense.");
+                        console.log(err.message);
+                    })
                 }
-            } },
+            },
         ])
     }
 
@@ -48,7 +53,7 @@ export default function ExpenseItem(props: ExpenseItemProps) {
                     {props.expense.amount < 0 ? "-" : "+"}£{Math.abs(props.expense.amount).toFixed(2)}
                 </Text>
             </View>
-            
+
 
             <View style={styles.actionsContainer}>
                 <ListItemEditButton id={props.expense.getID()} handleEdit={handleEdit} />

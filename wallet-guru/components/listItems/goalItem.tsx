@@ -5,10 +5,12 @@ import { useRouter } from "expo-router";
 import ListItemEditButton from "./listItemEditButton";
 import ListItemDeleteButton from "./listItemDeleteButton";
 import clearRouterHistory from "@/utils/clearRouterHistory";
+import deleteGoal from "@/utils/apiCalls/deleteGoal";
 
 
 interface GoalItemProps {
     goal: Goal
+    token: string
 }
 
 
@@ -24,14 +26,20 @@ export default function GoalItem(props: GoalItemProps) {
     const handleDelete = (id: string) => {
         Alert.alert('Delete Goal', 'Are you sure you want to delete this goal?', [
             { text: 'Cancel', style: 'cancel' },
-            { text: 'Delete', style: 'destructive', onPress: () => {
-                // registry.goalService.deleteGoal(props.goal.getID());
-                // USE THE BLOCKCHAIN MIDDLEWARE API TO DELETE AN EXPENSE.
-                Alert.alert('Success', 'Goal deleted successfully!');
-                clearRouterHistory(router);
-                router.replace("/allGoalsPage");
-                return;
-            } },
+            {
+                text: 'Delete', style: 'destructive', onPress: () => {
+                    deleteGoal(props.token, id).then((complete) => {
+                        if (complete) {
+                            Alert.alert('Success', 'Goal deleted successfully!');
+                            clearRouterHistory(router);
+                            router.replace("/allGoalsPage");
+                        }
+                    }).catch((err: Error) => {
+                        Alert.alert("Failed", "Failed to delete goal.");
+                        console.log(err.message);
+                    })
+                }
+            },
         ])
     }
 

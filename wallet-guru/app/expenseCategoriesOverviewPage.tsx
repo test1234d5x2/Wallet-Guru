@@ -61,7 +61,7 @@ export default function ViewExpenseCategories() {
     const displayElements = [
         ...categories.map((category) => (
             <React.Fragment key={uuid.v4() as string}>
-                <ExpenseCategoryItem currentSpending={calculateMonthlyCategoryTotal(expenses, new Date(), category)} category={category} />
+                <ExpenseCategoryItem token={token} currentSpending={calculateMonthlyCategoryTotal(expenses, new Date(), category)} category={category} />
                 <View style={styles.divider} />
             </React.Fragment>
         ))
