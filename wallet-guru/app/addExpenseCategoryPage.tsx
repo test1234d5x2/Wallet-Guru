@@ -9,7 +9,7 @@ import { useRouter } from 'expo-router';
 import clearRouterHistory from '@/utils/clearRouterHistory';
 import getToken from '@/utils/tokenAccess/getToken';
 import ExpenseCategory from '@/models/ExpenseCategory';
-import getExpenseCategories from '@/utils/getExpenseCategories';
+import getExpenseCategories from '@/utils/apiCalls/getExpenseCategories';
 import getCategoryNamesList from '@/utils/getCategoryNamesList';
 
 

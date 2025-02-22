@@ -6,7 +6,7 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from "reac
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import clearRouterHistory from "@/utils/clearRouterHistory";
 import getToken from "@/utils/tokenAccess/getToken";
-import getGoalByID from "@/utils/getGoalByID";
+import getGoalByID from "@/utils/apiCalls/getGoalByID";
 import Goal from "@/models/Goal";
 import isNumeric from "@/utils/validation/validateNumeric";
 

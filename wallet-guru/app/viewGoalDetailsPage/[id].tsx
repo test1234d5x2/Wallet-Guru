@@ -7,7 +7,7 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import clearRouterHistory from '@/utils/clearRouterHistory';
 import Goal from '@/models/Goal';
 import getToken from '@/utils/tokenAccess/getToken';
-import getGoalByID from '@/utils/getGoalByID';
+import getGoalByID from '@/utils/apiCalls/getGoalByID';
 
 
 export default function ViewGoalDetails() {

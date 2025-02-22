@@ -8,8 +8,8 @@ import validateEmpty from '@/utils/validation/validateEmpty';
 import isNumeric from '@/utils/validation/validateNumeric';
 import clearRouterHistory from '@/utils/clearRouterHistory';
 import getToken from '@/utils/tokenAccess/getToken';
-import getExpenseCategoryByID from '@/utils/getExpenseCategoryByID';
-import updateExpenseCategory from '@/utils/updateExpenseCategory';
+import getExpenseCategoryByID from '@/utils/apiCalls/getExpenseCategoryByID';
+import updateExpenseCategory from '@/utils/apiCalls/updateExpenseCategory';
 
 
 export default function EditExpenseCategory() {

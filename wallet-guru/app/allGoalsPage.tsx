@@ -8,7 +8,7 @@ import { Link, useRouter } from 'expo-router';
 import clearRouterHistory from '@/utils/clearRouterHistory';
 import getToken from '@/utils/tokenAccess/getToken';
 import Goal from '@/models/Goal';
-import getGoals from '@/utils/getGoals';
+import getGoals from '@/utils/apiCalls/getGoals';
 
 export default function AllGoals() {
     setPageTitle("All Goals");

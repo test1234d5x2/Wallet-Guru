@@ -8,8 +8,8 @@ import { Link, useRouter } from 'expo-router';
 import clearRouterHistory from '@/utils/clearRouterHistory';
 import ExpenseCategory from '@/models/ExpenseCategory';
 import Expense from '@/models/Expense';
-import getExpenseCategories from '@/utils/getExpenseCategories';
-import getExpenses from '@/utils/getExpenses';
+import getExpenseCategories from '@/utils/apiCalls/getExpenseCategories';
+import getExpenses from '@/utils/apiCalls/getExpenses';
 import getToken from '@/utils/tokenAccess/getToken';
 import calculateMonthlyCategoryTotal from '@/utils/calculateMonthlyCategoryTotal';
 

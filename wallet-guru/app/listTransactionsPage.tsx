@@ -17,9 +17,9 @@ import filterTransactionsByDate from '@/utils/filterTransactionsByDate';
 import filterExpensesByCategory from '@/utils/filterExpensesByCategory';
 import Expense from '@/models/Expense';
 import Income from '@/models/Income';
-import getExpenseCategories from '@/utils/getExpenseCategories';
-import getExpenses from '@/utils/getExpenses';
-import getIncomes from '@/utils/getIncomes';
+import getExpenseCategories from '@/utils/apiCalls/getExpenseCategories';
+import getExpenses from '@/utils/apiCalls/getExpenses';
+import getIncomes from '@/utils/apiCalls/getIncomes';
 import getToken from '@/utils/tokenAccess/getToken';
 
 

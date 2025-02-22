@@ -6,7 +6,7 @@ import { View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import clearRouterHistory from '@/utils/clearRouterHistory';
 import Expense from '@/models/Expense';
 import getToken from '@/utils/tokenAccess/getToken';
-import getExpenseByID from '@/utils/getExpensesByID';
+import getExpenseByID from '@/utils/apiCalls/getExpensesByID';
 
 
 

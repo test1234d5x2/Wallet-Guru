@@ -9,8 +9,8 @@ import isNumeric from '@/utils/validation/validateNumeric';
 import { isValidDate, isTodayOrBefore } from '@/utils/validation/validateDate';
 import clearRouterHistory from '@/utils/clearRouterHistory';
 import getToken from '@/utils/tokenAccess/getToken';
-import getIncomeByID from '@/utils/getIncomeByID';
-import updateIncome from '@/utils/updateIncome';
+import getIncomeByID from '@/utils/apiCalls/getIncomeByID';
+import updateIncome from '@/utils/apiCalls/updateIncome';
 
 export default function EditIncome() {
     setPageTitle("Edit Income");

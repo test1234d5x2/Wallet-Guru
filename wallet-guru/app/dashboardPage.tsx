@@ -13,9 +13,9 @@ import ExpenseCategory from '@/models/ExpenseCategory';
 import Expense from '@/models/Expense';
 import Income from '@/models/Income'
 import calculateMonthlyTransactionsTotal from '@/utils/calculateMonthlyTransactionsTotal';
-import getExpenses from '@/utils/getExpenses';
-import getIncomes from '@/utils/getIncomes';
-import getExpenseCategories from '@/utils/getExpenseCategories';
+import getExpenses from '@/utils/apiCalls/getExpenses';
+import getIncomes from '@/utils/apiCalls/getIncomes';
+import getExpenseCategories from '@/utils/apiCalls/getExpenseCategories';
 import calculateMonthlyCategoryTotal from '@/utils/calculateMonthlyCategoryTotal';
 
 

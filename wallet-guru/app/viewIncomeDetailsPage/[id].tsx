@@ -6,7 +6,7 @@ import { View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import clearRouterHistory from '@/utils/clearRouterHistory';
 import Income from '@/models/Income';
 import getToken from '@/utils/tokenAccess/getToken';
-import getIncomeByID from '@/utils/getIncomeByID';
+import getIncomeByID from '@/utils/apiCalls/getIncomeByID';
 
 
 

@@ -10,7 +10,7 @@ import { isTodayOrBefore, isValidDate } from '@/utils/validation/validateDate';
 import ExpenseCategory from '@/models/ExpenseCategory';
 import clearRouterHistory from '@/utils/clearRouterHistory';
 import getToken from '@/utils/tokenAccess/getToken';
-import getExpenseCategories from '@/utils/getExpenseCategories';
+import getExpenseCategories from '@/utils/apiCalls/getExpenseCategories';
 
 
 
