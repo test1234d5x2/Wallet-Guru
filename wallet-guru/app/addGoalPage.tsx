@@ -36,9 +36,12 @@ async function addGoal(token: string, title: string, description: string, target
         })
     });
 
+    console.log(response.status);
+    
+
     if (!response.ok) {
         const error = await response.json();
-        throw new Error(error.message);
+        throw new Error(error.error);
     }
 }
 

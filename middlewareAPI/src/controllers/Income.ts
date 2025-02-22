@@ -124,5 +124,5 @@ export const findByID: RequestHandler = (req, res) => {
         return;
     }
 
-    res.status(200).json({ income });
+    res.status(200).json(income.toJSON());
 };

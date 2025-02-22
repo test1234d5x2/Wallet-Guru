@@ -22,6 +22,6 @@ export default async function getIncomes(token: string): Promise<Income[]> {
     }
 
     const data = await response.json();
-    const incomes: Income[] = data.incomes.map((i: any) => new Income(i.userID, i.title, i.amount, i.date, i.notes, i.id));
+    const incomes: Income[] = data.incomes.map((i: any) => new Income(i.userID, i.title, i.amount, new Date(i.date), i.notes, i.id));
     return incomes;
 }

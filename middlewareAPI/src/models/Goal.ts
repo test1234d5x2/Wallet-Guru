@@ -36,4 +36,16 @@ export default class Goal {
     calculateProgress(): number {
         return this.current / this.target;
     }
+
+    public toJSON() {
+        return {
+            id: this.id,
+            userID: this.userID,
+            title: this.title,
+            description: this.description,
+            target: this.target,
+            current: this.current,
+            status: this.status,
+        }
+    }
 }

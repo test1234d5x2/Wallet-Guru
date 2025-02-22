@@ -40,7 +40,7 @@ export default function AllGoals() {
             }
         }
 
-        getGoalsList();
+        if (token) getGoalsList();
     }, [token]);
 
     const handleGoalClick = (id: string) => {
@@ -48,6 +48,7 @@ export default function AllGoals() {
         router.navigate(`/viewGoalDetailsPage/${id}`);
     };
 
+    
     const displayElements = goals.map((goal) => (
         <React.Fragment key={uuid.v4()}>
             <TouchableOpacity onPress={() => handleGoalClick(goal.getID())}>

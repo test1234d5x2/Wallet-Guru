@@ -143,20 +143,20 @@ export const findByID: RequestHandler = (req, res) => {
 
     const userID = getUserFromToken(req);
     if (!userID) {
-        res.status(401).json({ error: "You must be logged in to view an expense." });
+        res.status(401).json({ message: "You must be logged in to view an expense." });
         return;
     }
 
     if (!id) {
-        res.status(400).json({ error: "Expense ID is required." });
+        res.status(400).json({ message: "Expense ID is required." });
         return;
     }
 
     const expense = expenseService.findByID(id);
     if (!expense) {
-        res.status(404).json({ error: "Expense not found." });
+        res.status(404).json({ message: "Expense not found." });
         return;
     }
 
-    res.status(200).json({ expense });
+    res.status(200).json(expense.toJSON());
 };

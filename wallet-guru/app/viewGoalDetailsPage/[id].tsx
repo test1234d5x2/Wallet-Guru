@@ -39,17 +39,15 @@ async function getGoalByID(token: string, id: string): Promise<Goal> {
 
 
 
-
-
-
 export default function ViewGoalDetails() {
-    setPageTitle("");
     const { id } = useLocalSearchParams();
 
     const router = useRouter();
     const [token, setToken] = useState<string>('');
     const [email, setEmail] = useState<string>('');
     const [goal, setGoal] = useState<Goal>();
+
+    setPageTitle(!goal ? "": goal.title);
 
     getToken().then((data) => {
         if (!data) {
@@ -67,7 +65,6 @@ export default function ViewGoalDetails() {
         async function getGoal() {
             getGoalByID(token, id as string).then((data) => {
                 setGoal(data);
-                setPageTitle(data.title)
             }).catch((error: Error) => {
                 Alert.alert("Goal Not Found")
                 console.log(error.message);
@@ -76,7 +73,7 @@ export default function ViewGoalDetails() {
             })
         }
 
-        getGoal();
+        if (token) getGoal();
     }, [token]);
 
 

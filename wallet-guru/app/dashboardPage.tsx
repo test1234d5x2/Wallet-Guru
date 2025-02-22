@@ -42,19 +42,6 @@ export default function Dashboard() {
     });
 
     useEffect(() => {
-        async function getCategories() {
-            const result = await getExpenseCategories(token);
-            if (result) {
-                setCategories(result);
-            } else {
-                console.log("Error with getting expense categories list.")
-            }
-        }
-
-        getCategories();
-    }, [token, expenses]);
-
-    useEffect(() => {
         async function getExpenseList() {
             const result = await getExpenses(token);
             if (result) {
@@ -82,16 +69,29 @@ export default function Dashboard() {
         getIncomesList();
     }, [token]);
 
+    useEffect(() => {
+        async function getCategories() {
+            const result = await getExpenseCategories(token);
+            if (result) {
+                setCategories(result);
+            } else {
+                console.log("Error with getting expense categories list.")
+            }
+        }
+
+        getCategories();
+    }, [token, expenses]);
+
 
 
     const transactionItemsList = [
-        ...expenses.slice(0, 3).map((expense) => (
+        expenses.slice(0, 3).map((expense) => (
             <React.Fragment key={uuid.v4() as string}>
                 <ExpenseItem expense={expense} />
                 <View style={styles.dividerLine} />
             </React.Fragment>
         )),
-        ...incomes.slice(0, 3).map((income) => (
+        incomes.slice(0, 3).map((income) => (
             <React.Fragment key={uuid.v4() as string}>
                 <IncomeItem income={income} />
                 <View style={styles.dividerLine} />
@@ -100,7 +100,7 @@ export default function Dashboard() {
     ];
 
     const expenseCategoryItemsList = [
-        ...categories.slice(0, 3).map((category) => (
+        categories.slice(0, 3).map((category) => (
             <React.Fragment key={uuid.v4() as string}>
                 <ExpenseCategoryItem currentSpending={calculateMonthlyCategoryTotal(expenses, new Date(), category)} category={category} />
                 <View style={styles.dividerLine} />

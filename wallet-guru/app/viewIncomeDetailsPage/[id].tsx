@@ -31,19 +31,20 @@ async function getIncomeByID(token: string, id: string): Promise<Income> {
     };
 
     const data: any = await response.json();
-    return new Income(data.userID, data.title, data.amount, data.date, data.notes, data.id);
+    return new Income(data.userID, data.title, data.amount, new Date(data.date), data.notes, data.id);
 }
 
 
 
 export default function IncomeDetailsScreen() {
-    setPageTitle("");
     const { id } = useLocalSearchParams();
 
     const router = useRouter();
     const [token, setToken] = useState<string>('');
     const [email, setEmail] = useState<string>('');
     const [income, setIncome] = useState<Income>();
+
+    setPageTitle(!income ? "": income.title);
 
 
     getToken().then((data) => {
@@ -62,7 +63,6 @@ export default function IncomeDetailsScreen() {
         async function getIncome() {
             getIncomeByID(token, id as string).then((data) => {
                 setIncome(data);
-                setPageTitle(data.title)
             }).catch((error: Error) => {
                 Alert.alert("Income Not Found")
                 console.log(error.message);
@@ -71,7 +71,7 @@ export default function IncomeDetailsScreen() {
             })
         }
 
-        getIncome();
+        if (token) getIncome();
     }, [token]);
 
 

@@ -32,14 +32,13 @@ async function getExpenseByID(token: string, id: string): Promise<Expense> {
     };
 
     const data: any = await response.json();
-    return new Expense(data.userID, data.title, data.amount, data.date, data.notes, data.categoryID, data.receipt, data.id);
+    return new Expense(data.userID, data.title, data.amount, new Date(data.date), data.notes, data.categoryID, data.receipt, data.id);
 }
 
 
 
 
 export default function ExpenseDetailsScreen() {
-    setPageTitle("");
     const { id } = useLocalSearchParams();
 
     const router = useRouter();
@@ -47,24 +46,27 @@ export default function ExpenseDetailsScreen() {
     const [email, setEmail] = useState<string>('');
     const [expense, setExpense] = useState<Expense>();
 
+    setPageTitle(!expense ? "": expense.title)
 
-    getToken().then((data) => {
-        if (!data) {
-            Alert.alert('Error', 'You must be logged in to view your dashboard.');
-            clearRouterHistory(router);
-            router.replace("/loginPage");
-            return;
-        }
 
-        setToken(data.token);
-        setEmail(data.email);
-    });
+    useEffect(() => {
+        getToken().then((data) => {
+            if (!data) {
+                Alert.alert('Error', 'You must be logged in to view your dashboard.');
+                clearRouterHistory(router);
+                router.replace("/loginPage");
+                return;
+            }
+            setToken(data.token);
+            setEmail(data.email);
+        });
+    }, []);
+
 
     useEffect(() => {
         async function getExpense() {
             getExpenseByID(token, id as string).then((data) => {
                 setExpense(data);
-                setPageTitle(data.title)
             }).catch((error: Error) => {
                 Alert.alert("Expense Not Found")
                 console.log(error.message);
@@ -73,7 +75,7 @@ export default function ExpenseDetailsScreen() {
             })
         }
 
-        getExpense();
+        if (token) getExpense();
     }, [token]);
 
     const handleEdit = () => {

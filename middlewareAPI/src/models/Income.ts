@@ -38,6 +38,17 @@ class Income implements Transaction {
     getEditURL(): string {
         return "/editIncomePage/" + this.id;
     }
+
+    public toJSON() {
+        return {
+            id: this.id,
+            userID: this.userID,
+            title: this.title,
+            amount: this.amount,
+            date: this.date,
+            notes: this.notes,
+        }
+    }
 }
 
 export default Income;

@@ -183,5 +183,5 @@ export const findByID: RequestHandler = (req, res) => {
         return;
     }
 
-    res.status(200).json({ goal });
+    res.status(200).json(goal.toJSON());
 };

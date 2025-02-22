@@ -14,7 +14,6 @@ export default async function getGoals(token: string): Promise<Goal[]> {
             "Authorization": `Bearer ${token}`,
             "Content-Type": "application/json",
         },
-
     });
 
     if (!response.ok) {
@@ -23,6 +22,6 @@ export default async function getGoals(token: string): Promise<Goal[]> {
     }
 
     const data = await response.json();
-    const categories: Goal[] = data.categories.map((goal: any) => new Goal(goal.title, goal.userID, goal.description, goal.target, goal.status, goal.id));
-    return categories;
+    const goals: Goal[] = data.goals.map((goal: any) => new Goal(goal.title, goal.userID, goal.description, goal.target, goal.status, goal.id));
+    return goals;
 }
