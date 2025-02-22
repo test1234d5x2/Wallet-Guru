@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import ExpenseCategoryInputs from '@/components/formComponents/expenseCategoryInputs';
 import setPageTitle from '@/components/pageTitle/setPageTitle';
@@ -7,113 +7,116 @@ import { useRouter, useLocalSearchParams } from 'expo-router';
 import validateEmpty from '@/utils/validation/validateEmpty';
 import isNumeric from '@/utils/validation/validateNumeric';
 import clearRouterHistory from '@/utils/clearRouterHistory';
+import getToken from '@/utils/tokenAccess/getToken';
+import getExpenseCategoryByID from '@/utils/getExpenseCategoryByID';
+import updateExpenseCategory from '@/utils/updateExpenseCategory';
+
 
 export default function EditExpenseCategory() {
     setPageTitle("Edit Expense Category");
 
-    // const { id } = useLocalSearchParams();
+    const { id } = useLocalSearchParams();
+    const router = useRouter();
+    const [token, setToken] = useState<string>('');
+    const [email, setEmail] = useState<string>('');
+    const [categoryName, setCategoryName] = useState<string>('');
+    const [monthlyLimit, setMonthlyLimit] = useState<string>('');
+    const [error, setError] = useState<string>('');
 
-    // const registry = Registry.getInstance();
-    // const authService = registry.authService;
-    // const expenseCategoryService = registry.expenseCategoryService;
+    getToken().then((data) => {
+        if (!data) {
+            Alert.alert('Error', 'You must be logged in to edit an expense category.');
+            clearRouterHistory(router);
+            router.replace("/loginPage");
+            return;
+        }
 
-    // const authenticatedUser = authService.getAuthenticatedUser();
-    // const router = useRouter();
+        setToken(data.token);
+        setEmail(data.email);
+    });
 
-    // if (!authenticatedUser) {
-    //     Alert.alert("Error", "You must be logged in to edit a category.");
-    //     clearRouterHistory(router);
-    //     router.replace("/loginPage");
-    //     return;
-    // }
+    useEffect(() => {
+        async function getExpenseCategory() {
+            getExpenseCategoryByID(token, id as string).then((category) => {
+                setCategoryName(category.name);
+                setMonthlyLimit(category.monthlyBudget.toString());
+            }).catch((error: Error) => {
+                Alert.alert("Expense Category Not Found")
+                console.log(error.message);
+                clearRouterHistory(router);
+                router.replace("/expenseCategoriesOverviewPage");
+            })
+        }
 
-    // const category = expenseCategoryService
-    //     .getAllCategoriesByUser(authenticatedUser)
-    //     .find(cat => cat.getID() === id);
+        if (token) getExpenseCategory();
+    }, [token]);
 
-    // if (!category) {
-    //     Alert.alert("Error", "Category not found.");
-    //     clearRouterHistory(router);
-    //     router.replace("/expenseCategoriesOverviewPage");
-    //     return;
-    // }
+    const validateForm = () => {
+        if (!categoryName || !monthlyLimit) {
+            Alert.alert("Please fill in all the fields.");
+            setError("Please fill in all the fields.");
+            return false;
+        }
 
-    // const [categoryName, setCategoryName] = useState<string>(category.name);
-    // const [monthlyLimit, setMonthlyLimit] = useState<string>(category.monthlyBudget.toString());
-    // const [error, setError] = useState<string>('');
+        if (validateEmpty(categoryName)) {
+            Alert.alert("Empty Category Name Field", "The category name field must be filled properly.");
+            setError("The category name field must be filled properly.");
+            return false;
+        }
 
-    // const validateForm = () => {
-    //     if (!categoryName || !monthlyLimit) {
-    //         Alert.alert("Please fill in all the fields.");
-    //         setError("Please fill in all the fields.");
-    //         return false;
-    //     }
+        if (validateEmpty(monthlyLimit)) {
+            Alert.alert("Empty Monthly Limit Field", "The monthly limit field must be filled properly.");
+            setError("The monthly limit field must be filled properly.");
+            return false;
+        }
 
-    //     if (validateEmpty(categoryName)) {
-    //         Alert.alert("Empty Category Name Field", "The category name field must be filled properly.");
-    //         setError("The category name field must be filled properly.");
-    //         return false;
-    //     }
+        if (!isNumeric(monthlyLimit)) {
+            Alert.alert("Monthly Limit Field Not Numeric", "The monthly limit field must be a number.");
+            setError("The monthly limit field must be a number.");
+            return false;
+        }
 
-    //     if (validateEmpty(monthlyLimit)) {
-    //         Alert.alert("Empty Monthly Limit Field", "The monthly limit field must be filled properly.");
-    //         setError("The monthly limit field must be filled properly.");
-    //         return false;
-    //     }
+        // CHECK THAT THERE ARE NO NAMES FOR THE EXPENSE CATEGORY FOR THE USER VIA THE API.
 
-    //     if (!isNumeric(monthlyLimit)) {
-    //         Alert.alert("Monthly Limit Field Not Numeric", "The monthly limit field must be a number.");
-    //         setError("The monthly limit field must be a number.");
-    //         return false;
-    //     }
+        setError('');
+        return true;
+    };
 
-    //     if (expenseCategoryService.getAllCategoriesByUserAndName(authenticatedUser, categoryName).length > 0) {
-    //         Alert.alert("Category Already Exists", "This category already exists.");
-    //         setError("This category already exists.");
-    //         return false;
-    //     }
+    const handleEditCategory = () => {
+        if (validateForm()) {
+            updateExpenseCategory(token, id as string, categoryName, parseFloat(monthlyLimit)).then((complete) => {
+                if (complete) {
+                    Alert.alert('Success', `Category "${categoryName}" updated with a limit of £${monthlyLimit}`);
+                    clearRouterHistory(router);
+                    router.replace("/expenseCategoriesOverviewPage");
+                }
+            }).catch((error: Error) => {
+                Alert.alert("Failed", "Expense cateogry failed to update.");
+                console.log(error.message);
+            })
+        }
+    };
 
-    //     setError('');
-    //     return true;
-    // };
+    return (
+        <View style={styles.container}>
+            <TopBar />
 
-    // const handleEditCategory = () => {
-    //     if (validateForm()) {
-    //         try {
-    //             expenseCategoryService.updateExpenseCategory(
-    //                 id as string,
-    //                 categoryName,
-    //                 parseFloat(monthlyLimit)
-    //             );
-    //             Alert.alert('Success', `Category "${categoryName}" updated with a limit of £${monthlyLimit}`);
-    //             clearRouterHistory(router);
-    //             router.replace("/expenseCategoriesOverviewPage");
-    //         } catch (err: any) {
-    //             Alert.alert("Error", err.message);
-    //         }
-    //     }
-    // };
+            <View style={styles.expenseCategoryForm}>
+                <ExpenseCategoryInputs
+                    categoryName={categoryName}
+                    monthlyLimit={monthlyLimit}
+                    setCategoryName={setCategoryName}
+                    setMonthlyLimit={setMonthlyLimit}
+                />
+            </View>
 
-    // return (
-    //     <View style={styles.container}>
-    //         <TopBar />
+            {error === '' ? null : <Text style={styles.errorText}>{error}</Text>}
 
-    //         <View style={styles.expenseCategoryForm}>
-    //             <ExpenseCategoryInputs
-    //                 categoryName={categoryName}
-    //                 monthlyLimit={monthlyLimit}
-    //                 setCategoryName={setCategoryName}
-    //                 setMonthlyLimit={setMonthlyLimit}
-    //             />
-    //         </View>
-
-    //         {error === '' ? null : <Text style={styles.errorText}>{error}</Text>}
-
-    //         <TouchableOpacity style={styles.editButton} onPress={handleEditCategory}>
-    //             <Text style={styles.editButtonText}>Edit Category</Text>
-    //         </TouchableOpacity>
-    //     </View>
-    // );
+            <TouchableOpacity style={styles.editButton} onPress={handleEditCategory}>
+                <Text style={styles.editButtonText}>Edit Category</Text>
+            </TouchableOpacity>
+        </View>
+    );
 }
 
 const styles = StyleSheet.create({

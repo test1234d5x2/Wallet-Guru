@@ -51,8 +51,8 @@ export const update: RequestHandler = (req, res) => {
         return;
     }
 
-    if (!id || !title || amount === undefined || !date || !notes) {
-        res.status(400).json({ error: "Missing required fields: id, title, amount, date, notes" });
+    if (!id || !title || amount === undefined || !date) {
+        res.status(400).json({ error: "Missing required fields: id, title, amount, date" });
         return;
     }
 
