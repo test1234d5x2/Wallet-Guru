@@ -12,6 +12,10 @@ import getExpenseCategoryByID from '@/utils/apiCalls/getExpenseCategoryByID';
 import updateExpenseCategory from '@/utils/apiCalls/updateExpenseCategory';
 import ExpenseCategory from '@/models/core/ExpenseCategory';
 import getExpenseCategories from '@/utils/apiCalls/getExpenseCategories';
+import Frequency from '@/enums/Frequency';
+import getCategoryNamesList from '@/utils/getCategoryNamesList';
+import isValidFrequency from '@/utils/validation/isValidFrequency';
+import isInteger from '@/utils/validation/validateInteger';
 
 
 export default function EditExpenseCategory() {
@@ -24,6 +28,9 @@ export default function EditExpenseCategory() {
     const [categories, setCategories] = useState<ExpenseCategory[]>([]);
     const [categoryName, setCategoryName] = useState<string>('');
     const [monthlyLimit, setMonthlyLimit] = useState<string>('');
+    const [frequency, setFrequency] = useState<Frequency>(Frequency.Daily);
+    const [interval, setFrequencyInterval] = useState<string>('');
+    const [startDate, setStartDate] = useState<Date | null>(null);
     const [error, setError] = useState<string>('');
 
     getToken().then((data) => {
@@ -72,7 +79,7 @@ export default function EditExpenseCategory() {
         }
     }, [token]);
 
-    const validateForm = () => {
+    const validateForm = (): boolean => {
         if (!categoryName || !monthlyLimit) {
             Alert.alert("Please fill in all the fields.");
             setError("Please fill in all the fields.");
@@ -97,9 +104,27 @@ export default function EditExpenseCategory() {
             return false;
         }
 
-        if (categories.find((cat) => cat.name === categoryName && cat.getID() !== id)) {
-            Alert.alert("Category Already Exists", "This category already exists. Please choose a different name.");
-            setError("This category already exists. Please choose a different name.");
+        if (getCategoryNamesList(categories).find((cName => cName === categoryName))) {
+            Alert.alert("Category Already Exists", "This category already exists.");
+            setError("This category already exists.");
+            return false;
+        }
+
+
+        if (!isValidFrequency(frequency)) {
+            Alert.alert("Frequency Field Invalid", "Please select a valid frequency.");
+            setError("Please select a valid frequency.");
+            return false;
+        }
+
+        if (!isInteger(interval)) {
+            Alert.alert("Interval Field Invalid", "Interval must be a whole number greater than 0.");
+            setError("Please select a date.");
+            return false;
+        }
+        else if (parseInt(interval) <= 0) {
+            Alert.alert("Interval Field Invalid", "Interval must be a whole number greater than 0.");
+            setError("Please select a date.");
             return false;
         }
 
@@ -130,8 +155,14 @@ export default function EditExpenseCategory() {
                 <ExpenseCategoryInputs
                     categoryName={categoryName}
                     monthlyLimit={monthlyLimit}
+                    frequency={frequency}
+                    interval={interval}
+                    startDate={startDate}
                     setCategoryName={setCategoryName}
                     setMonthlyLimit={setMonthlyLimit}
+                    setFrequency={setFrequency}
+                    setFrequencyInterval={setFrequencyInterval}
+                    setStartDate={setStartDate}
                 />
             </View>
 

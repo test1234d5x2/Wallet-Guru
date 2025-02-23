@@ -5,14 +5,14 @@ class ExpenseCategory {
     private id: string;
     private userID: string;
     name: string;
-    budgetAmount: number;
+    monthlyBudget: number;
     recurrenceRule?: BasicRecurrenceRule;
 
-    constructor(userID: string, name: string, budgetAmount: number, recurrenceRule?: BasicRecurrenceRule, id?: string) {
+    constructor(userID: string, name: string, monthlyBudget: number, recurrenceRule?: BasicRecurrenceRule, id?: string) {
         this.id = id || uuid.v4();
         this.userID = userID;
         this.name = name;
-        this.budgetAmount = budgetAmount;
+        this.monthlyBudget = monthlyBudget;
         this.recurrenceRule = recurrenceRule;
     }
 
@@ -25,7 +25,7 @@ class ExpenseCategory {
     }
 
     calculateBudgetUsed(currentSpending: number): number {
-        return currentSpending / this.budgetAmount;
+        return currentSpending / this.monthlyBudget;
     }
 
     shouldResetBudget(): boolean {
@@ -46,7 +46,7 @@ class ExpenseCategory {
             id: this.id,
             userID: this.userID,
             name: this.name,
-            budgetAmount: this.budgetAmount,
+            monthlyBudget: this.monthlyBudget,
             recurrenceRule: this.recurrenceRule,
         };
     }

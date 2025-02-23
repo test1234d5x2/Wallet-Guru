@@ -11,7 +11,9 @@ import getToken from '@/utils/tokenAccess/getToken';
 import ExpenseCategory from '@/models/core/ExpenseCategory';
 import getExpenseCategories from '@/utils/apiCalls/getExpenseCategories';
 import getCategoryNamesList from '@/utils/getCategoryNamesList';
-
+import Frequency from '@/enums/Frequency';
+import isValidFrequency from '@/utils/validation/isValidFrequency';
+import isInteger from '@/utils/validation/validateInteger';
 
 
 
@@ -52,6 +54,9 @@ export default function AddExpenseCategory() {
     const [categories, setCategories] = useState<ExpenseCategory[]>([]);
     const [categoryName, setCategoryName] = useState<string>('');
     const [monthlyLimit, setMonthlyLimit] = useState<string>('');
+    const [frequency, setFrequency] = useState<Frequency>(Frequency.Daily);
+    const [interval, setFrequencyInterval] = useState<string>('');
+    const [startDate, setStartDate] = useState<Date | null>(null);
     const [error, setError] = useState<string>('');
     const router = useRouter();
 
@@ -81,7 +86,7 @@ export default function AddExpenseCategory() {
         getCategories();
     }, [token]);
 
-    const validateForm = () => {
+    const validateForm = (): boolean => {
         if (!categoryName || !monthlyLimit) {
             Alert.alert("Please fill in all the fields.");
             setError("Please fill in all the fields.");
@@ -112,6 +117,24 @@ export default function AddExpenseCategory() {
             return false;
         }
 
+
+        if (!isValidFrequency(frequency)) {
+            Alert.alert("Frequency Field Invalid", "Please select a valid frequency.");
+            setError("Please select a valid frequency.");
+            return false;
+        }
+
+        if (!isInteger(interval)) {
+            Alert.alert("Interval Field Invalid", "Interval must be a whole number greater than 0.");
+            setError("Please select a date.");
+            return false;
+        }
+        else if (parseInt(interval) <= 0) {
+            Alert.alert("Interval Field Invalid", "Interval must be a whole number greater than 0.");
+            setError("Please select a date.");
+            return false;
+        }
+
         setError('');
         return true;
     };
@@ -139,8 +162,14 @@ export default function AddExpenseCategory() {
                 <ExpenseCategoryInputs
                     categoryName={categoryName}
                     monthlyLimit={monthlyLimit}
+                    frequency={frequency}
+                    interval={interval}
+                    startDate={startDate}
                     setCategoryName={setCategoryName}
                     setMonthlyLimit={setMonthlyLimit}
+                    setFrequency={setFrequency}
+                    setFrequencyInterval={setFrequencyInterval}
+                    setStartDate={setStartDate}
                 />
             </View>
 
