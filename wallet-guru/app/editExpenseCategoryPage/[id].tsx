@@ -97,7 +97,7 @@ export default function EditExpenseCategory() {
             return false;
         }
 
-        if (categories.find((cat) => cat.name === categoryName)) {
+        if (categories.find((cat) => cat.name === categoryName && cat.getID() !== id)) {
             Alert.alert("Category Already Exists", "This category already exists. Please choose a different name.");
             setError("This category already exists. Please choose a different name.");
             return false;

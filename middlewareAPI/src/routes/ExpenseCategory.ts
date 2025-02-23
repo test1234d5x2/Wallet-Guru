@@ -8,6 +8,6 @@ router.post("/", authenticateJWT, create);
 router.put("/:id", authenticateJWT, update);
 router.delete("/:id", authenticateJWT, remove);
 router.get("/", authenticateJWT, listByUser);
-router.get("/view/:id", authenticateJWT, findByID)
+router.get("/:id", authenticateJWT, findByID)
 
 export default router;

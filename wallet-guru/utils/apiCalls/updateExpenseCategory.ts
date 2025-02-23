@@ -4,7 +4,7 @@ export default async function updateExpenseCategory(token: string, id: string, n
         throw new Error("Domain could not be found.");
     };
 
-    const UPDATE_EXPENSE_CATEGORY_URL = `http://${API_DOMAIN}/api/expenses-categories/${id}`;
+    const UPDATE_EXPENSE_CATEGORY_URL = `http://${API_DOMAIN}/api/expense-categories/${id}`;
 
     const response = await fetch(UPDATE_EXPENSE_CATEGORY_URL, {
         method: "PUT",
