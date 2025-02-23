@@ -7,7 +7,13 @@ export const authenticateJWT = (req: Request, res: Response, next: NextFunction)
     if (authHeader) {
         // Expected header format: "Bearer <token>"
         const token = authHeader.split(" ")[1];
-        const jwtSecret = process.env.JWT_SECRET || "your_default_secret";
+        const jwtSecret = process.env.JWT_SECRET;
+
+        if (!jwtSecret) {
+            res.status(500).json({error: "Unexpected Server Error. Please try again later."});
+            return;
+        }
+
         
         jwt.verify(token, jwtSecret, (err, decoded) => {
             if (err) {

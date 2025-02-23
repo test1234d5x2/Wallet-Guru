@@ -63,10 +63,10 @@ export default function Login() {
             return;
         }
 
-        await login(email, password).then((data) => {
+        await login(email, password).then( async (data) => {
             const token = data.token;
 
-            saveToken(token, email).then((data2) => {
+            await saveToken(token, email).then((data2) => {
                 setError("");
                 clearRouterHistory(router);
                 router.replace("/dashboardPage");

@@ -18,7 +18,7 @@ class AuthService {
 
         const paylod = { userID: user.getUserID() };
 
-        const token = jwt.sign(paylod, this.JWTSecret, { expiresIn: "12h" });
+        const token = jwt.sign(paylod, this.JWTSecret, { expiresIn: "12h", algorithm: "HS512"});
         return token;
     }
 
