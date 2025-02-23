@@ -1,17 +1,17 @@
-import RecurrencePeriods from "@/enums/RecurrencePeriods";
+import Frequency from "@/enums/Frequency";
 
 export default abstract class RecurrenceRule {
-    frequency: RecurrencePeriods;
+    frequency: Frequency;
     interval: number;
     startDate: Date;
     nextTriggerDate: Date;
     endDate?: Date;
 
-    constructor(frequency: RecurrencePeriods, interval: number, startDate: Date, nextTriggerDate: Date, endDate?: Date) {
+    constructor(frequency: Frequency, interval: number, startDate: Date, endDate?: Date) {
         this.frequency = frequency;
         this.interval = interval;
         this.startDate = startDate;
-        this.nextTriggerDate = nextTriggerDate;
+        this.nextTriggerDate = startDate;
         this.endDate = endDate;
     }
 
@@ -23,16 +23,16 @@ export default abstract class RecurrenceRule {
     public computeNextTriggerDate(): Date {
         let nextDate = new Date(this.nextTriggerDate);
         switch (this.frequency) {
-            case RecurrencePeriods.Daily:
+            case Frequency.Daily:
                 nextDate.setDate(nextDate.getDate() + this.interval);
                 break;
-            case RecurrencePeriods.Weekly:
+            case Frequency.Weekly:
                 nextDate.setDate(nextDate.getDate() + this.interval * 7);
                 break;
-            case RecurrencePeriods.Monthly:
+            case Frequency.Monthly:
                 nextDate.setMonth(nextDate.getMonth() + this.interval);
                 break;
-            case RecurrencePeriods.Yearly:
+            case Frequency.Yearly:
                 nextDate.setFullYear(nextDate.getFullYear() + this.interval);
                 break;
             default:
@@ -42,6 +42,9 @@ export default abstract class RecurrenceRule {
         if (this.endDate && nextDate > this.endDate) {
             throw new Error("Next trigger date exceeds end date");
         }
+
+        this.nextTriggerDate = nextDate;
+
         return nextDate;
     }
 

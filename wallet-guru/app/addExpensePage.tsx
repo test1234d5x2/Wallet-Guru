@@ -62,7 +62,7 @@ export default function AddExpense() {
 
     getToken().then((data) => {
         if (!data) {
-            Alert.alert('Error', 'You must be logged in to view your dashboard.');
+            Alert.alert('Error', 'You must be logged in to add an expense.');
             clearRouterHistory(router);
             router.replace("/loginPage");
             return;

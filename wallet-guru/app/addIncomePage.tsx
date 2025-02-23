@@ -56,7 +56,7 @@ export default function AddIncome() {
 
     getToken().then((data) => {
         if (!data) {
-            Alert.alert('Error', 'You must be logged in to view your dashboard.');
+            Alert.alert('Error', 'You must be logged in to add an income.');
             clearRouterHistory(router);
             router.replace("/loginPage");
             return;

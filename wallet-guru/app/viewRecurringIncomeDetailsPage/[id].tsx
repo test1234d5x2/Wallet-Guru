@@ -8,11 +8,10 @@ import Income from '@/models/core/Income';
 import getToken from '@/utils/tokenAccess/getToken';
 import getIncomeByID from '@/utils/apiCalls/getIncomeByID';
 import deleteIncome from '@/utils/apiCalls/deleteIncome';
-
-
-
-
-
+import RecurringIncome from '@/models/recurrenceModels/RecurringIncome';
+import BasicRecurrenceRule from '@/models/recurrenceModels/BasicRecurrenceRule';
+import Frequency from '@/enums/Frequency';
+import convertFrequencyToTextDisplay from '@/utils/convertFrequencyToTextDisplay';
 
 
 export default function IncomeDetailsScreen() {
@@ -21,14 +20,14 @@ export default function IncomeDetailsScreen() {
     const router = useRouter();
     const [token, setToken] = useState<string>('');
     const [email, setEmail] = useState<string>('');
-    const [income, setIncome] = useState<Income>();
+    const [recurringIncome, setRecurringIncome] = useState<RecurringIncome>();
 
-    setPageTitle(!income ? "" : income.title);
+    setPageTitle(!recurringIncome ? "" : recurringIncome.title);
 
 
     getToken().then((data) => {
         if (!data) {
-            Alert.alert('Error', 'You must be logged in to view your dashboard.');
+            Alert.alert('Error', 'You must be logged in to view a recurring income.');
             clearRouterHistory(router);
             router.replace("/loginPage");
             return;
@@ -38,46 +37,56 @@ export default function IncomeDetailsScreen() {
         setEmail(data.email);
     });
 
-    useEffect(() => {
-        async function getIncome() {
-            getIncomeByID(token, id as string).then((data) => {
-                setIncome(data);
-            }).catch((error: Error) => {
-                Alert.alert("Income Not Found")
-                console.log(error.message);
-                clearRouterHistory(router);
-                router.replace("/listTransactionsPage");
-            })
-        }
 
-        if (token) getIncome();
-    }, [token]);
+    useEffect(() => {
+        const today = new Date();
+        const endDate = new Date(today.setDate(today.getDate() + 5));
+
+        setRecurringIncome(
+            new RecurringIncome("", "Title", 25, new Date(), "Some Notes", new BasicRecurrenceRule(Frequency.Daily, 4, new Date(), endDate))
+        )
+    }, [])
+
+    // useEffect(() => {
+    //     async function getIncome() {
+    //         getIncomeByID(token, id as string).then((data) => {
+    //             setIncome(data);
+    //         }).catch((error: Error) => {
+    //             Alert.alert("Income Not Found")
+    //             console.log(error.message);
+    //             clearRouterHistory(router);
+    //             router.replace("/listTransactionsPage");
+    //         })
+    //     }
+
+    //     if (token) getIncome();
+    // }, [token]);
 
 
     const handleEdit = () => {
-        if (!income) {
+        if (!recurringIncome) {
             clearRouterHistory(router);
             router.navigate("/loginPage");
             return;
         }
-        router.navigate(income.getEditURL());
+        router.navigate(recurringIncome.getEditURL());
     }
 
     const handleDelete = () => {
-        Alert.alert('Delete Income', 'Are you sure you want to delete this income source?', [
+        Alert.alert('Delete Recurring Income', 'Are you sure you want to delete this recurring income source?', [
             { text: 'Cancel', style: 'cancel' },
             {
                 text: 'Delete', style: 'destructive', onPress: () => {
-                    deleteIncome(token, id as string).then((complete) => {
-                        if (complete) {
-                            Alert.alert('Success', 'Income deleted successfully!');
-                            clearRouterHistory(router);
-                            router.replace("/listTransactionsPage");
-                        }
-                    }).catch((err: Error) => {
-                        Alert.alert("Failed", "Failed to delete income.");
-                        console.log(err.message);
-                    })
+                    // deleteIncome(token, id as string).then((complete) => {
+                    //     if (complete) {
+                    //         Alert.alert('Success', 'Income deleted successfully!');
+                    //         clearRouterHistory(router);
+                    //         router.replace("/listTransactionsPage");
+                    //     }
+                    // }).catch((err: Error) => {
+                    //     Alert.alert("Failed", "Failed to delete income.");
+                    //     console.log(err.message);
+                    // })
                 }
             },
         ]);
@@ -86,12 +95,16 @@ export default function IncomeDetailsScreen() {
     return (
         <View style={styles.mainContainer}>
             <TopBar />
-            {!income ? "" : <View style={styles.container}>
-                <Text style={styles.detail}>Amount: £{income.amount.toFixed(2)}</Text>
-                <Text style={styles.detail}>Date: {income.date.toDateString()}</Text>
+            {!recurringIncome ? "" : <View style={styles.container}>
+                <Text style={styles.detail}>Amount: £{recurringIncome.amount.toFixed(2)}</Text>
+                <Text style={styles.detail}>Date: {recurringIncome.date.toDateString()}</Text>
+                <Text style={styles.detail}>Start Date: {recurringIncome.recurrenceRule.startDate.toDateString()}</Text>
+                <Text style={styles.detail}>Next Transaction Date: {recurringIncome.recurrenceRule.nextTriggerDate.toDateString()}</Text>
+                {!recurringIncome.recurrenceRule.endDate ? "" : <Text style={styles.detail}>End Date: {recurringIncome.recurrenceRule.endDate.toDateString()}</Text>}
+                <Text style={styles.detail}>Frequency: {`${recurringIncome.recurrenceRule.interval} ${convertFrequencyToTextDisplay(recurringIncome.recurrenceRule.frequency)}${recurringIncome.recurrenceRule.interval !== 1 ? "s" : ""}`}</Text>
                 <View>
                     <Text style={styles.notesTitle}>Notes:</Text>
-                    <Text style={styles.notes}>{income.notes}</Text>
+                    <Text style={styles.notes}>{recurringIncome.notes}</Text>
                 </View>
 
                 <View style={styles.buttonContainer}>

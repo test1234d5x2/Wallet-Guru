@@ -1,14 +1,14 @@
 import uuid from 'react-native-uuid';
-import RecurringBudget from '../recurrenceModels/RecurringBudget';
+import BasicRecurrenceRule from '../recurrenceModels/BasicRecurrenceRule';
 
 class ExpenseCategory {
     private id: string;
     private userID: string;
     name: string;
     budgetAmount: number;
-    recurrenceRule?: RecurringBudget;
+    recurrenceRule?: BasicRecurrenceRule;
 
-    constructor(userID: string, name: string, budgetAmount: number, recurrenceRule?: RecurringBudget, id?: string) {
+    constructor(userID: string, name: string, budgetAmount: number, recurrenceRule?: BasicRecurrenceRule, id?: string) {
         this.id = id || uuid.v4();
         this.userID = userID;
         this.name = name;

@@ -27,7 +27,7 @@ export default function ExpenseDetailsScreen() {
 
     getToken().then((data) => {
         if (!data) {
-            Alert.alert('Error', 'You must be logged in to view your dashboard.');
+            Alert.alert('Error', 'You must be logged in to view an expense.');
             clearRouterHistory(router);
             router.replace("/loginPage");
             return;
@@ -77,7 +77,7 @@ export default function ExpenseDetailsScreen() {
             router.navigate("/loginPage");
             return;
         }
-        router.navigate("/editExpensePage/" + expense.getID());
+        router.navigate(expense.getEditURL());
     };
 
     const handleDelete = () => {

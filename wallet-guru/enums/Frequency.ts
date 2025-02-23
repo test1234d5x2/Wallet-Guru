@@ -1,8 +1,8 @@
-enum RecurrencePeriods {
+enum Frequency {
     Daily = "Daily",
     Weekly = 'Weekly',
     Monthly = 'Monthly',
     Yearly = 'Yearly'
 }
 
-export default RecurrencePeriods;
+export default Frequency;

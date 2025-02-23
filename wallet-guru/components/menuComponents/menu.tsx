@@ -14,6 +14,10 @@ export default function MainMenu() {
         {title: 'Expense Category Overview', link: "/expenseCategoriesOverviewPage"},
         {title: 'Dashboard', link: "/dashboardPage"},
         {title: 'Spending Analytics', link: "/analyticsPage"},
+        {title: "Add Recurrent Expense", link: "/addRecurringExpensePage"},
+        {title: "Add Recurrent Income", link: "/addRecurringIncomePage"},
+        {title: "NEEDS REMOVING: View Recurrent Expense", link: "/viewRecurringExpenseDetailsPage/jhbjhbhjbjhbjh"},
+        {title: "NEEDS REMOVING: View Recurrent Income", link: "/viewRecurringIncomeDetailsPage/jhbjhbhjbjhbjh"},
     ]
 
     return (
