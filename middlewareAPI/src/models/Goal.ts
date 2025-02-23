@@ -28,9 +28,8 @@ export default class Goal {
         return this.userID;
     }
 
-    updateCurrent(figure: number): boolean {
+    updateCurrent(figure: number): void {
         this.current += figure;
-        return true;
     }
 
     calculateProgress(): number {

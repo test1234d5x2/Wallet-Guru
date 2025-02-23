@@ -24,6 +24,15 @@ class ExpenseCategory {
     calculateBudgetUsed(currentMonthlySpending: number): number {
         return currentMonthlySpending / this.monthlyBudget;
     }
+
+    public toJSON() {
+        return {
+            id: this.id,
+            userID: this.userID,
+            name: this.name,
+            monthlyBudget: this.monthlyBudget,
+        }
+    }
 }
 
 export default ExpenseCategory;

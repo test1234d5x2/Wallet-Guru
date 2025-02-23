@@ -30,21 +30,25 @@ class Expense implements Transaction {
         return this.userID;
     }
 
-    getCategoryID(): string {
-        return this.categoryID;
-    }
-
-    deleteTransaction(): boolean {
-        console.log("Delete Expense");
-        return false;
-    }
-
     getPageURL(): string {
         return "/viewExpenseDetailsPage/" + this.id;
     }
 
     getEditURL(): string {
         return "/editExpensePage/" + this.id;
+    }
+
+    public toJSON() {
+        return {
+            id: this.id,
+            userID: this.userID,
+            title: this.title,
+            amount: this.amount,
+            date: this.date,
+            notes: this.notes,
+            categoryID: this.categoryID,
+            receipt: this.receipt,
+        }
     }
 }
 

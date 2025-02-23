@@ -16,18 +16,18 @@ class User {
         this.status = UserStatus.PENDING
     }
 
-    public getUserID(): string {return this.id}
+    public getUserID(): string { return this.id }
 
-    public getEmail(): string {return this.username}
+    public getEmail(): string { return this.username }
 
-    public getPassword(): string {return this.password}
+    public getPassword(): string { return this.password }
 
-    public getDateJoined(): Date {return this.dateJoined;}
+    public getDateJoined(): Date { return this.dateJoined; }
 
-    public setUserStatus(newStatus: UserStatus): void {this.status = newStatus;}
+    public setUserStatus(newStatus: UserStatus): void { this.status = newStatus; }
 
-    public getUserStatus(): UserStatus {return this.status;}
-    
+    public getUserStatus(): UserStatus { return this.status; }
+
 }
 
 export default User;

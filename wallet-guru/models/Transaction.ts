@@ -3,7 +3,6 @@ interface Transaction {
     date: Date
     amount: number
     notes: string
-    deleteTransaction(): boolean
     getPageURL(): string
     getEditURL(): string
 }

@@ -26,11 +26,6 @@ class Income implements Transaction {
         return this.userID;
     }
 
-    deleteTransaction(): boolean {
-        console.log("Delete Income");
-        return false;
-    }
-
     getPageURL(): string {
         return "/viewIncomeDetailsPage/" + this.id;
     }
