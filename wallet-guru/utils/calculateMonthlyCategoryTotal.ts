@@ -1,5 +1,5 @@
-import Expense from "@/models/Expense";
-import ExpenseCategory from "@/models/ExpenseCategory";
+import Expense from "@/models/core/Expense";
+import ExpenseCategory from "@/models/core/ExpenseCategory";
 import filterTransactionByMonth from "./filterTransactionByMonth";
 import filterExpensesByCategory from "./filterExpensesByCategory";
 

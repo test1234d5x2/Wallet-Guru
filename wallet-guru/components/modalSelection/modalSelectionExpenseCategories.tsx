@@ -1,4 +1,4 @@
-import ExpenseCategory from '@/models/ExpenseCategory';
+import ExpenseCategory from '@/models/core/ExpenseCategory';
 import React, { useState } from 'react';
 import { View, Text, FlatList, TouchableOpacity, StyleSheet, Modal, Pressable, SafeAreaView, Alert } from 'react-native';
 

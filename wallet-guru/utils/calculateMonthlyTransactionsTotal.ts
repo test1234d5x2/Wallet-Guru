@@ -1,4 +1,4 @@
-import Transaction from "@/models/Transaction";
+import Transaction from "@/models/core/Transaction";
 import filterTransactionByMonth from "./filterTransactionByMonth";
 
 

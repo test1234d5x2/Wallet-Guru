@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, Alert } from 'react-native';
 import * as Progress from 'react-native-progress';
-import ExpenseCategory from '@/models/ExpenseCategory';
+import ExpenseCategory from '@/models/core/ExpenseCategory';
 import { useRouter } from 'expo-router';
 import ListItemDeleteButton from './listItemDeleteButton';
 import ListItemEditButton from './listItemEditButton';

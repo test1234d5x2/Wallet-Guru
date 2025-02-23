@@ -1,4 +1,4 @@
-import Income from "@/models/Income";
+import Income from "@/models/core/Income";
 
 export default async function getIncomeByID(token: string, id: string): Promise<Income> {
     const API_DOMAIN = process.env.EXPO_PUBLIC_BLOCKCHAIN_MIDDLEWARE_API_IP_ADDRESS;

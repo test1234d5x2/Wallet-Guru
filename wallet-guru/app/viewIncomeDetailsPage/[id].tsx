@@ -4,7 +4,7 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import clearRouterHistory from '@/utils/clearRouterHistory';
-import Income from '@/models/Income';
+import Income from '@/models/core/Income';
 import getToken from '@/utils/tokenAccess/getToken';
 import getIncomeByID from '@/utils/apiCalls/getIncomeByID';
 import deleteIncome from '@/utils/apiCalls/deleteIncome';

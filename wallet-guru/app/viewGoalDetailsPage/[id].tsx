@@ -5,7 +5,7 @@ import setPageTitle from '@/components/pageTitle/setPageTitle';
 import TopBar from '@/components/topBars/topBar';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import clearRouterHistory from '@/utils/clearRouterHistory';
-import Goal from '@/models/Goal';
+import Goal from '@/models/core/Goal';
 import getToken from '@/utils/tokenAccess/getToken';
 import getGoalByID from '@/utils/apiCalls/getGoalByID';
 import deleteGoal from '@/utils/apiCalls/deleteGoal';

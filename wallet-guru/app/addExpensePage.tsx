@@ -7,7 +7,7 @@ import validateEmpty from '@/utils/validation/validateEmpty';
 import isNumeric from '@/utils/validation/validateNumeric';
 import { useRouter } from 'expo-router';
 import { isTodayOrBefore, isValidDate } from '@/utils/validation/validateDate';
-import ExpenseCategory from '@/models/ExpenseCategory';
+import ExpenseCategory from '@/models/core/ExpenseCategory';
 import clearRouterHistory from '@/utils/clearRouterHistory';
 import getToken from '@/utils/tokenAccess/getToken';
 import getExpenseCategories from '@/utils/apiCalls/getExpenseCategories';

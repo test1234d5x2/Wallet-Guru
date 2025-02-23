@@ -3,7 +3,7 @@ import { View, StyleSheet, ScrollView } from 'react-native';
 import StandardInputField from './inputFields/standardInputField';
 import NumericInputField from './inputFields/numericInputField';
 import DateInputField from './inputFields/dateInputField';
-import ExpenseCategory from '@/models/ExpenseCategory';
+import ExpenseCategory from '@/models/core/ExpenseCategory';
 import ModalSelectionExpenseCategories from '../modalSelection/modalSelectionExpenseCategories';
 
 

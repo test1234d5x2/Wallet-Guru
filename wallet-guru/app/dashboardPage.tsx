@@ -9,9 +9,9 @@ import ExpenseItem from '@/components/listItems/expenseItem';
 import IncomeItem from '@/components/listItems/incomeItem';
 import clearRouterHistory from '@/utils/clearRouterHistory';
 import getToken from '@/utils/tokenAccess/getToken';
-import ExpenseCategory from '@/models/ExpenseCategory';
-import Expense from '@/models/Expense';
-import Income from '@/models/Income'
+import ExpenseCategory from '@/models/core/ExpenseCategory';
+import Expense from '@/models/core/Expense';
+import Income from '@/models/core/Income'
 import calculateMonthlyTransactionsTotal from '@/utils/calculateMonthlyTransactionsTotal';
 import getExpenses from '@/utils/apiCalls/getExpenses';
 import getIncomes from '@/utils/apiCalls/getIncomes';

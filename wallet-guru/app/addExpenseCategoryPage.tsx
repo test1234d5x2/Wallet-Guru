@@ -8,7 +8,7 @@ import isNumeric from '@/utils/validation/validateNumeric';
 import { useRouter } from 'expo-router';
 import clearRouterHistory from '@/utils/clearRouterHistory';
 import getToken from '@/utils/tokenAccess/getToken';
-import ExpenseCategory from '@/models/ExpenseCategory';
+import ExpenseCategory from '@/models/core/ExpenseCategory';
 import getExpenseCategories from '@/utils/apiCalls/getExpenseCategories';
 import getCategoryNamesList from '@/utils/getCategoryNamesList';
 

@@ -1,4 +1,4 @@
-import Goal from "@/models/Goal";
+import Goal from "@/models/core/Goal";
 import { View, Text, StyleSheet, Alert } from 'react-native';
 import * as Progress from 'react-native-progress';
 import { useRouter } from "expo-router";

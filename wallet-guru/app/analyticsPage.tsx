@@ -9,10 +9,10 @@ import getMonthName from '@/utils/getMonthName';
 import ModalSelectionDates from '@/components/modalSelection/modalSelectionDates';
 import monthsPassedSinceJoinDate from '@/utils/monthsPassedSinceJoinDate';
 import getToken from '@/utils/tokenAccess/getToken';
-import Expense from '@/models/Expense';
-import Income from '@/models/Income';
+import Expense from '@/models/core/Expense';
+import Income from '@/models/core/Income';
 import getCategoryDistribution from '@/utils/analytics/getCategoryDistribution';
-import ExpenseCategory from '@/models/ExpenseCategory';
+import ExpenseCategory from '@/models/core/ExpenseCategory';
 import getIncomeVsExpenses from '@/utils/analytics/getIncomeVsExpenses';
 import getSavingsTrends from '@/utils/analytics/getSavingsTrends';
 

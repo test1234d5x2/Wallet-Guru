@@ -1,4 +1,4 @@
-import Transaction from "@/models/Transaction";
+import Transaction from "@/models/core/Transaction";
 
 export default function filterTransactionsByDate<T extends Transaction>(txList: T[], startDate: Date, endDate: Date): T[] {
     return txList.filter(transaction => {
