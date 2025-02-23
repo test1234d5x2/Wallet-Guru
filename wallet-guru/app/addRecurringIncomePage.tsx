@@ -185,7 +185,7 @@ export default function AddRecurrentIncome() {
             {error ? <View style={styles.centeredTextContainer}><Text style={styles.errorText}>{error}</Text></View> : null}
 
             <TouchableOpacity style={styles.addButton} onPress={handleAddRecurrentIncome}>
-                <Text style={styles.addButtonText}>Add Income</Text>
+                <Text style={styles.addButtonText}>Add Recurrent Income</Text>
             </TouchableOpacity>
         </ScrollView>
     );
