@@ -8,6 +8,8 @@ import Expense from '@/models/Expense';
 import getToken from '@/utils/tokenAccess/getToken';
 import getExpenseByID from '@/utils/apiCalls/getExpensesByID';
 import deleteExpense from '@/utils/apiCalls/deleteExpense';
+import ExpenseCategory from '@/models/ExpenseCategory';
+import getExpenseCategories from '@/utils/apiCalls/getExpenseCategories';
 
 
 
@@ -18,28 +20,27 @@ export default function ExpenseDetailsScreen() {
     const [token, setToken] = useState<string>('');
     const [email, setEmail] = useState<string>('');
     const [expense, setExpense] = useState<Expense>();
+    const [category, setCategory] = useState<ExpenseCategory>();
 
     setPageTitle(!expense ? "" : expense.title)
 
 
-    useEffect(() => {
-        getToken().then((data) => {
-            if (!data) {
-                Alert.alert('Error', 'You must be logged in to view your dashboard.');
-                clearRouterHistory(router);
-                router.replace("/loginPage");
-                return;
-            }
-            setToken(data.token);
-            setEmail(data.email);
-        });
-    }, []);
+    getToken().then((data) => {
+        if (!data) {
+            Alert.alert('Error', 'You must be logged in to view your dashboard.');
+            clearRouterHistory(router);
+            router.replace("/loginPage");
+            return;
+        }
+        setToken(data.token);
+        setEmail(data.email);
+    });
 
 
     useEffect(() => {
         async function getExpense() {
-            getExpenseByID(token, id as string).then((data) => {
-                setExpense(data);
+            getExpenseByID(token, id as string).then((expense) => {
+                setExpense(expense);
             }).catch((error: Error) => {
                 Alert.alert("Expense Not Found")
                 console.log(error.message);
@@ -50,6 +51,25 @@ export default function ExpenseDetailsScreen() {
 
         if (token) getExpense();
     }, [token]);
+
+
+    useEffect(() => {
+        async function getExpenseCategory() {
+            if (expense) {
+                getExpenseCategories(token).then((categories) => {
+                    setCategory(categories.find((cat) => cat.getID() === expense.categoryID));
+                }).catch((error: Error) => {
+                    Alert.alert("Error", "Could not load the category name.")
+                    console.log(error.message);
+                    clearRouterHistory(router);
+                    router.replace("/listTransactionsPage");
+                })
+            }
+        }
+
+        if (token && expense) getExpenseCategory();
+    }, [token, expense]);
+
 
     const handleEdit = () => {
         if (!expense) {
@@ -89,7 +109,7 @@ export default function ExpenseDetailsScreen() {
             <TopBar />
 
             {!expense ? "" : <View style={styles.container}>
-                <Text style={styles.detail}>Category: {expense.categoryID}</Text>
+                <Text style={styles.detail}>Category: {!category ? "": category.name}</Text>
                 <Text style={styles.detail}>Amount: £{Math.abs(expense.amount).toFixed(2)}</Text>
                 <Text style={styles.detail}>Date: {expense.date.toDateString()}</Text>
                 <View>

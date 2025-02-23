@@ -12,6 +12,7 @@ import clearRouterHistory from '@/utils/clearRouterHistory';
 import getToken from '@/utils/tokenAccess/getToken';
 import updateExpense from '@/utils/apiCalls/updateExpense';
 import getExpenseByID from '@/utils/apiCalls/getExpensesByID';
+import getExpenseCategories from '@/utils/apiCalls/getExpenseCategories';
 
 
 export default function EditExpense() {
@@ -21,6 +22,7 @@ export default function EditExpense() {
     const router = useRouter();
     const [token, setToken] = useState<string>('');
     const [email, setEmail] = useState<string>('');
+    const [categories, setCategories] = useState<ExpenseCategory[]>([]);
     const [title, setTitle] = useState<string>('');
     const [amount, setAmount] = useState<string>('');
     const [date, setDate] = useState<Date>(new Date());
@@ -41,12 +43,32 @@ export default function EditExpense() {
     });
 
     useEffect(() => {
+        async function getCategories() {
+            const result = await getExpenseCategories(token);
+            if (result) {
+                setCategories(result);
+            } else {
+                console.log("Error with getting expense categories list.")
+            }
+        }
+
+        if (token) {
+            getCategories();
+            
+        }
+    }, [token]);
+
+
+    useEffect(() => {
         async function getExpense() {
             getExpenseByID(token, id as string).then((expense) => {
                 setTitle(expense.title);
                 setAmount(expense.amount.toString());
                 setDate(expense.date);
                 setNotes(expense.notes);
+                if (categories) {
+                    setCategory(categories.find((cat) => expense.categoryID === cat.getID()));
+                }
             }).catch((error: Error) => {
                 Alert.alert("Expense Not Found")
                 console.log(error.message);
@@ -55,8 +77,10 @@ export default function EditExpense() {
             })
         }
 
-        if (token) getExpense();
-    }, [token]);
+        if (token && categories) {
+            getExpense();
+        }
+    }, [token, categories])
 
     const validateForm = () => {
         if (!title || !amount || !date || !category) {
@@ -129,7 +153,7 @@ export default function EditExpense() {
                     date={date}
                     category={category === undefined ? null : category}
                     notes={notes}
-                    categoriesList={[]}
+                    categoriesList={categories}
                     setTitle={setTitle}
                     setAmount={setAmount}
                     setDate={setDate}

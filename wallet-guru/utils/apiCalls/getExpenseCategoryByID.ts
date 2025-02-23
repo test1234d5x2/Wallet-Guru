@@ -6,7 +6,7 @@ export default async function getExpenseCategoryByID(token: string, id: string):
         throw new Error("Domain could not be found.");
     };
 
-    const GET_EXPENSE_CATEGORY_URL = `http://${API_DOMAIN}/api/expenses-categories/${id}`;
+    const GET_EXPENSE_CATEGORY_URL = `http://${API_DOMAIN}/api/expense-categories/${id}`;
 
     const response = await fetch(GET_EXPENSE_CATEGORY_URL, {
         method: "GET",

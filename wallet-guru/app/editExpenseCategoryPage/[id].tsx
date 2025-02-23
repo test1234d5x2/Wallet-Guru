@@ -10,6 +10,8 @@ import clearRouterHistory from '@/utils/clearRouterHistory';
 import getToken from '@/utils/tokenAccess/getToken';
 import getExpenseCategoryByID from '@/utils/apiCalls/getExpenseCategoryByID';
 import updateExpenseCategory from '@/utils/apiCalls/updateExpenseCategory';
+import ExpenseCategory from '@/models/ExpenseCategory';
+import getExpenseCategories from '@/utils/apiCalls/getExpenseCategories';
 
 
 export default function EditExpenseCategory() {
@@ -19,6 +21,7 @@ export default function EditExpenseCategory() {
     const router = useRouter();
     const [token, setToken] = useState<string>('');
     const [email, setEmail] = useState<string>('');
+    const [categories, setCategories] = useState<ExpenseCategory[]>([]);
     const [categoryName, setCategoryName] = useState<string>('');
     const [monthlyLimit, setMonthlyLimit] = useState<string>('');
     const [error, setError] = useState<string>('');
@@ -35,6 +38,7 @@ export default function EditExpenseCategory() {
         setEmail(data.email);
     });
 
+
     useEffect(() => {
         async function getExpenseCategory() {
             getExpenseCategoryByID(token, id as string).then((category) => {
@@ -49,6 +53,23 @@ export default function EditExpenseCategory() {
         }
 
         if (token) getExpenseCategory();
+    }, [token]);
+
+
+    useEffect(() => {
+        async function getCategories() {
+            const result = await getExpenseCategories(token);
+            if (result) {
+                setCategories(result);
+            } else {
+                console.log("Error with getting expense categories list.")
+            }
+        }
+
+        if (token) {
+            getCategories();
+
+        }
     }, [token]);
 
     const validateForm = () => {
@@ -76,7 +97,11 @@ export default function EditExpenseCategory() {
             return false;
         }
 
-        // CHECK THAT THERE ARE NO NAMES FOR THE EXPENSE CATEGORY FOR THE USER VIA THE API.
+        if (categories.find((cat) => cat.name === categoryName)) {
+            Alert.alert("Category Already Exists", "This category already exists. Please choose a different name.");
+            setError("This category already exists. Please choose a different name.");
+            return false;
+        }
 
         setError('');
         return true;
