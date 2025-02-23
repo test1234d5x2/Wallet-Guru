@@ -1,5 +1,5 @@
 import { v4 } from "uuid";
-import UserStatus from "../enums/UserStatus";
+import UserStatus from "../../enums/UserStatus";
 
 class User {
     private id: string;

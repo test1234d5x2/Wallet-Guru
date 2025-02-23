@@ -1,4 +1,4 @@
-import Income from "../models/Income";
+import Income from "../models/core/Income";
 
 class IncomeRepository {
     private incomes: Income[] = [];

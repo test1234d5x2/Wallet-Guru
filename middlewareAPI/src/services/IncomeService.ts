@@ -1,4 +1,4 @@
-import Income from "../models/Income";
+import Income from "../models/core/Income";
 import IncomeRepository from "../repositories/IncomeRepository";
 
 class IncomeService {
@@ -31,7 +31,7 @@ class IncomeService {
     public getAllIncomesByUser(userID: string): Income[] {
         return this.repository.findByUser(userID);
     }
-    
+
     public findByID(id: string): Income | undefined {
         return this.repository.findById(id);
     }

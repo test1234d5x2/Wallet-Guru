@@ -1,4 +1,4 @@
-import ExpenseCategory from "../models/ExpenseCategory";
+import ExpenseCategory from "../models/core/ExpenseCategory";
 
 class ExpenseCategoryRepository {
     private categories: ExpenseCategory[] = [];

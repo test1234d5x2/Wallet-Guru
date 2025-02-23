@@ -1,6 +1,6 @@
-import ExpenseCategory from "../models/ExpenseCategory";
+import ExpenseCategory from "../models/core/ExpenseCategory";
+import User from "../models/core/User";
 import ExpenseCategoryRepository from "../repositories/ExpenseCategoryRepository";
-import User from "../models/User";
 
 class ExpenseCategoryService {
     private repository: ExpenseCategoryRepository;

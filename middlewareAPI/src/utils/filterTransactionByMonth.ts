@@ -1,4 +1,4 @@
-import Transaction from "../models/Transaction";
+import Transaction from "../models/core/Transaction";
 
 export default function filterTransactionByMonth(transactions: Transaction[], month: Date): Transaction[] {
     return transactions.filter((transaction) => {

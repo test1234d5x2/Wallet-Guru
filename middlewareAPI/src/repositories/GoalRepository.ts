@@ -1,4 +1,4 @@
-import Goal from "../models/Goal";
+import Goal from "../models/core/Goal";
 
 class GoalRepository {
     private goals: Goal[] = [];

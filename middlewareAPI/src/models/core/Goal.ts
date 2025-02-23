@@ -1,5 +1,5 @@
-import GoalStatus from "../enums/GoalStatus";
 import {v4} from 'uuid';
+import GoalStatus from '../../enums/GoalStatus';
 
 export default class Goal {
     private id: string;

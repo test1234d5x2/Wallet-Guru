@@ -1,5 +1,4 @@
-import User from "../models/User";
-import Expense from "../models/Expense";
+import Expense from "../models/core/Expense";
 import ExpenseRepository from "../repositories/ExpenseRepository";
 
 class ExpenseService {

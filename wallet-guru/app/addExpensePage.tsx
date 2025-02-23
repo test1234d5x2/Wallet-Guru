@@ -11,7 +11,7 @@ import ExpenseCategory from '@/models/core/ExpenseCategory';
 import clearRouterHistory from '@/utils/clearRouterHistory';
 import getToken from '@/utils/tokenAccess/getToken';
 import getExpenseCategories from '@/utils/apiCalls/getExpenseCategories';
-
+import * as ImagePicker from 'expo-image-picker';
 
 
 async function addExpense(token: string, title: string, amount: number, date: Date, expenseCategoryID: string, notes: string, receipt?: string) {
@@ -58,6 +58,7 @@ export default function AddExpense() {
     const [date, setDate] = useState<Date | null>(null);
     const [category, setCategory] = useState<ExpenseCategory | null>(null);
     const [notes, setNotes] = useState<string>('');
+    const [receipt, setReceipt] = useState<string>('');
     const [error, setError] = useState<string>('');
 
     getToken().then((data) => {
@@ -145,9 +146,23 @@ export default function AddExpense() {
         };
     };
 
-    const handleScanReceipt = () => {
-        Alert.alert('Feature Coming Soon', 'Receipt scanning is not yet implemented.');
-        return;
+
+    const pickImage = async () => {
+        const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+        if (status !== 'granted') {
+            Alert.alert('Permission Required', 'Gallery permission is needed to select an image.');
+            return;
+        }
+
+        let result = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ImagePicker.MediaTypeOptions.Images,
+            allowsEditing: true,
+            quality: 1,
+        });
+
+        if (!result.canceled) {
+            setReceipt(result.assets[0].uri);
+        }
     };
 
     return (
@@ -170,12 +185,15 @@ export default function AddExpense() {
                 />
             </View>
 
+            {receipt ? <View style={styles.centeredTextContainer}><Text>Receipt Set</Text></View>: ""}
+
             {error ? <View style={styles.centeredTextContainer}><Text style={styles.errorText}>{error}</Text></View> : null}
 
             <View style={styles.centeredTextContainer}>
-                <TouchableOpacity onPress={handleScanReceipt}>
-                    <Text style={styles.scanText}>Scan Receipt</Text>
+                <TouchableOpacity onPress={pickImage}>
+                    <Text style={styles.scanText}>Upload Receipt</Text>
                 </TouchableOpacity>
+                
             </View>
 
             <TouchableOpacity style={styles.addButton} onPress={handleAddExpense}>

@@ -1,6 +1,6 @@
-import Goal from "../models/Goal";
 import GoalRepository from "../repositories/GoalRepository";
 import GoalStatus from "../enums/GoalStatus";
+import Goal from "../models/core/Goal";
 
 class GoalService {
     private repository: GoalRepository;
