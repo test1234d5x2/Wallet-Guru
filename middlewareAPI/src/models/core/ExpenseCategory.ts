@@ -1,16 +1,19 @@
-import {v4} from 'uuid';
+import uuid from 'uuid';
+import BasicRecurrenceRule from '../recurrenceModels/BasicRecurrenceRule';
 
 class ExpenseCategory {
     private id: string;
     private userID: string;
     name: string;
     monthlyBudget: number;
+    recurrenceRule?: BasicRecurrenceRule;
 
-    constructor(userID: string, name: string, monthlyBudget: number) {
-        this.id = v4();
+    constructor(userID: string, name: string, monthlyBudget: number, recurrenceRule?: BasicRecurrenceRule) {
+        this.id = uuid.v4();
         this.userID = userID;
         this.name = name;
         this.monthlyBudget = monthlyBudget;
+        this.recurrenceRule = recurrenceRule;
     }
 
     getID(): string {
@@ -21,8 +24,21 @@ class ExpenseCategory {
         return this.userID;
     }
 
-    calculateBudgetUsed(currentMonthlySpending: number): number {
-        return currentMonthlySpending / this.monthlyBudget;
+    calculateBudgetUsed(currentSpending: number): number {
+        return currentSpending / this.monthlyBudget;
+    }
+
+    shouldResetBudget(): boolean {
+        if (this.recurrenceRule) {
+            return this.recurrenceRule.shouldTrigger();
+        }
+        return false;
+    }
+
+    updateBudgetCycle(): void {
+        if (this.recurrenceRule && this.recurrenceRule.shouldTrigger()) {
+            this.recurrenceRule.nextTriggerDate = this.recurrenceRule.computeNextTriggerDate();
+        }
     }
 
     public toJSON() {
@@ -31,7 +47,8 @@ class ExpenseCategory {
             userID: this.userID,
             name: this.name,
             monthlyBudget: this.monthlyBudget,
-        }
+            recurrenceRule: this.recurrenceRule,
+        };
     }
 }
 

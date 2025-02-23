@@ -1,5 +1,5 @@
-import Transaction from "./Transaction";
 import {v4} from 'uuid';
+import Transaction from './Transaction';
 
 class Expense implements Transaction {
     private id: string;

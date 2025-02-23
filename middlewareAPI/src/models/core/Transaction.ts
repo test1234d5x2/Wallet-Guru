@@ -1,4 +1,4 @@
-interface Transaction {
+export default interface Transaction {
     title: string
     date: Date
     amount: number
@@ -6,5 +6,3 @@ interface Transaction {
     getPageURL(): string
     getEditURL(): string
 }
-
-export default Transaction;

@@ -13,6 +13,7 @@ import getToken from '@/utils/tokenAccess/getToken';
 import updateExpense from '@/utils/apiCalls/updateExpense';
 import getExpenseByID from '@/utils/apiCalls/getExpensesByID';
 import getExpenseCategories from '@/utils/apiCalls/getExpenseCategories';
+import pickImage from '@/utils/pickImage';
 
 
 export default function EditExpense() {
@@ -28,6 +29,7 @@ export default function EditExpense() {
     const [date, setDate] = useState<Date>(new Date());
     const [category, setCategory] = useState<ExpenseCategory>();
     const [notes, setNotes] = useState<string>('');
+    const [receipt, setReceipt] = useState<string>('');
     const [error, setError] = useState<string>('');
 
     getToken().then((data) => {
@@ -54,7 +56,7 @@ export default function EditExpense() {
 
         if (token) {
             getCategories();
-            
+
         }
     }, [token]);
 
@@ -138,10 +140,6 @@ export default function EditExpense() {
         }
     };
 
-    const handleScanReceipt = () => {
-        Alert.alert('Feature Coming Soon', 'Receipt scanning is not yet implemented.');
-    };
-
     return (
         <ScrollView contentContainerStyle={styles.container}>
             <TopBar />
@@ -162,11 +160,13 @@ export default function EditExpense() {
                 />
             </View>
 
+            {receipt ? <View style={styles.centeredTextContainer}><Text>Receipt Set</Text></View> : ""}
+
             {error ? <View style={styles.centeredTextContainer}><Text style={styles.errorText}>{error}</Text></View> : null}
 
             <View style={styles.centeredTextContainer}>
-                <TouchableOpacity onPress={handleScanReceipt}>
-                    <Text style={styles.scanText}>Scan Receipt</Text>
+                <TouchableOpacity onPress={() => pickImage(setReceipt)}>
+                    <Text style={styles.scanText}>Upload Receipt</Text>
                 </TouchableOpacity>
             </View>
 
