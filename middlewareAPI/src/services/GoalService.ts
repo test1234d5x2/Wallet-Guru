@@ -23,8 +23,9 @@ class GoalService {
         goal.description = description;
         goal.target = target;
         goal.targetDate = targetDate;
-        goal.current = current;
         goal.status = status;
+
+        goal.updateCurrent(current);
     }
 
     public deleteGoal(id: string): void {

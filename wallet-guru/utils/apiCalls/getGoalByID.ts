@@ -22,5 +22,5 @@ export default async function getGoalByID(token: string, id: string): Promise<Go
     };
 
     const data: any = await response.json();
-    return new Goal(data.title, data.userID, data.description, data.target, data.targetDate, data.status, data.id);
+    return new Goal(data.title, data.userID, data.description, data.target, data.targetDate, data.status, data.id, data.current);
 }
