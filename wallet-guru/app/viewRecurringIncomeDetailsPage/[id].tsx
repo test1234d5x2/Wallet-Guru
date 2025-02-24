@@ -96,7 +96,6 @@ export default function IncomeDetailsScreen() {
             <TopBar />
             {!recurringIncome ? "" : <View style={styles.container}>
                 <Text style={styles.detail}>Amount: £{recurringIncome.amount.toFixed(2)}</Text>
-                <Text style={styles.detail}>Date: {recurringIncome.date.toDateString()}</Text>
                 <Text style={styles.detail}>Start Date: {recurringIncome.recurrenceRule.startDate.toDateString()}</Text>
                 <Text style={styles.detail}>Next Transaction Date: {recurringIncome.recurrenceRule.nextTriggerDate.toDateString()}</Text>
                 {!recurringIncome.recurrenceRule.endDate ? "" : <Text style={styles.detail}>End Date: {recurringIncome.recurrenceRule.endDate.toDateString()}</Text>}

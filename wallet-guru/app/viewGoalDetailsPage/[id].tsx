@@ -56,7 +56,7 @@ export default function ViewGoalDetails() {
             router.navigate("/loginPage");
             return;
         }
-        router.navigate("/updateGoalPage/" + goal.getID());
+        router.navigate(`/updateGoalPage/${goal.getID()}`);
     };
 
     const handleDeleteGoal = () => {
@@ -130,7 +130,7 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: "#007BFF",
         paddingVertical: 15,
-        borderRadius: 5,
+        borderRadius: 30,
         alignItems: "center",
         marginHorizontal: 10,
         marginLeft: 0,
@@ -139,7 +139,7 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: "#FF4C4C",
         paddingVertical: 15,
-        borderRadius: 5,
+        borderRadius: 30,
         alignItems: "center",
         marginHorizontal: 10,
         marginRight: 0,
