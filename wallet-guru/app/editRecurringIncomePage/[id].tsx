@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Alert, ScrollView } from 'react-native';
 import setPageTitle from '@/components/pageTitle/setPageTitle';
 import TopBar from '@/components/topBars/topBar';
 import validateEmpty from '@/utils/validation/validateEmpty';
 import isNumeric from '@/utils/validation/validateNumeric';
-import { useRouter } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { isValidDate, isTodayOrBefore } from '@/utils/validation/validateDate';
 import clearRouterHistory from '@/utils/clearRouterHistory';
 import getToken from '@/utils/tokenAccess/getToken';
@@ -12,41 +12,15 @@ import Frequency from '@/enums/Frequency';
 import RecurrentIncomeDetailsInputs from '@/components/formComponents/recurrentIncomeInputs';
 import isInteger from '@/utils/validation/validateInteger';
 import isValidFrequency from '@/utils/validation/isValidFrequency';
-
-
-async function editRecurrentIncome(token: string) {
-    // const API_DOMAIN = process.env.EXPO_PUBLIC_BLOCKCHAIN_MIDDLEWARE_API_IP_ADDRESS;
-    // if (!API_DOMAIN) {
-    //     throw new Error("Domain could not be found.");
-    // };
-
-    // const ADD_INCOME_URL = `http://${API_DOMAIN}/api/incomes/`
-
-    // const response = await fetch(ADD_INCOME_URL, {
-    //     method: "POST",
-    //     headers: {
-    //         "Authorization": `Bearer ${token}`,
-    //         "Content-Type": "application/json",
-    //     },
-    //     body: JSON.stringify({
-    //         title,
-    //         amount,
-    //         date,
-    //         notes
-    //     })
-    // });
-
-    // if (!response.ok) {
-    //     const error = await response.json();
-    //     throw new Error(error.message);
-    // }
-}
-
+import getRecurringIncomeByID from '@/utils/apiCalls/getRecurringIncomeByID';
+import updateRecurrentIncome from '@/utils/apiCalls/updateReccuringIncome';
+import BasicRecurrenceRule from '@/models/recurrenceModels/BasicRecurrenceRule';
 
 
 export default function EditRecurrentIncome() {
     setPageTitle("Edit Recurrent Income");
 
+    const { id } = useLocalSearchParams();
     const [token, setToken] = useState<string>('');
     const [email, setEmail] = useState<string>('');
     const [title, setTitle] = useState<string>('');
@@ -71,6 +45,27 @@ export default function EditRecurrentIncome() {
         setToken(data.token);
         setEmail(data.email);
     });
+
+    useEffect(() => {
+        async function getIncome() {
+            getRecurringIncomeByID(token, id as string).then((data) => {
+                setTitle(data.title);
+                setAmount(data.amount.toString());
+                setNotes(data.notes);
+                setFrequency(data.recurrenceRule.frequency);
+                setFrequencyInterval(data.recurrenceRule.interval.toString());
+                setStartDate(data.recurrenceRule.startDate);
+                setEndDate(data.recurrenceRule.endDate || null);
+            }).catch((error: Error) => {
+                Alert.alert("Recurrent Income Not Found")
+                console.log(error.message);
+                clearRouterHistory(router);
+                router.replace("/listRecurringTransactionsPage");
+            })
+        }
+
+        if (token) getIncome();
+    }, [token]);
 
     const validateForm = (): boolean => {
         if (!title || !amount || !startDate || !frequency || !interval) {
@@ -143,19 +138,15 @@ export default function EditRecurrentIncome() {
 
     const handleEditRecurrentIncome = () => {
         if (validateForm()) {
-            console.log("Form Valid");
-            // addIncome(token, title, parseFloat(amount), date as Date, notes).then((data) => {
-            //     Alert.alert('Success', 'Income added successfully!');
-            //     setTitle('');
-            //     setAmount('');
-            //     setDate(null);
-            //     setNotes('');
-            //     clearRouterHistory(router);
-            //     router.replace("/listTransactionsPage");
-            // }).catch((error: Error) => {
-            //     Alert.alert("Error Adding Income");
-            //     console.log(error.message)
-            // });
+            const recurrenceRule = new BasicRecurrenceRule(frequency, parseFloat(interval), startDate as Date, undefined, endDate as Date);
+            updateRecurrentIncome(token, id as string, title, parseFloat(amount), new Date(), notes, recurrenceRule).then((data) => {
+                Alert.alert('Success', 'Recurrent income added successfully!');
+                clearRouterHistory(router);
+                router.replace("/listRecurringTransactionsPage");
+            }).catch((error: Error) => {
+                Alert.alert("Error Adding Recurrent Income");
+                console.log(error.message)
+            });
         }
     };
 

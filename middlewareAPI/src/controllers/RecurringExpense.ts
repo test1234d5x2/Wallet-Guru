@@ -77,7 +77,6 @@ export const listByUser = (req: Request, res: Response): void => {
     }
 
     const recurringExpenses = registry.recurringExpenseService.getAllRecurringExpensesByUser(userID);
-    console.log(recurringExpenses);
     res.status(200).json({ recurringExpenses });
 };
 

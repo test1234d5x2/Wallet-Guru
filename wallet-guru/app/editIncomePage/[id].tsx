@@ -103,7 +103,7 @@ export default function EditIncome() {
                 if (complete) {
                     Alert.alert('Success', 'Income updated successfully!');
                     clearRouterHistory(router);
-                    router.replace("/listTransactionsPage");
+                    router.replace(`/viewIncomeDetailsPage/${id}`);
                 }
             }).catch((error: Error) => {
                 Alert.alert("Error", "Failed to update income.");

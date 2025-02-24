@@ -7,11 +7,10 @@ import clearRouterHistory from '@/utils/clearRouterHistory';
 import getToken from '@/utils/tokenAccess/getToken';
 import ExpenseCategory from '@/models/core/ExpenseCategory';
 import RecurringExpense from '@/models/recurrenceModels/RecurringExpense';
-import RecurrenceRule from '@/models/recurrenceModels/RecurrenceRule';
-import BasicRecurrenceRule from '@/models/recurrenceModels/BasicRecurrenceRule';
-import Frequency from '@/enums/Frequency';
 import convertFrequencyToTextDisplay from '@/utils/convertFrequencyToTextDisplay';
 import deleteRecurringExpense from '@/utils/apiCalls/deleteRecurringExpense';
+import getRecurringExpenseByID from '@/utils/apiCalls/getRecurringExpenseByID';
+import getExpenseCategories from '@/utils/apiCalls/getExpenseCategories';
 
 
 export default function RecurrentExpenseDetailsScreen() {
@@ -37,54 +36,37 @@ export default function RecurrentExpenseDetailsScreen() {
     });
 
     useEffect(() => {
-        let today = new Date();
-        let endDate = new Date(today.setDate(today.getDate() + 5));
+        async function getRecurringExpense() {
+            getRecurringExpenseByID(token, id as string).then((rx) => {
+                setRecurringExpense(rx);
+            }).catch((error: Error) => {
+                Alert.alert("Reccuring Expense Not Found")
+                console.log(error.message);
+                clearRouterHistory(router);
+                router.replace("/listRecurringTransactionsPage");
+            })
+        }
 
-        setCategory(
-            new ExpenseCategory("", "Some Category", 500, new BasicRecurrenceRule(Frequency.Daily, 4, new Date(), endDate), "1")
-        )
-
-        today = new Date();
-        endDate = new Date(today.setDate(today.getDate() + 25));
-
-        setRecurringExpense(
-            new RecurringExpense("", "Title", 25, new Date(), "Some Notes", "1", new BasicRecurrenceRule(Frequency.Daily, 2, new Date(), endDate))
-        )
-    }, [])
-
-    // ONCE THE BACKEND API IS IMPLEMENTED TO ACCUSTOM THIS, WE SHALL CONTINUE HERE.
-    // useEffect(() => {
-    //     async function getRecurringExpense() {
-    //         getExpenseByID(token, id as string).then((expense) => {
-    //             setRecurringExpense(expense);
-    //         }).catch((error: Error) => {
-    //             Alert.alert("Expense Not Found")
-    //             console.log(error.message);
-    //             clearRouterHistory(router);
-    //             router.replace("/listTransactionsPage");
-    //         })
-    //     }
-
-    //     if (token) getRecurringExpense();
-    // }, [token]);
+        if (token) getRecurringExpense();
+    }, [token]);
 
 
-    // useEffect(() => {
-    //     async function getExpenseCategory() {
-    //         if (expense) {
-    //             getExpenseCategories(token).then((categories) => {
-    //                 setCategory(categories.find((cat) => cat.getID() === expense.categoryID));
-    //             }).catch((error: Error) => {
-    //                 Alert.alert("Error", "Could not load the category name.")
-    //                 console.log(error.message);
-    //                 clearRouterHistory(router);
-    //                 router.replace("/listTransactionsPage");
-    //             })
-    //         }
-    //     }
+    useEffect(() => {
+        async function getExpenseCategory() {
+            if (recurringExpense) {
+                getExpenseCategories(token).then((categories) => {
+                    setCategory(categories.find((cat) => cat.getID() === recurringExpense.categoryID));
+                }).catch((error: Error) => {
+                    Alert.alert("Error", "Could not load the category name.")
+                    console.log(error.message);
+                    clearRouterHistory(router);
+                    router.replace("/listRecurringTransactionsPage");
+                })
+            }
+        }
 
-    //     if (token && expense) getExpenseCategory();
-    // }, [token, expense]);
+        if (token && recurringExpense) getExpenseCategory();
+    }, [token, recurringExpense]);
 
 
     const handleEdit = () => {

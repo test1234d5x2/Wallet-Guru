@@ -16,10 +16,6 @@ export default function MainMenu() {
         {title: 'Spending Analytics', link: "/analyticsPage"},
         {title: "Add Recurrent Expense", link: "/addRecurringExpensePage"},
         {title: "Add Recurrent Income", link: "/addRecurringIncomePage"},
-        {title: "NEEDS REMOVING: View Recurrent Expense", link: "/viewRecurringExpenseDetailsPage/jhbjhbhjbjhbjh"},
-        {title: "NEEDS REMOVING: View Recurrent Income", link: "/viewRecurringIncomeDetailsPage/jhbjhbhjbjhbjh"},
-        {title: "NEEDS REMOVING: Edit Recurrent Expense", link: "/editRecurringExpensePage/jhbjhbhjbjhbjh"},
-        {title: "NEEDS REMOVING: Edit Recurrent Income", link: "/editRecurringIncomePage/jhbjhbhjbjhbjh"},
         {title: "Current Recurring Transactions", link: "/listRecurringTransactionsPage"},
     ]
 

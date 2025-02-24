@@ -4,7 +4,7 @@ import setPageTitle from '@/components/pageTitle/setPageTitle';
 import TopBar from '@/components/topBars/topBar';
 import validateEmpty from '@/utils/validation/validateEmpty';
 import isNumeric from '@/utils/validation/validateNumeric';
-import { useRouter } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { isValidDate } from '@/utils/validation/validateDate';
 import ExpenseCategory from '@/models/core/ExpenseCategory';
 import clearRouterHistory from '@/utils/clearRouterHistory';
@@ -14,50 +14,22 @@ import Frequency from '@/enums/Frequency';
 import RecurrentExpenseDetailsInputs from '@/components/formComponents/recurrentExpenseInputs';
 import isInteger from '@/utils/validation/validateInteger';
 import isValidFrequency from '@/utils/validation/isValidFrequency';
-
-
-async function editRecurrentExpense(token: string) {
-    // const API_DOMAIN = process.env.EXPO_PUBLIC_BLOCKCHAIN_MIDDLEWARE_API_IP_ADDRESS;
-    // if (!API_DOMAIN) {
-    //     throw new Error("Domain could not be found.");
-    // };
-
-    // const ADD_EXPENSE_URL = `http://${API_DOMAIN}/api/expenses/`;
-
-    // const response = await fetch(ADD_EXPENSE_URL, {
-    //     method: "POST",
-    //     headers: {
-    //         "Authorization": `Bearer ${token}`,
-    //         "Content-Type": "application/json",
-    //     },
-    //     body: JSON.stringify({
-    //         title,
-    //         amount,
-    //         date,
-    //         notes,
-    //         expenseCategoryID,
-    //         receipt: receipt === undefined ? '' : receipt
-    //     })
-    // });
-
-    // if (!response.ok) {
-    //     const error = await response.json();
-    //     throw new Error(error.message);
-    // };
-}
-
+import getRecurringExpenseByID from '@/utils/apiCalls/getRecurringExpenseByID';
+import BasicRecurrenceRule from '@/models/recurrenceModels/BasicRecurrenceRule';
+import updateRecurrentExpense from '@/utils/apiCalls/updateReccuringExpense';
 
 
 export default function EditRecurrentExpense() {
     setPageTitle("Edit Recurrent Expense");
 
+    const { id } = useLocalSearchParams();
     const router = useRouter();
     const [token, setToken] = useState<string>('');
     const [email, setEmail] = useState<string>('');
     const [categories, setCategories] = useState<ExpenseCategory[]>([]);
     const [title, setTitle] = useState<string>('');
     const [amount, setAmount] = useState<string>('');
-    const [category, setCategory] = useState<ExpenseCategory | null>(null);
+    const [category, setCategory] = useState<ExpenseCategory>();
     const [frequency, setFrequency] = useState<Frequency>(Frequency.Daily);
     const [interval, setFrequencyInterval] = useState<string>('');
     const [startDate, setStartDate] = useState<Date | null>(null);
@@ -89,6 +61,31 @@ export default function EditRecurrentExpense() {
 
         getCategories();
     }, [token]);
+
+
+    useEffect(() => {
+        async function getRecurringExpense() {
+            getRecurringExpenseByID(token, id as string).then((data) => {
+                setTitle(data.title);
+                setAmount(data.amount.toString());
+                setFrequency(data.recurrenceRule.frequency);
+                setFrequencyInterval(data.recurrenceRule.interval.toString());
+                setStartDate(data.recurrenceRule.startDate);
+                setEndDate(data.recurrenceRule.endDate || null);
+
+                if (categories) setCategory(categories.find((cat) => cat.getID() === data.categoryID));
+            }).catch((err: Error) => {
+                Alert.alert("Recurrent Expense Not Found")
+                console.log(err.message);
+                clearRouterHistory(router);
+                router.replace("/listRecurringTransactionsPage");
+            })
+        }
+
+        if (token && categories) {
+            getRecurringExpense()
+        }
+    }, [token, categories])
 
 
     const validateForm = (): boolean => {
@@ -161,22 +158,16 @@ export default function EditRecurrentExpense() {
     };
 
     const handleEditRecurrentExpense = () => {
-        console.log("OK")
         if (validateForm()) {
-            Alert.alert("Valid Form");
-            // addExpense(token, title, parseFloat(amount), date as Date, (category as ExpenseCategory).getID(), notes).then((data) => {
-            //     Alert.alert('Success', 'Expense added successfully!');
-            //     setTitle('');
-            //     setAmount('');
-            //     setDate(new Date());
-            //     setCategory(null);
-            //     setNotes('');
-            //     clearRouterHistory(router);
-            //     router.replace("/listTransactionsPage");
-            // }).catch((error: Error) => {
-            //     Alert.alert("Error Adding Expense");
-            //     console.log(error)
-            // })
+            const recurrenceRule = new BasicRecurrenceRule(frequency, parseFloat(interval), startDate as Date, undefined, endDate as Date);
+            updateRecurrentExpense(token, id as string, title, parseFloat(amount), new Date(), (category as ExpenseCategory).getID(), notes, recurrenceRule).then((data) => {
+                Alert.alert('Success', 'Recurrent Expense updated successfully!');
+                clearRouterHistory(router);
+                router.replace(`/viewRecurringExpenseDetailsPage/${id}`);
+            }).catch((error: Error) => {
+                Alert.alert("Error Adding Recurrent Expense");
+                console.log(error)
+            })
         };
     };
 
@@ -188,7 +179,7 @@ export default function EditRecurrentExpense() {
                 <RecurrentExpenseDetailsInputs
                     title={title}
                     amount={amount}
-                    category={category}
+                    category={category === undefined ? null : category}
                     notes={notes}
                     frequency={frequency}
                     interval={interval}

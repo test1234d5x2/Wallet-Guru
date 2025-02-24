@@ -10,6 +10,7 @@ import BasicRecurrenceRule from '@/models/recurrenceModels/BasicRecurrenceRule';
 import Frequency from '@/enums/Frequency';
 import convertFrequencyToTextDisplay from '@/utils/convertFrequencyToTextDisplay';
 import deleteRecurringIncome from '@/utils/apiCalls/deleteRecurringIncome';
+import getRecurringIncomeByID from '@/utils/apiCalls/getRecurringIncomeByID';
 
 
 export default function IncomeDetailsScreen() {
@@ -45,20 +46,20 @@ export default function IncomeDetailsScreen() {
         )
     }, [])
 
-    // useEffect(() => {
-    //     async function getIncome() {
-    //         getIncomeByID(token, id as string).then((data) => {
-    //             setIncome(data);
-    //         }).catch((error: Error) => {
-    //             Alert.alert("Income Not Found")
-    //             console.log(error.message);
-    //             clearRouterHistory(router);
-    //             router.replace("/listTransactionsPage");
-    //         })
-    //     }
+    useEffect(() => {
+        async function getIncome() {
+            getRecurringIncomeByID(token, id as string).then((data) => {
+                setRecurringIncome(data);
+            }).catch((error: Error) => {
+                Alert.alert("Income Not Found")
+                console.log(error.message);
+                clearRouterHistory(router);
+                router.replace("/listTransactionsPage");
+            })
+        }
 
-    //     if (token) getIncome();
-    // }, [token]);
+        if (token) getIncome();
+    }, [token]);
 
 
     const handleEdit = () => {

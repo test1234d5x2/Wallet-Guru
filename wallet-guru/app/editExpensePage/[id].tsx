@@ -132,7 +132,7 @@ export default function EditExpense() {
                 if (!complete) return
                 Alert.alert('Success', 'Expense updated successfully!');
                 clearRouterHistory(router);
-                router.replace("/viewExpenseDetailsPage/" + id);
+                router.replace(`/viewExpenseDetailsPage/${id}`);
             }).catch((error: Error) => {
                 Alert.alert("Failed", "Failed to update expense.");
                 console.log(error.message);
