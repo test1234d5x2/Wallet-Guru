@@ -7,13 +7,14 @@ import ListItemDeleteButton from './listItemDeleteButton';
 import clearRouterHistory from '@/utils/clearRouterHistory';
 import deleteExpense from '@/utils/apiCalls/deleteExpense';
 
+
 interface ExpenseItemProps {
-    expense: Expense
-    token: string
+    expense: Expense;
+    token: string;
+    categoryName: string;
 }
 
 export default function ExpenseItem(props: ExpenseItemProps) {
-
     const router = useRouter();
 
     const handleEdit = (id: string) => {
@@ -46,11 +47,10 @@ export default function ExpenseItem(props: ExpenseItemProps) {
             <View style={styles.transactionTextContainer}>
                 <View>
                     <Text style={styles.transactionName}>{props.expense.title}</Text>
-                    <Text style={styles.transactionCategory}>Category: {//props.expense.expenseCategory.name
-                    }</Text>
+                    <Text style={styles.transactionCategory}>Category: {props.categoryName}</Text>
                 </View>
                 <Text style={[styles.transactionAmount, styles.expenseAmount]}>
-                    {props.expense.amount < 0 ? "-" : "+"}£{Math.abs(props.expense.amount).toFixed(2)}
+                    -£{Math.abs(props.expense.amount).toFixed(2)}
                 </Text>
             </View>
 

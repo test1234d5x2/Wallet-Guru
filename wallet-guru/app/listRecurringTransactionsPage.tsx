@@ -117,7 +117,7 @@ export default function ViewReccuringTransactionsList() {
         ...transactions.map((rx) => (
             <React.Fragment key={uuid.v4() as string}>
                 <TouchableOpacity onPress={() => handleTransactionClick(rx)}>
-                    <RecurringExpenseItem token={token} recurringExpense={rx} />
+                    <RecurringExpenseItem categoryName={categories.find((cat) => cat.getID() === rx.categoryID)?.name || ""} token={token} recurringExpense={rx} />
                 </TouchableOpacity>
                 <View style={styles.divider} />
             </React.Fragment>

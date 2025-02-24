@@ -18,7 +18,7 @@ import RecurrenceRule from '@/models/recurrenceModels/RecurrenceRule';
 import BasicRecurrenceRule from '@/models/recurrenceModels/BasicRecurrenceRule';
 
 
-async function addRecurrentExpense(token: string, title: string, amount: number, date: Date, expenseCategoryID: string, notes: string, recurrenceRule: RecurrenceRule) {
+async function addRecurrentExpense(token: string, title: string, amount: number, date: Date, categoryID: string, notes: string, recurrenceRule: RecurrenceRule) {
     const API_DOMAIN = process.env.EXPO_PUBLIC_BLOCKCHAIN_MIDDLEWARE_API_IP_ADDRESS;
     if (!API_DOMAIN) {
         throw new Error("Domain could not be found.");
@@ -37,7 +37,7 @@ async function addRecurrentExpense(token: string, title: string, amount: number,
             amount,
             date,
             notes,
-            expenseCategoryID,
+            categoryID,
             recurrenceRule
         })
     });
@@ -166,11 +166,11 @@ export default function AddRecurrentExpense() {
         if (validateForm()) {
             const recurrenceRule = new BasicRecurrenceRule(frequency, parseFloat(interval), startDate as Date, undefined, endDate as Date)
             addRecurrentExpense(token, title, parseFloat(amount), new Date(), (category as ExpenseCategory).getID(), notes, recurrenceRule).then((data) => {
-                Alert.alert('Success', 'Expense added successfully!');
+                Alert.alert('Success', 'Recurrent expense added successfully!');
                 clearRouterHistory(router);
                 router.replace("/listRecurringTransactionsPage");
             }).catch((error: Error) => {
-                Alert.alert("Error Adding Expense");
+                Alert.alert("Error Adding Reccurent Expense");
                 console.log(error)
             })
         };

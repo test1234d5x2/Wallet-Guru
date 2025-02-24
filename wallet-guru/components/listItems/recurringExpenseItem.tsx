@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, Alert } from 'react-native';
 import { useRouter } from 'expo-router';
 import ListItemEditButton from './listItemEditButton';
@@ -9,8 +9,9 @@ import deleteRecurringExpense from '@/utils/apiCalls/deleteRecurringExpense';
 
 
 interface RecurringExpenseItemProps {
-    recurringExpense: RecurringExpense
-    token: string
+    recurringExpense: RecurringExpense;
+    token: string;
+    categoryName: string;
 }
 
 export default function RecurringExpenseItem(props: RecurringExpenseItemProps) {
@@ -47,8 +48,7 @@ export default function RecurringExpenseItem(props: RecurringExpenseItemProps) {
             <View style={styles.transactionTextContainer}>
                 <View>
                     <Text style={styles.transactionName}>{props.recurringExpense.title}</Text>
-                    <Text style={styles.transactionCategory}>Category: {//props.recurringExpense.expenseCategory.name
-                    }</Text>
+                    <Text style={styles.transactionCategory}>Category: {props.categoryName}</Text>
                 </View>
                 <Text style={[styles.transactionAmount, styles.expenseAmount]}>
                     -£{Math.abs(props.recurringExpense.amount).toFixed(2)}

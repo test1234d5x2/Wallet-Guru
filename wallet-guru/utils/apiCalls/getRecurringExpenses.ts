@@ -23,7 +23,8 @@ export default async function getRecurringExpenses(token: string): Promise<Recur
         throw new Error(error.message);
     }
 
-    const data = await response.json();    
+    const data = await response.json();
+    console.log(data)
     const recurringExpenses: RecurringExpense[] = data.recurringExpenses.map((e: any) => {
         const recurrenceRule = new BasicRecurrenceRule(e.recurrenceRule.frequency, e.recurrenceRule.interval, new Date(e.recurrenceRule.startDate), new Date(e.recurrenceRule.nextTriggerDate), new Date(e.recurrenceRule.endDate))
         return new RecurringExpense(e.userID, e.title, e.amount, new Date(e.date), e.notes, e.categoryID, recurrenceRule, e.id);

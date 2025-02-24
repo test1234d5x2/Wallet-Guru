@@ -118,7 +118,7 @@ export default function ViewTransactionsList() {
             ...transactions.map((expense) => (
                 <React.Fragment key={uuid.v4() as string}>
                     <TouchableOpacity onPress={() => handleTransactionClick(expense)}>
-                        <ExpenseItem token={token} expense={expense} />
+                        <ExpenseItem token={token} expense={expense} categoryName={categories.find((cat) => cat.getID() === expense.categoryID)?.name || ""} />
                     </TouchableOpacity>
                     <View style={styles.divider} />
                 </React.Fragment>

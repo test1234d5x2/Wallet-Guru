@@ -129,8 +129,8 @@ export default function AddExpense() {
     };
 
     const handleAddExpense = () => {
-        if (validateForm()) {
-            addExpense(token, title, parseFloat(amount), date as Date, (category as ExpenseCategory).getID(), notes).then((data) => {
+        if (validateForm() && category) {
+            addExpense(token, title, parseFloat(amount), date as Date, category.getID(), notes).then((data) => {
                 Alert.alert('Success', 'Expense added successfully!');
                 setTitle('');
                 setAmount('');

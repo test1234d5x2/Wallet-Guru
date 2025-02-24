@@ -9,7 +9,6 @@ import clearRouterHistory from '@/utils/clearRouterHistory';
 import deleteExpenseCategory from '@/utils/apiCalls/deleteExpenseCategory';
 
 
-
 interface ExpenseCategoryProps {
     category: ExpenseCategory;
     currentSpending: number
@@ -20,7 +19,7 @@ export default function ExpenseCategoryItem(props: ExpenseCategoryProps) {
     const router = useRouter();
 
     const handleEdit = (id: string) => {
-        router.navigate("/editExpenseCategoryPage/" + props.category.getID());
+        router.navigate(`/editExpenseCategoryPage/${props.category.getID()}`);
     };
 
     const handleDelete = (id: string) => {

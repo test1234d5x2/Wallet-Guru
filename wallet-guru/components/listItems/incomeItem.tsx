@@ -48,7 +48,7 @@ export default function IncomeItem(props: IncomeItemProps) {
                     <Text style={styles.transactionName}>{props.income.title}</Text>
                 </View>
                 <Text style={[styles.transactionAmount, styles.incomeAmount]}>
-                    {props.income.amount < 0 ? "-" : "+"}£{Math.abs(props.income.amount).toFixed(2)}
+                    +£{Math.abs(props.income.amount).toFixed(2)}
                 </Text>
             </View>
 

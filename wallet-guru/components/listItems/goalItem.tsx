@@ -19,7 +19,7 @@ export default function GoalItem(props: GoalItemProps) {
     const router = useRouter();
 
     const handleUpdate = (id: string) => {
-        router.navigate("/updateGoalPage/" + props.goal.getID());
+        router.navigate(`/updateGoalPage/${props.goal.getID()}`);
         return;
     }
 
