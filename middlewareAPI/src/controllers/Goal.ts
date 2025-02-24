@@ -18,7 +18,7 @@ const goalService = registry.goalService;
  * }
  */
 export const create: RequestHandler = (req, res) => {
-    const { title, description, target, status } = req.body;
+    const { title, description, target, targetDate, status } = req.body;
 
     const userID = getUserFromToken(req);
     if (!userID) {
@@ -31,7 +31,7 @@ export const create: RequestHandler = (req, res) => {
         return;
     }
 
-    goalService.addGoal(userID, title, description, target, status || GoalStatus.Active);
+    goalService.addGoal(userID, title, description, target, targetDate, status || GoalStatus.Active);
     res.status(201).json({ message: "Goal created" });
 };
 
@@ -72,8 +72,9 @@ export const updateProgress: RequestHandler = (req, res) => {
         goal.title,
         goal.description,
         goal.target,
+        goal.targetDate,
         current,
-        goal.status
+        goal.status,
     );
     res.status(200).json({ message: "Goal progress updated" });
 };
@@ -109,6 +110,7 @@ export const archive: RequestHandler = (req, res) => {
         goal.title,
         goal.description,
         goal.target,
+        goal.targetDate,
         goal.current,
         GoalStatus.Archived
     );

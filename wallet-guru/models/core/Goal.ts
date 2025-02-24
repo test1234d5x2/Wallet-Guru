@@ -7,15 +7,17 @@ export default class Goal {
     title: string;
     description: string;
     target: number;
+    targetDate: Date;
     current: number;
     status: GoalStatus;
 
-    constructor(title: string, userID: string, description: string, target: number, status: GoalStatus, id?: string, current?: number) {
+    constructor(title: string, userID: string, description: string, target: number, targetDate: Date, status: GoalStatus, id?: string, current?: number) {
         this.id = id || uuid.v4();
         this.userID = userID;
         this.title = title;
         this.description = description;
         this.target = target;
+        this.targetDate = targetDate
         this.current = current || 0;
         this.status = status;
     }
@@ -26,6 +28,10 @@ export default class Goal {
 
     getUserID(): string {
         return this.userID;
+    }
+
+    isTimeUp(): boolean {
+        return new Date() >= this.targetDate;
     }
 
     updateCurrent(figure: number): void {
@@ -43,6 +49,7 @@ export default class Goal {
             title: this.title,
             description: this.description,
             target: this.target,
+            targetDate: this.targetDate,
             current: this.current,
             status: this.status,
         }

@@ -22,6 +22,6 @@ export default async function getGoals(token: string): Promise<Goal[]> {
     }
 
     const data = await response.json();
-    const goals: Goal[] = data.goals.map((goal: any) => new Goal(goal.title, goal.userID, goal.description, goal.target, goal.status, goal.id));
+    const goals: Goal[] = data.goals.map((goal: any) => new Goal(goal.title, goal.userID, goal.description, goal.target, goal.targetDate, goal.status, goal.id));
     return goals;
 }

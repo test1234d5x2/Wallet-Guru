@@ -1,37 +1,83 @@
-import { View, StyleSheet} from "react-native";
-import MenuItem from './menuItem';
-
+import { View, Text, StyleSheet, ScrollView } from "react-native";
+import MenuItem from "./menuItem";
 
 export default function MainMenu() {
-
-    const menuItems = [
-        {title: 'Add Expense', link: "/addExpensePage"},
-        {title: 'Add Income', link: "/addIncomePage"},
-        {title: 'Transaction History', link: "/listTransactionsPage"},
-        {title: 'Create A New Goal', link: "/addGoalPage"},
-        {title: 'View Goals', link: "/allGoalsPage"},
-        {title: 'Create An Expense Category', link: "/addExpenseCategoryPage"},
-        {title: 'Expense Category Overview', link: "/expenseCategoriesOverviewPage"},
-        {title: 'Dashboard', link: "/dashboardPage"},
-        {title: 'Spending Analytics', link: "/analyticsPage"},
-        {title: "Add Recurrent Expense", link: "/addRecurringExpensePage"},
-        {title: "Add Recurrent Income", link: "/addRecurringIncomePage"},
-        {title: "Current Recurring Transactions", link: "/listRecurringTransactionsPage"},
-    ]
+    const groupedMenuItems = [
+        {
+            groupTitle: "Dashboard",
+            items: [
+                { title: "Dashboard", link: "/dashboardPage" },
+            ],
+        },
+        {
+            groupTitle: "Transactions",
+            items: [
+                { title: "Add Expense", link: "/addExpensePage" },
+                { title: "Add Income", link: "/addIncomePage" },
+                { title: "Transaction History", link: "/listTransactionsPage" },
+            ],
+        },
+        {
+            groupTitle: "Recurring Transactions",
+            items: [
+                { title: "Add Recurrent Expense", link: "/addRecurringExpensePage" },
+                { title: "Add Recurrent Income", link: "/addRecurringIncomePage" },
+                { title: "Current Recurring Transactions", link: "/listRecurringTransactionsPage" },
+            ],
+        },
+        {
+            groupTitle: "Categories",
+            items: [
+                { title: "Create An Expense Category", link: "/addExpenseCategoryPage" },
+                { title: "Expense Category Overview", link: "/expenseCategoriesOverviewPage" },
+            ],
+        },
+        {
+            groupTitle: "Goals",
+            items: [
+                { title: "Create A New Goal", link: "/addGoalPage" },
+                { title: "View Goals", link: "/allGoalsPage" },
+            ],
+        },
+        {
+            groupTitle: "Analytics",
+            items: [
+                { title: "Spending Analytics", link: "/analyticsPage" },
+            ],
+        },
+    ];
 
     return (
-        <View>
-            <View style={styles.menuContainer}>
-                {menuItems.map((item) => {return <MenuItem key={item.title} title={item.title} url={item.link} />})}
-            </View>
-        </View>
-    )
+        <ScrollView style={styles.container}>
+            {groupedMenuItems.map((group) => (
+                <View key={group.groupTitle} style={styles.groupContainer}>
+                    <Text style={styles.groupTitle}>{group.groupTitle}</Text>
+                    <View style={styles.itemsContainer}>
+                        {group.items.map((item) => (
+                            <MenuItem key={item.title} title={item.title} url={item.link} />
+                        ))}
+                    </View>
+                </View>
+            ))}
+        </ScrollView>
+    );
 }
 
 const styles = StyleSheet.create({
-    menuContainer: {
-        display: "flex",
-        flexDirection: "column",
-        rowGap: 20,
+    container: {
+        flex: 1,
+        padding: 16,
+        backgroundColor: "#fff",
     },
-})
+    groupContainer: {
+        marginBottom: 32,
+    },
+    groupTitle: {
+        fontSize: 24,
+        fontWeight: "bold",
+        marginBottom: 8,
+    },
+    itemsContainer: {
+        rowGap: 12,
+    },
+});

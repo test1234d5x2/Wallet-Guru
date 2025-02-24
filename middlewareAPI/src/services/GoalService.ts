@@ -9,12 +9,12 @@ class GoalService {
         this.repository = new GoalRepository();
     }
 
-    public addGoal(userID: string, title: string, description: string, target: number, status: GoalStatus): void {
-        const goal = new Goal(title, userID, description, target, status);
+    public addGoal(userID: string, title: string, description: string, target: number, targetDate: Date, status: GoalStatus): void {
+        const goal = new Goal(title, userID, description, target, targetDate, status);
         this.repository.add(goal);
     }
 
-    public updateGoal(id: string, title: string, description: string, target: number, current: number, status: GoalStatus): void {
+    public updateGoal(id: string, title: string, description: string, target: number, targetDate: Date, current: number, status: GoalStatus): void {
         const goal = this.repository.findById(id);
         if (!goal) {
             throw new Error(`Goal does not exist`);
@@ -22,6 +22,7 @@ class GoalService {
         goal.title = title;
         goal.description = description;
         goal.target = target;
+        goal.targetDate = targetDate;
         goal.current = current;
         goal.status = status;
     }
