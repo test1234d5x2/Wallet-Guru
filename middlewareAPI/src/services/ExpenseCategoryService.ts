@@ -1,5 +1,6 @@
 import ExpenseCategory from "../models/core/ExpenseCategory";
 import User from "../models/core/User";
+import RecurrenceRule from "../models/recurrenceModels/RecurrenceRule";
 import ExpenseCategoryRepository from "../repositories/ExpenseCategoryRepository";
 
 class ExpenseCategoryService {
@@ -9,18 +10,19 @@ class ExpenseCategoryService {
         this.repository = new ExpenseCategoryRepository();
     }
 
-    public addExpenseCategory(userID: string, name: string, monthlyBudget: number): void {
-        const category = new ExpenseCategory(userID, name, monthlyBudget);
+    public addExpenseCategory(userID: string, name: string, monthlyBudget: number, recurrenceRule: RecurrenceRule): void {
+        const category = new ExpenseCategory(userID, name, monthlyBudget, recurrenceRule);
         this.repository.add(category);
     }
 
-    public updateExpenseCategory(id: string, name: string, monthlyBudget: number): void {
+    public updateExpenseCategory(id: string, name: string, monthlyBudget: number, recurrenceRule: RecurrenceRule): void {
         const category = this.repository.findByID(id);
         if (!category) {
             throw new Error(`Category does not exist`);
         }
         category.name = name;
         category.monthlyBudget = monthlyBudget;
+        category.recurrenceRule = recurrenceRule;
     }
 
     public deleteExpenseCategory(id: string): void {

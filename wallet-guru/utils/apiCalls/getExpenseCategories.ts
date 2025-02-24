@@ -1,4 +1,5 @@
 import ExpenseCategory from "@/models/core/ExpenseCategory";
+import BasicRecurrenceRule from "@/models/recurrenceModels/BasicRecurrenceRule";
 
 export default async function getExpenseCategories(token: string): Promise<ExpenseCategory[]> {
     const API_DOMAIN = process.env.EXPO_PUBLIC_BLOCKCHAIN_MIDDLEWARE_API_IP_ADDRESS;
@@ -23,6 +24,10 @@ export default async function getExpenseCategories(token: string): Promise<Expen
     }
 
     const data = await response.json();
-    const categories: ExpenseCategory[] = data.categories.map((category: any) => new ExpenseCategory(category.userID, category.name, category.monthlyBudget, category.id));
+    const categories: ExpenseCategory[] = data.categories.map((category: any) => {
+        const recurrenceRule = new BasicRecurrenceRule(category.recurrenceRule.frequency, category.recurrenceRule.interval, new Date(category.recurrenceRule.startDate))
+        return new ExpenseCategory(category.userID, category.name, category.monthlyBudget, recurrenceRule, category.id);
+    });
+
     return categories;
 }

@@ -1,5 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
+import dotenv from "dotenv";
+dotenv.config();
 
 export const authenticateJWT = (req: Request, res: Response, next: NextFunction) => {
     const authHeader = req.headers.authorization;
@@ -15,7 +17,7 @@ export const authenticateJWT = (req: Request, res: Response, next: NextFunction)
         }
 
         
-        jwt.verify(token, jwtSecret, (err, decoded) => {
+        jwt.verify(token, jwtSecret, {algorithms: ["HS512"]}, (err, decoded) => {
             if (err) {
                 return res.status(403).json({ error: "Invalid token" });
             }

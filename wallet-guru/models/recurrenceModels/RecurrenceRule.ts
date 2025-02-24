@@ -7,11 +7,11 @@ export default abstract class RecurrenceRule {
     nextTriggerDate: Date;
     endDate?: Date;
 
-    constructor(frequency: Frequency, interval: number, startDate: Date, endDate?: Date) {
+    constructor(frequency: Frequency, interval: number, startDate: Date, nextTriggerDate?: Date, endDate?: Date) {
         this.frequency = frequency;
         this.interval = interval;
         this.startDate = startDate;
-        this.nextTriggerDate = startDate;
+        this.nextTriggerDate = nextTriggerDate || startDate;
         this.endDate = endDate;
     }
 

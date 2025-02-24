@@ -14,10 +14,11 @@ import getCategoryNamesList from '@/utils/getCategoryNamesList';
 import Frequency from '@/enums/Frequency';
 import isValidFrequency from '@/utils/validation/isValidFrequency';
 import isInteger from '@/utils/validation/validateInteger';
+import RecurrenceRule from '@/models/recurrenceModels/RecurrenceRule';
+import BasicRecurrenceRule from '@/models/recurrenceModels/BasicRecurrenceRule';
 
 
-
-async function addExpenseCategory(token: string, name: string, monthlyBudget: number) {
+async function addExpenseCategory(token: string, name: string, monthlyBudget: number, recurrenceRule: RecurrenceRule) {
     const API_DOMAIN = process.env.EXPO_PUBLIC_BLOCKCHAIN_MIDDLEWARE_API_IP_ADDRESS;
     if (!API_DOMAIN) {
         throw new Error("Domain could not be found.");
@@ -33,13 +34,16 @@ async function addExpenseCategory(token: string, name: string, monthlyBudget: nu
         },
         body: JSON.stringify({
             name,
-            monthlyBudget
+            monthlyBudget,
+            recurrenceRule
         })
     });
 
+    console.log(response.status)
+
     if (!response.ok) {
         const error = await response.json();
-        throw new Error(error.message);
+        throw new Error(error.error);
     }
 }
 
@@ -141,7 +145,7 @@ export default function AddExpenseCategory() {
 
     const handleAddCategory = () => {
         if (validateForm()) {
-            addExpenseCategory(token, categoryName, parseFloat(monthlyLimit)).then((data) => {
+            addExpenseCategory(token, categoryName, parseFloat(monthlyLimit), new BasicRecurrenceRule(frequency, parseFloat(interval), startDate as Date)).then((data) => {
                 Alert.alert('Success', `Category "${categoryName}" added with a limit of £${monthlyLimit}`);
                 setCategoryName('');
                 setMonthlyLimit('');

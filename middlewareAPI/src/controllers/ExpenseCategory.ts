@@ -10,9 +10,10 @@ const expenseCategoryService = registry.expenseCategoryService;
  * Expected request body should include:
  * - name (string)
  * - monthlyBudget (number)
+ * - recurrenceRule (RecurrenceRule)
  */
 export const create: RequestHandler = (req, res) => {
-    const { name, monthlyBudget } = req.body;
+    const { name, monthlyBudget, recurrenceRule } = req.body;
 
     const userID = getUserFromToken(req);
     if (!userID) {
@@ -25,7 +26,7 @@ export const create: RequestHandler = (req, res) => {
         return;
     }
 
-    expenseCategoryService.addExpenseCategory(userID, name, monthlyBudget);
+    expenseCategoryService.addExpenseCategory(userID, name, monthlyBudget, recurrenceRule);
     res.status(201).json({ message: "Expense category created" });
 };
 
@@ -36,10 +37,11 @@ export const create: RequestHandler = (req, res) => {
  * Expected request body should include:
  * - name (string)
  * - monthlyBudget (number)
+ * - recurrenceRule (RecurrenceRule)
  */
 export const update: RequestHandler = (req, res) => {
     const { id } = req.params;
-    const { name, monthlyBudget } = req.body;
+    const { name, monthlyBudget, recurrenceRule } = req.body;
 
     const userID = getUserFromToken(req);
     if (!userID) {
@@ -52,7 +54,7 @@ export const update: RequestHandler = (req, res) => {
         return;
     }
 
-    expenseCategoryService.updateExpenseCategory(id, name, monthlyBudget);
+    expenseCategoryService.updateExpenseCategory(id, name, monthlyBudget, recurrenceRule);
     res.status(200).json({ message: "Expense category updated" });
 };
 

@@ -6,9 +6,9 @@ class ExpenseCategory {
     private userID: string;
     name: string;
     monthlyBudget: number;
-    recurrenceRule?: BasicRecurrenceRule;
+    recurrenceRule: BasicRecurrenceRule;
 
-    constructor(userID: string, name: string, monthlyBudget: number, recurrenceRule?: BasicRecurrenceRule, id?: string) {
+    constructor(userID: string, name: string, monthlyBudget: number, recurrenceRule: BasicRecurrenceRule, id?: string) {
         this.id = id || uuid.v4();
         this.userID = userID;
         this.name = name;

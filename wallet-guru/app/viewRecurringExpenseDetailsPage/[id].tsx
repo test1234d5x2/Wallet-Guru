@@ -6,12 +6,12 @@ import { View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import clearRouterHistory from '@/utils/clearRouterHistory';
 import getToken from '@/utils/tokenAccess/getToken';
 import ExpenseCategory from '@/models/core/ExpenseCategory';
-import getExpenseCategories from '@/utils/apiCalls/getExpenseCategories';
 import RecurringExpense from '@/models/recurrenceModels/RecurringExpense';
 import RecurrenceRule from '@/models/recurrenceModels/RecurrenceRule';
 import BasicRecurrenceRule from '@/models/recurrenceModels/BasicRecurrenceRule';
 import Frequency from '@/enums/Frequency';
 import convertFrequencyToTextDisplay from '@/utils/convertFrequencyToTextDisplay';
+import deleteRecurringExpense from '@/utils/apiCalls/deleteRecurringExpense';
 
 
 export default function RecurrentExpenseDetailsScreen() {
@@ -23,10 +23,7 @@ export default function RecurrentExpenseDetailsScreen() {
     const [recurringExpense, setRecurringExpense] = useState<RecurringExpense>();
     const [category, setCategory] = useState<ExpenseCategory>();
 
-
-
     setPageTitle(!recurringExpense ? "" : recurringExpense.title);
-
 
     getToken().then((data) => {
         if (!data) {
@@ -40,12 +37,15 @@ export default function RecurrentExpenseDetailsScreen() {
     });
 
     useEffect(() => {
+        let today = new Date();
+        let endDate = new Date(today.setDate(today.getDate() + 5));
+
         setCategory(
-            new ExpenseCategory("", "Some Category", 500, undefined, "1")
+            new ExpenseCategory("", "Some Category", 500, new BasicRecurrenceRule(Frequency.Daily, 4, new Date(), endDate), "1")
         )
 
-        const today = new Date();
-        const endDate = new Date(today.setDate(today.getDate() + 25));
+        today = new Date();
+        endDate = new Date(today.setDate(today.getDate() + 25));
 
         setRecurringExpense(
             new RecurringExpense("", "Title", 25, new Date(), "Some Notes", "1", new BasicRecurrenceRule(Frequency.Daily, 2, new Date(), endDate))
@@ -101,17 +101,16 @@ export default function RecurrentExpenseDetailsScreen() {
             { text: 'Cancel', style: 'cancel' },
             {
                 text: 'Delete', style: 'destructive', onPress: () => {
-                    console.log("Deleted");
-                    // deleteExpense(token, id as string).then((complete) => {
-                    //     if (complete) {
-                    //         Alert.alert('Success', 'Expense deleted successfully!');
-                    //         clearRouterHistory(router);
-                    //         router.replace("/listTransactionsPage");
-                    //     }
-                    // }).catch((err: Error) => {
-                    //     Alert.alert("Failed", "Failed to delete expense.");
-                    //     console.log(err.message);
-                    // })
+                    deleteRecurringExpense(token, id as string).then((complete) => {
+                        if (complete) {
+                            Alert.alert('Success', 'Expense deleted successfully!');
+                            clearRouterHistory(router);
+                            router.replace("/listRecurringTransactionsPage");
+                        }
+                    }).catch((err: Error) => {
+                        Alert.alert("Failed", "Failed to delete expense.");
+                        console.log(err.message);
+                    })
                 },
             },
         ]);

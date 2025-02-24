@@ -1,4 +1,4 @@
-import uuid from 'uuid';
+import {v4} from 'uuid';
 import BasicRecurrenceRule from '../recurrenceModels/BasicRecurrenceRule';
 
 class ExpenseCategory {
@@ -6,10 +6,10 @@ class ExpenseCategory {
     private userID: string;
     name: string;
     monthlyBudget: number;
-    recurrenceRule?: BasicRecurrenceRule;
+    recurrenceRule: BasicRecurrenceRule;
 
-    constructor(userID: string, name: string, monthlyBudget: number, recurrenceRule?: BasicRecurrenceRule) {
-        this.id = uuid.v4();
+    constructor(userID: string, name: string, monthlyBudget: number, recurrenceRule: BasicRecurrenceRule) {
+        this.id = v4();
         this.userID = userID;
         this.name = name;
         this.monthlyBudget = monthlyBudget;

@@ -1,15 +1,15 @@
 import RecurringExpenseRepository from "../repositories/RecurringExpenseRepository";
 import RecurringExpense from "../models/recurrenceModels/RecurringExpense";
 import RecurrenceRule from "../models/recurrenceModels/RecurrenceRule";
-import Registry from "../registry/Registry";
+import ExpenseService from "./ExpenseService";
 
 class RecurringExpenseService {
     private repository: RecurringExpenseRepository;
-    private registry: Registry;
+    private expenseService: ExpenseService;
 
-    constructor() {
+    constructor(expenseService: ExpenseService) {
         this.repository = new RecurringExpenseRepository();
-        this.registry = Registry.getInstance();
+        this.expenseService = expenseService;
     }
 
     public addRecurringExpense(userID: string, title: string, amount: number, date: Date, notes: string, categoryID: string, recurrenceRule: RecurrenceRule): void {
@@ -45,7 +45,7 @@ class RecurringExpenseService {
         const recurringExpenses = this.repository.getAll();
         recurringExpenses.forEach(recExp => {
             if (recExp.recurrenceRule.shouldTrigger()) {
-                this.registry.expenseService.addExpense(recExp.getUserID(), recExp.title, recExp.amount, new Date(), recExp.notes, recExp.categoryID, recExp.receipt);
+                this.expenseService.addExpense(recExp.getUserID(), recExp.title, recExp.amount, new Date(), recExp.notes, recExp.categoryID, recExp.receipt);
                 recExp.recurrenceRule.computeNextTriggerDate();
             }
         });

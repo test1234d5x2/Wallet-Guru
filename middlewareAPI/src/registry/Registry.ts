@@ -26,8 +26,8 @@ class Registry {
         this.goalService = new GoalService();
         this.expenseCategoryService = new ExpenseCategoryService();
         this.authService = new AuthService(this.userService);
-        this.recurringExpenseService = new RecurringExpenseService();
-        this.recurringIncomeService = new RecurringIncomeService();
+        this.recurringExpenseService = new RecurringExpenseService(this.expenseService);
+        this.recurringIncomeService = new RecurringIncomeService(this.incomeService);
     }
 
     public static getInstance(): Registry {

@@ -1,4 +1,6 @@
-export default async function updateExpenseCategory(token: string, id: string, name: string, monthlyBudget: number): Promise<boolean> {
+import BasicRecurrenceRule from "@/models/recurrenceModels/BasicRecurrenceRule";
+
+export default async function updateExpenseCategory(token: string, id: string, name: string, monthlyBudget: number, recurrenceRule: BasicRecurrenceRule): Promise<boolean> {
     const API_DOMAIN = process.env.EXPO_PUBLIC_BLOCKCHAIN_MIDDLEWARE_API_IP_ADDRESS;
     if (!API_DOMAIN) {
         throw new Error("Domain could not be found.");
@@ -14,7 +16,8 @@ export default async function updateExpenseCategory(token: string, id: string, n
         },
         body: JSON.stringify({
             name,
-            monthlyBudget
+            monthlyBudget,
+            recurrenceRule
         })
     });
 

@@ -7,7 +7,7 @@ const router = Router();
 router.post('/', create);
 router.put('/:id', update);
 router.delete('/:id', remove);
-router.get('/:userID', listByUser);
+router.get('/', listByUser);
 router.get('/:id', findByID);
 
 export default router;

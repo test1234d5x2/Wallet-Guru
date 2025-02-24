@@ -20,6 +20,7 @@ export default function MainMenu() {
         {title: "NEEDS REMOVING: View Recurrent Income", link: "/viewRecurringIncomeDetailsPage/jhbjhbhjbjhbjh"},
         {title: "NEEDS REMOVING: Edit Recurrent Expense", link: "/editRecurringExpensePage/jhbjhbhjbjhbjh"},
         {title: "NEEDS REMOVING: Edit Recurrent Income", link: "/editRecurringIncomePage/jhbjhbhjbjhbjh"},
+        {title: "Current Recurring Transactions", link: "/listRecurringTransactionsPage"},
     ]
 
     return (

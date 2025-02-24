@@ -4,14 +4,12 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import clearRouterHistory from '@/utils/clearRouterHistory';
-import Income from '@/models/core/Income';
 import getToken from '@/utils/tokenAccess/getToken';
-import getIncomeByID from '@/utils/apiCalls/getIncomeByID';
-import deleteIncome from '@/utils/apiCalls/deleteIncome';
 import RecurringIncome from '@/models/recurrenceModels/RecurringIncome';
 import BasicRecurrenceRule from '@/models/recurrenceModels/BasicRecurrenceRule';
 import Frequency from '@/enums/Frequency';
 import convertFrequencyToTextDisplay from '@/utils/convertFrequencyToTextDisplay';
+import deleteRecurringIncome from '@/utils/apiCalls/deleteRecurringIncome';
 
 
 export default function IncomeDetailsScreen() {
@@ -77,16 +75,16 @@ export default function IncomeDetailsScreen() {
             { text: 'Cancel', style: 'cancel' },
             {
                 text: 'Delete', style: 'destructive', onPress: () => {
-                    // deleteIncome(token, id as string).then((complete) => {
-                    //     if (complete) {
-                    //         Alert.alert('Success', 'Income deleted successfully!');
-                    //         clearRouterHistory(router);
-                    //         router.replace("/listTransactionsPage");
-                    //     }
-                    // }).catch((err: Error) => {
-                    //     Alert.alert("Failed", "Failed to delete income.");
-                    //     console.log(err.message);
-                    // })
+                    deleteRecurringIncome(token, id as string).then((complete) => {
+                        if (complete) {
+                            Alert.alert('Success', 'Income deleted successfully!');
+                            clearRouterHistory(router);
+                            router.replace("/listRecurringTransactionsPage");
+                        }
+                    }).catch((err: Error) => {
+                        Alert.alert("Failed", "Failed to delete income.");
+                        console.log(err.message);
+                    })
                 }
             },
         ]);

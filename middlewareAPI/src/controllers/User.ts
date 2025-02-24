@@ -56,6 +56,5 @@ export const remove: RequestHandler = (req, res) => {
     }
 
     userService.deleteUser(id);
-    authService.logout()
     res.status(200).json({ message: "User deleted" });
 };

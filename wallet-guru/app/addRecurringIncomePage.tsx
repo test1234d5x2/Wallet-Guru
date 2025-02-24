@@ -12,34 +12,37 @@ import Frequency from '@/enums/Frequency';
 import RecurrentIncomeDetailsInputs from '@/components/formComponents/recurrentIncomeInputs';
 import isInteger from '@/utils/validation/validateInteger';
 import isValidFrequency from '@/utils/validation/isValidFrequency';
+import RecurrenceRule from '@/models/recurrenceModels/RecurrenceRule';
+import BasicRecurrenceRule from '@/models/recurrenceModels/BasicRecurrenceRule';
 
 
-async function addRecurrentIncome(token: string) {
-    // const API_DOMAIN = process.env.EXPO_PUBLIC_BLOCKCHAIN_MIDDLEWARE_API_IP_ADDRESS;
-    // if (!API_DOMAIN) {
-    //     throw new Error("Domain could not be found.");
-    // };
+async function addRecurrentIncome(token: string, title: string, amount: number, date: Date, notes: string, recurrenceRule: RecurrenceRule) {
+    const API_DOMAIN = process.env.EXPO_PUBLIC_BLOCKCHAIN_MIDDLEWARE_API_IP_ADDRESS;
+    if (!API_DOMAIN) {
+        throw new Error("Domain could not be found.");
+    };
 
-    // const ADD_INCOME_URL = `http://${API_DOMAIN}/api/incomes/`
+    const ADD_INCOME_URL = `http://${API_DOMAIN}/api/recurring-incomes/`
 
-    // const response = await fetch(ADD_INCOME_URL, {
-    //     method: "POST",
-    //     headers: {
-    //         "Authorization": `Bearer ${token}`,
-    //         "Content-Type": "application/json",
-    //     },
-    //     body: JSON.stringify({
-    //         title,
-    //         amount,
-    //         date,
-    //         notes
-    //     })
-    // });
+    const response = await fetch(ADD_INCOME_URL, {
+        method: "POST",
+        headers: {
+            "Authorization": `Bearer ${token}`,
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+            title,
+            amount,
+            date,
+            notes,
+            recurrenceRule
+        })
+    });
 
-    // if (!response.ok) {
-    //     const error = await response.json();
-    //     throw new Error(error.message);
-    // }
+    if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message);
+    }
 }
 
 
@@ -143,19 +146,15 @@ export default function AddRecurrentIncome() {
 
     const handleAddRecurrentIncome = () => {
         if (validateForm()) {
-            console.log("Form Valid");
-            // addIncome(token, title, parseFloat(amount), date as Date, notes).then((data) => {
-            //     Alert.alert('Success', 'Income added successfully!');
-            //     setTitle('');
-            //     setAmount('');
-            //     setDate(null);
-            //     setNotes('');
-            //     clearRouterHistory(router);
-            //     router.replace("/listTransactionsPage");
-            // }).catch((error: Error) => {
-            //     Alert.alert("Error Adding Income");
-            //     console.log(error.message)
-            // });
+            const recurrenceRule = new BasicRecurrenceRule(frequency, parseFloat(interval), startDate as Date, undefined, endDate as Date)
+            addRecurrentIncome(token, title, parseFloat(amount), new Date(), notes, recurrenceRule).then((data) => {
+                Alert.alert('Success', 'Income added successfully!');
+                clearRouterHistory(router);
+                router.replace("/listRecurringTransactionsPage");
+            }).catch((error: Error) => {
+                Alert.alert("Error Adding Income");
+                console.log(error.message)
+            });
         }
     };
 

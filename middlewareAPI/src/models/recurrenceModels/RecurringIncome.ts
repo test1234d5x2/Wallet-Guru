@@ -17,4 +17,12 @@ export default class RecurringIncome extends Income implements RecurringTransact
     getPageURL(): string {
         return "/viewRecurringIncomeDetailsPage/" + this.getID();
     }
+
+    public toJSON() {
+        let partialResult = super.toJSON();
+        return {
+            ...partialResult,
+            recurrenceRule: this.recurrenceRule,
+        };
+    }
 }

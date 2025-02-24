@@ -13,9 +13,9 @@ import updateExpenseCategory from '@/utils/apiCalls/updateExpenseCategory';
 import ExpenseCategory from '@/models/core/ExpenseCategory';
 import getExpenseCategories from '@/utils/apiCalls/getExpenseCategories';
 import Frequency from '@/enums/Frequency';
-import getCategoryNamesList from '@/utils/getCategoryNamesList';
 import isValidFrequency from '@/utils/validation/isValidFrequency';
 import isInteger from '@/utils/validation/validateInteger';
+import BasicRecurrenceRule from '@/models/recurrenceModels/BasicRecurrenceRule';
 
 
 export default function EditExpenseCategory() {
@@ -51,6 +51,9 @@ export default function EditExpenseCategory() {
             getExpenseCategoryByID(token, id as string).then((category) => {
                 setCategoryName(category.name);
                 setMonthlyLimit(category.monthlyBudget.toString());
+                setFrequency(category.recurrenceRule.frequency);
+                setFrequencyInterval(category.recurrenceRule.interval.toString());
+                setStartDate(category.recurrenceRule.startDate);
             }).catch((error: Error) => {
                 Alert.alert("Expense Category Not Found")
                 console.log(error.message);
@@ -104,7 +107,7 @@ export default function EditExpenseCategory() {
             return false;
         }
 
-        if (getCategoryNamesList(categories).find((cName => cName === categoryName))) {
+        if (categories.find((cat => cat.name === categoryName && cat.getID() !== id))) {
             Alert.alert("Category Already Exists", "This category already exists.");
             setError("This category already exists.");
             return false;
@@ -134,7 +137,8 @@ export default function EditExpenseCategory() {
 
     const handleEditCategory = () => {
         if (validateForm()) {
-            updateExpenseCategory(token, id as string, categoryName, parseFloat(monthlyLimit)).then((complete) => {
+            const recurrenceRule = new BasicRecurrenceRule(frequency, parseFloat(interval), startDate as Date);
+            updateExpenseCategory(token, id as string, categoryName, parseFloat(monthlyLimit), recurrenceRule).then((complete) => {
                 if (complete) {
                     Alert.alert('Success', `Category "${categoryName}" updated with a limit of £${monthlyLimit}`);
                     clearRouterHistory(router);

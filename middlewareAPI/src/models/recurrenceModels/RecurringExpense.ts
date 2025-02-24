@@ -17,4 +17,12 @@ export default class RecurringExpense extends Expense implements RecurringTransa
     getEditURL(): string {
         return "/editRecurringExpensePage/" + this.getID();
     }
+
+    public toJSON() {
+        let partialResult = super.toJSON();
+        return {
+            ...partialResult,
+            recurrenceRule: this.recurrenceRule,
+        };
+    }
 }

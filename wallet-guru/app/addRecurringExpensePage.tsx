@@ -14,36 +14,38 @@ import Frequency from '@/enums/Frequency';
 import RecurrentExpenseDetailsInputs from '@/components/formComponents/recurrentExpenseInputs';
 import isInteger from '@/utils/validation/validateInteger';
 import isValidFrequency from '@/utils/validation/isValidFrequency';
+import RecurrenceRule from '@/models/recurrenceModels/RecurrenceRule';
+import BasicRecurrenceRule from '@/models/recurrenceModels/BasicRecurrenceRule';
 
 
-async function addRecurrentExpense(token: string) {
-    // const API_DOMAIN = process.env.EXPO_PUBLIC_BLOCKCHAIN_MIDDLEWARE_API_IP_ADDRESS;
-    // if (!API_DOMAIN) {
-    //     throw new Error("Domain could not be found.");
-    // };
+async function addRecurrentExpense(token: string, title: string, amount: number, date: Date, expenseCategoryID: string, notes: string, recurrenceRule: RecurrenceRule) {
+    const API_DOMAIN = process.env.EXPO_PUBLIC_BLOCKCHAIN_MIDDLEWARE_API_IP_ADDRESS;
+    if (!API_DOMAIN) {
+        throw new Error("Domain could not be found.");
+    };
 
-    // const ADD_EXPENSE_URL = `http://${API_DOMAIN}/api/expenses/`;
+    const ADD_RECURRING_EXPENSE_URL = `http://${API_DOMAIN}/api/recurring-expenses/`;
 
-    // const response = await fetch(ADD_EXPENSE_URL, {
-    //     method: "POST",
-    //     headers: {
-    //         "Authorization": `Bearer ${token}`,
-    //         "Content-Type": "application/json",
-    //     },
-    //     body: JSON.stringify({
-    //         title,
-    //         amount,
-    //         date,
-    //         notes,
-    //         expenseCategoryID,
-    //         receipt: receipt === undefined ? '' : receipt
-    //     })
-    // });
+    const response = await fetch(ADD_RECURRING_EXPENSE_URL, {
+        method: "POST",
+        headers: {
+            "Authorization": `Bearer ${token}`,
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+            title,
+            amount,
+            date,
+            notes,
+            expenseCategoryID,
+            recurrenceRule
+        })
+    });
 
-    // if (!response.ok) {
-    //     const error = await response.json();
-    //     throw new Error(error.message);
-    // };
+    if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message);
+    };
 }
 
 
@@ -161,22 +163,16 @@ export default function AddRecurrentExpense() {
     };
 
     const handleAddRecurrentExpense = () => {
-        console.log("OK")
         if (validateForm()) {
-            Alert.alert("Valid Form");
-            // addExpense(token, title, parseFloat(amount), date as Date, (category as ExpenseCategory).getID(), notes).then((data) => {
-            //     Alert.alert('Success', 'Expense added successfully!');
-            //     setTitle('');
-            //     setAmount('');
-            //     setDate(new Date());
-            //     setCategory(null);
-            //     setNotes('');
-            //     clearRouterHistory(router);
-            //     router.replace("/listTransactionsPage");
-            // }).catch((error: Error) => {
-            //     Alert.alert("Error Adding Expense");
-            //     console.log(error)
-            // })
+            const recurrenceRule = new BasicRecurrenceRule(frequency, parseFloat(interval), startDate as Date, undefined, endDate as Date)
+            addRecurrentExpense(token, title, parseFloat(amount), new Date(), (category as ExpenseCategory).getID(), notes, recurrenceRule).then((data) => {
+                Alert.alert('Success', 'Expense added successfully!');
+                clearRouterHistory(router);
+                router.replace("/listRecurringTransactionsPage");
+            }).catch((error: Error) => {
+                Alert.alert("Error Adding Expense");
+                console.log(error)
+            })
         };
     };
 

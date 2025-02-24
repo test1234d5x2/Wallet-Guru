@@ -1,16 +1,16 @@
 import RecurringIncomeRepository from "../repositories/RecurringIncomeRepository";
-import Income from "../models/core/Income";
 import RecurrenceRule from "../models/recurrenceModels/RecurrenceRule";
 import RecurringIncome from "../models/recurrenceModels/RecurringIncome";
-import Registry from "../registry/Registry";
+import IncomeService from "./IncomeService";
+
 
 class RecurringIncomeService {
     private repository: RecurringIncomeRepository;
-    private registry: Registry;
+    private incomeService: IncomeService;
 
-    constructor() {
+    constructor(incomeService: IncomeService) {
         this.repository = new RecurringIncomeRepository();
-        this.registry = Registry.getInstance();
+        this.incomeService = incomeService;
     }
 
     public addRecurringIncome(userID: string, title: string, amount: number, date: Date, notes: string, recurrenceRule: RecurrenceRule): void {
@@ -52,7 +52,7 @@ class RecurringIncomeService {
         const recurringIncomes = this.repository.getAll();
         recurringIncomes.forEach(recIncome => {
             if (recIncome.recurrenceRule.shouldTrigger()) {
-                this.registry.incomeService.addIncome(recIncome.getUserID(), recIncome.title, recIncome.amount, new Date(), recIncome.notes);
+                this.incomeService.addIncome(recIncome.getUserID(), recIncome.title, recIncome.amount, new Date(), recIncome.notes);
                 recIncome.recurrenceRule.computeNextTriggerDate();
             }
         });

@@ -4,9 +4,7 @@ import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert } from 'rea
 import setPageTitle from '@/components/pageTitle/setPageTitle';
 import TopBar from '@/components/topBars/topBar';
 import uuid from 'react-native-uuid';
-import ExpenseItem from '@/components/listItems/expenseItem';
 import Transaction from '@/models/core/Transaction';
-import IncomeItem from '@/components/listItems/incomeItem';
 import clearRouterHistory from '@/utils/clearRouterHistory';
 import ExpenseCategory from '@/models/core/ExpenseCategory';
 import DateInputField from '@/components/formComponents/inputFields/dateInputField';
@@ -15,16 +13,18 @@ import ModalSelectionTransactionTypes from '@/components/modalSelection/modalSel
 import TransactionType from '@/enums/TransactionType';
 import filterTransactionsByDate from '@/utils/filterTransactionsByDate';
 import filterExpensesByCategory from '@/utils/filterExpensesByCategory';
-import Expense from '@/models/core/Expense';
-import Income from '@/models/core/Income';
 import getExpenseCategories from '@/utils/apiCalls/getExpenseCategories';
-import getExpenses from '@/utils/apiCalls/getExpenses';
-import getIncomes from '@/utils/apiCalls/getIncomes';
 import getToken from '@/utils/tokenAccess/getToken';
+import RecurringExpense from '@/models/recurrenceModels/RecurringExpense';
+import RecurringIncome from '@/models/recurrenceModels/RecurringIncome';
+import getRecurringExpenses from '@/utils/apiCalls/getRecurringExpenses';
+import getRecurringIncomes from '@/utils/apiCalls/getReccuringIncomes';
+import RecurringExpenseItem from '@/components/listItems/recurringExpenseItem';
+import RecurringIncomeItem from '@/components/listItems/recurringIncomeItem';
 
 
-export default function ViewTransactionsList() {
-    setPageTitle("Transactions");
+export default function ViewReccuringTransactionsList() {
+    setPageTitle("Recurring Transactions");
 
     const router = useRouter();
     const [token, setToken] = useState<string>('');
@@ -33,12 +33,12 @@ export default function ViewTransactionsList() {
     const [filterStartDate, setFilterStartDate] = useState<Date | null>(null);
     const [filterEndDate, setFilterEndDate] = useState<Date | null>(null);
     const [categories, setCategories] = useState<ExpenseCategory[]>([]);
-    const [expenses, setExpenses] = useState<Expense[]>([]);
-    const [incomes, setIncomes] = useState<Income[]>([]);
+    const [recurringExpenses, setRecurringExpenses] = useState<RecurringExpense[]>([]);
+    const [recurringIncomes, setRecurringIncomes] = useState<RecurringIncome[]>([]);
 
     getToken().then((data) => {
         if (!data) {
-            Alert.alert('Error', 'You must be logged in to view your dashboard.');
+            Alert.alert('Error', 'You must be logged in to view your recurring transactions.');
             clearRouterHistory(router);
             router.replace("/loginPage");
             return;
@@ -62,11 +62,11 @@ export default function ViewTransactionsList() {
 
     useEffect(() => {
         async function getExpenseList() {
-            const result = await getExpenses(token);
+            const result = await getRecurringExpenses(token);
             if (result) {
-                setExpenses(result);
+                setRecurringExpenses(result);
             } else {
-                console.log("Error with getting expense list")
+                console.log("Error with getting recurring expenses list")
             }
         }
 
@@ -75,11 +75,11 @@ export default function ViewTransactionsList() {
 
     useEffect(() => {
         async function getIncomesList() {
-            const result = await getIncomes(token);
+            const result = await getRecurringIncomes(token);
             if (result) {
-                setIncomes(result);
+                setRecurringIncomes(result);
             } else {
-                console.log("Error with getting incomes list")
+                console.log("Error with getting recurring incomes list")
             }
         }
 
@@ -97,34 +97,32 @@ export default function ViewTransactionsList() {
     let tomorrow = new Date();
     tomorrow = new Date(tomorrow.setDate(tomorrow.getDate() + 1))
 
-    if (selectedType !== TransactionType.EXPENSE) {
-        transactions = filterTransactionsByDate(incomes, filterStartDate === null ? new Date(1800, 0, 1) : filterStartDate, filterEndDate === null ? tomorrow : filterEndDate)
-        transactionDisplayElements.push(
-            ...transactions.map((income) => (
-                <React.Fragment key={uuid.v4() as string}>
-                    <TouchableOpacity onPress={() => handleTransactionClick(income)}>
-                        <IncomeItem token={token} income={income} />
-                    </TouchableOpacity>
-                    <View style={styles.divider} />
-                </React.Fragment>
-            )),
-        )
-    }
+    transactions = filterTransactionsByDate(recurringIncomes, filterStartDate === null ? new Date(1800, 0, 1) : filterStartDate, filterEndDate === null ? tomorrow : filterEndDate)
+    transactionDisplayElements.push(
+        ...transactions.map((ri) => (
+            <React.Fragment key={uuid.v4() as string}>
+                <TouchableOpacity onPress={() => handleTransactionClick(ri)}>
+                    <RecurringIncomeItem token={token} recurringIncome={ri} />
+                </TouchableOpacity>
+                <View style={styles.divider} />
+            </React.Fragment>
+        )),
+    )
 
-    if (selectedType !== TransactionType.INCOME) {
-        transactions = filterTransactionsByDate(expenses, filterStartDate === null ? new Date(1800, 0, 1) : filterStartDate, filterEndDate === null ? tomorrow : filterEndDate)
-        if (selectedCategory) { transactions = filterExpensesByCategory(transactions, selectedCategory) }
-        transactionDisplayElements.push(
-            ...transactions.map((expense) => (
-                <React.Fragment key={uuid.v4() as string}>
-                    <TouchableOpacity onPress={() => handleTransactionClick(expense)}>
-                        <ExpenseItem token={token} expense={expense} />
-                    </TouchableOpacity>
-                    <View style={styles.divider} />
-                </React.Fragment>
-            )),
-        )
+    transactions = filterTransactionsByDate(recurringExpenses, filterStartDate === null ? new Date(1800, 0, 1) : filterStartDate, filterEndDate === null ? tomorrow : filterEndDate)
+    if (selectedCategory) {
+        transactions = filterExpensesByCategory(transactions, selectedCategory)
     }
+    transactionDisplayElements.push(
+        ...transactions.map((rx) => (
+            <React.Fragment key={uuid.v4() as string}>
+                <TouchableOpacity onPress={() => handleTransactionClick(rx)}>
+                    <RecurringExpenseItem token={token} recurringExpense={rx} />
+                </TouchableOpacity>
+                <View style={styles.divider} />
+            </React.Fragment>
+        )),
+    )
 
     return (
         <View style={styles.container}>
@@ -150,8 +148,8 @@ export default function ViewTransactionsList() {
                         <View style={styles.messageContainer}>
                             <Text style={styles.message}>There are currently no transactions.</Text>
                             <TouchableOpacity>
-                                <Link href="/addExpensePage" replace>
-                                    <Text style={styles.linkText}>Add an expense</Text>
+                                <Link href="/addRecurringExpensePage" replace>
+                                    <Text style={styles.linkText}>Add a recurring expense</Text>
                                 </Link>
                             </TouchableOpacity>
                         </View>
