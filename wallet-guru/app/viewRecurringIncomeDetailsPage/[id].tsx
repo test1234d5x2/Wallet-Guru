@@ -6,8 +6,6 @@ import { View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import clearRouterHistory from '@/utils/clearRouterHistory';
 import getToken from '@/utils/tokenAccess/getToken';
 import RecurringIncome from '@/models/recurrenceModels/RecurringIncome';
-import BasicRecurrenceRule from '@/models/recurrenceModels/BasicRecurrenceRule';
-import Frequency from '@/enums/Frequency';
 import convertFrequencyToTextDisplay from '@/utils/convertFrequencyToTextDisplay';
 import deleteRecurringIncome from '@/utils/apiCalls/deleteRecurringIncome';
 import getRecurringIncomeByID from '@/utils/apiCalls/getRecurringIncomeByID';
@@ -35,16 +33,6 @@ export default function IncomeDetailsScreen() {
         setToken(data.token);
         setEmail(data.email);
     });
-
-
-    useEffect(() => {
-        const today = new Date();
-        const endDate = new Date(today.setDate(today.getDate() + 5));
-
-        setRecurringIncome(
-            new RecurringIncome("", "Title", 25, new Date(), "Some Notes", new BasicRecurrenceRule(Frequency.Daily, 4, new Date(), endDate))
-        )
-    }, [])
 
     useEffect(() => {
         async function getIncome() {

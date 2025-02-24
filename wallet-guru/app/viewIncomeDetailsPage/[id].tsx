@@ -10,11 +10,6 @@ import getIncomeByID from '@/utils/apiCalls/getIncomeByID';
 import deleteIncome from '@/utils/apiCalls/deleteIncome';
 
 
-
-
-
-
-
 export default function IncomeDetailsScreen() {
     const { id } = useLocalSearchParams();
 

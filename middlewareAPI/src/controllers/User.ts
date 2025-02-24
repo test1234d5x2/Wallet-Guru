@@ -1,5 +1,6 @@
 import { RequestHandler } from "express";
 import Registry from "../registry/Registry";
+import getUserFromToken from "../utils/getUserFromToken";
 
 const registry = Registry.getInstance();
 const userService = registry.userService;
@@ -21,7 +22,7 @@ export const create: RequestHandler = (req, res) => {
         res.status(400).json({ error: "User already exists", message: "User already exists." });
         return;
     }
-    
+
     userService.addUser(username, password);
     res.status(201).json({ message: "User created" });
 };
@@ -45,16 +46,34 @@ export const login: RequestHandler = (req, res) => {
 
 /**
  * Delete a user.
- * Calls registry.userService.deleteUser using the user id from the URL parameters.
+ * Calls registry.userService.deleteUser using the email to get the userID and then using the userID to delete the user.
  */
 export const remove: RequestHandler = (req, res) => {
-    const { id } = req.params;
+    const { email } = req.body;
 
-    if (!id) {
-        res.status(400).json({ error: "User ID is required", message: "User ID is required." });
+    if (!email) {
+        res.status(400).json({ error: "Email is required." });
         return;
     }
 
-    userService.deleteUser(id);
-    res.status(200).json({ message: "User deleted" });
+    const userID = getUserFromToken(req);
+    if (!userID) {
+        res.status(401).json({ error: "You must be logged in to perform this action." });
+        return;
+    }
+
+    const user = userService.findByID(userID);
+
+    if (!user) {
+        res.status(401).json({ error: "You must be logged in to perform this action." })
+        return;
+    }
+
+    if (user.getEmail() !== email) {
+        res.status(401).json({ error: "You must be logged in to perform this action." })
+        return;
+    }
+
+    userService.deleteUser(userID);
+    res.status(200).json({ error: "User deleted" });
 };

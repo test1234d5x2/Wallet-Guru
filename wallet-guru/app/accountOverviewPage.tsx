@@ -6,6 +6,7 @@ import { useRouter } from "expo-router";
 import clearRouterHistory from "@/utils/clearRouterHistory";
 import getToken from "@/utils/tokenAccess/getToken";
 import removeToken from "@/utils/tokenAccess/deleteToken";
+import deleteUser from "@/utils/apiCalls/deleteUser";
 
 export default function AccountOverview() {
     setPageTitle("Account Overview");
@@ -16,7 +17,7 @@ export default function AccountOverview() {
 
     getToken().then((data) => {
         if (!data) {
-            Alert.alert('Error', 'You must be logged in to view your dashboard.');
+            Alert.alert('Error', 'You must be logged in to view your account page.');
             clearRouterHistory(router);
             router.replace("/loginPage");
             return;
@@ -43,7 +44,7 @@ export default function AccountOverview() {
             { text: 'Cancel', style: 'cancel' },
             {
                 text: 'Delete', style: 'destructive', onPress: () => {
-                    // TODO: Implementation Required
+                    deleteUser(token, email)
                     removeToken();
                     clearRouterHistory(router);
                     router.replace("/");
