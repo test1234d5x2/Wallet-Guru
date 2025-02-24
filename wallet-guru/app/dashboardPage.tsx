@@ -82,29 +82,39 @@ export default function Dashboard() {
         getCategories();
     }, [token, expenses]);
 
-    const transactionItemsList = [
-        expenses.slice(0, 3).map((expense) => (
-            <React.Fragment key={uuid.v4() as string}>
-                <ExpenseItem token={token} expense={expense} categoryName={categories.find((cat) => cat.getID() === expense.categoryID)?.name || ""} />
-                <View style={styles.dividerLine} />
-            </React.Fragment>
-        )),
-        incomes.slice(0, 3).map((income) => (
-            <React.Fragment key={uuid.v4() as string}>
-                <IncomeItem token={token} income={income} />
-                <View style={styles.dividerLine} />
-            </React.Fragment>
-        )),
-    ];
+    const transactionItemsList = [];
+    if (expenses.length > 0) {
+        transactionItemsList.push(
+            expenses.slice(0, 3).map((expense) => (
+                <React.Fragment key={uuid.v4() as string}>
+                    <ExpenseItem token={token} expense={expense} categoryName={categories.find((cat) => cat.getID() === expense.categoryID)?.name || ""} />
+                    <View style={styles.dividerLine} />
+                </React.Fragment>
+            ))
+        )
+    }
+    if (incomes.length > 0) {
+        transactionItemsList.push(
+            incomes.slice(0, 3).map((income) => (
+                <React.Fragment key={uuid.v4() as string}>
+                    <IncomeItem token={token} income={income} />
+                    <View style={styles.dividerLine} />
+                </React.Fragment>
+            ))
+        )
+    }
 
-    const expenseCategoryItemsList = [
-        categories.slice(0, 3).map((category) => (
-            <React.Fragment key={uuid.v4() as string}>
-                <ExpenseCategoryItem token={token} currentSpending={calculateMonthlyCategoryTotal(expenses, new Date(), category)} category={category} />
-                <View style={styles.dividerLine} />
-            </React.Fragment>
-        ))
-    ];
+    const expenseCategoryItemsList = [];
+    if (categories.length > 0) {
+        expenseCategoryItemsList.push(
+            categories.slice(0, 3).map((category) => (
+                <React.Fragment key={uuid.v4() as string}>
+                    <ExpenseCategoryItem token={token} currentSpending={calculateMonthlyCategoryTotal(expenses, new Date(), category)} category={category} />
+                    <View style={styles.dividerLine} />
+                </React.Fragment>
+            ))
+        )
+    }
 
     return (
         <View style={styles.container}>

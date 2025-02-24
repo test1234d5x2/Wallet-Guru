@@ -89,7 +89,7 @@ export default function ViewGoalDetails() {
 
                 <View style={{ rowGap: 5 }}>
                     <Text style={styles.label}>Current: £{goal.current.toFixed(2)}</Text>
-                    <Progress.Bar progress={goal.calculateProgress()} color="#007BFF" width={null} />
+                    <Progress.Bar progress={goal.calculateProgress()} color={goal.calculateProgress() >= 1 ? "#54B835": "#007BFF"} width={null} />
                 </View>
 
                 <Text style={styles.label}>Description: {goal.description}</Text>

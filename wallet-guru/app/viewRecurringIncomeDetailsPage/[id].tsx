@@ -99,7 +99,7 @@ export default function IncomeDetailsScreen() {
                 <Text style={styles.detail}>Start Date: {recurringIncome.recurrenceRule.startDate.toDateString()}</Text>
                 <Text style={styles.detail}>Next Transaction Date: {recurringIncome.recurrenceRule.nextTriggerDate.toDateString()}</Text>
                 {!recurringIncome.recurrenceRule.endDate ? "" : <Text style={styles.detail}>End Date: {recurringIncome.recurrenceRule.endDate.toDateString()}</Text>}
-                <Text style={styles.detail}>Frequency: {`${recurringIncome.recurrenceRule.interval} ${convertFrequencyToTextDisplay(recurringIncome.recurrenceRule.frequency)}${recurringIncome.recurrenceRule.interval !== 1 ? "s" : ""}`}</Text>
+                <Text style={styles.detail}>Frequency: Every {`${recurringIncome.recurrenceRule.interval} ${convertFrequencyToTextDisplay(recurringIncome.recurrenceRule.frequency)}${recurringIncome.recurrenceRule.interval !== 1 ? "s" : ""}`}</Text>
                 <View>
                     <Text style={styles.notesTitle}>Notes:</Text>
                     <Text style={styles.notes}>{recurringIncome.notes}</Text>

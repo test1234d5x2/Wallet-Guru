@@ -2,7 +2,7 @@ import setPageTitle from "@/components/pageTitle/setPageTitle";
 import TopBar from "@/components/topBars/topBar";
 import { Ionicons } from "@expo/vector-icons";
 import React, { useEffect, useState } from "react";
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from "react-native";
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, Dimensions } from "react-native";
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import clearRouterHistory from "@/utils/clearRouterHistory";
 import getToken from "@/utils/tokenAccess/getToken";
@@ -10,6 +10,7 @@ import getGoalByID from "@/utils/apiCalls/getGoalByID";
 import Goal from "@/models/core/Goal";
 import isNumeric from "@/utils/validation/validateNumeric";
 import updateGoal from "@/utils/apiCalls/updateGoal";
+import NumericInputField from "@/components/formComponents/inputFields/numericInputField";
 
 
 
@@ -90,21 +91,14 @@ export default function UpdateGoal() {
             <TopBar />
 
             {!goal ? "": 
-            <View>
+            <View style={{rowGap: 15}}>
                 <Text style={styles.label}>Goal: {goal.title}</Text>
                 <Text style={styles.label}>Target: £{goal.target.toFixed(2)}</Text>
                 <Text style={styles.label}>Current: £{goal.current.toFixed(2)}</Text>
             </View>}
 
             <View style={styles.inputContainer}>
-                <TextInput
-                    style={styles.input}
-                    placeholder="Amount Added/Removed"
-                    placeholderTextColor={"rgba(0,0,0,0.25)"}
-                    value={amount}
-                    onChangeText={(text) => setAmount(text)}
-                    keyboardType="numeric"
-                />
+                <NumericInputField value={amount} setValue={setAmount} placeholder={"Amount Added/Removed"} />
 
                 <TouchableOpacity>
                     <Ionicons name="help-circle-outline" size={24} color="black" onPress={handleHelpClick} />
@@ -134,7 +128,9 @@ const styles = StyleSheet.create({
         display: "flex",
         flexDirection: "row",
         alignItems: "center",
+        justifyContent: "space-between",
         columnGap: 15,
+        width: "80%",
     },
     input: {
         borderWidth: 1,

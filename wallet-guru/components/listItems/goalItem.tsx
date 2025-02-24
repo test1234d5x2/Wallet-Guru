@@ -50,7 +50,7 @@ export default function GoalItem(props: GoalItemProps) {
                 <Text style={styles.goalTarget}>Target: £{props.goal.target.toFixed(2)}</Text>
             </View>
             <Text style={styles.progressLabel}>Progress</Text>
-            <Progress.Bar progress={props.goal.calculateProgress()} color="#007BFF" width={null} />
+            <Progress.Bar progress={props.goal.calculateProgress()} color={props.goal.calculateProgress() >= 1 ? "#54B835": "#007BFF"} width={null} />
             <View style={styles.actionsContainer}>
                 <ListItemEditButton id={props.goal.getID()} handleEdit={handleUpdate} />
                 <ListItemDeleteButton id={props.goal.getID()} handleDelete={handleDelete} />

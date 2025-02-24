@@ -108,7 +108,7 @@ export default function RecurrentExpenseDetailsScreen() {
                 <Text style={styles.detail}>Start Date: {recurringExpense.recurrenceRule.startDate.toDateString()}</Text>
                 <Text style={styles.detail}>Next Transaction Date: {recurringExpense.recurrenceRule.nextTriggerDate.toDateString()}</Text>
                 {!recurringExpense.recurrenceRule.endDate ? "": <Text style={styles.detail}>End Date: {recurringExpense.recurrenceRule.endDate.toDateString()}</Text>}
-                <Text style={styles.detail}>Frequency: {`${recurringExpense.recurrenceRule.interval} ${convertFrequencyToTextDisplay(recurringExpense.recurrenceRule.frequency)}${recurringExpense.recurrenceRule.interval !== 1 ? "s": ""}`}</Text>
+                <Text style={styles.detail}>Frequency: Every {`${recurringExpense.recurrenceRule.interval} ${convertFrequencyToTextDisplay(recurringExpense.recurrenceRule.frequency)}${recurringExpense.recurrenceRule.interval !== 1 ? "s": ""}`}</Text>
                 <View>
                     <Text style={styles.notesTitle}>Notes:</Text>
                     <Text style={styles.notes}>{recurringExpense.notes}</Text>
