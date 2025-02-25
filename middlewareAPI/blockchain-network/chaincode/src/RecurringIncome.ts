@@ -59,7 +59,7 @@ export class RecurringIncomeContract extends Contract {
 
         // Validate required fields, including the id provided by the client
         if (!incomeInput.id || !incomeInput.userID || incomeInput.amount === undefined || !incomeInput.title ||
-            !incomeInput.notes || !incomeInput.date || !incomeInput.recurrenceRule) {
+            !incomeInput.date || !incomeInput.recurrenceRule) {
             throw new Error('Missing required fields: id, userID, title, amount, notes, date, recurrenceRule');
         }
 
@@ -68,22 +68,14 @@ export class RecurringIncomeContract extends Contract {
             throw new Error('amount must be a valid number');
         }
 
-        // Parse the recurrenceRule, which is provided as a JSON string
-        let parsedRecurrenceRule: any;
-        try {
-            parsedRecurrenceRule = JSON.parse(incomeInput.recurrenceRule);
-        } catch (error) {
-            throw new Error('recurrenceRule must be a valid JSON string');
-        }
-
         const newRecurringIncome: RecurringIncome = {
             id: incomeInput.id,
             title: incomeInput.title,
             userID: incomeInput.userID,
             amount: amountNum,
-            notes: incomeInput.notes,
+            notes: incomeInput.notes || undefined,
             date: incomeInput.date,
-            recurrenceRule: parsedRecurrenceRule,
+            recurrenceRule: incomeInput.recurrenceRule,
         };
 
         const existing = await ctx.stub.getState(incomeInput.id);
@@ -121,7 +113,7 @@ export class RecurringIncomeContract extends Contract {
 
         // Validate required fields for update
         if (!incomeInput.id || !incomeInput.userID || !incomeInput.title ||
-            incomeInput.amount === undefined || !incomeInput.notes || !incomeInput.date || !incomeInput.recurrenceRule) {
+            incomeInput.amount === undefined || !incomeInput.date || !incomeInput.recurrenceRule) {
             throw new Error('Missing required fields: id, userID, title, amount, notes, date, recurrenceRule');
         }
 
@@ -136,18 +128,10 @@ export class RecurringIncomeContract extends Contract {
             throw new Error('amount must be a valid number');
         }
 
-        let parsedRecurrenceRule: any;
-        try {
-            parsedRecurrenceRule = JSON.parse(incomeInput.recurrenceRule);
-        } catch (error) {
-            throw new Error('recurrenceRule must be a valid JSON string');
-        }
-
         storedIncome.title = incomeInput.title;
         storedIncome.amount = amountNum;
-        storedIncome.notes = incomeInput.notes;
+        storedIncome.notes = incomeInput.notes || undefined;
         storedIncome.date = incomeInput.date;
-        storedIncome.recurrenceRule = parsedRecurrenceRule;
 
         await ctx.stub.putState(incomeInput.id, Buffer.from(this.deterministicStringify(storedIncome)));
         return JSON.stringify({ message: 'Recurring income updated' });

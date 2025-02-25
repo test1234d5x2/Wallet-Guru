@@ -59,7 +59,7 @@ export class IncomeContract extends Contract {
         }
 
         // Validate required fields
-        if (!incomeInput.id || !incomeInput.userID || !incomeInput.title || incomeInput.amount === undefined || !incomeInput.notes || !incomeInput.date) {
+        if (!incomeInput.id || !incomeInput.userID || !incomeInput.title || incomeInput.amount === undefined || !incomeInput.date) {
             throw new Error('Missing required fields: id, userID, title, amount, notes, date');
         }
 
@@ -74,7 +74,7 @@ export class IncomeContract extends Contract {
             title: incomeInput.title,
             userID: incomeInput.userID,
             amount: amountNum,
-            notes: incomeInput.notes,
+            notes: incomeInput.notes || undefined,
             date: incomeInput.date,
         };
 
@@ -112,7 +112,7 @@ export class IncomeContract extends Contract {
         }
 
         // Validate required fields for update
-        if (!incomeInput.id || !incomeInput.userID || !incomeInput.title || incomeInput.amount === undefined || !incomeInput.notes || !incomeInput.date) {
+        if (!incomeInput.id || !incomeInput.userID || !incomeInput.title || incomeInput.amount === undefined || !incomeInput.date) {
             throw new Error('Missing required fields: id, userID, title, amount, notes, date');
         }
 
@@ -130,7 +130,7 @@ export class IncomeContract extends Contract {
         // Update fields with client-provided data
         storedIncome.title = incomeInput.title;
         storedIncome.amount = amountNum;
-        storedIncome.notes = incomeInput.notes;
+        storedIncome.notes = incomeInput.notes || undefined;
         storedIncome.date = incomeInput.date;
 
         await ctx.stub.putState(incomeInput.id, Buffer.from(this.deterministicStringify(storedIncome)));

@@ -71,7 +71,6 @@ export class ExpenseContract extends Contract {
             !expenseInput.title ||
             !expenseInput.categoryID ||
             expenseInput.amount === undefined ||
-            !expenseInput.notes ||
             !expenseInput.date
         ) {
             throw new Error('Missing required expense fields: id, userID, title, categoryID, amount, notes, date');
@@ -88,7 +87,7 @@ export class ExpenseContract extends Contract {
             title: expenseInput.title,
             categoryID: expenseInput.categoryID,
             amount: amountNum,
-            notes: expenseInput.notes,
+            notes: expenseInput.notes || undefined,
             date: expenseInput.date,
             receipt: expenseInput.receipt || undefined,
         };
@@ -140,7 +139,6 @@ export class ExpenseContract extends Contract {
             !expenseInput.title ||
             !expenseInput.categoryID ||
             expenseInput.amount === undefined ||
-            !expenseInput.notes ||
             !expenseInput.date
         ) {
             throw new Error('Missing required expense fields: id, userID, title, categoryID, amount, notes, date');
@@ -160,7 +158,7 @@ export class ExpenseContract extends Contract {
         storedExpense.title = expenseInput.title;
         storedExpense.categoryID = expenseInput.categoryID;
         storedExpense.amount = amountNum;
-        storedExpense.notes = expenseInput.notes;
+        storedExpense.notes = expenseInput.notes || undefined;
         storedExpense.date = expenseInput.date;
         storedExpense.receipt = expenseInput.receipt || undefined;
 

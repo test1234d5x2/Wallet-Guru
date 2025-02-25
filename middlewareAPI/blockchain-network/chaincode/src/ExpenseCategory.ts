@@ -16,7 +16,6 @@ export interface ExpenseCategory {
 /**
  * Smart contract for managing expense categories.
  * 
- * NOTE: The client must supply the expense category id in the JSON input.
  */
 @Info({ title: 'ExpenseCategoryContract', description: 'Smart contract for managing expense categories' })
 export class ExpenseCategoryContract extends Contract {
@@ -62,7 +61,7 @@ export class ExpenseCategoryContract extends Contract {
         }
 
         // Validate required fields (id must be provided by the client)
-        if (!expenseCategoryInput.id || !expenseCategoryInput.userID || !expenseCategoryInput.name || expenseCategoryInput.monthlyBudget === undefined) {
+        if (!expenseCategoryInput.id || !expenseCategoryInput.userID || !expenseCategoryInput.name || expenseCategoryInput.monthlyBudget === undefined || !expenseCategoryInput.recurrenceRule) {
             throw new Error('Missing required fields: id, userID, name, monthlyBudget');
         }
 
@@ -72,22 +71,12 @@ export class ExpenseCategoryContract extends Contract {
             throw new Error('monthlyBudget must be a valid number');
         }
 
-        // Parse recurrenceRule if provided (expecting a JSON string)
-        let parsedRecurrenceRule = null;
-        if (expenseCategoryInput.recurrenceRule) {
-            try {
-                parsedRecurrenceRule = JSON.parse(expenseCategoryInput.recurrenceRule);
-            } catch (error) {
-                throw new Error('recurrenceRule must be a valid JSON string');
-            }
-        }
-
         const expenseCategory: ExpenseCategory = {
             id: categoryID,
             userID: expenseCategoryInput.userID,
             name: expenseCategoryInput.name,
             monthlyBudget: monthlyBudgetNum,
-            recurrenceRule: parsedRecurrenceRule,
+            recurrenceRule: expenseCategoryInput.recurrenceRule,
         };
 
         const key = this.getExpenseCategoryKey(ctx, expenseCategory.userID, categoryID);
@@ -97,7 +86,7 @@ export class ExpenseCategoryContract extends Contract {
         }
 
         await ctx.stub.putState(key, Buffer.from(this.deterministicStringify(expenseCategory)));
-        return JSON.stringify({ message: 'Expense category created', categoryID });
+        return JSON.stringify({ message: 'Expense category created' });
     }
 
     /**
@@ -142,14 +131,6 @@ export class ExpenseCategoryContract extends Contract {
             throw new Error('monthlyBudget must be a valid number');
         }
         storedExpenseCategory.monthlyBudget = monthlyBudgetNum;
-
-        if (expenseCategoryInput.recurrenceRule) {
-            try {
-                storedExpenseCategory.recurrenceRule = JSON.parse(expenseCategoryInput.recurrenceRule);
-            } catch (error) {
-                throw new Error('recurrenceRule must be a valid JSON string');
-            }
-        }
 
         await ctx.stub.putState(key, Buffer.from(this.deterministicStringify(storedExpenseCategory)));
         return JSON.stringify({ message: 'Expense category updated' });

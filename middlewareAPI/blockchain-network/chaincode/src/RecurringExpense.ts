@@ -62,7 +62,7 @@ export class RecurringExpenseContract extends Contract {
 
         // Validate required fields including the id now provided by the client
         if (!expenseInput.id || !expenseInput.userID || !expenseInput.title || !expenseInput.categoryID ||
-            expenseInput.amount === undefined || !expenseInput.notes || !expenseInput.date || !expenseInput.recurrenceRule) {
+            expenseInput.amount === undefined || !expenseInput.date || !expenseInput.recurrenceRule) {
             throw new Error('Missing required fields: id, userID, title, categoryID, amount, notes, date, recurrenceRule');
         }
 
@@ -71,23 +71,15 @@ export class RecurringExpenseContract extends Contract {
             throw new Error('amount must be a valid number');
         }
 
-        // Parse the recurrenceRule, which is provided as a JSON string
-        let parsedRecurrenceRule: any;
-        try {
-            parsedRecurrenceRule = JSON.parse(expenseInput.recurrenceRule);
-        } catch (error) {
-            throw new Error('recurrenceRule must be a valid JSON string');
-        }
-
         const newRecurringExpense: RecurringExpense = {
             id: expenseInput.id,
             title: expenseInput.title,
             userID: expenseInput.userID,
             categoryID: expenseInput.categoryID,
             amount: amountNum,
-            notes: expenseInput.notes,
+            notes: expenseInput.notes || undefined,
             date: expenseInput.date,
-            recurrenceRule: parsedRecurrenceRule,
+            recurrenceRule: expenseInput.recurrenceRule,
         };
 
         const existing = await ctx.stub.getState(expenseInput.id);
@@ -125,7 +117,7 @@ export class RecurringExpenseContract extends Contract {
 
         // Validate required fields for update
         if (!expenseInput.id || !expenseInput.userID || !expenseInput.categoryID || !expenseInput.title ||
-            expenseInput.amount === undefined || !expenseInput.notes || !expenseInput.date || !expenseInput.recurrenceRule) {
+            expenseInput.amount === undefined || !expenseInput.date || !expenseInput.recurrenceRule) {
             throw new Error('Missing required fields: id, userID, categoryID, title, amount, notes, date, recurrenceRule');
         }
 
@@ -140,19 +132,11 @@ export class RecurringExpenseContract extends Contract {
             throw new Error('amount must be a valid number');
         }
 
-        let parsedRecurrenceRule: any;
-        try {
-            parsedRecurrenceRule = JSON.parse(expenseInput.recurrenceRule);
-        } catch (error) {
-            throw new Error('recurrenceRule must be a valid JSON string');
-        }
-
         storedExpense.title = expenseInput.title;
         storedExpense.categoryID = expenseInput.categoryID;
         storedExpense.amount = amountNum;
-        storedExpense.notes = expenseInput.notes;
+        storedExpense.notes = expenseInput.notes || undefined;
         storedExpense.date = expenseInput.date;
-        storedExpense.recurrenceRule = parsedRecurrenceRule;
 
         await ctx.stub.putState(expenseInput.id, Buffer.from(this.deterministicStringify(storedExpense)));
         return JSON.stringify({ message: 'Recurring expense updated' });
