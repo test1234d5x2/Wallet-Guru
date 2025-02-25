@@ -8,19 +8,17 @@ import sortKeysRecursive from 'sort-keys-recursive';
  */
 export interface RecurringIncome {
     id: string;
-    userId: string;
-    incomeCategoryId: string;
+    userID: string;
     amount: number;
-    description: string;
-    startDate: string;
+    notes: string;
     recurrenceRule: any;  // Recurrence rule stored as an object.
-    dateCreated: string;
+    date: string;
 }
 
 /**
  * Smart contract for managing recurring income records.
  */
-@Info({ title: 'RecurringIncomeContract', description: 'Smart contract for managing recurring income records' })
+@Info({ title: 'RecurringIncomeContract', notes: 'Smart contract for managing recurring income records' })
 export class RecurringIncomeContract extends Contract {
     constructor() {
         super('RecurringIncomeContract');
@@ -37,7 +35,7 @@ export class RecurringIncomeContract extends Contract {
      * Create a new recurring income record.
      * 
      * Expects a JSON string representing the entire recurring income object.
-     * Required fields in the JSON: userId, incomeCategoryId, amount, description, startDate, recurrenceRule.
+     * Required fields in the JSON: userID, , amount, notes, date, recurrenceRule.
      * The chaincode generates a new id and sets the creation timestamp.
      *
      * @param ctx The transaction context.
@@ -50,22 +48,26 @@ export class RecurringIncomeContract extends Contract {
         if (!recurringIncomeStr) {
             throw new Error('Missing recurring income object');
         }
+
         let incomeInput: any;
         try {
             incomeInput = JSON.parse(recurringIncomeStr);
         } catch (error) {
             throw new Error('Recurring income must be a valid JSON string');
         }
+
         // Validate required fields
-        if (!incomeInput.userId || !incomeInput.incomeCategoryId || incomeInput.amount === undefined ||
-            !incomeInput.description || !incomeInput.startDate || !incomeInput.recurrenceRule) {
-            throw new Error('Missing required fields: userId, incomeCategoryId, amount, description, startDate, recurrenceRule');
+        if (!incomeInput.userID || incomeInput.amount === undefined ||
+            !incomeInput.notes || !incomeInput.date || !incomeInput.recurrenceRule) {
+            throw new Error('Missing required fields: userID, amount, notes, date, recurrenceRule');
         }
+
         const incomeId = uuidv4();
         const amountNum = Number(incomeInput.amount);
         if (isNaN(amountNum)) {
             throw new Error('amount must be a valid number');
         }
+
         // Parse the recurrenceRule, which is provided as a JSON string
         let parsedRecurrenceRule: any;
         try {
@@ -76,28 +78,27 @@ export class RecurringIncomeContract extends Contract {
 
         const newRecurringIncome: RecurringIncome = {
             id: incomeId,
-            userId: incomeInput.userId,
-            incomeCategoryId: incomeInput.incomeCategoryId,
+            userID: incomeInput.userID,
             amount: amountNum,
-            description: incomeInput.description,
-            startDate: incomeInput.startDate,
+            notes: incomeInput.notes,
+            date: incomeInput.date,
             recurrenceRule: parsedRecurrenceRule,
-            dateCreated: new Date().toISOString()
         };
 
         const existing = await ctx.stub.getState(incomeId);
         if (existing && existing.length > 0) {
             throw new Error('Recurring income record already exists');
         }
+
         await ctx.stub.putState(incomeId, Buffer.from(this.deterministicStringify(newRecurringIncome)));
-        return JSON.stringify({ message: 'Recurring income created', recurringIncomeId: incomeId });
+        return JSON.stringify({ message: 'Recurring income created' });
     }
 
     /**
      * Update an existing recurring income record.
      * 
      * Expects a JSON string representing the updated recurring income object.
-     * Required fields in the JSON: id, userId, incomeCategoryId, amount, description, startDate, recurrenceRule.
+     * Required fields in the JSON: id, userID, , amount, notes, date, recurrenceRule.
      *
      * @param ctx The transaction context.
      * @param recurringIncomeStr A JSON string representing the updated recurring income.
@@ -109,38 +110,43 @@ export class RecurringIncomeContract extends Contract {
         if (!recurringIncomeStr) {
             throw new Error('Missing recurring income object');
         }
+
         let incomeInput: any;
         try {
             incomeInput = JSON.parse(recurringIncomeStr);
         } catch (error) {
             throw new Error('Recurring income must be a valid JSON string');
         }
+
         // Validate required fields for update
-        if (!incomeInput.id || !incomeInput.userId || !incomeInput.incomeCategoryId ||
-            incomeInput.amount === undefined || !incomeInput.description || !incomeInput.startDate || !incomeInput.recurrenceRule) {
-            throw new Error('Missing required fields: id, userId, incomeCategoryId, amount, description, startDate, recurrenceRule');
+        if (!incomeInput.id || !incomeInput.userID ||
+            incomeInput.amount === undefined || !incomeInput.notes || !incomeInput.date || !incomeInput.recurrenceRule) {
+            throw new Error('Missing required fields: id, userID, amount, notes, date, recurrenceRule');
         }
+
         const incomeId = incomeInput.id;
         const incomeBytes = await ctx.stub.getState(incomeId);
         if (!incomeBytes || incomeBytes.length === 0) {
             throw new Error('Recurring income record does not exist');
         }
+
         const storedIncome: RecurringIncome = JSON.parse(incomeBytes.toString());
         const amountNum = Number(incomeInput.amount);
         if (isNaN(amountNum)) {
             throw new Error('amount must be a valid number');
         }
+
         let parsedRecurrenceRule: any;
         try {
             parsedRecurrenceRule = JSON.parse(incomeInput.recurrenceRule);
         } catch (error) {
             throw new Error('recurrenceRule must be a valid JSON string');
         }
+
         // Update fields
-        storedIncome.incomeCategoryId = incomeInput.incomeCategoryId;
         storedIncome.amount = amountNum;
-        storedIncome.description = incomeInput.description;
-        storedIncome.startDate = incomeInput.startDate;
+        storedIncome.notes = incomeInput.notes;
+        storedIncome.date = incomeInput.date;
         storedIncome.recurrenceRule = parsedRecurrenceRule;
 
         await ctx.stub.putState(incomeId, Buffer.from(this.deterministicStringify(storedIncome)));
@@ -153,43 +159,47 @@ export class RecurringIncomeContract extends Contract {
      * Expects the recurring income ID to be passed directly.
      *
      * @param ctx The transaction context.
-     * @param recurringIncomeId The recurring income record identifier.
+     * @param recurringIncomeID The recurring income record identifier.
      * @returns A JSON string confirming deletion.
      */
     @Transaction()
     @Returns('string')
-    public async deleteRecurringIncome(ctx: Context, recurringIncomeId: string): Promise<string> {
-        if (!recurringIncomeId) {
+    public async deleteRecurringIncome(ctx: Context, recurringIncomeID: string): Promise<string> {
+        if (!recurringIncomeID) {
             throw new Error('Missing recurring income ID');
         }
-        const incomeBytes = await ctx.stub.getState(recurringIncomeId);
+
+        const incomeBytes = await ctx.stub.getState(recurringIncomeID);
         if (!incomeBytes || incomeBytes.length === 0) {
             throw new Error('Recurring income record does not exist');
         }
-        await ctx.stub.deleteState(recurringIncomeId);
+
+        await ctx.stub.deleteState(recurringIncomeID);
         return JSON.stringify({ message: 'Recurring income deleted' });
     }
 
     /**
      * List all recurring income records for a given user.
      * 
-     * Expects the userId to be passed directly.
+     * Expects the userID to be passed directly.
      *
      * @param ctx The transaction context.
-     * @param userId The user identifier.
+     * @param userID The user identifier.
      * @returns A JSON string containing an array of recurring income records.
      */
     @Transaction(false)
     @Returns('string')
-    public async listRecurringIncomesByUser(ctx: Context, userId: string): Promise<string> {
-        if (!userId) {
+    public async listRecurringIncomesByUser(ctx: Context, userID: string): Promise<string> {
+        if (!userID) {
             throw new Error('Missing user ID');
         }
+
         const query = {
             selector: {
-                userId: userId
+                userID: userID
             }
         };
+
         const iterator = await ctx.stub.getQueryResult(JSON.stringify(query));
         const results: RecurringIncome[] = [];
         let result = await iterator.next();
@@ -200,6 +210,7 @@ export class RecurringIncomeContract extends Contract {
             }
             result = await iterator.next();
         }
+
         await iterator.close();
         return JSON.stringify({ recurringIncomes: results });
     }
@@ -210,19 +221,21 @@ export class RecurringIncomeContract extends Contract {
      * Expects the recurring income ID to be passed directly.
      *
      * @param ctx The transaction context.
-     * @param recurringIncomeId The recurring income record identifier.
+     * @param recurringIncomeID The recurring income record identifier.
      * @returns A JSON string representing the recurring income record.
      */
     @Transaction(false)
     @Returns('string')
-    public async getRecurringIncomeByID(ctx: Context, recurringIncomeId: string): Promise<string> {
-        if (!recurringIncomeId) {
+    public async getRecurringIncomeByID(ctx: Context, recurringIncomeID: string): Promise<string> {
+        if (!recurringIncomeID) {
             throw new Error('Missing recurring income ID');
         }
-        const incomeBytes = await ctx.stub.getState(recurringIncomeId);
+
+        const incomeBytes = await ctx.stub.getState(recurringIncomeID);
         if (!incomeBytes || incomeBytes.length === 0) {
             throw new Error('Recurring income record not found');
         }
+        
         const income: RecurringIncome = JSON.parse(incomeBytes.toString());
         return JSON.stringify(income);
     }
