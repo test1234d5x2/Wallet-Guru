@@ -1,0 +1,1 @@
+# An Example Of How The Reccurence Rule Works But With A Shorter Timespan
