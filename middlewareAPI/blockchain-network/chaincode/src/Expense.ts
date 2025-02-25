@@ -1,5 +1,4 @@
 import { Context, Contract, Transaction, Returns, Info } from 'fabric-contract-api';
-import { v4 as uuidv4 } from 'uuid';
 import stringify from 'json-stringify-deterministic';
 import sortKeysRecursive from 'sort-keys-recursive';
 
@@ -19,6 +18,8 @@ export interface Expense {
 
 /**
  * Smart contract for managing expenses.
+ * 
+ * NOTE: The client must supply the expense id in the JSON input.
  */
 @Info({ title: 'ExpenseContract', notes: 'Smart contract for managing expenses' })
 export class ExpenseContract extends Contract {
@@ -36,17 +37,18 @@ export class ExpenseContract extends Contract {
     /**
      * Create a new expense.
      * Expects a JSON string representing the expense object with these fields:
+     * - id
      * - userID
      * - title
      * - categoryID
      * - amount
      * - notes
      * - date
-     * The chaincode will generate a new expense id, and record the creation timestamp.
+     * Optionally, a receipt field can be provided.
      *
      * @param ctx The transaction context.
      * @param expenseStr A JSON string representing the expense.
-     * @returns A JSON string with a message and the new expense's id.
+     * @returns A JSON string with a message and the expense's id.
      */
     @Transaction()
     @Returns('string')
@@ -62,21 +64,28 @@ export class ExpenseContract extends Contract {
             throw new Error('Expense must be a valid JSON string');
         }
 
-        // Validate required fields
-        if (!expenseInput.userID || !expenseInput.title || !expenseInput.categoryID || expenseInput.amount === undefined || !expenseInput.notes || !expenseInput.date) {
-            throw new Error('Missing required expense fields: userID, categoryID, amount, notes, date');
+        // Validate required fields (now including "id")
+        if (
+            !expenseInput.id ||
+            !expenseInput.userID ||
+            !expenseInput.title ||
+            !expenseInput.categoryID ||
+            expenseInput.amount === undefined ||
+            !expenseInput.notes ||
+            !expenseInput.date
+        ) {
+            throw new Error('Missing required expense fields: id, userID, title, categoryID, amount, notes, date');
         }
 
-        const expenseID = uuidv4();
         const amountNum = Number(expenseInput.amount);
         if (isNaN(amountNum)) {
             throw new Error('amount must be a valid number');
         }
 
         const newExpense: Expense = {
-            id: expenseID,
-            title: expenseInput.title,
+            id: expenseInput.id,
             userID: expenseInput.userID,
+            title: expenseInput.title,
             categoryID: expenseInput.categoryID,
             amount: amountNum,
             notes: expenseInput.notes,
@@ -84,12 +93,12 @@ export class ExpenseContract extends Contract {
             receipt: expenseInput.receipt || undefined,
         };
 
-        const existing = await ctx.stub.getState(expenseID);
+        const existing = await ctx.stub.getState(expenseInput.id);
         if (existing && existing.length > 0) {
             throw new Error('Expense already exists');
         }
 
-        await ctx.stub.putState(expenseID, Buffer.from(this.deterministicStringify(newExpense)));
+        await ctx.stub.putState(expenseInput.id, Buffer.from(this.deterministicStringify(newExpense)));
         return JSON.stringify({ message: 'Expense created' });
     }
 
@@ -104,6 +113,7 @@ export class ExpenseContract extends Contract {
      * - amount
      * - notes
      * - date
+     * Optionally, receipt can be provided.
      *
      * @param ctx The transaction context.
      * @param expenseStr A JSON string representing the updated expense.
@@ -124,12 +134,19 @@ export class ExpenseContract extends Contract {
         }
 
         // Validate required fields for update
-        if (!expenseInput.id || !expenseInput.userID || !expenseInput.title || !expenseInput.categoryID || expenseInput.amount === undefined || !expenseInput.notes || !expenseInput.date) {
+        if (
+            !expenseInput.id ||
+            !expenseInput.userID ||
+            !expenseInput.title ||
+            !expenseInput.categoryID ||
+            expenseInput.amount === undefined ||
+            !expenseInput.notes ||
+            !expenseInput.date
+        ) {
             throw new Error('Missing required expense fields: id, userID, title, categoryID, amount, notes, date');
         }
 
-        const expenseID = expenseInput.id;
-        const expenseBytes = await ctx.stub.getState(expenseID);
+        const expenseBytes = await ctx.stub.getState(expenseInput.id);
         if (!expenseBytes || expenseBytes.length === 0) {
             throw new Error('Expense does not exist');
         }
@@ -147,7 +164,7 @@ export class ExpenseContract extends Contract {
         storedExpense.date = expenseInput.date;
         storedExpense.receipt = expenseInput.receipt || undefined;
 
-        await ctx.stub.putState(expenseID, Buffer.from(this.deterministicStringify(storedExpense)));
+        await ctx.stub.putState(expenseInput.id, Buffer.from(this.deterministicStringify(storedExpense)));
         return JSON.stringify({ message: 'Expense updated' });
     }
 

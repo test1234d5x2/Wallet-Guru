@@ -1,5 +1,4 @@
 import { Context, Contract, Transaction, Returns, Info } from 'fabric-contract-api';
-import { v4 as uuidv4 } from 'uuid';
 import stringify from 'json-stringify-deterministic';
 import sortKeysRecursive from 'sort-keys-recursive';
 
@@ -19,7 +18,6 @@ export interface Goal {
     userID: string;
     title: string;
     description: string;
-    date: string;        // Creation date
     target: number;
     targetDate: string;
     current: number;
@@ -28,6 +26,8 @@ export interface Goal {
 
 /**
  * Smart contract for managing goals.
+ * 
+ * NOTE: The client must supply the goal id in the JSON input.
  */
 @Info({ title: 'GoalContract', description: 'Smart contract for managing goals' })
 export class GoalContract extends Contract {
@@ -46,9 +46,9 @@ export class GoalContract extends Contract {
      * Create a new goal.
      * 
      * Expects a JSON string representing the entire goal object.
-     * Required fields: userID, title, description, target, targetDate.
-     * The chaincode generates a new id, sets the creation date, initializes current to 0,
-     * and sets status to Active if not provided.
+     * Required fields: id, userID, title, description, target, targetDate.
+     * The chaincode expects the id to be provided by the client.
+     * It initializes current to 0 and sets status to Active if not provided.
      *
      * @param ctx The transaction context.
      * @param goalStr A JSON string representing the goal.
@@ -60,40 +60,42 @@ export class GoalContract extends Contract {
         if (!goalStr) {
             throw new Error('Missing goal object');
         }
+
         let goalInput: any;
         try {
             goalInput = JSON.parse(goalStr);
         } catch (error) {
             throw new Error('Goal must be a valid JSON string');
         }
+
         // Validate required fields
-        if (!goalInput.userID || !goalInput.title || !goalInput.description || goalInput.target === undefined || !goalInput.targetDate) {
-            throw new Error('Missing required fields: userID, title, description, target, targetDate');
+        if (!goalInput.id || !goalInput.userID || !goalInput.title || !goalInput.description || goalInput.target === undefined || !goalInput.targetDate) {
+            throw new Error('Missing required fields: id, userID, title, description, target, targetDate');
         }
-        const goalID = uuidv4();
+
         const targetNum = Number(goalInput.target);
         if (isNaN(targetNum)) {
             throw new Error('target must be a valid number');
         }
+
         const newGoal: Goal = {
-            id: goalID,
+            id: goalInput.id,
             userID: goalInput.userID,
             title: goalInput.title,
             description: goalInput.description,
-            date: new Date().toISOString(),
             target: targetNum,
             targetDate: goalInput.targetDate,
             current: 0,
             status: goalInput.status ? goalInput.status as GoalStatus : GoalStatus.Active,
         };
 
-        const existing = await ctx.stub.getState(goalID);
+        const existing = await ctx.stub.getState(goalInput.id);
         if (existing && existing.length > 0) {
             throw new Error('Goal already exists');
         }
 
-        await ctx.stub.putState(goalID, Buffer.from(this.deterministicStringify(newGoal)));
-        return JSON.stringify({ message: 'Goal created', goalID });
+        await ctx.stub.putState(goalInput.id, Buffer.from(this.deterministicStringify(newGoal)));
+        return JSON.stringify({ message: 'Goal created' });
     }
 
     /**
@@ -123,6 +125,7 @@ export class GoalContract extends Contract {
         if (isNaN(currentNum)) {
             throw new Error('current must be a valid number');
         }
+        
         goal.current = currentNum;
 
         await ctx.stub.putState(goalID, Buffer.from(this.deterministicStringify(goal)));

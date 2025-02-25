@@ -1,5 +1,4 @@
 import { Context, Contract, Transaction, Returns, Info } from 'fabric-contract-api';
-import { v4 as uuidv4 } from 'uuid';
 import stringify from 'json-stringify-deterministic';
 import sortKeysRecursive from 'sort-keys-recursive';
 
@@ -29,15 +28,17 @@ export class UserContract extends Contract {
     /**
      * Create a new user.
      * @param ctx The transaction context.
+     * @param id The user's unique identifier (provided by the client).
      * @param email The user's email.
      * @param password The user's password.
-     * @returns A JSON string with a message and the new user's ID.
+     * @param dateJoined The date that the user joined.
+     * @returns A JSON string with a message confirming creation.
      */
     @Transaction()
     @Returns('string')
-    public async createUser(ctx: Context, email: string, password: string): Promise<string> {
-        if (!email || !password) {
-            throw new Error('Email and password are required');
+    public async createUser(ctx: Context, id: string, email: string, password: string, dateJoined: string): Promise<string> {
+        if (!id || !email || !password) {
+            throw new Error('ID, email, and password are required');
         }
 
         const userKey = this.getUserKey(ctx, email);
@@ -46,25 +47,24 @@ export class UserContract extends Contract {
             throw new Error('User already exists');
         }
 
-        const id = uuidv4();
         const newUser: User = {
             id,
             email,
             password, // Note: In production, store a hashed password!
-            dateJoined: new Date().toISOString(),
+            dateJoined,
             status: UserStatus.PENDING,
         };
 
         await ctx.stub.putState(userKey, Buffer.from(this.deterministicUser(newUser)));
-        return JSON.stringify({ message: 'User created'});
+        return JSON.stringify({ message: 'User created' });
     }
 
     /**
      * Authenticate a user.
      * @param ctx The transaction context.
-     * @param email The user's email/email.
+     * @param email The user's email.
      * @param password The user's password.
-     * @returns A JSON string with a success message and a dummy token.
+     * @returns A JSON string with a success message.
      */
     @Transaction(false) // Query (read-only) transaction.
     @Returns('string')

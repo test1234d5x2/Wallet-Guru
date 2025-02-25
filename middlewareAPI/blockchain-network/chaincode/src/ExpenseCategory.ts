@@ -1,5 +1,4 @@
 import { Context, Contract, Transaction, Returns, Info } from 'fabric-contract-api';
-import { v4 as uuidv4 } from 'uuid';
 import stringify from 'json-stringify-deterministic';
 import sortKeysRecursive from 'sort-keys-recursive';
 
@@ -16,6 +15,8 @@ export interface ExpenseCategory {
 
 /**
  * Smart contract for managing expense categories.
+ * 
+ * NOTE: The client must supply the expense category id in the JSON input.
  */
 @Info({ title: 'ExpenseCategoryContract', description: 'Smart contract for managing expense categories' })
 export class ExpenseCategoryContract extends Contract {
@@ -40,8 +41,7 @@ export class ExpenseCategoryContract extends Contract {
     /**
      * Create a new expense category.
      * Expects a JSON string representing the entire expense category object.
-     * Required fields in the JSON: userID, name, monthlyBudget, recurrenceRule.
-     * The chaincode will generate a new id and set the creation timestamp.
+     * Required fields in the JSON: id, userID, name, monthlyBudget, recurrenceRule.
      *
      * @param ctx The transaction context.
      * @param expenseCategoryStr A JSON string representing the expense category.
@@ -61,12 +61,12 @@ export class ExpenseCategoryContract extends Contract {
             throw new Error('Expense category must be a valid JSON string');
         }
 
-        // Validate required fields
-        if (!expenseCategoryInput.userID || !expenseCategoryInput.name || expenseCategoryInput.monthlyBudget === undefined) {
-            throw new Error('Missing required fields: userID, name, monthlyBudget');
+        // Validate required fields (id must be provided by the client)
+        if (!expenseCategoryInput.id || !expenseCategoryInput.userID || !expenseCategoryInput.name || expenseCategoryInput.monthlyBudget === undefined) {
+            throw new Error('Missing required fields: id, userID, name, monthlyBudget');
         }
 
-        const categoryID = uuidv4();
+        const categoryID = expenseCategoryInput.id;
         const monthlyBudgetNum = Number(expenseCategoryInput.monthlyBudget);
         if (isNaN(monthlyBudgetNum)) {
             throw new Error('monthlyBudget must be a valid number');
@@ -97,7 +97,7 @@ export class ExpenseCategoryContract extends Contract {
         }
 
         await ctx.stub.putState(key, Buffer.from(this.deterministicStringify(expenseCategory)));
-        return JSON.stringify({ message: 'Expense category created' });
+        return JSON.stringify({ message: 'Expense category created', categoryID });
     }
 
     /**
@@ -141,7 +141,6 @@ export class ExpenseCategoryContract extends Contract {
         if (isNaN(monthlyBudgetNum)) {
             throw new Error('monthlyBudget must be a valid number');
         }
-
         storedExpenseCategory.monthlyBudget = monthlyBudgetNum;
 
         if (expenseCategoryInput.recurrenceRule) {
@@ -177,7 +176,6 @@ export class ExpenseCategoryContract extends Contract {
         }
 
         await ctx.stub.deleteState(key);
-
         return JSON.stringify({ message: 'Expense category deleted' });
     }
 
@@ -207,7 +205,6 @@ export class ExpenseCategoryContract extends Contract {
         }
 
         await iterator.close();
-
         return JSON.stringify({ categories: results });
     }
 
@@ -232,7 +229,6 @@ export class ExpenseCategoryContract extends Contract {
         }
 
         const expenseCategory: ExpenseCategory = JSON.parse(categoryBytes.toString());
-        
         return JSON.stringify(expenseCategory);
     }
 }

@@ -1,5 +1,4 @@
 import { Context, Contract, Transaction, Returns, Info } from 'fabric-contract-api';
-import { v4 as uuidv4 } from 'uuid';
 import stringify from 'json-stringify-deterministic';
 import sortKeysRecursive from 'sort-keys-recursive';
 
@@ -17,6 +16,8 @@ export interface Income {
 
 /**
  * Smart contract for managing income records.
+ * 
+ * NOTE: The client must supply the income id (and date) in the JSON input.
  */
 @Info({ title: 'IncomeContract', description: 'Smart contract for managing income records' })
 export class IncomeContract extends Contract {
@@ -35,8 +36,9 @@ export class IncomeContract extends Contract {
      * Create a new income record.
      * 
      * Expects a JSON string representing the entire income object.
-     * Required fields in the JSON: userID, title, amount, notes, date.
-     * The chaincode will generate a new id and record the creation timestamp.
+     * Required fields in the JSON: id, userID, title, amount, notes, date.
+     * 
+     * The chaincode now expects the id to be provided by the client.
      *
      * @param ctx The transaction context.
      * @param incomeStr A JSON string representing the income.
@@ -57,32 +59,32 @@ export class IncomeContract extends Contract {
         }
 
         // Validate required fields
-        if (!incomeInput.userID || !incomeInput.title || incomeInput.amount === undefined || !incomeInput.notes || !incomeInput.date) {
-            throw new Error('Missing required fields: userID, amount, notes, date');
+        if (!incomeInput.id || !incomeInput.userID || !incomeInput.title || incomeInput.amount === undefined || !incomeInput.notes || !incomeInput.date) {
+            throw new Error('Missing required fields: id, userID, title, amount, notes, date');
         }
 
-        const incomeID = uuidv4();
         const amountNum = Number(incomeInput.amount);
         if (isNaN(amountNum)) {
             throw new Error('amount must be a valid number');
         }
 
+        // Use the client-supplied date (which should already be in ISO format)
         const newIncome: Income = {
-            id: incomeID,
+            id: incomeInput.id,
             title: incomeInput.title,
             userID: incomeInput.userID,
             amount: amountNum,
             notes: incomeInput.notes,
-            date: new Date(incomeInput.date).toISOString(),
+            date: incomeInput.date,
         };
 
-        const existing = await ctx.stub.getState(incomeID);
+        const existing = await ctx.stub.getState(incomeInput.id);
         if (existing && existing.length > 0) {
             throw new Error('Income record already exists');
         }
 
-        await ctx.stub.putState(incomeID, Buffer.from(this.deterministicStringify(newIncome)));
-        return JSON.stringify({ message: 'Income created', incomeID });
+        await ctx.stub.putState(incomeInput.id, Buffer.from(this.deterministicStringify(newIncome)));
+        return JSON.stringify({ message: 'Income created' });
     }
 
     /**
@@ -114,8 +116,7 @@ export class IncomeContract extends Contract {
             throw new Error('Missing required fields: id, userID, title, amount, notes, date');
         }
 
-        const incomeID = incomeInput.id;
-        const incomeBytes = await ctx.stub.getState(incomeID);
+        const incomeBytes = await ctx.stub.getState(incomeInput.id);
         if (!incomeBytes || incomeBytes.length === 0) {
             throw new Error('Income record does not exist');
         }
@@ -126,13 +127,13 @@ export class IncomeContract extends Contract {
             throw new Error('amount must be a valid number');
         }
 
-        // Update fields
+        // Update fields with client-provided data
         storedIncome.title = incomeInput.title;
         storedIncome.amount = amountNum;
         storedIncome.notes = incomeInput.notes;
-        storedIncome.date = new Date(incomeInput.date).toISOString();
+        storedIncome.date = incomeInput.date;
 
-        await ctx.stub.putState(incomeID, Buffer.from(this.deterministicStringify(storedIncome)));
+        await ctx.stub.putState(incomeInput.id, Buffer.from(this.deterministicStringify(storedIncome)));
         return JSON.stringify({ message: 'Income updated' });
     }
 
@@ -158,7 +159,6 @@ export class IncomeContract extends Contract {
         }
 
         await ctx.stub.deleteState(incomeID);
-
         return JSON.stringify({ message: 'Income deleted' });
     }
 
