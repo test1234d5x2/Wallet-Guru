@@ -182,27 +182,28 @@ export class RecurringExpenseContract extends Contract {
         if (!userID) {
             throw new Error('Missing user ID');
         }
-
-        const query = {
-            selector: {
-                userID: userID
-            }
-        };
-
-        const iterator = await ctx.stub.getQueryResult(JSON.stringify(query));
+    
+        // Scanning the entire ledger using empty strings for startKey and endKey.
+        const startKey = "";
+        const endKey = "";
+    
         const results: RecurringExpense[] = [];
+        const iterator = await ctx.stub.getStateByRange(startKey, endKey);
         let result = await iterator.next();
         while (!result.done) {
             if (result.value && result.value.value) {
                 const expense: RecurringExpense = JSON.parse(result.value.value.toString());
-                results.push(expense);
+                // Filter the records by userID.
+                if (expense.userID === userID) {
+                    results.push(expense);
+                }
             }
             result = await iterator.next();
         }
-
         await iterator.close();
         return JSON.stringify({ recurringExpenses: results });
     }
+    
 
     /**
      * Retrieve a specific recurring expense by ID.

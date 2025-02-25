@@ -204,28 +204,29 @@ export class ExpenseContract extends Contract {
         if (!userID) {
             throw new Error('Missing user ID');
         }
-
-        const query = {
-            selector: {
-                userID: userID
-            }
-        };
-
-        const iterator = await ctx.stub.getQueryResult(JSON.stringify(query));
+    
+        const startKey = '';
+        const endKey = '';
+    
+        const iterator = await ctx.stub.getStateByRange(startKey, endKey);
         const results: Expense[] = [];
-
+    
         let result = await iterator.next();
         while (!result.done) {
             if (result.value && result.value.value) {
                 const expense: Expense = JSON.parse(result.value.value.toString());
-                results.push(expense);
+                if (expense.userID === userID) {
+                    results.push(expense);
+                }
             }
             result = await iterator.next();
         }
-
+    
         await iterator.close();
         return JSON.stringify({ expenses: results });
     }
+    
+
 
     /**
      * Retrieve a specific expense by ID.
@@ -246,7 +247,7 @@ export class ExpenseContract extends Contract {
         if (!expenseBytes || expenseBytes.length === 0) {
             throw new Error('Expense not found');
         }
-        
+
         const expense: Expense = JSON.parse(expenseBytes.toString());
         return JSON.stringify(expense);
     }

@@ -178,26 +178,27 @@ export class RecurringIncomeContract extends Contract {
             throw new Error('Missing user ID');
         }
 
-        const query = {
-            selector: {
-                userID: userID
-            }
-        };
+        // Use empty strings for startKey and endKey to perform a full scan of the ledger.
+        const startKey = "";
+        const endKey = "";
 
-        const iterator = await ctx.stub.getQueryResult(JSON.stringify(query));
         const results: RecurringIncome[] = [];
+        const iterator = await ctx.stub.getStateByRange(startKey, endKey);
         let result = await iterator.next();
         while (!result.done) {
             if (result.value && result.value.value) {
                 const income: RecurringIncome = JSON.parse(result.value.value.toString());
-                results.push(income);
+                // Filter by userID
+                if (income.userID === userID) {
+                    results.push(income);
+                }
             }
             result = await iterator.next();
         }
-
         await iterator.close();
         return JSON.stringify({ recurringIncomes: results });
     }
+
 
     /**
      * Retrieve a specific recurring income record by ID.
@@ -219,7 +220,7 @@ export class RecurringIncomeContract extends Contract {
         if (!incomeBytes || incomeBytes.length === 0) {
             throw new Error('Recurring income record not found');
         }
-        
+
         const income: RecurringIncome = JSON.parse(incomeBytes.toString());
         return JSON.stringify(income);
     }

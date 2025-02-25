@@ -200,27 +200,31 @@ export class GoalContract extends Contract {
         if (!userID) {
             throw new Error('Missing required field: userID');
         }
-
-        const query = {
-            selector: {
-                userID: userID
-            }
-        };
-
-        const iterator = await ctx.stub.getQueryResult(JSON.stringify(query));
+    
+        // If you have a naming convention (e.g., "GOAL"), set startKey and endKey accordingly.
+        // Otherwise, using empty strings performs a full ledger scan.
+        const startKey = "";
+        const endKey = "";
+    
+        const iterator = await ctx.stub.getStateByRange(startKey, endKey);
         const results: Goal[] = [];
+    
         let result = await iterator.next();
         while (!result.done) {
             if (result.value && result.value.value) {
                 const goal: Goal = JSON.parse(result.value.value.toString());
-                results.push(goal);
+                // Filter goals by the provided userID.
+                if (goal.userID === userID) {
+                    results.push(goal);
+                }
             }
             result = await iterator.next();
         }
-
+    
         await iterator.close();
         return JSON.stringify({ goals: results });
     }
+    
 
     /**
      * Retrieve a specific goal by its ID.

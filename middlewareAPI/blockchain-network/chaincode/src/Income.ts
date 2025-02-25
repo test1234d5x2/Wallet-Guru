@@ -178,26 +178,27 @@ export class IncomeContract extends Contract {
             throw new Error('Missing user ID');
         }
 
-        const query = {
-            selector: {
-                userID: userID
-            }
-        };
+        // Scanning the entire ledger by using empty strings as startKey and endKey.
+        const startKey = "";
+        const endKey = "";
 
         const results: Income[] = [];
-        const iterator = await ctx.stub.getQueryResult(JSON.stringify(query));
+        const iterator = await ctx.stub.getStateByRange(startKey, endKey);
         let result = await iterator.next();
         while (!result.done) {
             if (result.value && result.value.value) {
                 const income: Income = JSON.parse(result.value.value.toString());
-                results.push(income);
+                // Filter records by userID.
+                if (income.userID === userID) {
+                    results.push(income);
+                }
             }
             result = await iterator.next();
         }
-
         await iterator.close();
         return JSON.stringify({ incomes: results });
     }
+
 
     /**
      * Retrieve a specific income record by ID.
@@ -219,7 +220,7 @@ export class IncomeContract extends Contract {
         if (!incomeBytes || incomeBytes.length === 0) {
             throw new Error('Income record not found');
         }
-        
+
         const income: Income = JSON.parse(incomeBytes.toString());
         return JSON.stringify(income);
     }
