@@ -36,7 +36,7 @@ export class RecurringIncomeContract extends Contract {
      * Create a new recurring income record.
      * 
      * Expects a JSON string representing the entire recurring income object.
-     * Required fields in the JSON: userID, , amount, notes, date, recurrenceRule.
+     * Required fields in the JSON: userID, title, amount, notes, date, recurrenceRule.
      * The chaincode generates a new id and sets the creation timestamp.
      *
      * @param ctx The transaction context.
@@ -100,7 +100,7 @@ export class RecurringIncomeContract extends Contract {
      * Update an existing recurring income record.
      * 
      * Expects a JSON string representing the updated recurring income object.
-     * Required fields in the JSON: id, userID, , amount, notes, date, recurrenceRule.
+     * Required fields in the JSON: id, userID, title, amount, notes, date, recurrenceRule.
      *
      * @param ctx The transaction context.
      * @param recurringIncomeStr A JSON string representing the updated recurring income.

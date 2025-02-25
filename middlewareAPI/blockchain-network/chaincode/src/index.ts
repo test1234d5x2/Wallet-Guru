@@ -9,5 +9,6 @@ import { ExpenseCategoryContract } from './ExpenseCategory';
 import { IncomeContract } from './Income';
 import { GoalContract } from './Goal';
 import { RecurringExpenseContract } from './RecurringExpense';
+import { RecurringIncomeContract } from './RecurringIncome';
 
-export const contracts: typeof Contract[] = [UserContract, ExpenseContract, ExpenseCategoryContract, IncomeContract, GoalContract, RecurringExpenseContract];
+export const contracts: typeof Contract[] = [UserContract, ExpenseContract, ExpenseCategoryContract, IncomeContract, GoalContract, RecurringExpenseContract, RecurringIncomeContract];

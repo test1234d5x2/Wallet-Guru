@@ -37,7 +37,7 @@ export class RecurringExpenseContract extends Contract {
      * Create a new recurring expense.
      * 
      * Expects a JSON string representing the entire recurring expense object.
-     * Required fields: userID, categoryID, amount, notes, date, recurrenceRule.
+     * Required fields: userID, categoryID, title, amount, notes, date, recurrenceRule.
      * The chaincode will generate a new id and set the creation timestamp.
      *
      * @param ctx The transaction context.
@@ -102,7 +102,7 @@ export class RecurringExpenseContract extends Contract {
      * Update an existing recurring expense.
      * 
      * Expects a JSON string representing the updated recurring expense object.
-     * Required fields: id, userID, categoryID, amount, notes, date, recurrenceRule.
+     * Required fields: id, userID, categoryID,title,  amount, notes, date, recurrenceRule.
      *
      * @param ctx The transaction context.
      * @param recurringExpenseStr A JSON string representing the updated recurring expense.

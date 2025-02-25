@@ -35,7 +35,7 @@ export class IncomeContract extends Contract {
      * Create a new income record.
      * 
      * Expects a JSON string representing the entire income object.
-     * Required fields in the JSON: userID, amount, notes, date.
+     * Required fields in the JSON: userID, title, amount, notes, date.
      * The chaincode will generate a new id and record the creation timestamp.
      *
      * @param ctx The transaction context.
@@ -89,7 +89,7 @@ export class IncomeContract extends Contract {
      * Update an existing income record.
      * 
      * Expects a JSON string representing the updated income object.
-     * Required fields in the JSON: id, userID, amount, notes, date.
+     * Required fields in the JSON: id, userID, title, amount, notes, date.
      *
      * @param ctx The transaction context.
      * @param incomeStr A JSON string representing the updated income.
