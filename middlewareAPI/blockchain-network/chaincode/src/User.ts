@@ -11,10 +11,10 @@ export class UserContract extends Contract {
     }
 
     /**
-     * Helper function that returns a composite key for a user based on the username.
+     * Helper function that returns a composite key for a user based on the email.
      */
-    private getUserKey(ctx: Context, username: string): string {
-        return ctx.stub.createCompositeKey('User', [username]);
+    private getUserKey(ctx: Context, email: string): string {
+        return ctx.stub.createCompositeKey('User', [email]);
     }
 
     /**
@@ -29,18 +29,18 @@ export class UserContract extends Contract {
     /**
      * Create a new user.
      * @param ctx The transaction context.
-     * @param username The user's email/username.
+     * @param email The user's email.
      * @param password The user's password.
      * @returns A JSON string with a message and the new user's ID.
      */
     @Transaction()
     @Returns('string')
-    public async createUser(ctx: Context, username: string, password: string): Promise<string> {
-        if (!username || !password) {
-            throw new Error('Username and password are required');
+    public async createUser(ctx: Context, email: string, password: string): Promise<string> {
+        if (!email || !password) {
+            throw new Error('Email and password are required');
         }
 
-        const userKey = this.getUserKey(ctx, username);
+        const userKey = this.getUserKey(ctx, email);
         const existing = await ctx.stub.getState(userKey);
         if (existing && existing.length > 0) {
             throw new Error('User already exists');
@@ -49,7 +49,7 @@ export class UserContract extends Contract {
         const id = uuidv4();
         const newUser: User = {
             id,
-            username,
+            email,
             password, // Note: In production, store a hashed password!
             dateJoined: new Date().toISOString(),
             status: UserStatus.PENDING,
@@ -62,18 +62,18 @@ export class UserContract extends Contract {
     /**
      * Authenticate a user.
      * @param ctx The transaction context.
-     * @param username The user's email/username.
+     * @param email The user's email/email.
      * @param password The user's password.
      * @returns A JSON string with a success message and a dummy token.
      */
     @Transaction(false) // Query (read-only) transaction.
     @Returns('string')
-    public async loginUser(ctx: Context, username: string, password: string): Promise<string> {
-        if (!username || !password) {
-            throw new Error('Username and password are required');
+    public async loginUser(ctx: Context, email: string, password: string): Promise<string> {
+        if (!email || !password) {
+            throw new Error('email and password are required');
         }
 
-        const userKey = this.getUserKey(ctx, username);
+        const userKey = this.getUserKey(ctx, email);
         const userBytes = await ctx.stub.getState(userKey);
         if (!userBytes || userBytes.length === 0) {
             throw new Error('User does not exist');
@@ -89,9 +89,8 @@ export class UserContract extends Contract {
 
     /**
      * Delete a user.
-     * Ensures that the caller's certificate includes the user's email.
      * @param ctx The transaction context.
-     * @param email The email (username) of the user to delete.
+     * @param email The email of the user to delete.
      * @returns A JSON string confirming deletion.
      */
     @Transaction()
@@ -108,7 +107,7 @@ export class UserContract extends Contract {
         }
 
         const user: User = JSON.parse(userBytes.toString());
-        if (user.username !== email) {
+        if (user.email !== email) {
             throw new Error('Caller not authorized to delete this user');
         }
 
@@ -120,7 +119,7 @@ export class UserContract extends Contract {
 // User model interface
 export interface User {
     id: string;
-    username: string;
+    email: string;
     password: string;
     dateJoined: string;
     status: UserStatus;

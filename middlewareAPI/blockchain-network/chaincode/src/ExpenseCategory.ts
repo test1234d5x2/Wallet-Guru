@@ -12,7 +12,6 @@ export interface ExpenseCategory {
     name: string;
     monthlyBudget: number;
     recurrenceRule: any; // Recurrence rule stored as an object.
-    date: string;
 }
 
 /**
@@ -89,7 +88,6 @@ export class ExpenseCategoryContract extends Contract {
             name: expenseCategoryInput.name,
             monthlyBudget: monthlyBudgetNum,
             recurrenceRule: parsedRecurrenceRule,
-            date: new Date().toISOString(),
         };
 
         const key = this.getExpenseCategoryKey(ctx, expenseCategory.userID, categoryID);

@@ -9,10 +9,12 @@ import sortKeysRecursive from 'sort-keys-recursive';
 export interface Expense {
     id: string;
     userID: string;
+    title: string;
     categoryID: string;
     amount: number;
     notes: string;
     date: string;
+    receipt?: string;
 }
 
 /**
@@ -35,6 +37,7 @@ export class ExpenseContract extends Contract {
      * Create a new expense.
      * Expects a JSON string representing the expense object with these fields:
      * - userID
+     * - title
      * - categoryID
      * - amount
      * - notes
@@ -60,7 +63,7 @@ export class ExpenseContract extends Contract {
         }
 
         // Validate required fields
-        if (!expenseInput.userID || !expenseInput.categoryID || expenseInput.amount === undefined || !expenseInput.notes || !expenseInput.date) {
+        if (!expenseInput.userID || !expenseInput.title || !expenseInput.categoryID || expenseInput.amount === undefined || !expenseInput.notes || !expenseInput.date) {
             throw new Error('Missing required expense fields: userID, categoryID, amount, notes, date');
         }
 
@@ -69,19 +72,23 @@ export class ExpenseContract extends Contract {
         if (isNaN(amountNum)) {
             throw new Error('amount must be a valid number');
         }
+
         const newExpense: Expense = {
             id: expenseID,
+            title: expenseInput.title,
             userID: expenseInput.userID,
             categoryID: expenseInput.categoryID,
             amount: amountNum,
             notes: expenseInput.notes,
             date: expenseInput.date,
+            receipt: expenseInput.receipt || undefined,
         };
 
         const existing = await ctx.stub.getState(expenseID);
         if (existing && existing.length > 0) {
             throw new Error('Expense already exists');
         }
+
         await ctx.stub.putState(expenseID, Buffer.from(this.deterministicStringify(newExpense)));
         return JSON.stringify({ message: 'Expense created' });
     }
@@ -92,6 +99,7 @@ export class ExpenseContract extends Contract {
      * The expense object must include the following fields:
      * - id
      * - userID
+     * - title
      * - categoryID
      * - amount
      * - notes
@@ -116,8 +124,8 @@ export class ExpenseContract extends Contract {
         }
 
         // Validate required fields for update
-        if (!expenseInput.id || !expenseInput.userID || !expenseInput.categoryID || expenseInput.amount === undefined || !expenseInput.notes || !expenseInput.date) {
-            throw new Error('Missing required expense fields: id, userID, categoryID, amount, notes, date');
+        if (!expenseInput.id || !expenseInput.userID || !expenseInput.title || !expenseInput.categoryID || expenseInput.amount === undefined || !expenseInput.notes || !expenseInput.date) {
+            throw new Error('Missing required expense fields: id, userID, title, categoryID, amount, notes, date');
         }
 
         const expenseID = expenseInput.id;
@@ -132,10 +140,12 @@ export class ExpenseContract extends Contract {
             throw new Error('amount must be a valid number');
         }
 
+        storedExpense.title = expenseInput.title;
         storedExpense.categoryID = expenseInput.categoryID;
         storedExpense.amount = amountNum;
         storedExpense.notes = expenseInput.notes;
         storedExpense.date = expenseInput.date;
+        storedExpense.receipt = expenseInput.receipt || undefined;
 
         await ctx.stub.putState(expenseID, Buffer.from(this.deterministicStringify(storedExpense)));
         return JSON.stringify({ message: 'Expense updated' });
@@ -162,7 +172,6 @@ export class ExpenseContract extends Contract {
         }
 
         await ctx.stub.deleteState(expenseID);
-
         return JSON.stringify({ message: 'Expense deleted' });
     }
 
@@ -183,7 +192,6 @@ export class ExpenseContract extends Contract {
 
         const query = {
             selector: {
-                docType: "Expense",
                 userID: userID
             }
         };
@@ -201,7 +209,6 @@ export class ExpenseContract extends Contract {
         }
 
         await iterator.close();
-
         return JSON.stringify({ expenses: results });
     }
 

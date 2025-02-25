@@ -9,6 +9,7 @@ import sortKeysRecursive from 'sort-keys-recursive';
 export interface RecurringIncome {
     id: string;
     userID: string;
+    title: string;
     amount: number;
     notes: string;
     recurrenceRule: any;  // Recurrence rule stored as an object.
@@ -57,12 +58,12 @@ export class RecurringIncomeContract extends Contract {
         }
 
         // Validate required fields
-        if (!incomeInput.userID || incomeInput.amount === undefined ||
+        if (!incomeInput.userID || incomeInput.amount === undefined || !incomeInput.title ||
             !incomeInput.notes || !incomeInput.date || !incomeInput.recurrenceRule) {
             throw new Error('Missing required fields: userID, amount, notes, date, recurrenceRule');
         }
 
-        const incomeId = uuidv4();
+        const incomeID = uuidv4();
         const amountNum = Number(incomeInput.amount);
         if (isNaN(amountNum)) {
             throw new Error('amount must be a valid number');
@@ -77,7 +78,8 @@ export class RecurringIncomeContract extends Contract {
         }
 
         const newRecurringIncome: RecurringIncome = {
-            id: incomeId,
+            id: incomeID,
+            title: incomeInput.title,
             userID: incomeInput.userID,
             amount: amountNum,
             notes: incomeInput.notes,
@@ -85,12 +87,12 @@ export class RecurringIncomeContract extends Contract {
             recurrenceRule: parsedRecurrenceRule,
         };
 
-        const existing = await ctx.stub.getState(incomeId);
+        const existing = await ctx.stub.getState(incomeID);
         if (existing && existing.length > 0) {
             throw new Error('Recurring income record already exists');
         }
 
-        await ctx.stub.putState(incomeId, Buffer.from(this.deterministicStringify(newRecurringIncome)));
+        await ctx.stub.putState(incomeID, Buffer.from(this.deterministicStringify(newRecurringIncome)));
         return JSON.stringify({ message: 'Recurring income created' });
     }
 
@@ -119,13 +121,13 @@ export class RecurringIncomeContract extends Contract {
         }
 
         // Validate required fields for update
-        if (!incomeInput.id || !incomeInput.userID ||
+        if (!incomeInput.id || !incomeInput.userID || !incomeInput.title ||
             incomeInput.amount === undefined || !incomeInput.notes || !incomeInput.date || !incomeInput.recurrenceRule) {
-            throw new Error('Missing required fields: id, userID, amount, notes, date, recurrenceRule');
+            throw new Error('Missing required fields: id, userID, title, amount, notes, date, recurrenceRule');
         }
 
-        const incomeId = incomeInput.id;
-        const incomeBytes = await ctx.stub.getState(incomeId);
+        const incomeID = incomeInput.id;
+        const incomeBytes = await ctx.stub.getState(incomeID);
         if (!incomeBytes || incomeBytes.length === 0) {
             throw new Error('Recurring income record does not exist');
         }
@@ -143,13 +145,13 @@ export class RecurringIncomeContract extends Contract {
             throw new Error('recurrenceRule must be a valid JSON string');
         }
 
-        // Update fields
+        storedIncome.title = incomeInput.title
         storedIncome.amount = amountNum;
         storedIncome.notes = incomeInput.notes;
         storedIncome.date = incomeInput.date;
         storedIncome.recurrenceRule = parsedRecurrenceRule;
 
-        await ctx.stub.putState(incomeId, Buffer.from(this.deterministicStringify(storedIncome)));
+        await ctx.stub.putState(incomeID, Buffer.from(this.deterministicStringify(storedIncome)));
         return JSON.stringify({ message: 'Recurring income updated' });
     }
 

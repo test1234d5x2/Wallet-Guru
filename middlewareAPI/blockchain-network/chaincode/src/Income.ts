@@ -9,6 +9,7 @@ import sortKeysRecursive from 'sort-keys-recursive';
 export interface Income {
     id: string;
     userID: string;
+    title: string;
     amount: number;
     notes: string;
     date: string;
@@ -56,7 +57,7 @@ export class IncomeContract extends Contract {
         }
 
         // Validate required fields
-        if (!incomeInput.userID || incomeInput.amount === undefined || !incomeInput.notes || !incomeInput.date) {
+        if (!incomeInput.userID || !incomeInput.title || incomeInput.amount === undefined || !incomeInput.notes || !incomeInput.date) {
             throw new Error('Missing required fields: userID, amount, notes, date');
         }
 
@@ -68,6 +69,7 @@ export class IncomeContract extends Contract {
 
         const newIncome: Income = {
             id: incomeID,
+            title: incomeInput.title,
             userID: incomeInput.userID,
             amount: amountNum,
             notes: incomeInput.notes,
@@ -80,7 +82,6 @@ export class IncomeContract extends Contract {
         }
 
         await ctx.stub.putState(incomeID, Buffer.from(this.deterministicStringify(newIncome)));
-
         return JSON.stringify({ message: 'Income created', incomeID });
     }
 
@@ -109,8 +110,8 @@ export class IncomeContract extends Contract {
         }
 
         // Validate required fields for update
-        if (!incomeInput.id || !incomeInput.userID || incomeInput.amount === undefined || !incomeInput.notes || !incomeInput.date) {
-            throw new Error('Missing required fields: id, userID, amount, notes, date');
+        if (!incomeInput.id || !incomeInput.userID || !incomeInput.title || incomeInput.amount === undefined || !incomeInput.notes || !incomeInput.date) {
+            throw new Error('Missing required fields: id, userID, title, amount, notes, date');
         }
 
         const incomeID = incomeInput.id;
@@ -126,12 +127,12 @@ export class IncomeContract extends Contract {
         }
 
         // Update fields
+        storedIncome.title = incomeInput.title;
         storedIncome.amount = amountNum;
         storedIncome.notes = incomeInput.notes;
         storedIncome.date = new Date(incomeInput.date).toISOString();
 
         await ctx.stub.putState(incomeID, Buffer.from(this.deterministicStringify(storedIncome)));
-
         return JSON.stringify({ message: 'Income updated' });
     }
 
@@ -195,7 +196,6 @@ export class IncomeContract extends Contract {
         }
 
         await iterator.close();
-
         return JSON.stringify({ incomes: results });
     }
 

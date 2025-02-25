@@ -203,8 +203,8 @@ export class GoalContract extends Contract {
             }
             result = await iterator.next();
         }
+        
         await iterator.close();
-
         return JSON.stringify({ goals: results });
     }
 

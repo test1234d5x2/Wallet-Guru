@@ -10,6 +10,7 @@ export interface RecurringExpense {
     id: string;
     userID: string;
     categoryID: string;
+    title: string;
     amount: number;
     notes: string;
     recurrenceRule: any; // Stored as an object (e.g., via BasicRecurrenceRule.toJSON())
@@ -49,22 +50,26 @@ export class RecurringExpenseContract extends Contract {
         if (!recurringExpenseStr) {
             throw new Error('Missing recurring expense object');
         }
+
         let expenseInput: any;
         try {
             expenseInput = JSON.parse(recurringExpenseStr);
         } catch (error) {
             throw new Error('Recurring expense must be a valid JSON string');
         }
+
         // Validate required fields
-        if (!expenseInput.userID || !expenseInput.categoryID || expenseInput.amount === undefined ||
+        if (!expenseInput.userID || !expenseInput.title || !expenseInput.categoryID || expenseInput.amount === undefined ||
             !expenseInput.notes || !expenseInput.date || !expenseInput.recurrenceRule) {
-            throw new Error('Missing required fields: userID, categoryID, amount, notes, date, recurrenceRule');
+            throw new Error('Missing required fields: userID, title, categoryID, amount, notes, date, recurrenceRule');
         }
+
         const expenseID = uuidv4();
         const amountNum = Number(expenseInput.amount);
         if (isNaN(amountNum)) {
             throw new Error('amount must be a valid number');
         }
+
         // Parse the recurrenceRule, which is provided as a JSON string
         let parsedRecurrenceRule: any;
         try {
@@ -75,6 +80,7 @@ export class RecurringExpenseContract extends Contract {
 
         const newRecurringExpense: RecurringExpense = {
             id: expenseID,
+            title: expenseInput.title,
             userID: expenseInput.userID,
             categoryID: expenseInput.categoryID,
             amount: amountNum,
@@ -87,6 +93,7 @@ export class RecurringExpenseContract extends Contract {
         if (existing && existing.length > 0) {
             throw new Error('Recurring expense already exists');
         }
+
         await ctx.stub.putState(expenseID, Buffer.from(this.deterministicStringify(newRecurringExpense)));
         return JSON.stringify({ message: 'Recurring expense created', recurringexpenseID: expenseID });
     }
@@ -107,34 +114,40 @@ export class RecurringExpenseContract extends Contract {
         if (!recurringExpenseStr) {
             throw new Error('Missing recurring expense object');
         }
+
         let expenseInput: any;
         try {
             expenseInput = JSON.parse(recurringExpenseStr);
         } catch (error) {
             throw new Error('Recurring expense must be a valid JSON string');
         }
+
         // Validate required fields for update
-        if (!expenseInput.id || !expenseInput.userID || !expenseInput.categoryID ||
+        if (!expenseInput.id || !expenseInput.userID || !expenseInput.categoryID || !expenseInput.title ||
             expenseInput.amount === undefined || !expenseInput.notes || !expenseInput.date || !expenseInput.recurrenceRule) {
-            throw new Error('Missing required fields: id, userID, categoryID, amount, notes, date, recurrenceRule');
+            throw new Error('Missing required fields: id, userID, categoryID, title, amount, notes, date, recurrenceRule');
         }
+
         const expenseID = expenseInput.id;
         const expenseBytes = await ctx.stub.getState(expenseID);
         if (!expenseBytes || expenseBytes.length === 0) {
             throw new Error('Recurring expense does not exist');
         }
+
         const storedExpense: RecurringExpense = JSON.parse(expenseBytes.toString());
         const amountNum = Number(expenseInput.amount);
         if (isNaN(amountNum)) {
             throw new Error('amount must be a valid number');
         }
+
         let parsedRecurrenceRule: any;
         try {
             parsedRecurrenceRule = JSON.parse(expenseInput.recurrenceRule);
         } catch (error) {
             throw new Error('recurrenceRule must be a valid JSON string');
         }
-        // Update fields
+
+        storedExpense.title = expenseInput.title;
         storedExpense.categoryID = expenseInput.categoryID;
         storedExpense.amount = amountNum;
         storedExpense.notes = expenseInput.notes;
