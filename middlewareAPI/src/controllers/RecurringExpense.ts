@@ -31,6 +31,7 @@ export const create = (req: Request, res: Response): void => {
         rule
     );
 
+    registry.recurringExpenseService.processDueRecurringExpenses();
     res.status(201).json({ message: 'Recurring Expense created successfully' });
 };
 
@@ -53,6 +54,7 @@ export const update = (req: Request, res: Response): void => {
         categoryID
     );
 
+    registry.recurringExpenseService.processDueRecurringExpenses();
     res.status(200).json({ message: 'Recurring Expense updated successfully' });
 };
 
@@ -66,6 +68,7 @@ export const remove = (req: Request, res: Response): void => {
     }
 
     registry.recurringExpenseService.deleteRecurringExpense(id);
+    registry.recurringExpenseService.processDueRecurringExpenses();
     res.status(200).json({ message: 'Recurring Expense deleted successfully' });
 };
 
@@ -76,6 +79,7 @@ export const listByUser = (req: Request, res: Response): void => {
         return;
     }
 
+    registry.recurringExpenseService.processDueRecurringExpenses();
     const recurringExpenses = registry.recurringExpenseService.getAllRecurringExpensesByUser(userID);
     res.status(200).json({ recurringExpenses });
 };
@@ -89,6 +93,7 @@ export const findByID = (req: Request, res: Response): void => {
         return;
     }
 
+    registry.recurringExpenseService.processDueRecurringExpenses();
     const expense = registry.recurringExpenseService.findByID(id);
     if (!expense) {
         res.status(404).json({ error: 'Recurring Expense not found' });

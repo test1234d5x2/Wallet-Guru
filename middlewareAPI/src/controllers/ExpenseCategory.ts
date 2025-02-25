@@ -116,7 +116,6 @@ export const findByID: RequestHandler = (req, res) => {
     }
 
     const category = expenseCategoryService.findByID(id);
-    console.log(expenseCategoryService.getAllCategoriesByUser(userID))
     if (!category) {
         res.status(404).json({ error: "Expense category not found" });
         return;

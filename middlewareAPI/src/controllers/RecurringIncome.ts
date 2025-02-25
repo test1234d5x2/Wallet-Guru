@@ -30,6 +30,7 @@ export const create = (req: Request, res: Response): void => {
         rule
     );
 
+    registry.recurringIncomeService.processDueRecurringIncomes();
     res.status(201).json({ message: 'Recurring Income created successfully' });
 };
 
@@ -51,6 +52,7 @@ export const update = (req: Request, res: Response): void => {
         notes
     );
 
+    registry.recurringIncomeService.processDueRecurringIncomes();
     res.status(200).json({ message: 'Recurring Income updated successfully' });
 };
 
@@ -64,6 +66,7 @@ export const remove = (req: Request, res: Response): void => {
     }
 
     registry.recurringIncomeService.deleteRecurringIncome(id);
+    registry.recurringIncomeService.processDueRecurringIncomes();
     res.status(200).json({ message: 'Recurring Income deleted successfully' });
 };
 
@@ -76,6 +79,7 @@ export const listByUser = (req: Request, res: Response): void => {
     }
 
     const recurringIncomes = registry.recurringIncomeService.getAllRecurringIncomesByUser(userID);
+    registry.recurringIncomeService.processDueRecurringIncomes();
     res.status(200).json({ recurringIncomes });
 };
 
@@ -93,5 +97,7 @@ export const findByID = (req: Request, res: Response): void => {
         res.status(404).json({ error: 'Recurring Income not found' });
         return;
     }
+
+    registry.recurringIncomeService.processDueRecurringIncomes();
     res.status(200).json(income.toJSON());
 };

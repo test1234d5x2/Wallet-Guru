@@ -1,105 +1,246 @@
-import { Context, Contract, Info, Returns, Transaction } from 'fabric-contract-api';
+// import { Context, Contract, Info, Returns, Transaction } from 'fabric-contract-api';
+// import stringify from 'json-stringify-deterministic';
+// import sortKeysRecursive from 'sort-keys-recursive';
+
+
+// @Info({ title: 'UserContract', description: 'User management smart contract' })
+// export class UserContract extends Contract {
+//     private readonly objectType = 'User';
+
+//     @Transaction()
+//     public async CreateUser(ctx: Context, id: string, username: string, password: string): Promise<void> {
+//         const userKey = ctx.stub.createCompositeKey(this.objectType, [id]);
+//         const exists = await this.UserExists(ctx, id);
+//         if (exists) {
+//             throw new Error(`The user with ID ${id} already exists`);
+//         }
+
+//         const user = {
+//             ID: id,
+//             Username: username,
+//             Password: password,
+//         };
+
+//         await ctx.stub.putState(userKey, Buffer.from(stringify(sortKeysRecursive(user))));
+//     }
+
+//     @Transaction(false)
+//     @Returns('boolean')
+//     public async UserExists(ctx: Context, id: string): Promise<boolean> {
+//         const userKey = ctx.stub.createCompositeKey(this.objectType, [id]);
+//         const userJSON = await ctx.stub.getState(userKey);
+//         return userJSON && userJSON.length > 0;
+//     }
+
+//     @Transaction(false)
+//     public async AuthenticateUser(ctx: Context, username: string, password: string): Promise<boolean> {
+//         const allUsers = await this.GetAllUsers(ctx);
+//         for (const user of allUsers) {
+//             if (user.Username === username && user.Password === password) {
+//                 return true;
+//             }
+//         }
+//         return false;
+//     }
+
+//     @Transaction(false)
+//     public async GetUserID(ctx: Context, username: string, password: string): Promise<string> {
+//         const allUsers = await this.GetAllUsers(ctx);
+//         for (const user of allUsers) {
+//             if (user.Username === username && user.Password === password) {
+//                 return user.ID;
+//             }
+//         }
+//         throw new Error('User not found');
+//     }
+
+//     @Transaction()
+//     public async UpdateUser(ctx: Context, id: string, newUsername: string, newPassword: string): Promise<void> {
+//         const userKey = ctx.stub.createCompositeKey(this.objectType, [id]);
+//         const exists = await this.UserExists(ctx, id);
+//         if (!exists) {
+//             throw new Error(`The user with ID ${id} does not exist`);
+//         }
+
+//         const user = {
+//             ID: id,
+//             Username: newUsername,
+//             Password: newPassword,
+//         };
+
+//         await ctx.stub.putState(userKey, Buffer.from(stringify(sortKeysRecursive(user))));
+//     }
+
+//     @Transaction()
+//     public async DeleteUser(ctx: Context, id: string): Promise<void> {
+//         const userKey = ctx.stub.createCompositeKey(this.objectType, [id]);
+//         const exists = await this.UserExists(ctx, id);
+//         if (!exists) {
+//             throw new Error(`The user with ID ${id} does not exist`);
+//         }
+//         await ctx.stub.deleteState(userKey);
+//     }
+
+//     @Transaction(false)
+//     @Returns('User[]')
+//     public async GetAllUsers(ctx: Context): Promise<any[]> {
+//         const allUsers = [];
+
+//         const iterator = await ctx.stub.getStateByPartialCompositeKey(this.objectType, []);
+//         let result = await iterator.next();
+
+//         while (!result.done) {
+//             const strValue = Buffer.from(result.value.value).toString('utf8');
+//             try {
+//                 const user = JSON.parse(strValue);
+//                 allUsers.push(user);
+//             } catch (error) {
+//                 console.error(`Error parsing user: ${error}`);
+//             }
+//             result = await iterator.next();
+//         }
+//         await iterator.close();
+//         return allUsers;
+//     }
+// }
+
+
+import { Context, Contract, Transaction, Returns, Info } from 'fabric-contract-api';
+import { v4 as uuidv4 } from 'uuid';
 import stringify from 'json-stringify-deterministic';
 import sortKeysRecursive from 'sort-keys-recursive';
 
-
+// Provide metadata for this smart contract.
 @Info({ title: 'UserContract', description: 'User management smart contract' })
 export class UserContract extends Contract {
-    private readonly objectType = 'User';
+    constructor() {
+        super('UserContract');
+    }
 
+    /**
+     * Helper function that returns a composite key for a user based on the username.
+     */
+    private getUserKey(ctx: Context, username: string): string {
+        return ctx.stub.createCompositeKey('User', [username]);
+    }
+
+    /**
+     * Helper to produce a deterministic JSON string of the user object.
+     * It first recursively sorts the keys and then stringifies deterministically.
+     */
+    private deterministicUser(user: User): string {
+        const sortedUser = sortKeysRecursive(user);
+        return stringify(sortedUser);
+    }
+
+    /**
+     * Create a new user.
+     * @param ctx The transaction context.
+     * @param username The user's email/username.
+     * @param password The user's password.
+     * @returns A JSON string with a message and the new user's ID.
+     */
     @Transaction()
-    public async CreateUser(ctx: Context, id: string, username: string, password: string): Promise<void> {
-        const userKey = ctx.stub.createCompositeKey(this.objectType, [id]);
-        const exists = await this.UserExists(ctx, id);
-        if (exists) {
-            throw new Error(`The user with ID ${id} already exists`);
+    @Returns('string')
+    public async createUser(ctx: Context, username: string, password: string): Promise<string> {
+        if (!username || !password) {
+            throw new Error('Username and password are required');
         }
 
-        const user = {
-            ID: id,
-            Username: username,
-            Password: password,
+        const userKey = this.getUserKey(ctx, username);
+        const existing = await ctx.stub.getState(userKey);
+        if (existing && existing.length > 0) {
+            throw new Error('User already exists');
+        }
+
+        const id = uuidv4();
+        const newUser: User = {
+            id,
+            username,
+            password, // Note: In production, store a hashed password!
+            dateJoined: new Date().toISOString(),
+            status: UserStatus.PENDING,
         };
 
-        await ctx.stub.putState(userKey, Buffer.from(stringify(sortKeysRecursive(user))));
+        await ctx.stub.putState(userKey, Buffer.from(this.deterministicUser(newUser)));
+        return JSON.stringify({ message: 'User created', userId: id });
     }
 
-    @Transaction(false)
-    @Returns('boolean')
-    public async UserExists(ctx: Context, id: string): Promise<boolean> {
-        const userKey = ctx.stub.createCompositeKey(this.objectType, [id]);
-        const userJSON = await ctx.stub.getState(userKey);
-        return userJSON && userJSON.length > 0;
-    }
-
-    @Transaction(false)
-    public async AuthenticateUser(ctx: Context, username: string, password: string): Promise<boolean> {
-        const allUsers = await this.GetAllUsers(ctx);
-        for (const user of allUsers) {
-            if (user.Username === username && user.Password === password) {
-                return true;
-            }
+    /**
+     * Authenticate a user.
+     * @param ctx The transaction context.
+     * @param username The user's email/username.
+     * @param password The user's password.
+     * @returns A JSON string with a success message and a dummy token.
+     */
+    @Transaction(false) // Query (read-only) transaction.
+    @Returns('string')
+    public async loginUser(ctx: Context, username: string, password: string): Promise<string> {
+        if (!username || !password) {
+            throw new Error('Username and password are required');
         }
-        return false;
-    }
 
-    @Transaction(false)
-    public async GetUserID(ctx: Context, username: string, password: string): Promise<string> {
-        const allUsers = await this.GetAllUsers(ctx);
-        for (const user of allUsers) {
-            if (user.Username === username && user.Password === password) {
-                return user.ID;
-            }
+        const userKey = this.getUserKey(ctx, username);
+        const userBytes = await ctx.stub.getState(userKey);
+        if (!userBytes || userBytes.length === 0) {
+            throw new Error('User does not exist');
         }
-        throw new Error('User not found');
+
+        const user: User = JSON.parse(userBytes.toString());
+        if (user.password !== password) {
+            throw new Error('Invalid credentials');
+        }
+
+        return JSON.stringify({ message: 'Login successful' });
     }
 
+    /**
+     * Delete a user.
+     * Ensures that the caller's certificate includes the user's email.
+     * @param ctx The transaction context.
+     * @param email The email (username) of the user to delete.
+     * @returns A JSON string confirming deletion.
+     */
     @Transaction()
-    public async UpdateUser(ctx: Context, id: string, newUsername: string, newPassword: string): Promise<void> {
-        const userKey = ctx.stub.createCompositeKey(this.objectType, [id]);
-        const exists = await this.UserExists(ctx, id);
-        if (!exists) {
-            throw new Error(`The user with ID ${id} does not exist`);
+    @Returns('string')
+    public async deleteUser(ctx: Context, email: string): Promise<string> {
+        if (!email) {
+            throw new Error('Email is required');
         }
 
-        const user = {
-            ID: id,
-            Username: newUsername,
-            Password: newPassword,
-        };
-
-        await ctx.stub.putState(userKey, Buffer.from(stringify(sortKeysRecursive(user))));
-    }
-
-    @Transaction()
-    public async DeleteUser(ctx: Context, id: string): Promise<void> {
-        const userKey = ctx.stub.createCompositeKey(this.objectType, [id]);
-        const exists = await this.UserExists(ctx, id);
-        if (!exists) {
-            throw new Error(`The user with ID ${id} does not exist`);
+        // Check that the caller's identity contains the email.
+        const callerID = ctx.clientIdentity.getID();
+        if (!callerID.includes(email)) {
+            throw new Error('Caller not authorized to delete this user');
         }
+
+        const userKey = this.getUserKey(ctx, email);
+        const userBytes = await ctx.stub.getState(userKey);
+        if (!userBytes || userBytes.length === 0) {
+            throw new Error('User does not exist');
+        }
+
+        const user: User = JSON.parse(userBytes.toString());
+        if (user.username !== email) {
+            throw new Error('Caller not authorized to delete this user');
+        }
+
         await ctx.stub.deleteState(userKey);
+        return JSON.stringify({ message: 'User deleted' });
     }
+}
 
-    @Transaction(false)
-    @Returns('User[]')
-    public async GetAllUsers(ctx: Context): Promise<any[]> {
-        const allUsers = [];
+// User model interface
+export interface User {
+    id: string;
+    username: string;
+    password: string;
+    dateJoined: string;
+    status: UserStatus;
+}
 
-        const iterator = await ctx.stub.getStateByPartialCompositeKey(this.objectType, []);
-        let result = await iterator.next();
-
-        while (!result.done) {
-            const strValue = Buffer.from(result.value.value).toString('utf8');
-            try {
-                const user = JSON.parse(strValue);
-                allUsers.push(user);
-            } catch (error) {
-                console.error(`Error parsing user: ${error}`);
-            }
-            result = await iterator.next();
-        }
-        await iterator.close();
-        return allUsers;
-    }
+// Enum for user status.
+export enum UserStatus {
+    VERIFIED = 'VERIFIED',
+    PENDING = 'PENDING'
 }

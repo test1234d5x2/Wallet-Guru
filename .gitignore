@@ -43,3 +43,5 @@ yarn-error.*
 app-example
 
 ./config-files/
+
+ztestapp/

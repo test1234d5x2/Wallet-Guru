@@ -11,8 +11,13 @@ export default abstract class RecurrenceRule {
         this.frequency = frequency;
         this.interval = interval;
         this.startDate = startDate;
-        this.nextTriggerDate = startDate;
         this.endDate = endDate;
+
+        this.nextTriggerDate = new Date(Date.UTC(
+            startDate.getUTCFullYear(),
+            startDate.getUTCMonth(),
+            startDate.getUTCDate(),
+        ));
     }
 
     public shouldTrigger(): boolean {
@@ -21,31 +26,36 @@ export default abstract class RecurrenceRule {
     }
 
     public computeNextTriggerDate(): Date {
-        let nextDate = new Date(this.nextTriggerDate);
-        switch (this.frequency) {
-            case Frequency.Daily:
-                nextDate.setDate(nextDate.getDate() + this.interval);
-                break;
-            case Frequency.Weekly:
-                nextDate.setDate(nextDate.getDate() + this.interval * 7);
-                break;
-            case Frequency.Monthly:
-                nextDate.setMonth(nextDate.getMonth() + this.interval);
-                break;
-            case Frequency.Yearly:
-                nextDate.setFullYear(nextDate.getFullYear() + this.interval);
-                break;
-            default:
-                throw new Error("Unsupported frequency");
+        const now = new Date(Date.UTC(
+            new Date().getUTCFullYear(),
+            new Date().getUTCMonth(),
+            new Date().getUTCDate(),
+        ));
+
+        while (this.nextTriggerDate <= now) {
+            switch (this.frequency) {
+                case Frequency.Daily:
+                    this.nextTriggerDate.setUTCDate(this.nextTriggerDate.getUTCDate() + this.interval);
+                    break;
+                case Frequency.Weekly:
+                    this.nextTriggerDate.setUTCDate(this.nextTriggerDate.getUTCDate() + this.interval * 7);
+                    break;
+                case Frequency.Monthly:
+                    this.nextTriggerDate.setUTCMonth(this.nextTriggerDate.getUTCMonth() + this.interval);
+                    break;
+                case Frequency.Yearly:
+                    this.nextTriggerDate.setUTCFullYear(this.nextTriggerDate.getUTCFullYear() + this.interval);
+                    break;
+                default:
+                    throw new Error("Unsupported frequency");
+            }
+
+            if (this.endDate && this.nextTriggerDate > this.endDate) {
+                throw new Error("Next trigger date exceeds end date");
+            }
         }
 
-        if (this.endDate && nextDate > this.endDate) {
-            throw new Error("Next trigger date exceeds end date");
-        }
-
-        this.nextTriggerDate = nextDate;
-
-        return nextDate;
+        return this.nextTriggerDate;
     }
 
     public toJSON() {
