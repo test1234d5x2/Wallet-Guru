@@ -42,6 +42,10 @@ export class GoalContract extends Contract {
         return stringify(sortKeysRecursive(goal));
     }
 
+    private getGoalKey(ctx: Context, userID: string, goalID: string): string {
+        return ctx.stub.createCompositeKey('Goal', [userID, goalID]);
+    }
+
     /**
      * Create a new goal.
      * 
@@ -89,12 +93,13 @@ export class GoalContract extends Contract {
             status: goalInput.status ? goalInput.status as GoalStatus : GoalStatus.Active,
         };
 
-        const existing = await ctx.stub.getState(goalInput.id);
+        const key = this.getGoalKey(ctx, goalInput.userID, goalInput.id)
+        const existing = await ctx.stub.getState(key);
         if (existing && existing.length > 0) {
             throw new Error('Goal already exists');
         }
 
-        await ctx.stub.putState(goalInput.id, Buffer.from(this.deterministicStringify(newGoal)));
+        await ctx.stub.putState(key, Buffer.from(this.deterministicStringify(newGoal)));
         return JSON.stringify({ message: 'Goal created' });
     }
 
@@ -110,12 +115,13 @@ export class GoalContract extends Contract {
      */
     @Transaction()
     @Returns('string')
-    public async updateGoal(ctx: Context, goalID: string, current: string): Promise<string> {
-        if (!goalID || current === undefined) {
+    public async updateGoal(ctx: Context, userID: string, goalID: string, current: string): Promise<string> {
+        if (!goalID || current === undefined || !userID) {
             throw new Error('Missing required fields: goalID and current');
         }
 
-        const goalBytes = await ctx.stub.getState(goalID);
+        const key = this.getGoalKey(ctx, userID, goalID)
+        const goalBytes = await ctx.stub.getState(key);
         if (!goalBytes || goalBytes.length === 0) {
             throw new Error('Goal not found');
         }
@@ -128,7 +134,7 @@ export class GoalContract extends Contract {
         
         goal.current = currentNum;
 
-        await ctx.stub.putState(goalID, Buffer.from(this.deterministicStringify(goal)));
+        await ctx.stub.putState(key, Buffer.from(this.deterministicStringify(goal)));
         return JSON.stringify({ message: 'Goal progress updated' });
     }
 
@@ -143,12 +149,13 @@ export class GoalContract extends Contract {
      */
     @Transaction()
     @Returns('string')
-    public async archiveGoal(ctx: Context, goalID: string): Promise<string> {
-        if (!goalID) {
+    public async archiveGoal(ctx: Context, userID: string, goalID: string): Promise<string> {
+        if (!goalID || !userID) {
             throw new Error('Missing required field: goalID');
         }
 
-        const goalBytes = await ctx.stub.getState(goalID);
+        const key = this.getGoalKey(ctx, userID, goalID)
+        const goalBytes = await ctx.stub.getState(key);
         if (!goalBytes || goalBytes.length === 0) {
             throw new Error('Goal not found');
         }
@@ -156,7 +163,7 @@ export class GoalContract extends Contract {
         const goal: Goal = JSON.parse(goalBytes.toString());
         goal.status = GoalStatus.Archived;
         
-        await ctx.stub.putState(goalID, Buffer.from(this.deterministicStringify(goal)));
+        await ctx.stub.putState(key, Buffer.from(this.deterministicStringify(goal)));
         return JSON.stringify({ message: 'Goal archived' });
     }
 
@@ -171,17 +178,18 @@ export class GoalContract extends Contract {
      */
     @Transaction()
     @Returns('string')
-    public async deleteGoal(ctx: Context, goalID: string): Promise<string> {
+    public async deleteGoal(ctx: Context, userID: string, goalID: string): Promise<string> {
         if (!goalID) {
             throw new Error('Missing required field: goalID');
         }
 
-        const goalBytes = await ctx.stub.getState(goalID);
+        const key = this.getGoalKey(ctx, userID, goalID)
+        const goalBytes = await ctx.stub.getState(key);
         if (!goalBytes || goalBytes.length === 0) {
             throw new Error('Goal not found');
         }
 
-        await ctx.stub.deleteState(goalID);
+        await ctx.stub.deleteState(key);
         return JSON.stringify({ message: 'Goal deleted' });
     }
 
@@ -201,12 +209,7 @@ export class GoalContract extends Contract {
             throw new Error('Missing required field: userID');
         }
     
-        // If you have a naming convention (e.g., "GOAL"), set startKey and endKey accordingly.
-        // Otherwise, using empty strings performs a full ledger scan.
-        const startKey = "";
-        const endKey = "";
-    
-        const iterator = await ctx.stub.getStateByRange(startKey, endKey);
+        const iterator = await ctx.stub.getStateByPartialCompositeKey('Goal', [userID]);
         const results: Goal[] = [];
     
         let result = await iterator.next();
@@ -237,12 +240,13 @@ export class GoalContract extends Contract {
      */
     @Transaction(false)
     @Returns('string')
-    public async getGoalByID(ctx: Context, goalID: string): Promise<string> {
+    public async getGoalByID(ctx: Context, userID: string, goalID: string): Promise<string> {
         if (!goalID) {
             throw new Error('Missing required field: goalID');
         }
         
-        const goalBytes = await ctx.stub.getState(goalID);
+        const key = this.getGoalKey(ctx, userID, goalID)
+        const goalBytes = await ctx.stub.getState(key);
         if (!goalBytes || goalBytes.length === 0) {
             throw new Error('Goal not found');
         }

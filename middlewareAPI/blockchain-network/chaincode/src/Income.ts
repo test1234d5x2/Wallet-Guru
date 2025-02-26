@@ -32,6 +32,10 @@ export class IncomeContract extends Contract {
         return stringify(sortKeysRecursive(income));
     }
 
+    private getIncomeKey(ctx: Context, userID: string, incomeID: string): string {
+        return ctx.stub.createCompositeKey('Income', [userID, incomeID]);
+    }
+
     /**
      * Create a new income record.
      * 
@@ -78,12 +82,13 @@ export class IncomeContract extends Contract {
             date: incomeInput.date,
         };
 
-        const existing = await ctx.stub.getState(incomeInput.id);
+        const key = this.getIncomeKey(ctx, incomeInput.userID, incomeInput.id)
+        const existing = await ctx.stub.getState(key);
         if (existing && existing.length > 0) {
             throw new Error('Income record already exists');
         }
 
-        await ctx.stub.putState(incomeInput.id, Buffer.from(this.deterministicStringify(newIncome)));
+        await ctx.stub.putState(key, Buffer.from(this.deterministicStringify(newIncome)));
         return JSON.stringify({ message: 'Income created' });
     }
 
@@ -116,7 +121,8 @@ export class IncomeContract extends Contract {
             throw new Error('Missing required fields: id, userID, title, amount, notes, date');
         }
 
-        const incomeBytes = await ctx.stub.getState(incomeInput.id);
+        const key = this.getIncomeKey(ctx, incomeInput.userID, incomeInput.id);
+        const incomeBytes = await ctx.stub.getState(key);
         if (!incomeBytes || incomeBytes.length === 0) {
             throw new Error('Income record does not exist');
         }
@@ -133,7 +139,7 @@ export class IncomeContract extends Contract {
         storedIncome.notes = incomeInput.notes || undefined;
         storedIncome.date = incomeInput.date;
 
-        await ctx.stub.putState(incomeInput.id, Buffer.from(this.deterministicStringify(storedIncome)));
+        await ctx.stub.putState(key, Buffer.from(this.deterministicStringify(storedIncome)));
         return JSON.stringify({ message: 'Income updated' });
     }
 
@@ -148,17 +154,18 @@ export class IncomeContract extends Contract {
      */
     @Transaction()
     @Returns('string')
-    public async deleteIncome(ctx: Context, incomeID: string): Promise<string> {
-        if (!incomeID) {
+    public async deleteIncome(ctx: Context, userID: string, incomeID: string): Promise<string> {
+        if (!incomeID || !userID) {
             throw new Error('Missing income ID');
         }
 
-        const incomeBytes = await ctx.stub.getState(incomeID);
+        const key = this.getIncomeKey(ctx, userID, incomeID)
+        const incomeBytes = await ctx.stub.getState(key);
         if (!incomeBytes || incomeBytes.length === 0) {
             throw new Error('Income record does not exist');
         }
 
-        await ctx.stub.deleteState(incomeID);
+        await ctx.stub.deleteState(key);
         return JSON.stringify({ message: 'Income deleted' });
     }
 
@@ -178,12 +185,8 @@ export class IncomeContract extends Contract {
             throw new Error('Missing user ID');
         }
 
-        // Scanning the entire ledger by using empty strings as startKey and endKey.
-        const startKey = "";
-        const endKey = "";
-
         const results: Income[] = [];
-        const iterator = await ctx.stub.getStateByRange(startKey, endKey);
+        const iterator = await ctx.stub.getStateByPartialCompositeKey('Income', [userID]);
         let result = await iterator.next();
         while (!result.done) {
             if (result.value && result.value.value) {
@@ -211,12 +214,13 @@ export class IncomeContract extends Contract {
      */
     @Transaction(false)
     @Returns('string')
-    public async getIncomeByID(ctx: Context, incomeID: string): Promise<string> {
+    public async getIncomeByID(ctx: Context, userID: string, incomeID: string): Promise<string> {
         if (!incomeID) {
             throw new Error('Missing income ID');
         }
 
-        const incomeBytes = await ctx.stub.getState(incomeID);
+        const key = this.getIncomeKey(ctx, userID, incomeID);
+        const incomeBytes = await ctx.stub.getState(key);
         if (!incomeBytes || incomeBytes.length === 0) {
             throw new Error('Income record not found');
         }

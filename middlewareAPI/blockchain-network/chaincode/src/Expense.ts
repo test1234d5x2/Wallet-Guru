@@ -34,6 +34,10 @@ export class ExpenseContract extends Contract {
         return stringify(sortKeysRecursive(expense));
     }
 
+    private getExpenseKey(ctx: Context, userID: string, expenseID: string): string {
+        return ctx.stub.createCompositeKey('Expense', [userID, expenseID]);
+    }
+
     /**
      * Create a new expense.
      * Expects a JSON string representing the expense object with these fields:
@@ -92,12 +96,13 @@ export class ExpenseContract extends Contract {
             receipt: expenseInput.receipt || undefined,
         };
 
-        const existing = await ctx.stub.getState(expenseInput.id);
+        const key = this.getExpenseKey(ctx, expenseInput.userID, expenseInput.id)
+        const existing = await ctx.stub.getState(key);
         if (existing && existing.length > 0) {
             throw new Error('Expense already exists');
         }
 
-        await ctx.stub.putState(expenseInput.id, Buffer.from(this.deterministicStringify(newExpense)));
+        await ctx.stub.putState(key, Buffer.from(this.deterministicStringify(newExpense)));
         return JSON.stringify({ message: 'Expense created' });
     }
 
@@ -144,7 +149,8 @@ export class ExpenseContract extends Contract {
             throw new Error('Missing required expense fields: id, userID, title, categoryID, amount, notes, date');
         }
 
-        const expenseBytes = await ctx.stub.getState(expenseInput.id);
+        const key = this.getExpenseKey(ctx, expenseInput.userID, expenseInput.id)
+        const expenseBytes = await ctx.stub.getState(key);
         if (!expenseBytes || expenseBytes.length === 0) {
             throw new Error('Expense does not exist');
         }
@@ -162,7 +168,7 @@ export class ExpenseContract extends Contract {
         storedExpense.date = expenseInput.date;
         storedExpense.receipt = expenseInput.receipt || undefined;
 
-        await ctx.stub.putState(expenseInput.id, Buffer.from(this.deterministicStringify(storedExpense)));
+        await ctx.stub.putState(key, Buffer.from(this.deterministicStringify(storedExpense)));
         return JSON.stringify({ message: 'Expense updated' });
     }
 
@@ -176,17 +182,18 @@ export class ExpenseContract extends Contract {
      */
     @Transaction()
     @Returns('string')
-    public async deleteExpense(ctx: Context, expenseID: string): Promise<string> {
-        if (!expenseID) {
+    public async deleteExpense(ctx: Context, userID: string, expenseID: string): Promise<string> {
+        if (!expenseID || !userID) {
             throw new Error('Missing expense ID');
         }
 
-        const expenseBytes = await ctx.stub.getState(expenseID);
+        const key = this.getExpenseKey(ctx, userID, expenseID)
+        const expenseBytes = await ctx.stub.getState(key);
         if (!expenseBytes || expenseBytes.length === 0) {
             throw new Error('Expense does not exist');
         }
 
-        await ctx.stub.deleteState(expenseID);
+        await ctx.stub.deleteState(key);
         return JSON.stringify({ message: 'Expense deleted' });
     }
 
@@ -204,11 +211,8 @@ export class ExpenseContract extends Contract {
         if (!userID) {
             throw new Error('Missing user ID');
         }
-    
-        const startKey = '';
-        const endKey = '';
-    
-        const iterator = await ctx.stub.getStateByRange(startKey, endKey);
+        
+        const iterator = await ctx.stub.getStateByPartialCompositeKey('Expense', [userID]);
         const results: Expense[] = [];
     
         let result = await iterator.next();
@@ -238,12 +242,13 @@ export class ExpenseContract extends Contract {
      */
     @Transaction(false)
     @Returns('string')
-    public async getExpenseByID(ctx: Context, expenseID: string): Promise<string> {
+    public async getExpenseByID(ctx: Context, userID: string, expenseID: string): Promise<string> {
         if (!expenseID) {
             throw new Error('Missing expense ID');
         }
 
-        const expenseBytes = await ctx.stub.getState(expenseID);
+        const key = this.getExpenseKey(ctx, userID, expenseID);
+        const expenseBytes = await ctx.stub.getState(key);
         if (!expenseBytes || expenseBytes.length === 0) {
             throw new Error('Expense not found');
         }

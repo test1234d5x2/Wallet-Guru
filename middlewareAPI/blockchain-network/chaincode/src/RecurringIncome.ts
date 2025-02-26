@@ -33,6 +33,10 @@ export class RecurringIncomeContract extends Contract {
         return stringify(sortKeysRecursive(income));
     }
 
+    private getReccuringIncomeKey(ctx: Context, userID: string, incomeID: string): string {
+        return ctx.stub.createCompositeKey('RecurringIncome', [userID, incomeID]);
+    }
+
     /**
      * Create a new recurring income record.
      * 
@@ -78,12 +82,13 @@ export class RecurringIncomeContract extends Contract {
             recurrenceRule: incomeInput.recurrenceRule,
         };
 
-        const existing = await ctx.stub.getState(incomeInput.id);
+        const key = this.getReccuringIncomeKey(ctx, incomeInput.userID, incomeInput.id)
+        const existing = await ctx.stub.getState(key);
         if (existing && existing.length > 0) {
             throw new Error('Recurring income record already exists');
         }
 
-        await ctx.stub.putState(incomeInput.id, Buffer.from(this.deterministicStringify(newRecurringIncome)));
+        await ctx.stub.putState(key, Buffer.from(this.deterministicStringify(newRecurringIncome)));
         return JSON.stringify({ message: 'Recurring income created' });
     }
 
@@ -117,7 +122,8 @@ export class RecurringIncomeContract extends Contract {
             throw new Error('Missing required fields: id, userID, title, amount, notes, date, recurrenceRule');
         }
 
-        const incomeBytes = await ctx.stub.getState(incomeInput.id);
+        const key = this.getReccuringIncomeKey(ctx, incomeInput.userID, incomeInput.id)
+        const incomeBytes = await ctx.stub.getState(key);
         if (!incomeBytes || incomeBytes.length === 0) {
             throw new Error('Recurring income record does not exist');
         }
@@ -133,7 +139,7 @@ export class RecurringIncomeContract extends Contract {
         storedIncome.notes = incomeInput.notes || undefined;
         storedIncome.date = incomeInput.date;
 
-        await ctx.stub.putState(incomeInput.id, Buffer.from(this.deterministicStringify(storedIncome)));
+        await ctx.stub.putState(key, Buffer.from(this.deterministicStringify(storedIncome)));
         return JSON.stringify({ message: 'Recurring income updated' });
     }
 
@@ -148,17 +154,18 @@ export class RecurringIncomeContract extends Contract {
      */
     @Transaction()
     @Returns('string')
-    public async deleteRecurringIncome(ctx: Context, recurringIncomeID: string): Promise<string> {
+    public async deleteRecurringIncome(ctx: Context, userID: string, recurringIncomeID: string): Promise<string> {
         if (!recurringIncomeID) {
             throw new Error('Missing recurring income ID');
         }
 
-        const incomeBytes = await ctx.stub.getState(recurringIncomeID);
+        const key = this.getReccuringIncomeKey(ctx, userID, recurringIncomeID)
+        const incomeBytes = await ctx.stub.getState(key);
         if (!incomeBytes || incomeBytes.length === 0) {
             throw new Error('Recurring income record does not exist');
         }
 
-        await ctx.stub.deleteState(recurringIncomeID);
+        await ctx.stub.deleteState(key);
         return JSON.stringify({ message: 'Recurring income deleted' });
     }
 
@@ -178,12 +185,8 @@ export class RecurringIncomeContract extends Contract {
             throw new Error('Missing user ID');
         }
 
-        // Use empty strings for startKey and endKey to perform a full scan of the ledger.
-        const startKey = "";
-        const endKey = "";
-
         const results: RecurringIncome[] = [];
-        const iterator = await ctx.stub.getStateByRange(startKey, endKey);
+        const iterator = await ctx.stub.getStateByPartialCompositeKey('RecurringIncome', [userID]);
         let result = await iterator.next();
         while (!result.done) {
             if (result.value && result.value.value) {
@@ -211,12 +214,13 @@ export class RecurringIncomeContract extends Contract {
      */
     @Transaction(false)
     @Returns('string')
-    public async getRecurringIncomeByID(ctx: Context, recurringIncomeID: string): Promise<string> {
+    public async getRecurringIncomeByID(ctx: Context, userID: string, recurringIncomeID: string): Promise<string> {
         if (!recurringIncomeID) {
             throw new Error('Missing recurring income ID');
         }
 
-        const incomeBytes = await ctx.stub.getState(recurringIncomeID);
+        const key = this.getReccuringIncomeKey(ctx, userID, recurringIncomeID)
+        const incomeBytes = await ctx.stub.getState(key);
         if (!incomeBytes || incomeBytes.length === 0) {
             throw new Error('Recurring income record not found');
         }

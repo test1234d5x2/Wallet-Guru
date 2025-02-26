@@ -34,6 +34,10 @@ export class RecurringExpenseContract extends Contract {
         return stringify(sortKeysRecursive(expense));
     }
 
+    private getReccuringExpenseKey(ctx: Context, userID: string, expenseID: string): string {
+        return ctx.stub.createCompositeKey('RecurringExpense', [userID, expenseID]);
+    }
+
     /**
      * Create a new recurring expense.
      * 
@@ -82,12 +86,13 @@ export class RecurringExpenseContract extends Contract {
             recurrenceRule: expenseInput.recurrenceRule,
         };
 
-        const existing = await ctx.stub.getState(expenseInput.id);
+        const key = this.getReccuringExpenseKey(ctx, expenseInput.userID, expenseInput.id)
+        const existing = await ctx.stub.getState(key);
         if (existing && existing.length > 0) {
             throw new Error('Recurring expense already exists');
         }
 
-        await ctx.stub.putState(expenseInput.id, Buffer.from(this.deterministicStringify(newRecurringExpense)));
+        await ctx.stub.putState(key, Buffer.from(this.deterministicStringify(newRecurringExpense)));
         return JSON.stringify({ message: 'Recurring expense created' });
     }
 
@@ -121,7 +126,8 @@ export class RecurringExpenseContract extends Contract {
             throw new Error('Missing required fields: id, userID, categoryID, title, amount, notes, date, recurrenceRule');
         }
 
-        const expenseBytes = await ctx.stub.getState(expenseInput.id);
+        const key = this.getReccuringExpenseKey(ctx, expenseInput.userID, expenseInput.id)
+        const expenseBytes = await ctx.stub.getState(key);
         if (!expenseBytes || expenseBytes.length === 0) {
             throw new Error('Recurring expense does not exist');
         }
@@ -138,7 +144,7 @@ export class RecurringExpenseContract extends Contract {
         storedExpense.notes = expenseInput.notes || undefined;
         storedExpense.date = expenseInput.date;
 
-        await ctx.stub.putState(expenseInput.id, Buffer.from(this.deterministicStringify(storedExpense)));
+        await ctx.stub.putState(key, Buffer.from(this.deterministicStringify(storedExpense)));
         return JSON.stringify({ message: 'Recurring expense updated' });
     }
 
@@ -153,17 +159,18 @@ export class RecurringExpenseContract extends Contract {
      */
     @Transaction()
     @Returns('string')
-    public async deleteRecurringExpense(ctx: Context, recurringexpenseID: string): Promise<string> {
+    public async deleteRecurringExpense(ctx: Context, userID: string, recurringexpenseID: string): Promise<string> {
         if (!recurringexpenseID) {
             throw new Error('Missing recurring expense ID');
         }
 
-        const expenseBytes = await ctx.stub.getState(recurringexpenseID);
+        const key = this.getReccuringExpenseKey(ctx, userID, recurringexpenseID)
+        const expenseBytes = await ctx.stub.getState(key);
         if (!expenseBytes || expenseBytes.length === 0) {
             throw new Error('Recurring expense does not exist');
         }
 
-        await ctx.stub.deleteState(recurringexpenseID);
+        await ctx.stub.deleteState(key);
         return JSON.stringify({ message: 'Recurring expense deleted' });
     }
 
@@ -183,12 +190,8 @@ export class RecurringExpenseContract extends Contract {
             throw new Error('Missing user ID');
         }
     
-        // Scanning the entire ledger using empty strings for startKey and endKey.
-        const startKey = "";
-        const endKey = "";
-    
         const results: RecurringExpense[] = [];
-        const iterator = await ctx.stub.getStateByRange(startKey, endKey);
+        const iterator = await ctx.stub.getStateByPartialCompositeKey('RecurringExpense', [userID]);
         let result = await iterator.next();
         while (!result.done) {
             if (result.value && result.value.value) {
@@ -216,12 +219,13 @@ export class RecurringExpenseContract extends Contract {
      */
     @Transaction(false)
     @Returns('string')
-    public async getRecurringExpenseByID(ctx: Context, recurringexpenseID: string): Promise<string> {
+    public async getRecurringExpenseByID(ctx: Context, userID: string, recurringexpenseID: string): Promise<string> {
         if (!recurringexpenseID) {
             throw new Error('Missing recurring expense ID');
         }
 
-        const expenseBytes = await ctx.stub.getState(recurringexpenseID);
+        const key = this.getReccuringExpenseKey(ctx, userID, recurringexpenseID)
+        const expenseBytes = await ctx.stub.getState(key);
         if (!expenseBytes || expenseBytes.length === 0) {
             throw new Error('Recurring expense not found');
         }
