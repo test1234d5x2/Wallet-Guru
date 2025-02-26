@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, Dimensions, Alert, ScrollView } from 'react-native';
 import setPageTitle from '@/components/pageTitle/setPageTitle';
 import TopBar from '@/components/topBars/topBar';
@@ -6,8 +6,6 @@ import { PieChart, LineChart } from 'react-native-chart-kit';
 import { useRouter } from 'expo-router';
 import clearRouterHistory from '@/utils/clearRouterHistory';
 import getMonthName from '@/utils/getMonthName';
-import ModalSelectionDates from '@/components/modalSelection/modalSelectionDates';
-import monthsPassedSinceJoinDate from '@/utils/monthsPassedSinceJoinDate';
 import getToken from '@/utils/tokenAccess/getToken';
 import Expense from '@/models/core/Expense';
 import Income from '@/models/core/Income';
@@ -15,6 +13,10 @@ import getCategoryDistribution from '@/utils/analytics/getCategoryDistribution';
 import ExpenseCategory from '@/models/core/ExpenseCategory';
 import getIncomeVsExpenses from '@/utils/analytics/getIncomeVsExpenses';
 import getSavingsTrends from '@/utils/analytics/getSavingsTrends';
+import getExpenseCategories from '@/utils/apiCalls/getExpenseCategories';
+import getExpenses from '@/utils/apiCalls/getExpenses';
+import getIncomes from '@/utils/apiCalls/getIncomes';
+
 
 export default function Analytics() {
     setPageTitle('Spending Analytics');
@@ -38,6 +40,45 @@ export default function Analytics() {
         setToken(data.token);
     });
 
+    useEffect(() => {
+        async function getExpenseList() {
+            const result = await getExpenses(token);
+            if (result) {
+                setExpenses(result);
+            } else {
+                console.log("Error with getting expense list")
+            }
+        }
+
+        getExpenseList();
+    }, [token]);
+
+    useEffect(() => {
+        async function getIncomesList() {
+            const result = await getIncomes(token);
+            if (result) {
+                setIncomes(result);
+            } else {
+                console.log("Error with getting incomes list")
+            }
+        }
+
+        getIncomesList();
+    }, [token]);
+
+    useEffect(() => {
+        async function getCategories() {
+            const result = await getExpenseCategories(token);
+            if (result) {
+                setCategories(result);
+            } else {
+                console.log("Error with getting expense categories list.")
+            }
+        }
+
+        getCategories();
+    }, [token, expenses]);
+
     const getColor = (index: number) => {
         const colors = ['#C0C0C0', '#A9A9A9', '#E5E5E5', '#696969', '#000000'];
         return colors[index % colors.length];
@@ -60,7 +101,7 @@ export default function Analytics() {
         legendFontSize: 12,
     }));
 
-    const {incomeTotals, expenseTotals} = getIncomeVsExpenses(expenses, incomes, lastFourMonths)
+    const { incomeTotals, expenseTotals } = getIncomeVsExpenses(expenses, incomes, lastFourMonths)
     const savingsTrend = getSavingsTrends(expenses, incomes, lastFourMonths);
 
     const labels = lastFourMonths.map((date) =>
@@ -71,7 +112,7 @@ export default function Analytics() {
         <View style={styles.container}>
             <TopBar />
 
-            <ScrollView contentContainerStyle={{ rowGap: 20, paddingBottom: 40 }} style={{flex: 1}} showsVerticalScrollIndicator={false}>
+            <ScrollView contentContainerStyle={{ rowGap: 20, paddingBottom: 40 }} style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
                 <View>
                     <Text style={styles.selectMonthText}>Select Month:</Text>
                     {/*<ModalSelectionDates
@@ -99,83 +140,83 @@ export default function Analytics() {
                 />}
 
                 <Text style={styles.header}>Income vs Expenditure</Text>
-                { expenseTotals.filter(value => value !== 0).length === 0 && incomeTotals.filter(value => value !== 0).length === 0 ? <Text style={styles.message}>There were no expenses or income records.</Text> : 
-                <LineChart
-                    data={{
-                        labels,
-                        datasets: [
-                            {
-                                data: incomeTotals,
-                                color: () => 'green',
-                                strokeWidth: 2,
+                {expenseTotals.filter(value => value !== 0).length === 0 && incomeTotals.filter(value => value !== 0).length === 0 ? <Text style={styles.message}>There were no expenses or income records.</Text> :
+                    <LineChart
+                        data={{
+                            labels,
+                            datasets: [
+                                {
+                                    data: incomeTotals,
+                                    color: () => 'green',
+                                    strokeWidth: 2,
+                                },
+                                {
+                                    data: expenseTotals,
+                                    color: () => 'red',
+                                    strokeWidth: 2,
+                                },
+                            ],
+                            legend: ['Income', 'Expense'],
+                        }}
+                        width={screenWidth - 30}
+                        height={300}
+                        yAxisLabel="£"
+                        chartConfig={{
+                            backgroundGradientFrom: '#fff',
+                            backgroundGradientTo: '#fff',
+                            decimalPlaces: 2,
+                            color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+                            labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+                            fillShadowGradient: 'white',
+                            fillShadowGradientFrom: 'white',
+                            fillShadowGradientTo: 'white',
+                            propsForDots: {
+                                r: 0,
                             },
-                            {
-                                data: expenseTotals,
-                                color: () => 'red',
-                                strokeWidth: 2,
+                            propsForBackgroundLines: {
+                                strokeWidth: 0.5,
+                                strokeDasharray: '2 4',
+                                stroke: 'rgba(0, 0, 0, 0.3)',
                             },
-                        ],
-                        legend: ['Income', 'Expense'],
-                    }}
-                    width={screenWidth - 30}
-                    height={300}
-                    yAxisLabel="£"
-                    chartConfig={{
-                        backgroundGradientFrom: '#fff',
-                        backgroundGradientTo: '#fff',
-                        decimalPlaces: 2,
-                        color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
-                        labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
-                        fillShadowGradient: 'white',
-                        fillShadowGradientFrom: 'white',
-                        fillShadowGradientTo: 'white',
-                        propsForDots: {
-                            r: 0,
-                        },
-                        propsForBackgroundLines: {
-                            strokeWidth: 0.5,
-                            strokeDasharray: '2 4',
-                            stroke: 'rgba(0, 0, 0, 0.3)',
-                        },
-                    }}
-                />}
+                        }}
+                    />}
 
                 <Text style={styles.header}>Savings Trends</Text>
-                { expenseTotals.filter(value => value !== 0).length === 0 && incomeTotals.filter(value => value !== 0).length === 0 ? <Text style={styles.message}>There were no expenses or income records.</Text> :
-                <LineChart
-                    data={{
-                        labels,
-                        datasets: [
-                            {
-                                data: savingsTrend,
-                                color: () => 'blue',
-                                strokeWidth: 2,
+                {expenseTotals.filter(value => value !== 0).length === 0 && incomeTotals.filter(value => value !== 0).length === 0 ? <Text style={styles.message}>There were no expenses or income records.</Text> :
+                    <LineChart
+                        data={{
+                            labels,
+                            datasets: [
+                                {
+                                    data: savingsTrend,
+                                    color: () => 'blue',
+                                    strokeWidth: 2,
+                                },
+                            ],
+                            legend: ['Savings'],
+                        }}
+                        width={screenWidth - 30}
+                        height={300}
+                        yAxisLabel="£"
+                        chartConfig={{
+                            backgroundGradientFrom: '#fff',
+                            backgroundGradientTo: '#fff',
+                            decimalPlaces: 2,
+                            color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+                            labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+                            fillShadowGradient: 'white',
+                            fillShadowGradientFrom: 'white',
+                            fillShadowGradientTo: 'white',
+                            propsForDots: {
+                                r: 0,
                             },
-                        ],
-                        legend: ['Savings'],
-                    }}
-                    width={screenWidth - 30}
-                    height={300}
-                    yAxisLabel="£"
-                    chartConfig={{
-                        backgroundGradientFrom: '#fff',
-                        backgroundGradientTo: '#fff',
-                        decimalPlaces: 2,
-                        color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
-                        labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
-                        fillShadowGradient: 'white',
-                        fillShadowGradientFrom: 'white',
-                        fillShadowGradientTo: 'white',
-                        propsForDots: {
-                            r: 0,
-                        },
-                        propsForBackgroundLines: {
-                            strokeWidth: 0.5,
-                            strokeDasharray: '2 4',
-                            stroke: 'rgba(0, 0, 0, 0.3)',
-                        },
-                    }}
-                />}
+                            propsForBackgroundLines: {
+                                strokeWidth: 0.5,
+                                strokeDasharray: '2 4',
+                                stroke: 'rgba(0, 0, 0, 0.3)',
+                            },
+                        }}
+                    />}
             </ScrollView>
         </View>
     );
