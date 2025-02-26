@@ -17,6 +17,7 @@ export const create = async (req: Request, res: Response): Promise<void> => {
         recurrenceRule.frequency,
         recurrenceRule.interval,
         new Date(recurrenceRule.startDate),
+        recurrenceRule.nextTriggerDate ? new Date(recurrenceRule.nextTriggerDate) : undefined,
         recurrenceRule.endDate ? new Date(recurrenceRule.endDate) : undefined
     );
 
@@ -34,7 +35,7 @@ export const create = async (req: Request, res: Response): Promise<void> => {
 
 export const update = async (req: Request, res: Response): Promise<void> => {
     const { id } = req.params;
-    const { title, amount, date, notes } = req.body;
+    const { title, amount, date, notes, recurrenceRule } = req.body;
 
     const userID = getUserFromToken(req);
     if (!userID) {
@@ -42,10 +43,18 @@ export const update = async (req: Request, res: Response): Promise<void> => {
         return;
     }
 
+    const rule = new BasicRecurrenceRule(
+        recurrenceRule.frequency,
+        recurrenceRule.interval,
+        new Date(recurrenceRule.startDate),
+        recurrenceRule.nextTriggerDate ? new Date(recurrenceRule.nextTriggerDate) : undefined,
+        recurrenceRule.endDate ? new Date(recurrenceRule.endDate) : undefined
+    );
+
     const registry = await Registry.getInstance();
     const recurringIncomeService = registry.recurringIncomeService;
 
-    if (!await recurringIncomeService.updateRecurringIncome(id, userID, title, amount, new Date(date), notes)) {
+    if (!await recurringIncomeService.updateRecurringIncome(id, userID, title, amount, new Date(date), notes, rule)) {
         res.status(404).json({ message: 'Fialed to udpate recurring income.' });
         return
     }
@@ -86,7 +95,7 @@ export const listByUser = async (req: Request, res: Response): Promise<void> => 
     const registry = await Registry.getInstance();
     const recurringIncomeService = registry.recurringIncomeService;
 
-    recurringIncomeService.processDueRecurringIncomes();
+    await recurringIncomeService.processDueRecurringIncomes();
     const recurringIncomes = await recurringIncomeService.getAllRecurringIncomesByUser(userID);
     res.status(200).json({ recurringIncomes });
 };

@@ -38,7 +38,7 @@ class RecurringExpenseService {
         return false;
     }
 
-    public async updateRecurringExpense(id: string, userID: string, title: string, amount: number, date: Date, notes: string, categoryID: string): Promise<boolean> {
+    public async updateRecurringExpense(id: string, userID: string, title: string, amount: number, date: Date, notes: string, categoryID: string, recurrenceRule: RecurrenceRule): Promise<boolean> {
         try {
             const recurringExpense = await this.findByID(id, userID);
             if (!recurringExpense) {
@@ -49,6 +49,7 @@ class RecurringExpenseService {
             recurringExpense.date = date;
             recurringExpense.notes = notes;
             recurringExpense.categoryID = categoryID;
+            recurringExpense.recurrenceRule = recurrenceRule
 
             await this.contract.submitTransaction(
                 "updateRecurringExpense",
@@ -119,14 +120,31 @@ class RecurringExpenseService {
         return undefined;
     }
 
-    public processDueRecurringExpenses(): void {
-        const recurringExpenses: RecurringExpense[] = [];
-        recurringExpenses.forEach(recExp => {
-            if (recExp.recurrenceRule.shouldTrigger()) {
-                this.expenseService.addExpense(recExp.getUserID(), recExp.title, recExp.amount, new Date(), recExp.notes, recExp.categoryID, recExp.receipt);
-                recExp.recurrenceRule.computeNextTriggerDate();
-            }
-        });
+    public async processDueRecurringExpenses(): Promise<void> {
+        try {
+            const resultBytes = await this.contract.evaluateTransaction(
+                "listAllRecurringExpenses",
+            )
+
+            const resultJson = utf8Decoder.decode(resultBytes);
+            const result = JSON.parse(resultJson);
+            const recurringExpenses: RecurringExpense[] = result.recurringExpenses.map((e: any) => {
+                const recurrenceRule = new BasicRecurrenceRule(e.recurrenceRule.frequency, e.recurrenceRule.interval, new Date(e.recurrenceRule.startDate), new Date(e.recurrenceRule.nextTriggerDate), new Date(e.recurrenceRule.endDate))
+                return new RecurringExpense(e.userID, e.title, e.amount, new Date(e.date), e.notes, e.categoryID, recurrenceRule, e.id);
+            });
+
+            recurringExpenses.forEach(recExp => {
+                if (recExp.recurrenceRule.shouldTrigger()) {
+                    this.expenseService.addExpense(recExp.getUserID(), recExp.title, recExp.amount, new Date(), recExp.notes, recExp.categoryID, recExp.receipt);
+                    recExp.recurrenceRule.computeNextTriggerDate();
+
+                    this.updateRecurringExpense(recExp.getID(), recExp.getUserID(), recExp.title, recExp.amount, recExp.date, recExp.notes, recExp.categoryID, recExp.recurrenceRule)
+                }
+            });
+            
+        } catch (err) {
+            console.log(err)
+        }
     }
 }
 

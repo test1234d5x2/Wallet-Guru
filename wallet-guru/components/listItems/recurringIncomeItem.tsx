@@ -27,7 +27,6 @@ export default function RecurringIncomeItem(props: RecurringIncomeItemProps) {
             { text: 'Cancel', style: 'cancel' },
             {
                 text: 'Delete', style: 'destructive', onPress: () => {
-                    Alert.alert("IMPLEMENT DELETE");
                     deleteRecurringIncome(props.token, id).then((complete) => {
                         if (complete) {
                             Alert.alert('Success', 'Recurring income deleted successfully!');

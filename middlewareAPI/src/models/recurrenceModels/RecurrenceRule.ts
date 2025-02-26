@@ -13,11 +13,13 @@ export default abstract class RecurrenceRule {
         this.startDate = startDate;
         this.endDate = endDate;
 
-        this.nextTriggerDate = nextTriggerDate || new Date(Date.UTC(
-            startDate.getUTCFullYear(),
-            startDate.getUTCMonth(),
-            startDate.getUTCDate(),
-        ));
+        this.nextTriggerDate = nextTriggerDate || new Date(startDate);
+
+        this.nextTriggerDate = new Date(Date.UTC(
+            this.nextTriggerDate.getUTCFullYear(),
+            this.nextTriggerDate.getUTCMonth(),
+            this.nextTriggerDate.getUTCDate(),
+        ))
     }
 
     public shouldTrigger(): boolean {
@@ -35,16 +37,16 @@ export default abstract class RecurrenceRule {
         while (this.nextTriggerDate <= now) {
             switch (this.frequency) {
                 case Frequency.Daily:
-                    this.nextTriggerDate.setUTCDate(this.nextTriggerDate.getUTCDate() + this.interval);
+                    this.nextTriggerDate.setUTCDate(this.nextTriggerDate.getUTCDate() + this.interval)
                     break;
                 case Frequency.Weekly:
-                    this.nextTriggerDate.setUTCDate(this.nextTriggerDate.getUTCDate() + this.interval * 7);
+                    this.nextTriggerDate.setUTCDate(this.nextTriggerDate.getUTCDate() + this.interval * 7)
                     break;
                 case Frequency.Monthly:
-                    this.nextTriggerDate.setUTCMonth(this.nextTriggerDate.getUTCMonth() + this.interval);
+                    this.nextTriggerDate.setUTCMonth(this.nextTriggerDate.getUTCMonth() + this.interval)
                     break;
                 case Frequency.Yearly:
-                    this.nextTriggerDate.setUTCFullYear(this.nextTriggerDate.getUTCFullYear() + this.interval);
+                    this.nextTriggerDate.setUTCFullYear(this.nextTriggerDate.getUTCFullYear() + this.interval)
                     break;
                 default:
                     throw new Error("Unsupported frequency");

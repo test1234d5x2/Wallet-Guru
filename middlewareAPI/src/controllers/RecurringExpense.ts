@@ -13,7 +13,12 @@ export const create = async (req: Request, res: Response): Promise<void> => {
         return;
     }
 
-    const rule = new BasicRecurrenceRule(recurrenceRule.frequency, recurrenceRule.interval, new Date(recurrenceRule.startDate), recurrenceRule.endDate ? new Date(recurrenceRule.endDate) : undefined);
+    const rule = new BasicRecurrenceRule(
+        recurrenceRule.frequency,
+        recurrenceRule.interval, new Date(recurrenceRule.startDate),
+        recurrenceRule.nextTriggerDate ? new Date(recurrenceRule.nextTriggerDate) : undefined,
+        recurrenceRule.endDate ? new Date(recurrenceRule.endDate) : undefined
+    );
 
     const registry = await Registry.getInstance();
     const recurringExpenseService = registry.recurringExpenseService;
@@ -29,7 +34,7 @@ export const create = async (req: Request, res: Response): Promise<void> => {
 
 export const update = async (req: Request, res: Response): Promise<void> => {
     const { id } = req.params;
-    const { title, amount, date, notes, categoryID } = req.body;
+    const { title, amount, date, notes, categoryID, recurrenceRule } = req.body;
 
     const userID = getUserFromToken(req);
     if (!userID) {
@@ -37,10 +42,17 @@ export const update = async (req: Request, res: Response): Promise<void> => {
         return;
     }
 
+    const rule = new BasicRecurrenceRule(
+        recurrenceRule.frequency,
+        recurrenceRule.interval, new Date(recurrenceRule.startDate),
+        recurrenceRule.nextTriggerDate ? new Date(recurrenceRule.nextTriggerDate) : undefined,
+        recurrenceRule.endDate ? new Date(recurrenceRule.endDate) : undefined
+    );
+
     const registry = await Registry.getInstance();
     const recurringExpenseService = registry.recurringExpenseService;
 
-    if (!await recurringExpenseService.updateRecurringExpense(id, userID, title, amount, new Date(date), notes, categoryID)) {
+    if (!await recurringExpenseService.updateRecurringExpense(id, userID, title, amount, new Date(date), notes, categoryID, rule)) {
         res.status(404).json({ message: 'Failed to update recurring expense.' });
         return
     }

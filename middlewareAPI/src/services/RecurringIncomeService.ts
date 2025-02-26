@@ -40,7 +40,7 @@ class RecurringIncomeService {
         return false;
     }
 
-    public async updateRecurringIncome(id: string, userID: string, title: string, amount: number, date: Date, notes: string): Promise<boolean> {
+    public async updateRecurringIncome(id: string, userID: string, title: string, amount: number, date: Date, notes: string, recurrenceRule: RecurrenceRule): Promise<boolean> {
         try {
             const recurringIncome = await this.findByID(id, userID);
             if (!recurringIncome) {
@@ -51,6 +51,7 @@ class RecurringIncomeService {
             recurringIncome.amount = amount;
             recurringIncome.date = date;
             recurringIncome.notes = notes;
+            recurringIncome.recurrenceRule = recurrenceRule;
 
             await this.contract.submitTransaction(
                 "updateRecurringIncome",
@@ -87,18 +88,18 @@ class RecurringIncomeService {
                 "listRecurringIncomesByUser",
                 userID,
             )
-    
+
             const resultJson = utf8Decoder.decode(resultBytes);
             const result = JSON.parse(resultJson);
-            const incomes: RecurringIncome[] = result.recurringIncomes.map((i: any) => {
+            const recurringIncomes: RecurringIncome[] = result.recurringIncomes.map((i: any) => {
                 const recurrenceRule = new BasicRecurrenceRule(i.recurrenceRule.frequency, i.recurrenceRule.interval, new Date(i.recurrenceRule.startDate), new Date(i.recurrenceRule.nextTriggerDate), new Date(i.recurrenceRule.endDate))
                 return new RecurringIncome(i.userID, i.title, i.amount, new Date(i.date), i.notes, recurrenceRule, i.id);
             });
-            return incomes;
+            return recurringIncomes;
         } catch (err: any) {
             console.log(err)
         }
-    
+
         return [];
     }
 
@@ -121,15 +122,31 @@ class RecurringIncomeService {
         return undefined
     }
 
-    // CHAINCODE NEEDS UPDATING
     public async processDueRecurringIncomes(): Promise<void> {
-        const recurringIncomes: RecurringIncome[] = [];
-        recurringIncomes.forEach(recIncome => {
-            if (recIncome.recurrenceRule.shouldTrigger()) {
-                this.incomeService.addIncome(recIncome.getUserID(), recIncome.title, recIncome.amount, new Date(), recIncome.notes);
-                recIncome.recurrenceRule.computeNextTriggerDate();
-            }
-        });
+        try {
+            const resultBytes = await this.contract.evaluateTransaction(
+                "listAllRecurringIncomes",
+            )
+
+            const resultJson = utf8Decoder.decode(resultBytes);
+            const result = JSON.parse(resultJson);
+            const recurringIncomes: RecurringIncome[] = result.recurringIncomes.map((i: any) => {
+                const recurrenceRule = new BasicRecurrenceRule(i.recurrenceRule.frequency, i.recurrenceRule.interval, new Date(i.recurrenceRule.startDate), new Date(i.recurrenceRule.nextTriggerDate), new Date(i.recurrenceRule.endDate))
+                return new RecurringIncome(i.userID, i.title, i.amount, new Date(i.date), i.notes, recurrenceRule, i.id);
+            });
+
+            recurringIncomes.forEach(async recIncome => {
+                if (recIncome.recurrenceRule.shouldTrigger()) {
+                    await this.incomeService.addIncome(recIncome.getUserID(), recIncome.title, recIncome.amount, new Date(), recIncome.notes);
+                    recIncome.recurrenceRule.computeNextTriggerDate();
+
+                    await this.updateRecurringIncome(recIncome.getID(), recIncome.getUserID(), recIncome.title, recIncome.amount, recIncome.date, recIncome.notes, recIncome.recurrenceRule);
+                }
+            });
+            
+        } catch (err) {
+            console.log(err)
+        }
     }
 }
 

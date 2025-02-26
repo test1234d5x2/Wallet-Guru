@@ -117,9 +117,6 @@ export const listByUser: RequestHandler = async (req, res): Promise<void> => {
     const registry = await Registry.getInstance();
     const incomeService = registry.incomeService;
 
-
-    console.log(incomeService)
-
     const incomes = await incomeService.getAllIncomesByUser(userID);
     res.status(200).json({ incomes });
 };

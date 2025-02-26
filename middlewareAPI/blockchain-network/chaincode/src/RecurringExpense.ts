@@ -143,6 +143,7 @@ export class RecurringExpenseContract extends Contract {
         storedExpense.amount = amountNum;
         storedExpense.notes = expenseInput.notes || undefined;
         storedExpense.date = expenseInput.date;
+        storedExpense.recurrenceRule = expenseInput.recurrenceRule;
 
         await ctx.stub.putState(key, Buffer.from(this.deterministicStringify(storedExpense)));
         return JSON.stringify({ message: 'Recurring expense updated' });
@@ -231,5 +232,28 @@ export class RecurringExpenseContract extends Contract {
 
         const expense: RecurringExpense = JSON.parse(expenseBytes.toString());
         return JSON.stringify(expense);
+    }
+
+    /**
+     * List all recurring expenses across all users.
+     *
+     * This transaction returns every recurring expense stored in the ledger.
+     *
+     * @param ctx The transaction context.
+     * @returns A JSON string containing an array of all recurring expense records.
+     */
+    @Transaction(false)
+    @Returns('string')
+    public async listAllRecurringExpenses(ctx: Context): Promise<string> {
+        const results: RecurringExpense[] = [];
+        const iterator = ctx.stub.getStateByPartialCompositeKey('RecurringExpense', []);
+        
+        for await (const res of iterator) {
+            if (res.value) {
+                const expense: RecurringExpense = JSON.parse(res.value.toString());
+                results.push(expense);
+            }
+        }
+        return JSON.stringify({ recurringExpenses: results });
     }
 }

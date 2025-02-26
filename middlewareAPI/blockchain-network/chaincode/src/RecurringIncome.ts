@@ -138,6 +138,7 @@ export class RecurringIncomeContract extends Contract {
         storedIncome.amount = amountNum;
         storedIncome.notes = incomeInput.notes || undefined;
         storedIncome.date = incomeInput.date;
+        storedIncome.recurrenceRule = incomeInput.recurrenceRule;
 
         await ctx.stub.putState(key, Buffer.from(this.deterministicStringify(storedIncome)));
         return JSON.stringify({ message: 'Recurring income updated' });
@@ -226,5 +227,28 @@ export class RecurringIncomeContract extends Contract {
 
         const income: RecurringIncome = JSON.parse(incomeBytes.toString());
         return JSON.stringify(income);
+    }
+
+    /**
+     * List all recurring income records across all users.
+     *
+     * This transaction returns every recurring income stored in the ledger.
+     *
+     * @param ctx The transaction context.
+     * @returns A JSON string containing an array of all recurring income records.
+     */
+    @Transaction(false)
+    @Returns('string')
+    public async listAllRecurringIncomes(ctx: Context): Promise<string> {
+        const results: RecurringIncome[] = [];
+        const iterator = ctx.stub.getStateByPartialCompositeKey('RecurringIncome', []);
+        
+        for await (const res of iterator) {
+            if (res.value) {
+                const income: RecurringIncome = JSON.parse(res.value.toString());
+                results.push(income);
+            }
+        }
+        return JSON.stringify({ recurringIncomes: results });
     }
 }
