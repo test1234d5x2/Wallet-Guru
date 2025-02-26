@@ -7,7 +7,7 @@ import expenseCategoryRoutes from "./routes/ExpenseCategory";
 import incomeRoutes from "./routes/Income";
 import goalRoutes from "./routes/Goal";
 import recurringExpenseRouter from "./routes/RecurringExpense";
-import recurringIncomeRouter from "./routes/RecurringIncome"
+import recurringIncomeRouter from "./routes/RecurringIncome";
 
 dotenv.config();
 

@@ -129,17 +129,3 @@ export default class Connection {
 function envOrDefault(key: string, defaultValue: string): string {
     return process.env[key] || defaultValue;
 }
-
-
-
-
-
-console.log(`channelName:       ${channelName}`);
-console.log(`chaincodeName:     ${chaincodeName}`);
-console.log(`userContractName:  ${userContractName}`);
-console.log(`mspId:             ${mspId}`);
-console.log(`cryptoPath:        ${cryptoPath}`);
-console.log(`keyDirectoryPath:  ${keyDirectoryPath}`);
-console.log(`certDirectoryPath: ${certDirectoryPath}`);
-console.log(`tlsCertPath:       ${tlsCertPath}`);
-console.log(`peerEndpoint:      ${peerEndpoint}`);
