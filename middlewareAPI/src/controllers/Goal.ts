@@ -3,9 +3,6 @@ import Registry from "../registry/Registry";
 import GoalStatus from "../enums/GoalStatus";
 import getUserFromToken from "../utils/getUserFromToken";
 
-const registry = Registry.getInstance();
-const goalService = registry.goalService;
-
 
 /**
  * Create a new goal.
@@ -17,7 +14,7 @@ const goalService = registry.goalService;
  *   "status": "Active" // optional; defaults to Active if not provided
  * }
  */
-export const create: RequestHandler = (req, res) => {
+export const create: RequestHandler = async (req, res): Promise<void> => {
     const { title, description, target, targetDate, status } = req.body;
 
     const userID = getUserFromToken(req);
@@ -30,6 +27,9 @@ export const create: RequestHandler = (req, res) => {
         res.status(400).json({ error: "Missing required fields: title, description, target" });
         return;
     }
+
+    const registry = await Registry.getInstance();
+    const goalService = registry.goalService;
 
     goalService.addGoal(userID, title, description, target, targetDate, status || GoalStatus.Active);
     res.status(201).json({ message: "Goal created" });
@@ -46,7 +46,7 @@ export const create: RequestHandler = (req, res) => {
  * This endpoint fetches the existing goal via getGoalById (see helper above) and then calls updateGoal
  * using the new current value while preserving the goal's title, description, target, and status.
  */
-export const updateProgress: RequestHandler = (req, res) => {
+export const updateProgress: RequestHandler = async (req, res): Promise<void> => {
     const { id } = req.params;
     const { current } = req.body;
 
@@ -60,6 +60,9 @@ export const updateProgress: RequestHandler = (req, res) => {
         res.status(400).json({ error: "Missing required fields: id, current" });
         return;
     }
+
+    const registry = await Registry.getInstance();
+    const goalService = registry.goalService;
 
     const goal = goalService.findByID(id);
     if (!goal) {
@@ -85,7 +88,7 @@ export const updateProgress: RequestHandler = (req, res) => {
  *   id: Goal identifier
  * This endpoint fetches the existing goal and updates its status to Archived while preserving other fields.
  */
-export const archive: RequestHandler = (req, res) => {
+export const archive: RequestHandler = async (req, res): Promise<void> => {
     const { id } = req.params;
 
     const userID = getUserFromToken(req);
@@ -98,6 +101,9 @@ export const archive: RequestHandler = (req, res) => {
         res.status(400).json({ error: "Goal id is required" });
         return;
     }
+
+    const registry = await Registry.getInstance();
+    const goalService = registry.goalService;
 
     const goal = goalService.findByID(id);
     if (!goal) {
@@ -122,7 +128,7 @@ export const archive: RequestHandler = (req, res) => {
  * Expected request parameters:
  *   id: Goal identifier
  */
-export const remove: RequestHandler = (req, res) => {
+export const remove: RequestHandler = async (req, res): Promise<void> => {
     const { id } = req.params;
 
     const userID = getUserFromToken(req);
@@ -135,6 +141,10 @@ export const remove: RequestHandler = (req, res) => {
         res.status(400).json({ error: "Goal id is required" });
         return;
     }
+
+    const registry = await Registry.getInstance();
+    const goalService = registry.goalService;
+
     try {
         goalService.deleteGoal(id);
         res.status(200).json({ message: "Goal deleted" });
@@ -148,13 +158,16 @@ export const remove: RequestHandler = (req, res) => {
  * Expected request parameters:
  * - userId: User identifier (provided as a route parameter)
  */
-export const listByUser: RequestHandler = (req, res) => {
+export const listByUser: RequestHandler = async (req, res): Promise<void> => {
 
     const userID = getUserFromToken(req);
     if (!userID) {
         res.status(401).json({ error: "You must be logged in to view goals." });
         return;
     }
+
+    const registry = await Registry.getInstance();
+    const goalService = registry.goalService;
 
     const goals = goalService.getAllGoalsByUser(userID);
     res.status(200).json({ goals });
@@ -165,7 +178,7 @@ export const listByUser: RequestHandler = (req, res) => {
  * Expected request parameters:
  * - id: Goal identifier (provided as a route parameter)
  */
-export const findByID: RequestHandler = (req, res) => {
+export const findByID: RequestHandler = async (req, res): Promise<void> => {
     const { id } = req.params;
 
     const userID = getUserFromToken(req);
@@ -178,6 +191,9 @@ export const findByID: RequestHandler = (req, res) => {
         res.status(400).json({ error: "Goal ID is required." });
         return;
     }
+
+    const registry = await Registry.getInstance();
+    const goalService = registry.goalService;
 
     const goal = goalService.findByID(id);
     if (!goal) {

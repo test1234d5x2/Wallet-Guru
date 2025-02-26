@@ -82,7 +82,7 @@ export class IncomeContract extends Contract {
             date: incomeInput.date,
         };
 
-        const key = this.getIncomeKey(ctx, incomeInput.userID, incomeInput.id)
+        const key = this.getIncomeKey(ctx, incomeInput.userID, incomeInput.id);
         const existing = await ctx.stub.getState(key);
         if (existing && existing.length > 0) {
             throw new Error('Income record already exists');
@@ -159,7 +159,7 @@ export class IncomeContract extends Contract {
             throw new Error('Missing income ID');
         }
 
-        const key = this.getIncomeKey(ctx, userID, incomeID)
+        const key = this.getIncomeKey(ctx, userID, incomeID);
         const incomeBytes = await ctx.stub.getState(key);
         if (!incomeBytes || incomeBytes.length === 0) {
             throw new Error('Income record does not exist');
@@ -186,22 +186,21 @@ export class IncomeContract extends Contract {
         }
 
         const results: Income[] = [];
-        const iterator = await ctx.stub.getStateByPartialCompositeKey('Income', [userID]);
-        let result = await iterator.next();
-        while (!result.done) {
-            if (result.value && result.value.value) {
-                const income: Income = JSON.parse(result.value.value.toString());
-                // Filter records by userID.
+        const iterator = ctx.stub.getStateByPartialCompositeKey('Income', [userID]);
+        
+        // Using the new async iterator approach.
+        for await (const res of iterator) {
+            if (res.value) {
+                const income: Income = JSON.parse(res.value.toString());
+                // The composite key ensures the records are for the given userID, but the check is kept for safety.
                 if (income.userID === userID) {
                     results.push(income);
                 }
             }
-            result = await iterator.next();
         }
-        await iterator.close();
+        // The iterator is automatically closed upon loop exit.
         return JSON.stringify({ incomes: results });
     }
-
 
     /**
      * Retrieve a specific income record by ID.

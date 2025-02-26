@@ -96,7 +96,7 @@ export class ExpenseContract extends Contract {
             receipt: expenseInput.receipt || undefined,
         };
 
-        const key = this.getExpenseKey(ctx, expenseInput.userID, expenseInput.id)
+        const key = this.getExpenseKey(ctx, expenseInput.userID, expenseInput.id);
         const existing = await ctx.stub.getState(key);
         if (existing && existing.length > 0) {
             throw new Error('Expense already exists');
@@ -149,7 +149,7 @@ export class ExpenseContract extends Contract {
             throw new Error('Missing required expense fields: id, userID, title, categoryID, amount, notes, date');
         }
 
-        const key = this.getExpenseKey(ctx, expenseInput.userID, expenseInput.id)
+        const key = this.getExpenseKey(ctx, expenseInput.userID, expenseInput.id);
         const expenseBytes = await ctx.stub.getState(key);
         if (!expenseBytes || expenseBytes.length === 0) {
             throw new Error('Expense does not exist');
@@ -187,7 +187,7 @@ export class ExpenseContract extends Contract {
             throw new Error('Missing expense ID');
         }
 
-        const key = this.getExpenseKey(ctx, userID, expenseID)
+        const key = this.getExpenseKey(ctx, userID, expenseID);
         const expenseBytes = await ctx.stub.getState(key);
         if (!expenseBytes || expenseBytes.length === 0) {
             throw new Error('Expense does not exist');
@@ -212,25 +212,22 @@ export class ExpenseContract extends Contract {
             throw new Error('Missing user ID');
         }
         
-        const iterator = await ctx.stub.getStateByPartialCompositeKey('Expense', [userID]);
         const results: Expense[] = [];
-    
-        let result = await iterator.next();
-        while (!result.done) {
-            if (result.value && result.value.value) {
-                const expense: Expense = JSON.parse(result.value.value.toString());
+        const iterator = ctx.stub.getStateByPartialCompositeKey('Expense', [userID]);
+        
+        // Using the new async iterator approach.
+        for await (const res of iterator) {
+            if (res.value) {
+                const expense: Expense = JSON.parse(res.value.toString());
+                // The composite key ensures the record belongs to userID, but this extra check is kept for safety.
                 if (expense.userID === userID) {
                     results.push(expense);
                 }
             }
-            result = await iterator.next();
         }
-    
-        await iterator.close();
+        // The iterator is automatically closed upon loop exit.
         return JSON.stringify({ expenses: results });
     }
-    
-
 
     /**
      * Retrieve a specific expense by ID.

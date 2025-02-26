@@ -8,8 +8,8 @@ class ExpenseCategory {
     monthlyBudget: number;
     recurrenceRule: BasicRecurrenceRule;
 
-    constructor(userID: string, name: string, monthlyBudget: number, recurrenceRule: BasicRecurrenceRule) {
-        this.id = v4();
+    constructor(userID: string, name: string, monthlyBudget: number, recurrenceRule: BasicRecurrenceRule, id?: string) {
+        this.id = id || v4();
         this.userID = userID;
         this.name = name;
         this.monthlyBudget = monthlyBudget;

@@ -173,19 +173,17 @@ export class ExpenseCategoryContract extends Contract {
             throw new Error('Missing required field: userID');
         }
 
-        const iterator = await ctx.stub.getStateByPartialCompositeKey('ExpenseCategory', [userID]);
         const results: ExpenseCategory[] = [];
+        const iterator = ctx.stub.getStateByPartialCompositeKey('ExpenseCategory', [userID]);
 
-        let result = await iterator.next();
-        while (!result.done) {
-            if (result.value && result.value.value && result.value.value.toString()) {
-                const category: ExpenseCategory = JSON.parse(result.value.value.toString());
+        // Using the new async iterator approach.
+        for await (const res of iterator) {
+            if (res.value) {
+                const category: ExpenseCategory = JSON.parse(res.value.toString());
                 results.push(category);
             }
-            result = await iterator.next();
         }
-
-        await iterator.close();
+        // The iterator is automatically closed upon loop exit.
         return JSON.stringify({ categories: results });
     }
 

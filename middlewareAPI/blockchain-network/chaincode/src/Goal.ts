@@ -93,7 +93,7 @@ export class GoalContract extends Contract {
             status: goalInput.status ? goalInput.status as GoalStatus : GoalStatus.Active,
         };
 
-        const key = this.getGoalKey(ctx, goalInput.userID, goalInput.id)
+        const key = this.getGoalKey(ctx, goalInput.userID, goalInput.id);
         const existing = await ctx.stub.getState(key);
         if (existing && existing.length > 0) {
             throw new Error('Goal already exists');
@@ -120,7 +120,7 @@ export class GoalContract extends Contract {
             throw new Error('Missing required fields: goalID and current');
         }
 
-        const key = this.getGoalKey(ctx, userID, goalID)
+        const key = this.getGoalKey(ctx, userID, goalID);
         const goalBytes = await ctx.stub.getState(key);
         if (!goalBytes || goalBytes.length === 0) {
             throw new Error('Goal not found');
@@ -154,7 +154,7 @@ export class GoalContract extends Contract {
             throw new Error('Missing required field: goalID');
         }
 
-        const key = this.getGoalKey(ctx, userID, goalID)
+        const key = this.getGoalKey(ctx, userID, goalID);
         const goalBytes = await ctx.stub.getState(key);
         if (!goalBytes || goalBytes.length === 0) {
             throw new Error('Goal not found');
@@ -183,7 +183,7 @@ export class GoalContract extends Contract {
             throw new Error('Missing required field: goalID');
         }
 
-        const key = this.getGoalKey(ctx, userID, goalID)
+        const key = this.getGoalKey(ctx, userID, goalID);
         const goalBytes = await ctx.stub.getState(key);
         if (!goalBytes || goalBytes.length === 0) {
             throw new Error('Goal not found');
@@ -209,26 +209,23 @@ export class GoalContract extends Contract {
             throw new Error('Missing required field: userID');
         }
     
-        const iterator = await ctx.stub.getStateByPartialCompositeKey('Goal', [userID]);
+        const iterator = ctx.stub.getStateByPartialCompositeKey('Goal', [userID]);
         const results: Goal[] = [];
     
-        let result = await iterator.next();
-        while (!result.done) {
-            if (result.value && result.value.value) {
-                const goal: Goal = JSON.parse(result.value.value.toString());
-                // Filter goals by the provided userID.
+        // Using the new async iterator approach.
+        for await (const res of iterator) {
+            if (res.value) {
+                const goal: Goal = JSON.parse(res.value.toString());
+                // Although the composite key filters by userID, we include an extra check.
                 if (goal.userID === userID) {
                     results.push(goal);
                 }
             }
-            result = await iterator.next();
         }
     
-        await iterator.close();
         return JSON.stringify({ goals: results });
     }
     
-
     /**
      * Retrieve a specific goal by its ID.
      * 
@@ -245,7 +242,7 @@ export class GoalContract extends Contract {
             throw new Error('Missing required field: goalID');
         }
         
-        const key = this.getGoalKey(ctx, userID, goalID)
+        const key = this.getGoalKey(ctx, userID, goalID);
         const goalBytes = await ctx.stub.getState(key);
         if (!goalBytes || goalBytes.length === 0) {
             throw new Error('Goal not found');

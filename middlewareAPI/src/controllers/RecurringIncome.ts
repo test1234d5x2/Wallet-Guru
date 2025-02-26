@@ -3,9 +3,8 @@ import Registry from '../registry/Registry';
 import BasicRecurrenceRule from '../models/recurrenceModels/BasicRecurrenceRule';
 import getUserFromToken from '../utils/getUserFromToken';
 
-const registry = Registry.getInstance();
 
-export const create = (req: Request, res: Response): void => {
+export const create = async (req: Request, res: Response): Promise<void> => {
     const { title, amount, date, notes, recurrenceRule } = req.body;
 
     const userID = getUserFromToken(req);
@@ -21,7 +20,10 @@ export const create = (req: Request, res: Response): void => {
         recurrenceRule.endDate ? new Date(recurrenceRule.endDate) : undefined
     );
 
-    registry.recurringIncomeService.addRecurringIncome(
+    const registry = await Registry.getInstance();
+    const recurringIncomeService = registry.recurringIncomeService;
+
+    recurringIncomeService.addRecurringIncome(
         userID,
         title,
         amount,
@@ -30,11 +32,11 @@ export const create = (req: Request, res: Response): void => {
         rule
     );
 
-    registry.recurringIncomeService.processDueRecurringIncomes();
+    recurringIncomeService.processDueRecurringIncomes();
     res.status(201).json({ message: 'Recurring Income created successfully' });
 };
 
-export const update = (req: Request, res: Response): void => {
+export const update = async (req: Request, res: Response): Promise<void> => {
     const { id } = req.params;
     const { title, amount, date, notes } = req.body;
 
@@ -44,7 +46,10 @@ export const update = (req: Request, res: Response): void => {
         return;
     }
 
-    registry.recurringIncomeService.updateRecurringIncome(
+    const registry = await Registry.getInstance();
+    const recurringIncomeService = registry.recurringIncomeService;
+
+    recurringIncomeService.updateRecurringIncome(
         id,
         title,
         amount,
@@ -52,11 +57,11 @@ export const update = (req: Request, res: Response): void => {
         notes
     );
 
-    registry.recurringIncomeService.processDueRecurringIncomes();
+    recurringIncomeService.processDueRecurringIncomes();
     res.status(200).json({ message: 'Recurring Income updated successfully' });
 };
 
-export const remove = (req: Request, res: Response): void => {
+export const remove = async (req: Request, res: Response): Promise<void> => {
     const { id } = req.params;
 
     const userID = getUserFromToken(req);
@@ -65,25 +70,31 @@ export const remove = (req: Request, res: Response): void => {
         return;
     }
 
-    registry.recurringIncomeService.deleteRecurringIncome(id);
-    registry.recurringIncomeService.processDueRecurringIncomes();
+    const registry = await Registry.getInstance();
+    const recurringIncomeService = registry.recurringIncomeService;
+
+    recurringIncomeService.deleteRecurringIncome(id);
+    recurringIncomeService.processDueRecurringIncomes();
     res.status(200).json({ message: 'Recurring Income deleted successfully' });
 };
 
 
-export const listByUser = (req: Request, res: Response): void => {
+export const listByUser = async (req: Request, res: Response): Promise<void> => {
     const userID = getUserFromToken(req);
     if (!userID) {
         res.status(401).json({ message: "You must be logged in to view your recurring income transactions." });
         return;
     }
 
-    const recurringIncomes = registry.recurringIncomeService.getAllRecurringIncomesByUser(userID);
-    registry.recurringIncomeService.processDueRecurringIncomes();
+    const registry = await Registry.getInstance();
+    const recurringIncomeService = registry.recurringIncomeService;
+
+    const recurringIncomes = recurringIncomeService.getAllRecurringIncomesByUser(userID);
+    recurringIncomeService.processDueRecurringIncomes();
     res.status(200).json({ recurringIncomes });
 };
 
-export const findByID = (req: Request, res: Response): void => {
+export const findByID = async (req: Request, res: Response): Promise<void> => {
     const { id } = req.params;
 
     const userID = getUserFromToken(req);
@@ -92,12 +103,15 @@ export const findByID = (req: Request, res: Response): void => {
         return;
     }
 
-    const income = registry.recurringIncomeService.findByID(id);
+    const registry = await Registry.getInstance();
+    const recurringIncomeService = registry.recurringIncomeService;
+
+    const income = recurringIncomeService.findByID(id);
     if (!income) {
         res.status(404).json({ error: 'Recurring Income not found' });
         return;
     }
 
-    registry.recurringIncomeService.processDueRecurringIncomes();
+    recurringIncomeService.processDueRecurringIncomes();
     res.status(200).json(income.toJSON());
 };

@@ -1,41 +1,114 @@
+import { Contract } from "@hyperledger/fabric-gateway";
 import Expense from "../models/core/Expense";
-import ExpenseRepository from "../repositories/ExpenseRepository";
+import { TextDecoder } from 'util';
+
+
+
+const utf8Decoder = new TextDecoder();
+
 
 class ExpenseService {
-    private repository: ExpenseRepository;
+    private expenseContract: Contract;
 
-    constructor() {
-        this.repository = new ExpenseRepository();
+    constructor(expenseContract: Contract) {
+        this.expenseContract = expenseContract;
     }
 
-    public addExpense(userID: string, title: string, amount: number, date: Date, notes: string, categoryID: string, receipt?: string): void {
+    public async addExpense(userID: string, title: string, amount: number, date: Date, notes: string, categoryID: string, receipt?: string): Promise<boolean> {
         const expense = new Expense(userID, title, amount, date, notes, categoryID, receipt);
-        this.repository.add(expense);
-    }
 
-    public updateExpense(id: string, title: string, amount: number, date: Date, notes: string, categoryID: string, receipt?: string): void {
-        const expense = this.repository.findById(id);
-        if (!expense) {
-            throw new Error(`The expense does not exist`);
+        try {
+            await this.expenseContract.submitTransaction(
+                "createExpense",
+                JSON.stringify(expense.toJSON())
+            )
+
+            return true;
+        } catch (err: any) {
+            console.log(err)
         }
-        expense.title = title;
-        expense.amount = amount;
-        expense.date = date;
-        expense.notes = notes;
-        expense.categoryID = categoryID;
-        expense.receipt = receipt || undefined;
+
+        return false;
     }
 
-    public deleteExpense(id: string): void {
-        this.repository.delete(id);
+    public async updateExpense(id: string, userID: string, title: string, amount: number, date: Date, notes: string, categoryID: string, receipt?: string): Promise<boolean> {
+        try {
+            const expense = await this.findByID(id, userID);
+            if (!expense) {
+                throw new Error(`The expense does not exist`);
+            }
+
+            expense.title = title;
+            expense.amount = amount;
+            expense.date = date;
+            expense.notes = notes;
+            expense.categoryID = categoryID;
+            expense.receipt = receipt || undefined;
+
+            await this.expenseContract.submitTransaction(
+                "updateExpense",
+                JSON.stringify(expense.toJSON())
+            )
+
+            return true;
+        } catch (err: any) {
+            console.log(err)
+        }
+
+        return false;
     }
 
-    public getAllExpensesByUser(userID: string): Expense[] {
-        return this.repository.findByUser(userID);
+    public async deleteExpense(id: string, userID: string): Promise<boolean> {
+        try {
+            await this.expenseContract.submitTransaction(
+                "deleteExpense",
+                userID,
+                id
+            )
+
+            return true;
+        } catch (err: any) {
+            console.log(err)
+        }
+
+        return false;
     }
-    
-    public findByID(id: string): Expense | undefined {
-        return this.repository.findById(id);
+
+    public async getAllExpensesByUser(userID: string): Promise<Expense[]> {
+        try {
+            const resultBytes = await this.expenseContract.evaluateTransaction(
+                "listExpensesByUser",
+                userID,
+            )
+
+            const resultJson = utf8Decoder.decode(resultBytes);
+            const result = JSON.parse(resultJson);
+            const expenses: Expense[] = result.expenses;
+
+            return expenses
+        } catch (err) {
+            console.log(err)
+        }
+
+        return [];
+    }
+
+    public async findByID(id: string, userID: string): Promise<Expense | undefined> {
+        try {
+            const resultBytes = await this.expenseContract.evaluateTransaction(
+                "getExpenseByID",
+                userID,
+                id,
+            )
+
+            const resultJson = utf8Decoder.decode(resultBytes);
+            const result: Expense = JSON.parse(resultJson);
+            return result;
+        } catch (err) {
+            console.log(err)
+        }
+
+        return undefined;
     }
 }
 

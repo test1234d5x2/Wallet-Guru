@@ -64,7 +64,7 @@ export class UserContract extends Contract {
      * @param ctx The transaction context.
      * @param email The user's email.
      * @param password The user's password.
-     * @returns A JSON string with a success message.
+     * @returns A JSON string with the user's ID for JWT token creation.
      */
     @Transaction(false) // Query (read-only) transaction.
     @Returns('string')
@@ -84,7 +84,7 @@ export class UserContract extends Contract {
             throw new Error('Invalid credentials');
         }
 
-        return JSON.stringify({ message: 'Login successful' });
+        return JSON.stringify({ userID: user.id });
     }
 
     /**
@@ -113,6 +113,60 @@ export class UserContract extends Contract {
 
         await ctx.stub.deleteState(userKey);
         return JSON.stringify({ message: 'User deleted' });
+    }
+
+    /**
+     * Check if a user exists based on their email.
+     * @param ctx The transaction context.
+     * @param email The user's email.
+     * @returns A JSON string indicating whether the user exists.
+     */
+    @Transaction(false)
+    @Returns('string')
+    public async userExists(ctx: Context, email: string): Promise<string> {
+        if (!email) {
+            throw new Error('Email is required');
+        }
+        
+        const userKey = this.getUserKey(ctx, email);
+        const userBytes = await ctx.stub.getState(userKey);
+        const exists = userBytes && userBytes.length > 0;
+        return JSON.stringify({ exists });
+    }
+
+    /**
+     * Find a user by their userID.
+     * This transaction iterates over all user records using the new async iterator approach.
+     * @param ctx The transaction context.
+     * @param userID The user's unique identifier.
+     * @returns A JSON string of the user object if found.
+     */
+    @Transaction(false)
+    @Returns('string')
+    public async findByID(ctx: Context, userID: string): Promise<string> {
+        if (!userID) {
+            throw new Error('User ID is required');
+        }
+
+        // Retrieve all users stored with the composite key prefix 'User'
+        const iterator = ctx.stub.getStateByPartialCompositeKey('User', []);
+        let foundUser: User | null = null;
+
+        // Use the new async iterator approach.
+        for await (const res of iterator) {
+            // res.value is a Buffer, so convert it to a string using 'utf8'
+            const userStr = res.value.toString();
+            const user: User = JSON.parse(userStr);
+            if (user.id === userID) {
+                foundUser = user;
+                break;
+            }
+        }
+        // The iterator is automatically closed on exit from the loop.
+        if (!foundUser) {
+            throw new Error('User not found');
+        }
+        return JSON.stringify(foundUser);
     }
 }
 

@@ -2,8 +2,6 @@ import { RequestHandler } from "express";
 import Registry from "../registry/Registry";
 import getUserFromToken from "../utils/getUserFromToken";
 
-const registry = Registry.getInstance();
-const expenseCategoryService = registry.expenseCategoryService;
 
 /**
  * Create a new expense category.
@@ -12,7 +10,7 @@ const expenseCategoryService = registry.expenseCategoryService;
  * - monthlyBudget (number)
  * - recurrenceRule (RecurrenceRule)
  */
-export const create: RequestHandler = (req, res) => {
+export const create: RequestHandler = async (req, res): Promise<void> => {
     const { name, monthlyBudget, recurrenceRule } = req.body;
 
     const userID = getUserFromToken(req);
@@ -26,8 +24,15 @@ export const create: RequestHandler = (req, res) => {
         return;
     }
 
-    expenseCategoryService.addExpenseCategory(userID, name, monthlyBudget, recurrenceRule);
-    res.status(201).json({ message: "Expense category created" });
+    const registry = await Registry.getInstance();
+    const expenseCategoryService = registry.expenseCategoryService;
+
+    if (await expenseCategoryService.addExpenseCategory(userID, name, monthlyBudget, recurrenceRule)) {
+        res.status(201).json({ message: "Expense category created" });
+    }
+    else {
+        res.status(404).json({ message: "Failed to add the expense category."})
+    }
 };
 
 /**
@@ -39,7 +44,7 @@ export const create: RequestHandler = (req, res) => {
  * - monthlyBudget (number)
  * - recurrenceRule (RecurrenceRule)
  */
-export const update: RequestHandler = (req, res) => {
+export const update: RequestHandler = async (req, res): Promise<void> => {
     const { id } = req.params;
     const { name, monthlyBudget, recurrenceRule } = req.body;
 
@@ -54,8 +59,15 @@ export const update: RequestHandler = (req, res) => {
         return;
     }
 
-    expenseCategoryService.updateExpenseCategory(id, name, monthlyBudget, recurrenceRule);
-    res.status(200).json({ message: "Expense category updated" });
+    const registry = await Registry.getInstance();
+    const expenseCategoryService = registry.expenseCategoryService;
+
+    if (await expenseCategoryService.updateExpenseCategory(id, userID, name, monthlyBudget, recurrenceRule)) {
+        res.status(200).json({ message: "Expense category updated" });
+    }
+    else {
+        res.status(404).json({ message: "Failed to update the expense category."});
+    }
 };
 
 /**
@@ -63,7 +75,7 @@ export const update: RequestHandler = (req, res) => {
  * Expected request parameters:
  * - id: ExpenseCategory identifier
  */
-export const remove: RequestHandler = (req, res) => {
+export const remove: RequestHandler = async (req, res): Promise<void> => {
     const { id } = req.params;
 
     const userID = getUserFromToken(req);
@@ -77,22 +89,33 @@ export const remove: RequestHandler = (req, res) => {
         return;
     }
 
-    expenseCategoryService.deleteExpenseCategory(id);
-    res.status(200).json({ message: "Expense category deleted" });
+    const registry = await Registry.getInstance();
+    const expenseCategoryService = registry.expenseCategoryService;
+
+    if (await expenseCategoryService.deleteExpenseCategory(id, userID)) {
+        res.status(200).json({ message: "Expense category deleted" });
+    }
+    else {
+        res.status(404).json({ message: "Failed to remove expense category."});
+    }
+
 };
 
 /**
  * List all expense categories for a given user.
  * Retrieves all categories associated with the authenticated user.
  */
-export const listByUser: RequestHandler = (req, res) => {
+export const listByUser: RequestHandler = async (req, res): Promise<void> => {
     const userID = getUserFromToken(req);
     if (!userID) {
         res.status(401).json({ error: "You must be logged in to view expense categories." });
         return;
     }
 
-    const categories = expenseCategoryService.getAllCategoriesByUser(userID);
+    const registry = await Registry.getInstance();
+    const expenseCategoryService = registry.expenseCategoryService;
+
+    const categories = await expenseCategoryService.getAllCategoriesByUser(userID);
     res.status(200).json({ categories });
 };
 
@@ -101,7 +124,7 @@ export const listByUser: RequestHandler = (req, res) => {
  * Expected request parameters:
  * - id: ExpenseCategory identifier
  */
-export const findByID: RequestHandler = (req, res) => {
+export const findByID: RequestHandler = async (req, res): Promise<void> => {
     const { id } = req.params;
 
     const userID = getUserFromToken(req);
@@ -115,7 +138,10 @@ export const findByID: RequestHandler = (req, res) => {
         return;
     }
 
-    const category = expenseCategoryService.findByID(id);
+    const registry = await Registry.getInstance();
+    const expenseCategoryService = registry.expenseCategoryService;
+
+    const category = await expenseCategoryService.findByID(id, userID);
     if (!category) {
         res.status(404).json({ error: "Expense category not found" });
         return;

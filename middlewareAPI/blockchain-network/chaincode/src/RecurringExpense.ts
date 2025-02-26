@@ -86,7 +86,7 @@ export class RecurringExpenseContract extends Contract {
             recurrenceRule: expenseInput.recurrenceRule,
         };
 
-        const key = this.getReccuringExpenseKey(ctx, expenseInput.userID, expenseInput.id)
+        const key = this.getReccuringExpenseKey(ctx, expenseInput.userID, expenseInput.id);
         const existing = await ctx.stub.getState(key);
         if (existing && existing.length > 0) {
             throw new Error('Recurring expense already exists');
@@ -126,7 +126,7 @@ export class RecurringExpenseContract extends Contract {
             throw new Error('Missing required fields: id, userID, categoryID, title, amount, notes, date, recurrenceRule');
         }
 
-        const key = this.getReccuringExpenseKey(ctx, expenseInput.userID, expenseInput.id)
+        const key = this.getReccuringExpenseKey(ctx, expenseInput.userID, expenseInput.id);
         const expenseBytes = await ctx.stub.getState(key);
         if (!expenseBytes || expenseBytes.length === 0) {
             throw new Error('Recurring expense does not exist');
@@ -164,7 +164,7 @@ export class RecurringExpenseContract extends Contract {
             throw new Error('Missing recurring expense ID');
         }
 
-        const key = this.getReccuringExpenseKey(ctx, userID, recurringexpenseID)
+        const key = this.getReccuringExpenseKey(ctx, userID, recurringexpenseID);
         const expenseBytes = await ctx.stub.getState(key);
         if (!expenseBytes || expenseBytes.length === 0) {
             throw new Error('Recurring expense does not exist');
@@ -191,23 +191,22 @@ export class RecurringExpenseContract extends Contract {
         }
     
         const results: RecurringExpense[] = [];
-        const iterator = await ctx.stub.getStateByPartialCompositeKey('RecurringExpense', [userID]);
-        let result = await iterator.next();
-        while (!result.done) {
-            if (result.value && result.value.value) {
-                const expense: RecurringExpense = JSON.parse(result.value.value.toString());
-                // Filter the records by userID.
+        const iterator = ctx.stub.getStateByPartialCompositeKey('RecurringExpense', [userID]);
+        
+        // Using the new async iterator approach.
+        for await (const res of iterator) {
+            if (res.value) {
+                const expense: RecurringExpense = JSON.parse(res.value.toString());
+                // The composite key ensures the records are for the given userID, but check kept for safety.
                 if (expense.userID === userID) {
                     results.push(expense);
                 }
             }
-            result = await iterator.next();
         }
-        await iterator.close();
+        // The iterator is automatically closed upon loop exit.
         return JSON.stringify({ recurringExpenses: results });
     }
     
-
     /**
      * Retrieve a specific recurring expense by ID.
      * 
@@ -224,7 +223,7 @@ export class RecurringExpenseContract extends Contract {
             throw new Error('Missing recurring expense ID');
         }
 
-        const key = this.getReccuringExpenseKey(ctx, userID, recurringexpenseID)
+        const key = this.getReccuringExpenseKey(ctx, userID, recurringexpenseID);
         const expenseBytes = await ctx.stub.getState(key);
         if (!expenseBytes || expenseBytes.length === 0) {
             throw new Error('Recurring expense not found');

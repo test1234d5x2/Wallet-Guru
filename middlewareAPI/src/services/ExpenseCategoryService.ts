@@ -1,47 +1,111 @@
+import { Contract } from "@hyperledger/fabric-gateway";
 import ExpenseCategory from "../models/core/ExpenseCategory";
-import User from "../models/core/User";
 import RecurrenceRule from "../models/recurrenceModels/RecurrenceRule";
-import ExpenseCategoryRepository from "../repositories/ExpenseCategoryRepository";
+import { TextDecoder } from 'util';
+
+
+const utf8Decoder = new TextDecoder();
+
+
 
 class ExpenseCategoryService {
-    private repository: ExpenseCategoryRepository;
+    private expenseCategoryContract: Contract;
 
-    constructor() {
-        this.repository = new ExpenseCategoryRepository();
+    constructor(expenseCategoryContract: Contract) {
+        this.expenseCategoryContract = expenseCategoryContract;
     }
 
-    public addExpenseCategory(userID: string, name: string, monthlyBudget: number, recurrenceRule: RecurrenceRule): void {
+    public async addExpenseCategory(userID: string, name: string, monthlyBudget: number, recurrenceRule: RecurrenceRule): Promise<boolean> {
         const category = new ExpenseCategory(userID, name, monthlyBudget, recurrenceRule);
-        this.repository.add(category);
-    }
+        try {
+            await this.expenseCategoryContract.submitTransaction(
+                "createExpenseCategory",
+                JSON.stringify(category.toJSON())
+            )
 
-    public updateExpenseCategory(id: string, name: string, monthlyBudget: number, recurrenceRule: RecurrenceRule): void {
-        const category = this.repository.findByID(id);
-        if (!category) {
-            throw new Error(`Category does not exist`);
+            return true;
+        } catch (err) {
+            console.log(err);
         }
-        category.name = name;
-        category.monthlyBudget = monthlyBudget;
-        category.recurrenceRule = recurrenceRule;
+
+        return false;
     }
 
-    public deleteExpenseCategory(id: string): void {
-        this.repository.delete(id);
+    public async updateExpenseCategory(id: string, userID: string, name: string, monthlyBudget: number, recurrenceRule: RecurrenceRule): Promise<boolean> {
+
+        try {
+            const category = await this.findByID(id, userID);
+            if (!category) {
+                throw new Error("Category not found");
+            }
+
+            category.name = name;
+            category.monthlyBudget = monthlyBudget;
+            category.recurrenceRule = recurrenceRule;
+
+            await this.expenseCategoryContract.submitTransaction(
+                "updateExpenseCategory",
+                JSON.stringify(category.toJSON()),
+            )
+
+            return true
+        } catch (err) {
+            console.log(err);
+        }
+
+        return false;
     }
 
-    public getAllCategoriesByUser(userID: string): ExpenseCategory[] {
-        return this.repository.findByUser(userID);
+    public async deleteExpenseCategory(id: string, userID: string): Promise<boolean> {
+        try {
+            await this.expenseCategoryContract.submitTransaction(
+                "deleteExpenseCategory",
+                userID,
+                id,
+            )
+
+            return true;
+        } catch (err) {
+            console.log(err);
+        }
+
+        return false;
     }
 
-    public getAllCategoriesByUserAndName(user: User, name: string): ExpenseCategory[] {
-        const allCategories = this.repository.findByUser(user.getUserID());
-        return allCategories.filter(category =>
-            category.name.toLowerCase() === name.toLowerCase()
-        );
+    public async getAllCategoriesByUser(userID: string): Promise<ExpenseCategory[]> {
+        try {
+            const resultBytes = await this.expenseCategoryContract.evaluateTransaction(
+                "listExpenseCategoriesByUser",
+                userID,
+            )
+
+            const resultJson = utf8Decoder.decode(resultBytes);
+            const result = JSON.parse(resultJson);
+            const categories: ExpenseCategory[] = result.categories;
+            return categories
+        } catch (err) {
+            console.log(err);
+        }
+
+        return [];
     }
 
-    public findByID(id: string): ExpenseCategory | undefined {
-        return this.repository.findByID(id);
+    public async findByID(id: string, userID: string): Promise<ExpenseCategory | undefined> {
+        try {
+            const resultBytes = await this.expenseCategoryContract.evaluateTransaction(
+                "getExpenseCategoryByID",
+                userID,
+                id,
+            )
+
+            const resultJson = utf8Decoder.decode(resultBytes);
+            const result: ExpenseCategory = JSON.parse(resultJson);
+            return result;
+        } catch (err) {
+            console.log(err)
+        }
+
+        return undefined;
     }
 
 }

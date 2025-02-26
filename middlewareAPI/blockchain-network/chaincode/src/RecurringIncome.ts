@@ -82,7 +82,7 @@ export class RecurringIncomeContract extends Contract {
             recurrenceRule: incomeInput.recurrenceRule,
         };
 
-        const key = this.getReccuringIncomeKey(ctx, incomeInput.userID, incomeInput.id)
+        const key = this.getReccuringIncomeKey(ctx, incomeInput.userID, incomeInput.id);
         const existing = await ctx.stub.getState(key);
         if (existing && existing.length > 0) {
             throw new Error('Recurring income record already exists');
@@ -122,7 +122,7 @@ export class RecurringIncomeContract extends Contract {
             throw new Error('Missing required fields: id, userID, title, amount, notes, date, recurrenceRule');
         }
 
-        const key = this.getReccuringIncomeKey(ctx, incomeInput.userID, incomeInput.id)
+        const key = this.getReccuringIncomeKey(ctx, incomeInput.userID, incomeInput.id);
         const incomeBytes = await ctx.stub.getState(key);
         if (!incomeBytes || incomeBytes.length === 0) {
             throw new Error('Recurring income record does not exist');
@@ -159,7 +159,7 @@ export class RecurringIncomeContract extends Contract {
             throw new Error('Missing recurring income ID');
         }
 
-        const key = this.getReccuringIncomeKey(ctx, userID, recurringIncomeID)
+        const key = this.getReccuringIncomeKey(ctx, userID, recurringIncomeID);
         const incomeBytes = await ctx.stub.getState(key);
         if (!incomeBytes || incomeBytes.length === 0) {
             throw new Error('Recurring income record does not exist');
@@ -186,22 +186,21 @@ export class RecurringIncomeContract extends Contract {
         }
 
         const results: RecurringIncome[] = [];
-        const iterator = await ctx.stub.getStateByPartialCompositeKey('RecurringIncome', [userID]);
-        let result = await iterator.next();
-        while (!result.done) {
-            if (result.value && result.value.value) {
-                const income: RecurringIncome = JSON.parse(result.value.value.toString());
-                // Filter by userID
-                if (income.userID === userID) {
-                    results.push(income);
-                }
+        const iterator = ctx.stub.getStateByPartialCompositeKey('RecurringIncome', [userID]);
+
+        // Use the new async iterator approach.
+        for await (const res of iterator) {
+            // Each res.value is a Buffer; convert it to a UTF-8 string.
+            const incomeStr = res.value.toString();
+            const income: RecurringIncome = JSON.parse(incomeStr);
+            // The composite key guarantees matching userID, but the check is kept for safety.
+            if (income.userID === userID) {
+                results.push(income);
             }
-            result = await iterator.next();
         }
-        await iterator.close();
+        // The iterator is automatically closed when the loop exits.
         return JSON.stringify({ recurringIncomes: results });
     }
-
 
     /**
      * Retrieve a specific recurring income record by ID.
@@ -219,7 +218,7 @@ export class RecurringIncomeContract extends Contract {
             throw new Error('Missing recurring income ID');
         }
 
-        const key = this.getReccuringIncomeKey(ctx, userID, recurringIncomeID)
+        const key = this.getReccuringIncomeKey(ctx, userID, recurringIncomeID);
         const incomeBytes = await ctx.stub.getState(key);
         if (!incomeBytes || incomeBytes.length === 0) {
             throw new Error('Recurring income record not found');

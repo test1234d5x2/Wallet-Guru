@@ -2,9 +2,6 @@ import { RequestHandler } from "express";
 import Registry from "../registry/Registry";
 import getUserFromToken from "../utils/getUserFromToken";
 
-const registry = Registry.getInstance();
-const expenseCategoryService = registry.expenseCategoryService;
-const expenseService = registry.expenseService;
 
 /**
  * Create a new expense.
@@ -16,7 +13,7 @@ const expenseService = registry.expenseService;
  * - expenseCategoryID (string)
  * - receipt (optional string)
  */
-export const create: RequestHandler = (req, res) => {
+export const create: RequestHandler = async (req, res): Promise<void> => {
     const { title, amount, date, notes, expenseCategoryID, receipt } = req.body;
 
     const userID = getUserFromToken(req);
@@ -25,7 +22,11 @@ export const create: RequestHandler = (req, res) => {
         return;
     }
 
-    const expenseCategory = expenseCategoryService.findByID(expenseCategoryID);
+    const registry = await Registry.getInstance(); 
+    const expenseCategoryService = registry.expenseCategoryService;
+    const expenseService = registry.expenseService;
+
+    const expenseCategory = expenseCategoryService.findByID(expenseCategoryID, userID);
     if (!expenseCategory) {
         res.status(404).json({ message: "The expense category could not be found." });
         return;
@@ -36,16 +37,12 @@ export const create: RequestHandler = (req, res) => {
         return;
     }
 
-    expenseService.addExpense(
-        userID,
-        title,
-        amount,
-        new Date(date),
-        notes,
-        expenseCategoryID,
-        receipt
-    );
-    res.status(201).json({ message: "Expense created" });
+    if (await expenseService.addExpense(userID, title, amount, new Date(date), notes, expenseCategoryID, receipt)) {
+        res.status(201).json({ message: "Expense created" });
+    }
+    else {
+        res.status(404).json({message: "Failed to add expense."});
+    }
 };
 
 /**
@@ -60,7 +57,7 @@ export const create: RequestHandler = (req, res) => {
  * - expenseCategoryID (string)
  * - receipt (optional string)
  */
-export const update: RequestHandler = (req, res) => {
+export const update: RequestHandler = async (req, res): Promise<void> => {
     const { id } = req.params;
     const { title, amount, date, notes, expenseCategoryID, receipt } = req.body;
 
@@ -70,7 +67,11 @@ export const update: RequestHandler = (req, res) => {
         return;
     }
 
-    const expenseCategory = expenseCategoryService.findByID(expenseCategoryID);
+    const registry = await Registry.getInstance(); 
+    const expenseCategoryService = registry.expenseCategoryService;
+    const expenseService = registry.expenseService;
+
+    const expenseCategory = await expenseCategoryService.findByID(expenseCategoryID, userID);
     if (!expenseCategory) {
         res.status(404).json({ error: "The expense category could not be found." });
         return;
@@ -81,16 +82,12 @@ export const update: RequestHandler = (req, res) => {
         return;
     }
 
-    expenseService.updateExpense(
-        id,
-        title,
-        amount,
-        new Date(date),
-        notes,
-        expenseCategoryID,
-        receipt
-    );
-    res.status(200).json({ message: "Expense updated" });
+    if (await expenseService.updateExpense(id, userID, title, amount, new Date(date), notes, expenseCategoryID, receipt)) {
+        res.status(200).json({ message: "Expense updated" });
+    }
+    else {
+        res.status(404).json({ message: "Failed to update expense" });
+    }
 };
 
 /**
@@ -98,7 +95,7 @@ export const update: RequestHandler = (req, res) => {
  * Expected request parameters:
  * - id: Expense identifier
  */
-export const remove: RequestHandler = (req, res) => {
+export const remove: RequestHandler = async (req, res): Promise<void> => {
     const { id } = req.params;
 
     const userID = getUserFromToken(req);
@@ -112,8 +109,15 @@ export const remove: RequestHandler = (req, res) => {
         return;
     }
 
-    expenseService.deleteExpense(id);
-    res.status(200).json({ message: "Expense deleted" });
+    const registry = await Registry.getInstance(); 
+    const expenseService = registry.expenseService;
+
+    if (await expenseService.deleteExpense(id, userID)) {
+        res.status(200).json({ message: "Expense deleted" });
+    }
+    else {
+        res.status(404).json({ message: "Failed to delete expense." });
+    }
 };
 
 /**
@@ -121,15 +125,17 @@ export const remove: RequestHandler = (req, res) => {
  * Expected request parameters:
  * - userId (string): User identifier (taken from the request params)
  */
-export const listByUser: RequestHandler = (req, res) => {
+export const listByUser: RequestHandler = async (req, res): Promise<void> => {
     const userID = getUserFromToken(req);
     if (!userID) {
         res.status(401).json({ error: "You must be logged in to view expenses." });
         return;
     }
 
+    const registry = await Registry.getInstance();
+    const expenseService = registry.expenseService;
 
-    const expenses = expenseService.getAllExpensesByUser(userID);
+    const expenses = await expenseService.getAllExpensesByUser(userID);
     res.status(200).json({ expenses });
 };
 
@@ -138,7 +144,7 @@ export const listByUser: RequestHandler = (req, res) => {
  * Expected request parameters:
  * - id: Expense identifier
  */
-export const findByID: RequestHandler = (req, res) => {
+export const findByID: RequestHandler = async (req, res): Promise<void> => {
     const { id } = req.params;
 
     const userID = getUserFromToken(req);
@@ -152,7 +158,10 @@ export const findByID: RequestHandler = (req, res) => {
         return;
     }
 
-    const expense = expenseService.findByID(id);
+    const registry = await Registry.getInstance();
+    const expenseService = registry.expenseService;
+
+    const expense = await expenseService.findByID(id, userID);
     if (!expense) {
         res.status(404).json({ message: "Expense not found." });
         return;

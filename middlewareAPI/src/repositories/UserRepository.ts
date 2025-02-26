@@ -11,8 +11,8 @@ class UserRepository {
         this.users.push(user);
     }
 
-    public delete(id: string): void {
-        const index = this.users.findIndex(u => u.getUserID() === id);
+    public delete(email: string): void {
+        const index = this.users.findIndex(u => u.getEmail() === email);
         if (index === -1) {
             throw new Error(`User not found`);
         }

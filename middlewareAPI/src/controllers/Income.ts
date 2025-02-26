@@ -2,8 +2,6 @@ import { RequestHandler } from "express";
 import Registry from "../registry/Registry";
 import getUserFromToken from "../utils/getUserFromToken";
 
-const registry = Registry.getInstance();
-const incomeService = registry.incomeService;
 
 /**
  * Create a new income transaction.
@@ -13,7 +11,7 @@ const incomeService = registry.incomeService;
  * - date (string, convertible to Date)
  * - notes (string)
  */
-export const create: RequestHandler = (req, res) => {
+export const create: RequestHandler = async (req, res): Promise<void> => {
     const { title, amount, date, notes } = req.body;
 
     const userID = getUserFromToken(req);
@@ -27,8 +25,15 @@ export const create: RequestHandler = (req, res) => {
         return;
     }
 
-    incomeService.addIncome(userID, title, amount, new Date(date), notes);
-    res.status(201).json({ message: "Income created" });
+    const registry = await Registry.getInstance();
+    const incomeService = registry.incomeService;
+
+    if (await incomeService.addIncome(userID, title, amount, new Date(date), notes)) {
+        res.status(201).json({ message: "Income created" });
+    }
+    else {
+        res.status(404).json({ message: "Failed to add income." });
+    }
 };
 
 /**
@@ -41,7 +46,7 @@ export const create: RequestHandler = (req, res) => {
  * - date (string, convertible to Date)
  * - notes (string)
  */
-export const update: RequestHandler = (req, res) => {
+export const update: RequestHandler = async (req, res): Promise<void> => {
     const { id } = req.params;
     const { title, amount, date, notes } = req.body;
 
@@ -56,8 +61,15 @@ export const update: RequestHandler = (req, res) => {
         return;
     }
 
-    incomeService.updateIncome(id, title, amount, new Date(date), notes);
-    res.status(200).json({ message: "Income updated" });
+    const registry = await Registry.getInstance();
+    const incomeService = registry.incomeService;
+
+    if (await incomeService.updateIncome(id, userID, title, amount, new Date(date), notes)) {
+        res.status(200).json({ message: "Income updated" });
+    }
+    else {
+        res.status(404).json({ message: "Failed to update income." });
+    }
 };
 
 /**
@@ -65,7 +77,7 @@ export const update: RequestHandler = (req, res) => {
  * Expected request parameters:
  * - id: Income identifier
  */
-export const remove: RequestHandler = (req, res) => {
+export const remove: RequestHandler = async (req, res): Promise<void> => {
     const { id } = req.params;
 
     const userID = getUserFromToken(req);
@@ -79,8 +91,15 @@ export const remove: RequestHandler = (req, res) => {
         return;
     }
 
-    incomeService.deleteIncome(id);
-    res.status(200).json({ message: "Income deleted" });
+    const registry = await Registry.getInstance();
+    const incomeService = registry.incomeService;
+
+    if (await incomeService.deleteIncome(id, userID)) {
+        res.status(200).json({ message: "Income deleted" });
+    }
+    else {
+        res.status(200).json({ message: "Failed to delete income." });
+    }
 };
 
 /**
@@ -88,14 +107,17 @@ export const remove: RequestHandler = (req, res) => {
  * Expected request parameters:
  * - userId (string): User identifier (taken from request params)
  */
-export const listByUser: RequestHandler = (req, res) => {
+export const listByUser: RequestHandler = async (req, res): Promise<void> => {
     const userID = getUserFromToken(req);
     if (!userID) {
         res.status(401).json({ error: "You must be logged in to view income transactions." });
         return;
     }
 
-    const incomes = incomeService.getAllIncomesByUser(userID);
+    const registry = await Registry.getInstance();
+    const incomeService = registry.incomeService;
+
+    const incomes = await incomeService.getAllIncomesByUser(userID);
     res.status(200).json({ incomes });
 };
 
@@ -104,7 +126,7 @@ export const listByUser: RequestHandler = (req, res) => {
  * Expected request parameters:
  * - id: Income identifier
  */
-export const findByID: RequestHandler = (req, res) => {
+export const findByID: RequestHandler = async (req, res): Promise<void> => {
     const { id } = req.params;
 
     const userID = getUserFromToken(req);
@@ -118,7 +140,10 @@ export const findByID: RequestHandler = (req, res) => {
         return;
     }
 
-    const income = incomeService.findByID(id);
+    const registry = await Registry.getInstance();
+    const incomeService = registry.incomeService;
+
+    const income = await incomeService.findByID(id, userID);
     if (!income) {
         res.status(404).json({ message: "Income transaction not found." });
         return;
