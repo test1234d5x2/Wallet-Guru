@@ -9,8 +9,8 @@ class Income implements Transaction {
     date: Date;
     notes: string;
 
-    constructor(userID: string, title: string, amount: number, date: Date, notes: string) {
-        this.id = v4();
+    constructor(userID: string, title: string, amount: number, date: Date, notes: string, id?: string) {
+        this.id = id || v4();
         this.userID = userID;
         this.title = title;
         this.amount = amount;

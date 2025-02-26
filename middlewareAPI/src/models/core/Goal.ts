@@ -11,14 +11,14 @@ export default class Goal {
     current: number;
     status: GoalStatus;
 
-    constructor(title: string, userID: string, description: string, target: number, targetDate: Date, status: GoalStatus) {
-        this.id = v4();
+    constructor(title: string, userID: string, description: string, target: number, targetDate: Date, status: GoalStatus, id?: string, current?: number) {
+        this.id = id || v4();
         this.userID = userID;
         this.title = title;
         this.description = description;
         this.target = target;
         this.targetDate = targetDate;
-        this.current = 0;
+        this.current = current || 0;
         this.status = status;
     }
 

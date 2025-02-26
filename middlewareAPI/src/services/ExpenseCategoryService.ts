@@ -2,6 +2,7 @@ import { Contract } from "@hyperledger/fabric-gateway";
 import ExpenseCategory from "../models/core/ExpenseCategory";
 import RecurrenceRule from "../models/recurrenceModels/RecurrenceRule";
 import { TextDecoder } from 'util';
+import BasicRecurrenceRule from "../models/recurrenceModels/BasicRecurrenceRule";
 
 
 const utf8Decoder = new TextDecoder();
@@ -81,8 +82,11 @@ class ExpenseCategoryService {
 
             const resultJson = utf8Decoder.decode(resultBytes);
             const result = JSON.parse(resultJson);
-            const categories: ExpenseCategory[] = result.categories;
-            return categories
+            const categories: ExpenseCategory[] = result.categories.map((category: any) => {
+                const recurrenceRule = new BasicRecurrenceRule(category.recurrenceRule.frequency, category.recurrenceRule.interval, new Date(category.recurrenceRule.startDate))
+                return new ExpenseCategory(category.userID, category.name, category.monthlyBudget, recurrenceRule, category.id);
+            });
+            return categories;
         } catch (err) {
             console.log(err);
         }
@@ -99,8 +103,9 @@ class ExpenseCategoryService {
             )
 
             const resultJson = utf8Decoder.decode(resultBytes);
-            const result: ExpenseCategory = JSON.parse(resultJson);
-            return result;
+            const data = JSON.parse(resultJson);
+            const recurrenceRule: RecurrenceRule = new BasicRecurrenceRule(data.recurrenceRule.frequency, data.recurrenceRule.interval, new Date(data.recurrenceRule.startDate));
+            return new ExpenseCategory(data.userID, data.name, data.monthlyBudget, recurrenceRule, data.id);
         } catch (err) {
             console.log(err)
         }

@@ -23,14 +23,10 @@ export const create = async (req: Request, res: Response): Promise<void> => {
     const registry = await Registry.getInstance();
     const recurringIncomeService = registry.recurringIncomeService;
 
-    recurringIncomeService.addRecurringIncome(
-        userID,
-        title,
-        amount,
-        new Date(date),
-        notes,
-        rule
-    );
+    if (!await recurringIncomeService.addRecurringIncome(userID, title, amount, new Date(date), notes, rule)) {
+        res.status(404).json({message: "Failed to created recurring income."});
+        return
+    }
 
     recurringIncomeService.processDueRecurringIncomes();
     res.status(201).json({ message: 'Recurring Income created successfully' });
@@ -49,13 +45,10 @@ export const update = async (req: Request, res: Response): Promise<void> => {
     const registry = await Registry.getInstance();
     const recurringIncomeService = registry.recurringIncomeService;
 
-    recurringIncomeService.updateRecurringIncome(
-        id,
-        title,
-        amount,
-        new Date(date),
-        notes
-    );
+    if (!await recurringIncomeService.updateRecurringIncome(id, userID, title, amount, new Date(date), notes)) {
+        res.status(404).json({ message: 'Fialed to udpate recurring income.' });
+        return
+    }
 
     recurringIncomeService.processDueRecurringIncomes();
     res.status(200).json({ message: 'Recurring Income updated successfully' });
@@ -73,7 +66,11 @@ export const remove = async (req: Request, res: Response): Promise<void> => {
     const registry = await Registry.getInstance();
     const recurringIncomeService = registry.recurringIncomeService;
 
-    recurringIncomeService.deleteRecurringIncome(id);
+    if (!await recurringIncomeService.deleteRecurringIncome(id, userID)) {
+        res.status(404).json({ message: 'Failed to delete recurring income.' });
+        return
+    }
+
     recurringIncomeService.processDueRecurringIncomes();
     res.status(200).json({ message: 'Recurring Income deleted successfully' });
 };
@@ -89,8 +86,8 @@ export const listByUser = async (req: Request, res: Response): Promise<void> => 
     const registry = await Registry.getInstance();
     const recurringIncomeService = registry.recurringIncomeService;
 
-    const recurringIncomes = recurringIncomeService.getAllRecurringIncomesByUser(userID);
     recurringIncomeService.processDueRecurringIncomes();
+    const recurringIncomes = await recurringIncomeService.getAllRecurringIncomesByUser(userID);
     res.status(200).json({ recurringIncomes });
 };
 
@@ -106,7 +103,7 @@ export const findByID = async (req: Request, res: Response): Promise<void> => {
     const registry = await Registry.getInstance();
     const recurringIncomeService = registry.recurringIncomeService;
 
-    const income = recurringIncomeService.findByID(id);
+    const income = await recurringIncomeService.findByID(id, userID);
     if (!income) {
         res.status(404).json({ error: 'Recurring Income not found' });
         return;

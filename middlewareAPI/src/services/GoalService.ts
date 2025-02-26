@@ -1,43 +1,115 @@
 import GoalRepository from "../repositories/GoalRepository";
 import GoalStatus from "../enums/GoalStatus";
 import Goal from "../models/core/Goal";
+import { Contract } from "@hyperledger/fabric-gateway";
+import { TextDecoder } from 'util';
+
+
+
+const utf8Decoder = new TextDecoder();
+
+
 
 class GoalService {
     private repository: GoalRepository;
+    private goalContract: Contract;
 
-    constructor() {
+    constructor(c: Contract) {
         this.repository = new GoalRepository();
+        this.goalContract = c;
     }
 
-    public addGoal(userID: string, title: string, description: string, target: number, targetDate: Date, status: GoalStatus): void {
+    public async addGoal(userID: string, title: string, description: string, target: number, targetDate: Date, status: GoalStatus): Promise<boolean> {
         const goal = new Goal(title, userID, description, target, targetDate, status);
-        this.repository.add(goal);
-    }
 
-    public updateGoal(id: string, title: string, description: string, target: number, targetDate: Date, current: number, status: GoalStatus): void {
-        const goal = this.repository.findById(id);
-        if (!goal) {
-            throw new Error(`Goal does not exist`);
+        try {
+            await this.goalContract.submitTransaction(
+                "createGoal",
+                JSON.stringify(goal.toJSON())
+            )
+    
+            return true;
+        } catch (err: any) {
+            console.log(err)
         }
-        goal.title = title;
-        goal.description = description;
-        goal.target = target;
-        goal.targetDate = targetDate;
-        goal.status = status;
 
-        goal.updateCurrent(current);
+        return false;
     }
 
-    public deleteGoal(id: string): void {
-        this.repository.delete(id);
+    public async updateGoal(id: string, userID: string, title: string, description: string, target: number, targetDate: Date, current: number, status: GoalStatus): Promise<boolean> {
+        try {
+            const goal = await this.findByID(id, userID);
+            if (!goal) {
+                throw new Error(`Goal does not exist`);
+            }
+            goal.updateCurrent(current);
+            
+
+            await this.goalContract.submitTransaction(
+                "updateGoal",
+                userID,
+                id,
+                goal.current.toString(),
+            )
+    
+            return true;
+        } catch (err: any) {
+            console.log(err)
+        }
+
+        return false;
     }
 
-    public getAllGoalsByUser(userID: string): Goal[] {
-        return this.repository.findByUser(userID);
+    public async deleteGoal(id: string, userID: string): Promise<boolean> {
+        try {
+            await this.goalContract.submitTransaction(
+                "deleteGoal",
+                userID,
+                id
+            )
+    
+            return true;
+        } catch (err: any) {
+            console.log(err)
+        }
+
+        return false;
     }
 
-    public findByID(id: string): Goal | undefined {
-        return this.repository.findById(id);
+    public async getAllGoalsByUser(userID: string): Promise<Goal[]> {
+        try {
+            const resultBytes = await this.goalContract.evaluateTransaction(
+                "listGoalsByUser",
+                userID,
+            )
+    
+            const resultJson = utf8Decoder.decode(resultBytes);
+            const result = JSON.parse(resultJson);
+            const goals: Goal[] = result.goals.map((goal: any) => new Goal(goal.title, goal.userID, goal.description, goal.target, goal.targetDate, goal.status, goal.id, goal.current));
+            return goals
+        } catch {
+            console.log("Failed To Get Goals")
+        }
+
+        return [];
+    }
+
+    public async findByID(id: string, userID: string): Promise<Goal | undefined> {
+        try {
+            const resultBytes = await this.goalContract.evaluateTransaction(
+                "getGoalByID",
+                userID,
+                id,
+            )
+    
+            const resultJson = utf8Decoder.decode(resultBytes);
+            const data = JSON.parse(resultJson);
+            return new Goal(data.title, data.userID, data.description, data.target, data.targetDate, data.status, data.id, data.current);;
+        } catch (err) {
+            console.log(err)
+        }
+    
+        return undefined;
     }
 }
 

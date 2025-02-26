@@ -5,8 +5,8 @@ import RecurringTransaction from "./RecurringTransaction";
 export default class RecurringExpense extends Expense implements RecurringTransaction {
     recurrenceRule: RecurrenceRule;
 
-    constructor(userID: string, title: string, amount: number, date: Date, notes: string, categoryID: string, recurrenceRule: RecurrenceRule) {
-        super(userID, title, amount, date, notes, categoryID, "");
+    constructor(userID: string, title: string, amount: number, date: Date, notes: string, categoryID: string, recurrenceRule: RecurrenceRule, id?: string) {
+        super(userID, title, amount, date, notes, categoryID, "", id);
         this.recurrenceRule = recurrenceRule;
     }
 

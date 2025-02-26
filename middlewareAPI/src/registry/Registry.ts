@@ -42,15 +42,13 @@ class Registry {
         const recurringIncomeContract = this.connection.getRecurringIncomeContract();
         const recurringExpenseContract = this.connection.getRecurringExpenseContract();
 
-        console.log(incomeContract.getContractName());
-
         this.userService = new UserService(userContract);
         this.expenseService = new ExpenseService(expenseContract);
         this.incomeService = new IncomeService(incomeContract);
-        this.goalService = new GoalService();
+        this.goalService = new GoalService(goalContract);
         this.expenseCategoryService = new ExpenseCategoryService(expenseCategoryContract);
-        this.recurringExpenseService = new RecurringExpenseService(this.expenseService);
-        this.recurringIncomeService = new RecurringIncomeService(this.incomeService);
+        this.recurringExpenseService = new RecurringExpenseService(this.expenseService, recurringExpenseContract);
+        this.recurringIncomeService = new RecurringIncomeService(this.incomeService, recurringIncomeContract);
     }
 }
 

@@ -2,47 +2,125 @@ import RecurringExpenseRepository from "../repositories/RecurringExpenseReposito
 import RecurringExpense from "../models/recurrenceModels/RecurringExpense";
 import RecurrenceRule from "../models/recurrenceModels/RecurrenceRule";
 import ExpenseService from "./ExpenseService";
+import { Contract } from "@hyperledger/fabric-gateway";
+import { TextDecoder } from 'util';
+import BasicRecurrenceRule from "../models/recurrenceModels/BasicRecurrenceRule";
+
+
+
+const utf8Decoder = new TextDecoder();
+
+
 
 class RecurringExpenseService {
-    private repository: RecurringExpenseRepository;
     private expenseService: ExpenseService;
+    private contract: Contract;
 
-    constructor(expenseService: ExpenseService) {
-        this.repository = new RecurringExpenseRepository();
+    constructor(expenseService: ExpenseService, recurringExpenseContract: Contract) {
         this.expenseService = expenseService;
+        this.contract = recurringExpenseContract;
     }
 
-    public addRecurringExpense(userID: string, title: string, amount: number, date: Date, notes: string, categoryID: string, recurrenceRule: RecurrenceRule): void {
+    public async addRecurringExpense(userID: string, title: string, amount: number, date: Date, notes: string, categoryID: string, recurrenceRule: RecurrenceRule): Promise<boolean> {
         const recurringExpense = new RecurringExpense(userID, title, amount, date, notes, categoryID, recurrenceRule);
-        this.repository.add(recurringExpense);
-    }
 
-    public updateRecurringExpense(id: string, title: string, amount: number, date: Date, notes: string, categoryID: string): void {
-        const recurringExpense = this.repository.findById(id);
-        if (!recurringExpense) {
-            throw new Error(`The recurring expense does not exist`);
+        try {
+            await this.contract.submitTransaction(
+                "createRecurringExpense",
+                JSON.stringify(recurringExpense.toJSON())
+            )
+
+            return true;
+        } catch (err: any) {
+            console.log(err)
         }
-        recurringExpense.title = title;
-        recurringExpense.amount = amount;
-        recurringExpense.date = date;
-        recurringExpense.notes = notes;
-        recurringExpense.categoryID = categoryID;
+
+        return false;
     }
 
-    public deleteRecurringExpense(id: string): void {
-        this.repository.delete(id);
+    public async updateRecurringExpense(id: string, userID: string, title: string, amount: number, date: Date, notes: string, categoryID: string): Promise<boolean> {
+        try {
+            const recurringExpense = await this.findByID(id, userID);
+            if (!recurringExpense) {
+                throw new Error(`The recurring expense does not exist`);
+            }
+            recurringExpense.title = title;
+            recurringExpense.amount = amount;
+            recurringExpense.date = date;
+            recurringExpense.notes = notes;
+            recurringExpense.categoryID = categoryID;
+
+            await this.contract.submitTransaction(
+                "updateRecurringExpense",
+                JSON.stringify(recurringExpense.toJSON())
+            )
+
+            return true;
+        } catch (err: any) {
+            console.log(err)
+        }
+
+        return false;
     }
 
-    public getAllRecurringExpensesByUser(userID: string): RecurringExpense[] {
-        return this.repository.findByUser(userID);
+    public async deleteRecurringExpense(id: string, userID: string): Promise<boolean> {
+        try {
+            await this.contract.submitTransaction(
+                "deleteRecurringExpense",
+                userID,
+                id
+            )
+
+            return true;
+        } catch (err: any) {
+            console.log(err)
+        }
+
+        return false;
     }
 
-    public findByID(id: string): RecurringExpense | undefined {
-        return this.repository.findById(id);
+    public async getAllRecurringExpensesByUser(userID: string): Promise<RecurringExpense[]> {
+        try {
+            const resultBytes = await this.contract.evaluateTransaction(
+                "listRecurringExpensesByUser",
+                userID,
+            )
+
+            const resultJson = utf8Decoder.decode(resultBytes);
+            const result = JSON.parse(resultJson);
+            const recurringExpenses: RecurringExpense[] = result.recurringExpenses.map((e: any) => {
+                const recurrenceRule = new BasicRecurrenceRule(e.recurrenceRule.frequency, e.recurrenceRule.interval, new Date(e.recurrenceRule.startDate), new Date(e.recurrenceRule.nextTriggerDate), new Date(e.recurrenceRule.endDate))
+                return new RecurringExpense(e.userID, e.title, e.amount, new Date(e.date), e.notes, e.categoryID, recurrenceRule, e.id);
+            });
+            return recurringExpenses;
+        } catch (err) {
+            console.log(err)
+        }
+
+        return [];
+    }
+
+    public async findByID(id: string, userID: string): Promise<RecurringExpense | undefined> {
+        try {
+            const resultBytes = await this.contract.evaluateTransaction(
+                "getRecurringExpenseByID",
+                userID,
+                id,
+            )
+
+            const resultJson = utf8Decoder.decode(resultBytes);
+            const data = JSON.parse(resultJson);
+            const recurrenceRule = new BasicRecurrenceRule(data.recurrenceRule.frequency, data.recurrenceRule.interval, new Date(data.recurrenceRule.startDate), new Date(data.recurrenceRule.nextTriggerDate), new Date(data.recurrenceRule.endDate))
+            return new RecurringExpense(data.userID, data.title, data.amount, new Date(data.date), data.notes, data.categoryID, recurrenceRule, data.id);
+        } catch (err) {
+            console.log(err)
+        }
+
+        return undefined;
     }
 
     public processDueRecurringExpenses(): void {
-        const recurringExpenses = this.repository.getAll();
+        const recurringExpenses: RecurringExpense[] = [];
         recurringExpenses.forEach(recExp => {
             if (recExp.recurrenceRule.shouldTrigger()) {
                 this.expenseService.addExpense(recExp.getUserID(), recExp.title, recExp.amount, new Date(), recExp.notes, recExp.categoryID, recExp.receipt);

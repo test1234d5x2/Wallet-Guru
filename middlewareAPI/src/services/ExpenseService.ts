@@ -83,8 +83,7 @@ class ExpenseService {
 
             const resultJson = utf8Decoder.decode(resultBytes);
             const result = JSON.parse(resultJson);
-            const expenses: Expense[] = result.expenses;
-
+            const expenses: Expense[] = result.expenses.map((e: any) => new Expense(e.userID, e.title, e.amount, new Date(e.date), e.notes, e.categoryID, e.receipt, e.id));
             return expenses
         } catch (err) {
             console.log(err)
@@ -102,8 +101,8 @@ class ExpenseService {
             )
 
             const resultJson = utf8Decoder.decode(resultBytes);
-            const result: Expense = JSON.parse(resultJson);
-            return result;
+            const data: any = JSON.parse(resultJson);
+            return new Expense(data.userID, data.title, data.amount, new Date(data.date), data.notes, data.categoryID, data.receipt, data.id);;
         } catch (err) {
             console.log(err)
         }

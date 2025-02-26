@@ -84,8 +84,7 @@ class IncomeService {
     
             const resultJson = utf8Decoder.decode(resultBytes);
             const result = JSON.parse(resultJson);
-            const incomes: Income[] = result.incomes;
-    
+            const incomes: Income[] = result.incomes.map((i: any) => new Income(i.userID, i.title, i.amount, new Date(i.date), i.notes, i.id));
             return incomes
         } catch (err) {
             console.log(err)
@@ -103,8 +102,8 @@ class IncomeService {
             )
 
             const resultJson = utf8Decoder.decode(resultBytes);
-            const result: Income = JSON.parse(resultJson);
-            return result;
+            const data = JSON.parse(resultJson);
+            return new Income(data.userID, data.title, data.amount, new Date(data.date), data.notes, data.id);;
         } catch (err) {
             console.log(err)
         }

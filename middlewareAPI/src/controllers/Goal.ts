@@ -31,8 +31,13 @@ export const create: RequestHandler = async (req, res): Promise<void> => {
     const registry = await Registry.getInstance();
     const goalService = registry.goalService;
 
-    goalService.addGoal(userID, title, description, target, targetDate, status || GoalStatus.Active);
-    res.status(201).json({ message: "Goal created" });
+    if (await goalService.addGoal(userID, title, description, target, targetDate, status || GoalStatus.Active)) {
+        res.status(201).json({ message: "Goal created" });
+    }
+    else {
+        res.status(404).json({ message: "Failed to create goal." });
+    }
+    
 };
 
 /**
@@ -64,22 +69,19 @@ export const updateProgress: RequestHandler = async (req, res): Promise<void> =>
     const registry = await Registry.getInstance();
     const goalService = registry.goalService;
 
-    const goal = goalService.findByID(id);
+    const goal = await goalService.findByID(id, userID);
     if (!goal) {
         res.status(404).json({ error: "Goal not found" });
         return;
     }
 
-    goalService.updateGoal(
-        id,
-        goal.title,
-        goal.description,
-        goal.target,
-        goal.targetDate,
-        current,
-        goal.status,
-    );
-    res.status(200).json({ message: "Goal progress updated" });
+    if (await goalService.updateGoal(id, userID, goal.title, goal.description, goal.target, goal.targetDate, current, goal.status)) {
+        res.status(200).json({ message: "Goal progress updated" });
+    }
+    else {
+        res.status(404).json({ message: "Failed to update goal progress." });
+    }
+    
 };
 
 /**
@@ -105,22 +107,18 @@ export const archive: RequestHandler = async (req, res): Promise<void> => {
     const registry = await Registry.getInstance();
     const goalService = registry.goalService;
 
-    const goal = goalService.findByID(id);
+    const goal = await goalService.findByID(id, userID);
     if (!goal) {
         res.status(404).json({ error: "Goal not found" });
         return;
     }
 
-    goalService.updateGoal(
-        id,
-        goal.title,
-        goal.description,
-        goal.target,
-        goal.targetDate,
-        goal.current,
-        GoalStatus.Archived
-    );
-    res.status(200).json({ message: "Goal archived" });
+    if (await goalService.updateGoal(id, userID, goal.title, goal.description, goal.target, goal.targetDate, goal.current, GoalStatus.Archived)) {
+        res.status(200).json({ message: "Goal archived" });
+    }
+    else {
+        res.status(200).json({ message: "Failed to archive goal." });
+    }
 };
 
 /**
@@ -146,7 +144,7 @@ export const remove: RequestHandler = async (req, res): Promise<void> => {
     const goalService = registry.goalService;
 
     try {
-        goalService.deleteGoal(id);
+        await goalService.deleteGoal(id, userID);
         res.status(200).json({ message: "Goal deleted" });
     } catch (err: any) {
         res.status(500).json({ error: "Error deleting goal", details: err.message });
@@ -169,7 +167,7 @@ export const listByUser: RequestHandler = async (req, res): Promise<void> => {
     const registry = await Registry.getInstance();
     const goalService = registry.goalService;
 
-    const goals = goalService.getAllGoalsByUser(userID);
+    const goals = await goalService.getAllGoalsByUser(userID);
     res.status(200).json({ goals });
 };
 
@@ -195,7 +193,7 @@ export const findByID: RequestHandler = async (req, res): Promise<void> => {
     const registry = await Registry.getInstance();
     const goalService = registry.goalService;
 
-    const goal = goalService.findByID(id);
+    const goal = await goalService.findByID(id, userID);
     if (!goal) {
         res.status(404).json({ error: "Goal not found." });
         return;

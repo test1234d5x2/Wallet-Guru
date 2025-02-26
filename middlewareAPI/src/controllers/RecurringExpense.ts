@@ -13,25 +13,15 @@ export const create = async (req: Request, res: Response): Promise<void> => {
         return;
     }
 
-    const rule = new BasicRecurrenceRule(
-        recurrenceRule.frequency,
-        recurrenceRule.interval,
-        new Date(recurrenceRule.startDate),
-        recurrenceRule.endDate ? new Date(recurrenceRule.endDate) : undefined
-    );
+    const rule = new BasicRecurrenceRule(recurrenceRule.frequency, recurrenceRule.interval, new Date(recurrenceRule.startDate), recurrenceRule.endDate ? new Date(recurrenceRule.endDate) : undefined);
 
     const registry = await Registry.getInstance();
     const recurringExpenseService = registry.recurringExpenseService;
 
-    recurringExpenseService.addRecurringExpense(
-        userID,
-        title,
-        amount,
-        new Date(date),
-        notes,
-        categoryID,
-        rule
-    );
+    if (!await recurringExpenseService.addRecurringExpense(userID, title, amount, new Date(date), notes, categoryID, rule)) {
+        res.status(201).json({ message: 'Failed to create recurring expense.' });
+        return
+    }
 
     recurringExpenseService.processDueRecurringExpenses();
     res.status(201).json({ message: 'Recurring Expense created successfully' });
@@ -50,14 +40,10 @@ export const update = async (req: Request, res: Response): Promise<void> => {
     const registry = await Registry.getInstance();
     const recurringExpenseService = registry.recurringExpenseService;
 
-    recurringExpenseService.updateRecurringExpense(
-        id,
-        title,
-        amount,
-        new Date(date),
-        notes,
-        categoryID
-    );
+    if (!await recurringExpenseService.updateRecurringExpense(id, userID, title, amount, new Date(date), notes, categoryID)) {
+        res.status(404).json({ message: 'Failed to update recurring expense.' });
+        return
+    }
 
     recurringExpenseService.processDueRecurringExpenses();
     res.status(200).json({ message: 'Recurring Expense updated successfully' });
@@ -75,7 +61,9 @@ export const remove = async (req: Request, res: Response): Promise<void> => {
     const registry = await Registry.getInstance();
     const recurringExpenseService = registry.recurringExpenseService;
 
-    recurringExpenseService.deleteRecurringExpense(id);
+    if (!await recurringExpenseService.deleteRecurringExpense(id, userID)) {
+        res.status(404).json({ message: 'Failed to delete recurring expense.' });
+    }
     recurringExpenseService.processDueRecurringExpenses();
     res.status(200).json({ message: 'Recurring Expense deleted successfully' });
 };
@@ -91,7 +79,7 @@ export const listByUser = async (req: Request, res: Response): Promise<void> => 
     const recurringExpenseService = registry.recurringExpenseService;
 
     recurringExpenseService.processDueRecurringExpenses();
-    const recurringExpenses = recurringExpenseService.getAllRecurringExpensesByUser(userID);
+    const recurringExpenses = await recurringExpenseService.getAllRecurringExpensesByUser(userID);
     res.status(200).json({ recurringExpenses });
 };
 
@@ -108,7 +96,7 @@ export const findByID = async (req: Request, res: Response): Promise<void> => {
     const recurringExpenseService = registry.recurringExpenseService;
 
     recurringExpenseService.processDueRecurringExpenses();
-    const expense = recurringExpenseService.findByID(id);
+    const expense = await recurringExpenseService.findByID(id, userID);
     if (!expense) {
         res.status(404).json({ error: 'Recurring Expense not found' });
         return;
