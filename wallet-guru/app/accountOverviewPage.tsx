@@ -27,10 +27,9 @@ export default function AccountOverview() {
         setEmail(data.email);
     });
 
-    // TODO: Implement
     const handleChangePassword = () => {
-        console.log("Change Password Pressed");
-        return;
+        clearRouterHistory(router);
+        router.replace("/changePasswordPage");
     };
 
     const handleLogOut = () => {

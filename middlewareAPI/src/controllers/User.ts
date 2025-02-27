@@ -27,7 +27,7 @@ export const create: RequestHandler = async (req, res) => {
         res.status(201).json({ message: "User created" });
     }
     else {
-        res.status(409).json({ message: "User already exists"});
+        res.status(409).json({ message: "User already exists" });
     }
 };
 
@@ -51,7 +51,7 @@ export const login: RequestHandler = async (req, res) => {
         res.status(200).json({ message: "Login successful", token: token });
     }
     else {
-        res.status(404).json({ message: "Authentication failed"});
+        res.status(404).json({ message: "Authentication failed" });
     }
     return
 };
@@ -94,5 +94,48 @@ export const remove: RequestHandler = async (req, res) => {
     }
     else {
         res.status(404).json({ error: "Failed to delete user." });
+    }
+};
+
+
+
+
+/**
+ * Change a user's password.
+ * Expects `email` and `newPassword` in the request body.
+ * Verifies the caller's identity using the token and calls userService.changePassword.
+ */
+export const changePassword: RequestHandler = async (req, res) => {
+    const { email, newPassword } = req.body;
+
+    if (!email || !newPassword) {
+        res.status(400).json({ error: "Email and new password are required" });
+        return;
+    }
+
+    const userID = getUserFromToken(req);
+    if (!userID) {
+        res.status(401).json({ error: "You must be logged in to perform this action." });
+        return;
+    }
+
+    const registry = await Registry.getInstance();
+    const userService = registry.userService;
+    const user = await userService.findByID(userID);
+
+    if (!user) {
+        res.status(401).json({ error: "User not found." });
+        return;
+    }
+
+    if (user.getEmail() !== email) {
+        res.status(401).json({ error: "You are not authorized to change this user's password." });
+        return;
+    }
+
+    if (await userService.changePassword(email, newPassword)) {
+        res.status(200).json({ message: "Password changed successfully" });
+    } else {
+        res.status(404).json({ error: "Failed to change password" });
     }
 };

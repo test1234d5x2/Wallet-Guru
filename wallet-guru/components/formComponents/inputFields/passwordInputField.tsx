@@ -3,15 +3,16 @@ import { TextInput, StyleSheet } from 'react-native';
 
 
 interface PasswordFieldProps {
-    password: string
-    setPassword: (text: string) => void
+    password: string;
+    setPassword: (text: string) => void;
+    placeholder?: string;
 }
 
 export default function PasswordInputField(props: PasswordFieldProps) {
     return (
         <TextInput 
             style={styles.input}
-            placeholder={"Password"}
+            placeholder={props.placeholder || "Password"}
             placeholderTextColor={"rgba(0,0,0,0.25)"}
             value={props.password}
             onChangeText={props.setPassword}

@@ -107,15 +107,31 @@ class UserService {
             )
 
             const resultJson = utf8Decoder.decode(resultBytes);
-            const user: User = JSON.parse(resultJson);
-            return user
+            const data = JSON.parse(resultJson);
+            
+            return new User(data.email, data.password, data.id, new Date(data.dateJoined), data.status)
         }
         catch (err) {
-            console.log (err);
+            console.log(err);
         }
 
         return undefined;
     }
+
+    public async changePassword(email: string, newPassword: string): Promise<boolean> {
+        try {
+            await this.userContract.submitTransaction(
+                'changePassword',
+                email,
+                newPassword
+            );
+            return true;
+        } catch (err) {
+            console.log(err);
+            return false;
+        }
+    }
+
 }
 
 export default UserService;

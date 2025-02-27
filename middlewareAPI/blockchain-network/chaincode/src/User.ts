@@ -127,7 +127,7 @@ export class UserContract extends Contract {
         if (!email) {
             throw new Error('Email is required');
         }
-        
+
         const userKey = this.getUserKey(ctx, email);
         const userBytes = await ctx.stub.getState(userKey);
         const exists = userBytes && userBytes.length > 0;
@@ -168,6 +168,34 @@ export class UserContract extends Contract {
         }
         return JSON.stringify(foundUser);
     }
+
+    /**
+     * Change a user's password.
+     * @param ctx The transaction context.
+     * @param email The user's email.
+     * @param newPassword The new password for the user.
+     * @returns A JSON string confirming the password update.
+     */
+    @Transaction()
+    @Returns('string')
+    public async changePassword(ctx: Context, email: string, newPassword: string): Promise<string> {
+        if (!email || !newPassword) {
+            throw new Error('Email and new password are required');
+        }
+
+        const userKey = this.getUserKey(ctx, email);
+        const userBytes = await ctx.stub.getState(userKey);
+        if (!userBytes || userBytes.length === 0) {
+            throw new Error('User does not exist');
+        }
+
+        const user: User = JSON.parse(userBytes.toString());
+        user.password = newPassword;
+
+        await ctx.stub.putState(userKey, Buffer.from(this.deterministicUser(user)));
+        return JSON.stringify({ message: 'Password updated successfully' });
+    }
+
 }
 
 // User model interface

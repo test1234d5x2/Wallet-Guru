@@ -8,7 +8,7 @@ class User {
     private dateJoined: Date;
     private status: UserStatus;
 
-    constructor(username: string, password: string) {
+    constructor(username: string, password: string, id?: string, dateJoined?: Date, status?: UserStatus) {
         this.id = v4();
         this.username = username;
         this.password = password;  // In real systems, hash this!
