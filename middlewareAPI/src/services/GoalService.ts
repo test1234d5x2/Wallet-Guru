@@ -36,7 +36,7 @@ class GoalService {
         return false;
     }
 
-    public async updateGoal(id: string, userID: string, title: string, description: string, target: number, targetDate: Date, current: number, status: GoalStatus): Promise<boolean> {
+    public async updateGoalProgress(id: string, userID: string, current: number): Promise<boolean> {
         try {
             const goal = await this.findByID(id, userID);
             if (!goal) {

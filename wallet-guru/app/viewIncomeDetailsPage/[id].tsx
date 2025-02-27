@@ -23,7 +23,7 @@ export default function IncomeDetailsScreen() {
 
     getToken().then((data) => {
         if (!data) {
-            Alert.alert('Error', 'You must be logged in to view your dashboard.');
+            Alert.alert('Error', 'You must be logged in to access this page.');
             clearRouterHistory(router);
             router.replace("/loginPage");
             return;
@@ -70,6 +70,7 @@ export default function IncomeDetailsScreen() {
                             router.replace("/listTransactionsPage");
                         }
                     }).catch((err: Error) => {
+                        // TODO: Set error as text message instead of alert.
                         Alert.alert("Failed", "Failed to delete income.");
                         console.log(err.message);
                     })

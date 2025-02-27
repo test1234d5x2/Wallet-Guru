@@ -61,23 +61,19 @@ export default function Register() {
     const handleRegistration = async () => {
         if (!email || !password) {
             setError("Please input both email and password");
-            Alert.alert("Please input both email and password");
             return;
         }
 
         if (!isValidEmail(email)) {
             setError("Please enter a valid email.");
-            Alert.alert("Invalid Email", "Please enter a valid email.");
             return;
         }
 
         await createUser(email, password).then((data) => {
             Alert.alert("Success", "User registered successfully!");
-            setError("");
             handleRedirection();
         }).catch((error: Error) => {
             setError(error.message);
-            Alert.alert(error.message);
         });
 
         return;

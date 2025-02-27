@@ -61,7 +61,7 @@ export default function AddGoal() {
 
     getToken().then((data) => {
         if (!data) {
-            Alert.alert('Error', 'You must be logged in to view your dashboard.');
+            Alert.alert('Error', 'You must be logged in to access this page.');
             clearRouterHistory(router);
             router.replace("/loginPage");
             return;
@@ -73,37 +73,31 @@ export default function AddGoal() {
 
     const validateForm = () => {
         if (!title || !target || !date) {
-            Alert.alert('Please fill in all required fields.');
             setError("Fill in all the required fields.");
             return false;
         }
 
         if (validateEmpty(title)) {
-            Alert.alert("Empty Title Field", "The title field must be filled properly.");
             setError("The title field must be filled properly.");
             return false;
         }
 
         if (validateEmpty(target)) {
-            Alert.alert("Empty Target Field", "The target field must be filled properly.");
             setError("The target field must be filled properly.");
             return false;
         }
 
         if (!isNumeric(target)) {
-            Alert.alert("Target Field Not Numeric", "The target field must be a number.");
             setError("The target field must be a number.");
             return false;
         }
 
         if (!isValidDate(date)) {
-            Alert.alert("Date Field Invalid", "Please select a date.");
             setError("Please select a date.");
             return false;
         }
 
         if (!isTodayOrAfter(date)) {
-            Alert.alert("Date Field Invalid", "Please select a date that is today or after today.");
             setError("Please select a date that is today or after today.");
             return false;
         }
@@ -119,8 +113,7 @@ export default function AddGoal() {
                 clearRouterHistory(router);
                 router.replace("/allGoalsPage");
             }).catch((error: Error) => {
-                Alert.alert("Error Adding Goal");
-                console.log(error.message)
+                setError(error.message)
             })
         }
     };

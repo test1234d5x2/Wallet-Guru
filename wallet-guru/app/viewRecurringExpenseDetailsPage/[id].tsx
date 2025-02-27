@@ -26,7 +26,7 @@ export default function RecurrentExpenseDetailsScreen() {
 
     getToken().then((data) => {
         if (!data) {
-            Alert.alert('Error', 'You must be logged in to view a recurrent expense.');
+            Alert.alert('Error', 'You must be logged in to access this page.');
             clearRouterHistory(router);
             router.replace("/loginPage");
             return;
@@ -90,6 +90,7 @@ export default function RecurrentExpenseDetailsScreen() {
                             router.replace("/listRecurringTransactionsPage");
                         }
                     }).catch((err: Error) => {
+                        // TODO: Set error as text message instead of alert.
                         Alert.alert("Failed", "Failed to delete expense.");
                         console.log(err.message);
                     })

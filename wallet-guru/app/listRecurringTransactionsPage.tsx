@@ -38,7 +38,7 @@ export default function ViewReccuringTransactionsList() {
 
     getToken().then((data) => {
         if (!data) {
-            Alert.alert('Error', 'You must be logged in to view your recurring transactions.');
+            Alert.alert('Error', 'You must be logged in to access this page.');
             clearRouterHistory(router);
             router.replace("/loginPage");
             return;

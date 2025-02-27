@@ -65,7 +65,7 @@ export default function AddRecurrentIncome() {
 
     getToken().then((data) => {
         if (!data) {
-            Alert.alert('Error', 'You must be logged in to add a recurrent income.');
+            Alert.alert('Error', 'You must be logged in to access this page.');
             clearRouterHistory(router);
             router.replace("/loginPage");
             return;
@@ -77,65 +77,54 @@ export default function AddRecurrentIncome() {
 
     const validateForm = (): boolean => {
         if (!title || !amount || !startDate || !frequency || !interval) {
-            Alert.alert('Please fill in all required fields.');
             setError("Fill in all the required fields.");
             return false;
         }
 
         if (validateEmpty(title.trim())) {
-            Alert.alert("Empty Title Field", "The title field must be filled properly.");
             setError("The title field must be filled properly.");
             return false;
         }
 
         if (validateEmpty(amount)) {
-            Alert.alert("Empty Amount Field", "The amount field must be filled properly.");
             setError("The amount field must be filled properly.");
             return false;
         }
         else if (!isNumeric(amount)) {
-            Alert.alert("Amount Field Not Numeric", "The amount field must be a number greater than 0.");
             setError("The amount field must be a number greater than 0.");
             return false;
         }
         else if (parseFloat(amount) <= 0) {
-            Alert.alert("Amount Field Not Numeric", "The amount field must be a number greater than 0.");
             setError("The amount field must be a number greater than 0.");
             return false;
         }
 
 
         if (!isValidDate(startDate)) {
-            Alert.alert("Start Date Field Invalid", "Please select a date.");
             setError("Please select a valid date.");
             return false;
         }
 
         if (endDate && !isValidDate(endDate)) {
-            Alert.alert("End Date Field Invalid", "Please select a date.");
             setError("Please select a valid date.");
             return false;
         }
 
         if (!isValidFrequency(frequency)) {
-            Alert.alert("Frequency Field Invalid", "Please select a valid frequency.");
             setError("Please select a valid frequency.");
             return false;
         }
 
         if (!isInteger(interval)) {
-            Alert.alert("Interval Field Invalid", "Interval must be a whole number greater than 0.");
             setError("Please select a date.");
             return false;
         }
         else if (parseInt(interval) <= 0) {
-            Alert.alert("Interval Field Invalid", "Interval must be a whole number greater than 0.");
             setError("Please select a date.");
             return false;
         }
 
         if (endDate && endDate <= startDate) {
-            Alert.alert("Invalid End Date", "End date must be after the start date.");
             setError("End date must be after the start date.");
             return false;
         }
@@ -152,8 +141,7 @@ export default function AddRecurrentIncome() {
                 clearRouterHistory(router);
                 router.replace("/listRecurringTransactionsPage");
             }).catch((error: Error) => {
-                Alert.alert("Error Adding Income");
-                console.log(error.message)
+                setError(error.message)
             });
         }
     };

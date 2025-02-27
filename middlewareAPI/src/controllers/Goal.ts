@@ -69,13 +69,9 @@ export const updateProgress: RequestHandler = async (req, res): Promise<void> =>
     const registry = await Registry.getInstance();
     const goalService = registry.goalService;
 
-    const goal = await goalService.findByID(id, userID);
-    if (!goal) {
-        res.status(404).json({ error: "Goal not found" });
-        return;
-    }
 
-    if (await goalService.updateGoal(id, userID, goal.title, goal.description, goal.target, goal.targetDate, current, goal.status)) {
+
+    if (await goalService.updateGoalProgress(id, userID, current)) {
         res.status(200).json({ message: "Goal progress updated" });
     }
     else {
@@ -91,34 +87,35 @@ export const updateProgress: RequestHandler = async (req, res): Promise<void> =>
  * This endpoint fetches the existing goal and updates its status to Archived while preserving other fields.
  */
 export const archive: RequestHandler = async (req, res): Promise<void> => {
-    const { id } = req.params;
+    // const { id } = req.params;
 
-    const userID = getUserFromToken(req);
-    if (!userID) {
-        res.status(401).json({ error: "You must be logged in to archive a goal." })
-        return;
-    }
+    // const userID = getUserFromToken(req);
+    // if (!userID) {
+    //     res.status(401).json({ error: "You must be logged in to archive a goal." })
+    //     return;
+    // }
 
-    if (!id) {
-        res.status(400).json({ error: "Goal id is required" });
-        return;
-    }
+    // if (!id) {
+    //     res.status(400).json({ error: "Goal id is required" });
+    //     return;
+    // }
 
-    const registry = await Registry.getInstance();
-    const goalService = registry.goalService;
+    // const registry = await Registry.getInstance();
+    // const goalService = registry.goalService;
 
-    const goal = await goalService.findByID(id, userID);
-    if (!goal) {
-        res.status(404).json({ error: "Goal not found" });
-        return;
-    }
+    // const goal = await goalService.findByID(id, userID);
+    // if (!goal) {
+    //     res.status(404).json({ error: "Goal not found" });
+    //     return;
+    // }
 
-    if (await goalService.updateGoal(id, userID, goal.title, goal.description, goal.target, goal.targetDate, goal.current, GoalStatus.Archived)) {
-        res.status(200).json({ message: "Goal archived" });
-    }
-    else {
-        res.status(200).json({ message: "Failed to archive goal." });
-    }
+    // if (await goalService.updateGoal(id, userID, goal.title, goal.description, goal.target, goal.targetDate, goal.current, GoalStatus.Archived)) {
+    //     res.status(200).json({ message: "Goal archived" });
+    // }
+    // else {
+    //     res.status(200).json({ message: "Failed to archive goal." });
+    // }
+    return
 };
 
 /**

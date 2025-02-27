@@ -27,7 +27,7 @@ export default function ExpenseDetailsScreen() {
 
     getToken().then((data) => {
         if (!data) {
-            Alert.alert('Error', 'You must be logged in to view an expense.');
+            Alert.alert('Error', 'You must be logged in to access this page.');
             clearRouterHistory(router);
             router.replace("/loginPage");
             return;
@@ -92,6 +92,7 @@ export default function ExpenseDetailsScreen() {
                             router.replace("/listTransactionsPage");
                         }
                     }).catch((err: Error) => {
+                        // TODO: Add error message as text instead of alert.
                         Alert.alert("Failed", "Failed to delete expense.");
                         console.log(err.message);
                     })
@@ -101,6 +102,7 @@ export default function ExpenseDetailsScreen() {
     };
 
     const handleViewReceipt = () => {
+        // TODO: Implement
         Alert.alert("Feature Coming Soon", "Receipt viewing is not yet implemented.");
     };
 

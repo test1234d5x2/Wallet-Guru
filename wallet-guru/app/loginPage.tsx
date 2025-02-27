@@ -59,7 +59,6 @@ export default function Login() {
     const handleLogin = async () => {
         if (!email || !password) {
             setError("Please input both email and password");
-            Alert.alert("Please input both email and password");
             return;
         }
 
@@ -72,11 +71,9 @@ export default function Login() {
                 router.replace("/dashboardPage");
             }).catch((error) => {
                 setError("Failed to login. Please try again.");
-                Alert.alert("Failed to login. Please try again.");
             })
         }).catch((error: Error) => {
             setError(error.message);
-            Alert.alert(error.message);
         });
 
         return;

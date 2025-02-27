@@ -2,7 +2,7 @@ import setPageTitle from "@/components/pageTitle/setPageTitle";
 import TopBar from "@/components/topBars/topBar";
 import { Ionicons } from "@expo/vector-icons";
 import React, { useEffect, useState } from "react";
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, Dimensions } from "react-native";
+import { View, Text, TouchableOpacity, StyleSheet, Alert } from "react-native";
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import clearRouterHistory from "@/utils/clearRouterHistory";
 import getToken from "@/utils/tokenAccess/getToken";
@@ -27,7 +27,7 @@ export default function UpdateGoal() {
 
     getToken().then((data) => {
         if (!data) {
-            Alert.alert('Error', 'You must be logged in to view your dashboard.');
+            Alert.alert('Error', 'You must be logged in to access this page.');
             clearRouterHistory(router);
             router.replace("/loginPage");
             return;
@@ -54,7 +54,6 @@ export default function UpdateGoal() {
 
     const handleUpdateProgress = () => {
         if (!isNumeric(amount)) {
-            Alert.alert("The amount entered must be a number.");
             setError("The amount entered must be a number.");
             return;
         }
@@ -73,8 +72,7 @@ export default function UpdateGoal() {
                 setError("");
             }
         }).catch((error: Error) => {
-            Alert.alert("Error", "Failed to update goal progress.");
-            console.log(error.message);
+            setError(error.message)
         })
     };
 

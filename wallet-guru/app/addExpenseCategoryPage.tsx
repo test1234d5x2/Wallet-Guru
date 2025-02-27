@@ -39,8 +39,6 @@ async function addExpenseCategory(token: string, name: string, monthlyBudget: nu
         })
     });
 
-    console.log(response.status)
-
     if (!response.ok) {
         const error = await response.json();
         throw new Error(error.error);
@@ -67,7 +65,7 @@ export default function AddExpenseCategory() {
 
     getToken().then((data) => {
         if (!data) {
-            Alert.alert('Error', 'You must be logged in to view your dashboard.');
+            Alert.alert('Error', 'You must be logged in to access this page.');
             clearRouterHistory(router);
             router.replace("/loginPage");
             return;
@@ -92,50 +90,42 @@ export default function AddExpenseCategory() {
 
     const validateForm = (): boolean => {
         if (!categoryName || !monthlyLimit) {
-            Alert.alert("Please fill in all the fields.");
             setError("Please fill in all the fields.");
             return false;
         }
 
         if (validateEmpty(categoryName)) {
-            Alert.alert("Empty Category Name Field", "The category name field must be filled properly.");
             setError("The category name field must be filled properly.");
             return false;
         }
 
         if (validateEmpty(monthlyLimit)) {
-            Alert.alert("Empty Monthly Limit Field", "The monthly limit field must be filled properly.");
             setError("The monthly limit field must be filled properly.");
             return false;
         }
 
         if (!isNumeric(monthlyLimit)) {
-            Alert.alert("Monthly Limit Field Not Numeric", "The monthly limit field must be a number.");
             setError("The monthly limit field must be a number.");
             return false;
         }
 
         if (getCategoryNamesList(categories).find((cName => cName === categoryName))) {
-            Alert.alert("Category Already Exists", "This category already exists.");
             setError("This category already exists.");
             return false;
         }
 
 
         if (!isValidFrequency(frequency)) {
-            Alert.alert("Frequency Field Invalid", "Please select a valid frequency.");
             setError("Please select a valid frequency.");
             return false;
         }
 
         if (!isInteger(interval)) {
-            Alert.alert("Interval Field Invalid", "Interval must be a whole number greater than 0.");
-            setError("Please select a date.");
+            setError("Please enter a valid interval.");
             return false;
         }
         else if (parseInt(interval) <= 0) {
-            Alert.alert("Interval Field Invalid", "Interval must be a whole number greater than 0.");
-            setError("Please select a date.");
+            setError("Please enter a valid interval..");
             return false;
         }
 
@@ -147,13 +137,10 @@ export default function AddExpenseCategory() {
         if (validateForm()) {
             addExpenseCategory(token, categoryName, parseFloat(monthlyLimit), new BasicRecurrenceRule(frequency, parseFloat(interval), startDate as Date)).then((data) => {
                 Alert.alert('Success', `Category "${categoryName}" added with a limit of £${monthlyLimit}`);
-                setCategoryName('');
-                setMonthlyLimit('');
                 clearRouterHistory(router);
                 router.replace("/expenseCategoriesOverviewPage");
             }).catch((error: Error) => {
-                Alert.alert("Error Adding Expense Category");
-                console.log(error.message)
+                setError(error.message)
             })
         }
     };

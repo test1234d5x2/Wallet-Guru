@@ -18,6 +18,8 @@ import getExpenses from '@/utils/apiCalls/getExpenses';
 import getIncomes from '@/utils/apiCalls/getIncomes';
 
 
+// TODO: THIS WHOLE PAGE
+
 export default function Analytics() {
     setPageTitle('Spending Analytics');
 
@@ -31,7 +33,7 @@ export default function Analytics() {
 
     getToken().then((data) => {
         if (!data) {
-            Alert.alert('Error', 'You must be logged in to view your dashboard.');
+            Alert.alert('Error', 'You must be logged in to access this page.');
             clearRouterHistory(router);
             router.replace("/loginPage");
             return;
@@ -77,7 +79,7 @@ export default function Analytics() {
         }
 
         getCategories();
-    }, [token, expenses]);
+    }, [token]);
 
     const getColor = (index: number) => {
         const colors = ['#C0C0C0', '#A9A9A9', '#E5E5E5', '#696969', '#000000'];

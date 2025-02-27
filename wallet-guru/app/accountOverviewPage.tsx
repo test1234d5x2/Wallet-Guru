@@ -17,7 +17,7 @@ export default function AccountOverview() {
 
     getToken().then((data) => {
         if (!data) {
-            Alert.alert('Error', 'You must be logged in to view your account page.');
+            Alert.alert('Error', 'You must be logged in to access this page.');
             clearRouterHistory(router);
             router.replace("/loginPage");
             return;
@@ -27,6 +27,7 @@ export default function AccountOverview() {
         setEmail(data.email);
     });
 
+    // TODO: Implement
     const handleChangePassword = () => {
         console.log("Change Password Pressed");
         return;

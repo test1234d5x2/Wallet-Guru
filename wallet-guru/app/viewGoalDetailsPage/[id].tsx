@@ -23,7 +23,7 @@ export default function ViewGoalDetails() {
 
     getToken().then((data) => {
         if (!data) {
-            Alert.alert('Error', 'You must be logged in to view your dashboard.');
+            Alert.alert('Error', 'You must be logged in to access this page.');
             clearRouterHistory(router);
             router.replace("/loginPage");
             return;
@@ -71,6 +71,7 @@ export default function ViewGoalDetails() {
                             router.replace("/allGoalsPage");
                         }
                     }).catch((err: Error) => {
+                        // TODO: Set error as text message instead of alert.
                         Alert.alert("Failed", "Failed to delete goal.");
                         console.log(err.message);
                     })

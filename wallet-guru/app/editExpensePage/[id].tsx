@@ -34,7 +34,7 @@ export default function EditExpense() {
 
     getToken().then((data) => {
         if (!data) {
-            Alert.alert('Error', 'You must be logged in to update your expenses.');
+            Alert.alert('Error', 'You must be logged in to access this page.');
             clearRouterHistory(router);
             router.replace("/loginPage");
             return;
@@ -86,37 +86,31 @@ export default function EditExpense() {
 
     const validateForm = () => {
         if (!title || !amount || !date || !category) {
-            Alert.alert('Please fill in all required fields.');
             setError("Fill in all the required fields.");
             return false;
         }
 
         if (validateEmpty(title)) {
-            Alert.alert("Empty Title Field", "The title field must be filled properly.");
             setError("The title field must be filled properly.");
             return false;
         }
 
         if (validateEmpty(amount)) {
-            Alert.alert("Empty Amount Field", "The amount field must be filled properly.");
             setError("The amount field must be filled properly.");
             return false;
         }
 
         if (!isNumeric(amount)) {
-            Alert.alert("Amount Field Not Numeric", "The amount field must be a number.");
             setError("The amount field must be a number.");
             return false;
         }
 
         if (!isValidDate(date)) {
-            Alert.alert("Date Field Invalid", "Please select a date.");
             setError("Please select a date.");
             return false;
         }
 
         if (!isTodayOrBefore(date)) {
-            Alert.alert("Date Field Invalid", "Please select a date that is today or before today.");
             setError("Please select a date that is today or before today.");
             return false;
         }
@@ -134,8 +128,7 @@ export default function EditExpense() {
                 clearRouterHistory(router);
                 router.replace(`/viewExpenseDetailsPage/${id}`);
             }).catch((error: Error) => {
-                Alert.alert("Failed", "Failed to update expense.");
-                console.log(error.message);
+                setError(error.message)
             })
         }
     };
