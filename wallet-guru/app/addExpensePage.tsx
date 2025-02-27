@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Alert, ScrollView } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Alert, ScrollView, Image, Dimensions } from 'react-native';
 import ExpenseDetailsInputs from '@/components/formComponents/expenseDetailsInputs';
 import setPageTitle from '@/components/pageTitle/setPageTitle';
 import TopBar from '@/components/topBars/topBar';
@@ -126,7 +126,7 @@ export default function AddExpense() {
 
     const handleAddExpense = () => {
         if (validateForm() && category) {
-            addExpense(token, title, parseFloat(amount), date as Date, category.getID(), notes).then((data) => {
+            addExpense(token, title, parseFloat(amount), date as Date, category.getID(), notes, receipt).then((data) => {
                 Alert.alert('Success', 'Expense added successfully!');
                 clearRouterHistory(router);
                 router.replace("/listTransactionsPage");
@@ -170,6 +170,7 @@ export default function AddExpense() {
             <TouchableOpacity style={styles.addButton} onPress={handleAddExpense}>
                 <Text style={styles.addButtonText}>Add Expense</Text>
             </TouchableOpacity>
+
         </ScrollView>
     );
 }
@@ -180,7 +181,7 @@ const styles = StyleSheet.create({
         rowGap: 20,
         padding: 20,
         backgroundColor: '#fff',
-        flex: 1,
+        minHeight: "100%",
     },
     expenseForm: {
         marginBottom: 40,

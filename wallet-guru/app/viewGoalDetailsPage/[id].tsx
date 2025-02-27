@@ -10,14 +10,13 @@ import getToken from '@/utils/tokenAccess/getToken';
 import getGoalByID from '@/utils/apiCalls/getGoalByID';
 import deleteGoal from '@/utils/apiCalls/deleteGoal';
 
-
 export default function ViewGoalDetails() {
     const { id } = useLocalSearchParams();
-
     const router = useRouter();
     const [token, setToken] = useState<string>('');
     const [email, setEmail] = useState<string>('');
     const [goal, setGoal] = useState<Goal>();
+    const [error, setError] = useState<string>('');
 
     setPageTitle(!goal ? "" : goal.title);
 
@@ -28,27 +27,23 @@ export default function ViewGoalDetails() {
             router.replace("/loginPage");
             return;
         }
-
         setToken(data.token);
         setEmail(data.email);
     });
 
     useEffect(() => {
         async function getGoal() {
-            getGoalByID(token, id as string).then((data) => {
-                setGoal(data);
-            }).catch((error: Error) => {
-                Alert.alert("Goal Not Found")
-                console.log(error.message);
-                clearRouterHistory(router);
-                router.replace("/allGoalsPage");
-            })
+            getGoalByID(token, id as string)
+                .then((data) => setGoal(data))
+                .catch((error: Error) => {
+                    Alert.alert("Goal Not Found");
+                    console.log(error.message);
+                    clearRouterHistory(router);
+                    router.replace("/allGoalsPage");
+                });
         }
-
         if (token) getGoal();
     }, [token]);
-
-
 
     const handleUpdateProgress = () => {
         if (!goal) {
@@ -63,19 +58,20 @@ export default function ViewGoalDetails() {
         Alert.alert('Delete Goal', 'Are you sure you want to delete this goal?', [
             { text: 'Cancel', style: 'cancel' },
             {
-                text: 'Delete', style: 'destructive', onPress: () => {
-                    deleteGoal(token, id as string).then((complete) => {
-                        if (complete) {
-                            Alert.alert('Success', 'Goal deleted successfully!');
-                            clearRouterHistory(router);
-                            router.replace("/allGoalsPage");
-                        }
-                    }).catch((err: Error) => {
-                        // TODO: Set error as text message instead of alert.
-                        Alert.alert("Failed", "Failed to delete goal.");
-                        console.log(err.message);
-                    })
-
+                text: 'Delete',
+                style: 'destructive',
+                onPress: () => {
+                    deleteGoal(token, id as string)
+                        .then((complete) => {
+                            if (complete) {
+                                Alert.alert('Success', 'Goal deleted successfully!');
+                                clearRouterHistory(router);
+                                router.replace("/allGoalsPage");
+                            }
+                        })
+                        .catch((err: Error) => {
+                            setError(err.message);
+                        });
                 },
             },
         ]);
@@ -85,26 +81,35 @@ export default function ViewGoalDetails() {
         <View style={styles.mainContainer}>
             <TopBar />
 
-            {!goal ? "" : <View style={styles.container}>
-                <Text style={styles.label}>Target: £{goal.target.toFixed(2)}</Text>
+            {goal && (
+                <View style={styles.container}>
+                    <Text style={styles.label}>Target: £{goal.target.toFixed(2)}</Text>
+                    <View style={{ rowGap: 5 }}>
+                        <Text style={styles.label}>Current: £{goal.current.toFixed(2)}</Text>
+                        <Progress.Bar
+                            progress={goal.calculateProgress()}
+                            color={goal.calculateProgress() >= 1 ? "#54B835" : "#007BFF"}
+                            width={null}
+                        />
+                    </View>
+                    <Text style={styles.label}>Description: {goal.description}</Text>
 
-                <View style={{ rowGap: 5 }}>
-                    <Text style={styles.label}>Current: £{goal.current.toFixed(2)}</Text>
-                    <Progress.Bar progress={goal.calculateProgress()} color={goal.calculateProgress() >= 1 ? "#54B835": "#007BFF"} width={null} />
+                    {error !== '' && (
+                        <View style={styles.errorTextContainer}>
+                            <Text style={styles.errorText}>{error}</Text>
+                        </View>
+                    )}
+
+                    <View style={styles.actionsContainer}>
+                        <TouchableOpacity style={styles.editButton} onPress={handleUpdateProgress}>
+                            <Text style={styles.buttonText}>Update</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity style={styles.deleteButton} onPress={handleDeleteGoal}>
+                            <Text style={styles.buttonText}>Delete</Text>
+                        </TouchableOpacity>
+                    </View>
                 </View>
-
-                <Text style={styles.label}>Description: {goal.description}</Text>
-
-                <View style={styles.actionsContainer}>
-                    <TouchableOpacity style={styles.editButton} onPress={handleUpdateProgress}>
-                        <Text style={styles.buttonText}>Update</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity style={styles.deleteButton} onPress={handleDeleteGoal}>
-                        <Text style={styles.buttonText}>Delete</Text>
-                    </TouchableOpacity>
-                </View>
-            </View>}
-
+            )}
         </View>
     );
 }
@@ -114,11 +119,11 @@ const styles = StyleSheet.create({
         flex: 1,
         padding: 20,
         backgroundColor: "white",
-        rowGap: 20
+        rowGap: 20,
     },
     container: {
         backgroundColor: '#fff',
-        rowGap: 20
+        rowGap: 20,
     },
     label: {
         fontSize: 16,
@@ -149,5 +154,13 @@ const styles = StyleSheet.create({
         color: "#fff",
         fontSize: 16,
         fontWeight: "bold",
+    },
+    errorTextContainer: {
+        justifyContent: "center",
+        alignItems: "center",
+    },
+    errorText: {
+        color: 'red',
+        fontSize: 14,
     },
 });

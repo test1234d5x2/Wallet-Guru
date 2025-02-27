@@ -17,6 +17,7 @@ export default function IncomeDetailsScreen() {
     const [token, setToken] = useState<string>('');
     const [email, setEmail] = useState<string>('');
     const [income, setIncome] = useState<Income>();
+    const [error, setError] = useState<string>('');
 
     setPageTitle(!income ? "" : income.title);
 
@@ -70,9 +71,7 @@ export default function IncomeDetailsScreen() {
                             router.replace("/listTransactionsPage");
                         }
                     }).catch((err: Error) => {
-                        // TODO: Set error as text message instead of alert.
-                        Alert.alert("Failed", "Failed to delete income.");
-                        console.log(err.message);
+                        setError(err.message)
                     })
                 }
             },
@@ -89,6 +88,12 @@ export default function IncomeDetailsScreen() {
                     <Text style={styles.notesTitle}>Notes:</Text>
                     <Text style={styles.notes}>{income.notes}</Text>
                 </View>
+
+                {error !== '' && (
+                    <View style={styles.errorTextContainer}>
+                        <Text style={styles.errorText}>{error}</Text>
+                    </View>
+                )}
 
                 <View style={styles.buttonContainer}>
                     <TouchableOpacity style={[styles.button, styles.editButton]} onPress={handleEdit}>
@@ -151,5 +156,13 @@ const styles = StyleSheet.create({
         fontSize: 20,
         color: '#fff',
         fontWeight: 'bold',
+    },
+    errorTextContainer: {
+        justifyContent: "center",
+        alignItems: "center",
+    },
+    errorText: {
+        color: 'red',
+        fontSize: 14,
     },
 });

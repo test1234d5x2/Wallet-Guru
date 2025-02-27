@@ -10,7 +10,7 @@ import getExpenseByID from '@/utils/apiCalls/getExpensesByID';
 import deleteExpense from '@/utils/apiCalls/deleteExpense';
 import ExpenseCategory from '@/models/core/ExpenseCategory';
 import getExpenseCategories from '@/utils/apiCalls/getExpenseCategories';
-
+import ViewReceiptModal from '@/components/modalView/viewReceiptModal';
 
 
 export default function ExpenseDetailsScreen() {
@@ -21,6 +21,8 @@ export default function ExpenseDetailsScreen() {
     const [email, setEmail] = useState<string>('');
     const [expense, setExpense] = useState<Expense>();
     const [category, setCategory] = useState<ExpenseCategory>();
+    const [error, setError] = useState<string>('');
+    const [viewReceipt, setViewReceipt] = useState<boolean>(false);
 
     setPageTitle(!expense ? "" : expense.title)
 
@@ -92,18 +94,11 @@ export default function ExpenseDetailsScreen() {
                             router.replace("/listTransactionsPage");
                         }
                     }).catch((err: Error) => {
-                        // TODO: Add error message as text instead of alert.
-                        Alert.alert("Failed", "Failed to delete expense.");
-                        console.log(err.message);
+                        setError(err.message);
                     })
                 },
             },
         ]);
-    };
-
-    const handleViewReceipt = () => {
-        // TODO: Implement
-        Alert.alert("Feature Coming Soon", "Receipt viewing is not yet implemented.");
     };
 
     return (
@@ -111,7 +106,7 @@ export default function ExpenseDetailsScreen() {
             <TopBar />
 
             {!expense ? "" : <View style={styles.container}>
-                <Text style={styles.detail}>Category: {!category ? "": category.name}</Text>
+                <Text style={styles.detail}>Category: {!category ? "" : category.name}</Text>
                 <Text style={styles.detail}>Amount: £{Math.abs(expense.amount).toFixed(2)}</Text>
                 <Text style={styles.detail}>Date: {expense.date.toDateString()}</Text>
                 <View>
@@ -119,7 +114,13 @@ export default function ExpenseDetailsScreen() {
                     <Text style={styles.notes}>{expense.notes}</Text>
                 </View>
 
-                <TouchableOpacity onPress={handleViewReceipt}>
+                {error !== '' && (
+                    <View style={styles.errorTextContainer}>
+                        <Text style={styles.errorText}>{error}</Text>
+                    </View>
+                )}
+
+                <TouchableOpacity onPress={() => setViewReceipt(true)}>
                     <Text style={styles.viewReceipt}>View Receipt</Text>
                 </TouchableOpacity>
                 <View style={styles.buttonContainer}>
@@ -130,7 +131,11 @@ export default function ExpenseDetailsScreen() {
                         <Text style={styles.buttonText}>Delete</Text>
                     </TouchableOpacity>
                 </View>
+
+                {expense.receipt ? <ViewReceiptModal uri={expense.receipt} visible={viewReceipt} setViewReceipt={setViewReceipt} />: ""}
             </View>}
+
+            
         </View>
     );
 }
@@ -190,5 +195,13 @@ const styles = StyleSheet.create({
         fontSize: 20,
         color: '#fff',
         fontWeight: 'bold',
+    },
+    errorTextContainer: {
+        justifyContent: "center",
+        alignItems: "center",
+    },
+    errorText: {
+        color: 'red',
+        fontSize: 14,
     },
 });

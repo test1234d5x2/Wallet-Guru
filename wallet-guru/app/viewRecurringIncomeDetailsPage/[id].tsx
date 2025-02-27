@@ -10,17 +10,15 @@ import convertFrequencyToTextDisplay from '@/utils/convertFrequencyToTextDisplay
 import deleteRecurringIncome from '@/utils/apiCalls/deleteRecurringIncome';
 import getRecurringIncomeByID from '@/utils/apiCalls/getRecurringIncomeByID';
 
-
 export default function IncomeDetailsScreen() {
     const { id } = useLocalSearchParams();
-
     const router = useRouter();
     const [token, setToken] = useState<string>('');
     const [email, setEmail] = useState<string>('');
     const [recurringIncome, setRecurringIncome] = useState<RecurringIncome>();
+    const [error, setError] = useState<string>('');
 
     setPageTitle(!recurringIncome ? "" : recurringIncome.title);
-
 
     getToken().then((data) => {
         if (!data) {
@@ -29,7 +27,6 @@ export default function IncomeDetailsScreen() {
             router.replace("/loginPage");
             return;
         }
-
         setToken(data.token);
         setEmail(data.email);
     });
@@ -39,16 +36,14 @@ export default function IncomeDetailsScreen() {
             getRecurringIncomeByID(token, id as string).then((data) => {
                 setRecurringIncome(data);
             }).catch((error: Error) => {
-                Alert.alert("Income Not Found")
+                Alert.alert("Income Not Found");
                 console.log(error.message);
                 clearRouterHistory(router);
                 router.replace("/listTransactionsPage");
-            })
+            });
         }
-
         if (token) getIncome();
     }, [token]);
-
 
     const handleEdit = () => {
         if (!recurringIncome) {
@@ -57,13 +52,15 @@ export default function IncomeDetailsScreen() {
             return;
         }
         router.navigate(recurringIncome.getEditURL());
-    }
+    };
 
     const handleDelete = () => {
         Alert.alert('Delete Recurring Income', 'Are you sure you want to delete this recurring income source?', [
             { text: 'Cancel', style: 'cancel' },
             {
-                text: 'Delete', style: 'destructive', onPress: () => {
+                text: 'Delete',
+                style: 'destructive',
+                onPress: () => {
                     deleteRecurringIncome(token, id as string).then((complete) => {
                         if (complete) {
                             Alert.alert('Success', 'Income deleted successfully!');
@@ -71,40 +68,50 @@ export default function IncomeDetailsScreen() {
                             router.replace("/listRecurringTransactionsPage");
                         }
                     }).catch((err: Error) => {
-                        // TODO: Set error as text message instead of alert.
-                        Alert.alert("Failed", "Failed to delete income.");
-                        console.log(err.message);
-                    })
+                        setError(err.message);
+                    });
                 }
             },
         ]);
-    }
+    };
 
     return (
         <View style={styles.mainContainer}>
             <TopBar />
-            {!recurringIncome ? "" : <View style={styles.container}>
-                <Text style={styles.detail}>Amount: £{recurringIncome.amount.toFixed(2)}</Text>
-                <Text style={styles.detail}>Start Date: {recurringIncome.recurrenceRule.startDate.toDateString()}</Text>
-                <Text style={styles.detail}>Next Transaction Date: {recurringIncome.recurrenceRule.nextTriggerDate.toDateString()}</Text>
-                {!recurringIncome.recurrenceRule.endDate ? "" : <Text style={styles.detail}>End Date: {recurringIncome.recurrenceRule.endDate.toDateString()}</Text>}
-                <Text style={styles.detail}>Frequency: Every {`${recurringIncome.recurrenceRule.interval} ${convertFrequencyToTextDisplay(recurringIncome.recurrenceRule.frequency)}${recurringIncome.recurrenceRule.interval !== 1 ? "s" : ""}`}</Text>
-                <View>
-                    <Text style={styles.notesTitle}>Notes:</Text>
-                    <Text style={styles.notes}>{recurringIncome.notes}</Text>
-                </View>
+            {recurringIncome && (
+                <View style={styles.container}>
+                    <Text style={styles.detail}>Amount: £{recurringIncome.amount.toFixed(2)}</Text>
+                    <Text style={styles.detail}>Start Date: {recurringIncome.recurrenceRule.startDate.toDateString()}</Text>
+                    <Text style={styles.detail}>Next Transaction Date: {recurringIncome.recurrenceRule.nextTriggerDate.toDateString()}</Text>
+                    {recurringIncome.recurrenceRule.endDate && (
+                        <Text style={styles.detail}>End Date: {recurringIncome.recurrenceRule.endDate.toDateString()}</Text>
+                    )}
+                    <Text style={styles.detail}>
+                        Frequency: Every {`${recurringIncome.recurrenceRule.interval} ${convertFrequencyToTextDisplay(recurringIncome.recurrenceRule.frequency)}${recurringIncome.recurrenceRule.interval !== 1 ? "s" : ""}`}
+                    </Text>
+                    <View>
+                        <Text style={styles.notesTitle}>Notes:</Text>
+                        <Text style={styles.notes}>{recurringIncome.notes}</Text>
+                    </View>
 
-                <View style={styles.buttonContainer}>
-                    <TouchableOpacity style={[styles.button, styles.editButton]} onPress={handleEdit}>
-                        <Text style={styles.buttonText}>Edit</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity style={[styles.button, styles.deleteButton]} onPress={handleDelete}>
-                        <Text style={styles.buttonText}>Delete</Text>
-                    </TouchableOpacity>
+                    {error !== '' && (
+                        <View style={styles.errorTextContainer}>
+                            <Text style={styles.errorText}>{error}</Text>
+                        </View>
+                    )}
+
+                    <View style={styles.buttonContainer}>
+                        <TouchableOpacity style={[styles.button, styles.editButton]} onPress={handleEdit}>
+                            <Text style={styles.buttonText}>Edit</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity style={[styles.button, styles.deleteButton]} onPress={handleDelete}>
+                            <Text style={styles.buttonText}>Delete</Text>
+                        </TouchableOpacity>
+                    </View>
                 </View>
-            </View>}
+            )}
         </View>
-    )
+    );
 }
 
 const styles = StyleSheet.create({
@@ -155,5 +162,13 @@ const styles = StyleSheet.create({
         fontSize: 20,
         color: '#fff',
         fontWeight: 'bold',
+    },
+    errorTextContainer: {
+        justifyContent: "center",
+        alignItems: "center",
+    },
+    errorText: {
+        color: 'red',
+        fontSize: 14,
     },
 });
