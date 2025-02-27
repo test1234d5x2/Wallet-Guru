@@ -140,10 +140,8 @@ export default function ViewTransactionsList() {
                         <ModalSelectionTransactionTypes choices={Object.values(TransactionType) as TransactionType[]} value={selectedType} setValue={setSelectedType} />
                     </View>
                     {selectedType === TransactionType.EXPENSE ? <View><ModalSelectionExpenseCategories choices={categories} value={selectedCategory} setValue={setSelectedCategory} /></View> : ""}
-                    <View style={{ flexDirection: "row", columnGap: 20, justifyContent: "space-between" }}>
-                        <DateInputField date={filterStartDate} setDate={setFilterStartDate} placeholder='Start Date' />
-                        <DateInputField date={filterEndDate} setDate={setFilterEndDate} placeholder='End Date' />
-                    </View>
+                    <DateInputField date={filterStartDate} setDate={setFilterStartDate} placeholder='Start Date' />
+                    <DateInputField date={filterEndDate} setDate={setFilterEndDate} placeholder='End Date' />
 
                 </View>
 

@@ -94,7 +94,7 @@ export default function Analytics() {
         return date;
     }).reverse();
 
-    const categoryTotals = getCategoryDistribution(expenses, selectedMonth, categories);
+    const categoryTotals = getCategoryDistribution(expenses, categories);
     const categoryDistribution = categoryTotals.map(({ name, total }, index) => ({
         name,
         population: total,
