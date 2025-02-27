@@ -1,5 +1,4 @@
 import Income from "../models/core/Income";
-import IncomeRepository from "../repositories/IncomeRepository";
 import { Contract } from "@hyperledger/fabric-gateway";
 import { TextDecoder } from 'util';
 
@@ -9,11 +8,9 @@ const utf8Decoder = new TextDecoder();
 
 
 class IncomeService {
-    private repository: IncomeRepository;
     private incomeContract: Contract;
 
     constructor(c: Contract) {
-        this.repository = new IncomeRepository();
         this.incomeContract = c;
     }
 

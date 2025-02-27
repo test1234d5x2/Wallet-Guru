@@ -12,6 +12,7 @@ import clearRouterHistory from '@/utils/clearRouterHistory';
 import getToken from '@/utils/tokenAccess/getToken';
 import getExpenseCategories from '@/utils/apiCalls/getExpenseCategories';
 import pickImage from '@/utils/pickImage';
+import updateCategoriesTimeWindowEnd from '@/utils/analytics/batchProcessRecurrencesUpdates/updateCategoriesTimeWindowEnd';
 
 
 async function addExpense(token: string, title: string, amount: number, date: Date, expenseCategoryID: string, notes: string, receipt?: string) {
@@ -78,6 +79,7 @@ export default function AddExpense() {
             const result = await getExpenseCategories(token);
             if (result) {
                 setCategories(result);
+                await updateCategoriesTimeWindowEnd(result, token);
             } else {
                 console.log("Error with getting expense categories list.")
             }

@@ -1,4 +1,3 @@
-import GoalRepository from "../repositories/GoalRepository";
 import GoalStatus from "../enums/GoalStatus";
 import Goal from "../models/core/Goal";
 import { Contract } from "@hyperledger/fabric-gateway";
@@ -11,11 +10,9 @@ const utf8Decoder = new TextDecoder();
 
 
 class GoalService {
-    private repository: GoalRepository;
     private goalContract: Contract;
 
     constructor(c: Contract) {
-        this.repository = new GoalRepository();
         this.goalContract = c;
     }
 

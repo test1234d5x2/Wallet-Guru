@@ -1,5 +1,4 @@
 import User from "../models/core/User";
-import UserRepository from "../repositories/UserRepository";
 import jwt from "jsonwebtoken";
 import { Contract } from "@hyperledger/fabric-gateway";
 import dotenv from "dotenv";

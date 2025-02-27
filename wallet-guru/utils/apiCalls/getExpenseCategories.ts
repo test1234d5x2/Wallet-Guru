@@ -25,7 +25,13 @@ export default async function getExpenseCategories(token: string): Promise<Expen
 
     const data = await response.json();
     const categories: ExpenseCategory[] = data.categories.map((category: any) => {
-        const recurrenceRule = new BasicRecurrenceRule(category.recurrenceRule.frequency, category.recurrenceRule.interval, new Date(category.recurrenceRule.startDate))
+        const recurrenceRule = new BasicRecurrenceRule(
+            category.recurrenceRule.frequency,
+            category.recurrenceRule.interval, 
+            new Date(category.recurrenceRule.startDate),
+            category.recurrenceRule.nextTriggerDate ? new Date(category.recurrenceRule.nextTriggerDate): undefined,
+            category.recurrenceRule.endDate ? new Date(category.recurrenceRule.endDate): undefined
+        )
         return new ExpenseCategory(category.userID, category.name, category.monthlyBudget, recurrenceRule, category.id);
     });
 

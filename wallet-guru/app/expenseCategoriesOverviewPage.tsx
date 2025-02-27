@@ -56,12 +56,12 @@ export default function ViewExpenseCategories() {
         }
 
         getExpenseList();
-    }, [token]);
+    }, [token, categories]);
 
     const displayElements = [
         ...categories.map((category) => (
             <React.Fragment key={uuid.v4() as string}>
-                <ExpenseCategoryItem token={token} currentSpending={calculateCategoryTotalForCurrentWindow(expenses, new Date(), category)} category={category} />
+                <ExpenseCategoryItem token={token} currentSpending={calculateCategoryTotalForCurrentWindow(expenses, category)} category={category} />
                 <View style={styles.divider} />
             </React.Fragment>
         ))

@@ -21,6 +21,7 @@ import getExpenses from '@/utils/apiCalls/getExpenses';
 import getIncomes from '@/utils/apiCalls/getIncomes';
 import getToken from '@/utils/tokenAccess/getToken';
 import filterTransactionsByTimeWindow from '@/utils/filterTransactionsByTimeWindow';
+import updateCategoriesTimeWindowEnd from '@/utils/analytics/batchProcessRecurrencesUpdates/updateCategoriesTimeWindowEnd';
 
 
 export default function ViewTransactionsList() {
@@ -52,6 +53,7 @@ export default function ViewTransactionsList() {
             const result = await getExpenseCategories(token);
             if (result) {
                 setCategories(result);
+                await updateCategoriesTimeWindowEnd(result, token);
             } else {
                 console.log("Error with getting expense categories list.")
             }

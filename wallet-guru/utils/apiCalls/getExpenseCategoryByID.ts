@@ -24,6 +24,12 @@ export default async function getExpenseCategoryByID(token: string, id: string):
     };
 
     const data: any = await response.json();
-    const recurrenceRule: RecurrenceRule = new BasicRecurrenceRule(data.recurrenceRule.frequency, data.recurrenceRule.interval, new Date(data.recurrenceRule.startDate))
+    const recurrenceRule = new BasicRecurrenceRule(
+        data.recurrenceRule.frequency,
+        data.recurrenceRule.interval,
+        new Date(data.recurrenceRule.startDate),
+        data.recurrenceRule.nextTriggerDate ? new Date(data.recurrenceRule.nextTriggerDate) : undefined,
+        data.recurrenceRule.endDate ? new Date(data.recurrenceRule.endDate) : undefined
+    )
     return new ExpenseCategory(data.userID, data.name, data.monthlyBudget, recurrenceRule, data.id);
 }

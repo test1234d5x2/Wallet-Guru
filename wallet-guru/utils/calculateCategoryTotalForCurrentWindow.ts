@@ -4,7 +4,7 @@ import filterExpensesByCategory from "./filterExpensesByCategory";
 import filterTransactionsByTimeWindow from "./filterTransactionsByTimeWindow";
 
 
-function calculateCategoryTotalForCurrentWindow(expenses: Expense[], month: Date, category: ExpenseCategory): number {
+function calculateCategoryTotalForCurrentWindow(expenses: Expense[], category: ExpenseCategory): number {
     const expensesByMonth = getFilteredExpenses(expenses, category);
     return reduceExpensesToTotal(expensesByMonth);
 }

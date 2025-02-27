@@ -17,6 +17,7 @@ import isValidFrequency from '@/utils/validation/isValidFrequency';
 import getRecurringExpenseByID from '@/utils/apiCalls/getRecurringExpenseByID';
 import BasicRecurrenceRule from '@/models/recurrenceModels/BasicRecurrenceRule';
 import updateRecurrentExpense from '@/utils/apiCalls/updateReccuringExpense';
+import updateCategoriesTimeWindowEnd from '@/utils/analytics/batchProcessRecurrencesUpdates/updateCategoriesTimeWindowEnd';
 
 
 export default function EditRecurrentExpense() {
@@ -54,6 +55,7 @@ export default function EditRecurrentExpense() {
             const result = await getExpenseCategories(token);
             if (result) {
                 setCategories(result);
+                await updateCategoriesTimeWindowEnd(result, token);
             } else {
                 console.log("Error with getting expense categories list.")
             }

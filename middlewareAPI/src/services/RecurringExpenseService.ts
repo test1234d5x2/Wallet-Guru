@@ -1,4 +1,3 @@
-import RecurringExpenseRepository from "../repositories/RecurringExpenseRepository";
 import RecurringExpense from "../models/recurrenceModels/RecurringExpense";
 import RecurrenceRule from "../models/recurrenceModels/RecurrenceRule";
 import ExpenseService from "./ExpenseService";

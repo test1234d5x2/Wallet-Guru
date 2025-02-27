@@ -16,6 +16,7 @@ import isInteger from '@/utils/validation/validateInteger';
 import isValidFrequency from '@/utils/validation/isValidFrequency';
 import RecurrenceRule from '@/models/recurrenceModels/RecurrenceRule';
 import BasicRecurrenceRule from '@/models/recurrenceModels/BasicRecurrenceRule';
+import updateCategoriesTimeWindowEnd from '@/utils/analytics/batchProcessRecurrencesUpdates/updateCategoriesTimeWindowEnd';
 
 
 async function addRecurrentExpense(token: string, title: string, amount: number, date: Date, categoryID: string, notes: string, recurrenceRule: RecurrenceRule) {
@@ -84,6 +85,7 @@ export default function AddRecurrentExpense() {
             const result = await getExpenseCategories(token);
             if (result) {
                 setCategories(result);
+                await updateCategoriesTimeWindowEnd(result, token);
             } else {
                 console.log("Error with getting expense categories list.")
             }

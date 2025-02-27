@@ -16,6 +16,7 @@ import isValidFrequency from '@/utils/validation/isValidFrequency';
 import isInteger from '@/utils/validation/validateInteger';
 import RecurrenceRule from '@/models/recurrenceModels/RecurrenceRule';
 import BasicRecurrenceRule from '@/models/recurrenceModels/BasicRecurrenceRule';
+import updateCategoriesTimeWindowEnd from '@/utils/analytics/batchProcessRecurrencesUpdates/updateCategoriesTimeWindowEnd';
 
 
 async function addExpenseCategory(token: string, name: string, monthlyBudget: number, recurrenceRule: RecurrenceRule) {
@@ -80,6 +81,7 @@ export default function AddExpenseCategory() {
             const result = await getExpenseCategories(token);
             if (result) {
                 setCategories(result);
+                await updateCategoriesTimeWindowEnd(result, token);
             } else {
                 console.log("Error with getting expense categories list.")
             }
@@ -125,7 +127,7 @@ export default function AddExpenseCategory() {
             return false;
         }
         else if (parseInt(interval) <= 0) {
-            setError("Please enter a valid interval..");
+            setError("Please enter a valid interval.");
             return false;
         }
 

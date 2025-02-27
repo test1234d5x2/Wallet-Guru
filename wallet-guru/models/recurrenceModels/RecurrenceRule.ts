@@ -13,6 +13,12 @@ export default abstract class RecurrenceRule {
         this.startDate = startDate;
         this.nextTriggerDate = nextTriggerDate || startDate;
         this.endDate = endDate;
+
+        this.nextTriggerDate = new Date(Date.UTC(
+            this.nextTriggerDate.getUTCFullYear(),
+            this.nextTriggerDate.getUTCMonth(),
+            this.nextTriggerDate.getUTCDate(),
+        ))
     }
 
     public shouldTrigger(): boolean {

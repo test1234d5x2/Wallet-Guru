@@ -48,13 +48,9 @@ class Registry {
         const recurringExpenseContract = this.connection.getRecurringExpenseContract();
 
         this.userService = new UserService(userContract);
-        console.log("User Service")
         this.expenseService = new ExpenseService(expenseContract);
-        console.log("Expense Service")
         this.incomeService = new IncomeService(incomeContract);
-        console.log("Income Service")
         this.goalService = new GoalService(goalContract);
-        console.log("Goal Service")
         this.expenseCategoryService = new ExpenseCategoryService(expenseCategoryContract);
         this.recurringExpenseService = new RecurringExpenseService(this.expenseService, recurringExpenseContract);
         this.recurringIncomeService = new RecurringIncomeService(this.incomeService, recurringIncomeContract);

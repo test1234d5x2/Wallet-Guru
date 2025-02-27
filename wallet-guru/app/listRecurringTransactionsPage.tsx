@@ -21,6 +21,7 @@ import getRecurringIncomes from '@/utils/apiCalls/getReccuringIncomes';
 import RecurringExpenseItem from '@/components/listItems/recurringExpenseItem';
 import RecurringIncomeItem from '@/components/listItems/recurringIncomeItem';
 import filterTransactionsByTimeWindow from '@/utils/filterTransactionsByTimeWindow';
+import updateCategoriesTimeWindowEnd from '@/utils/analytics/batchProcessRecurrencesUpdates/updateCategoriesTimeWindowEnd';
 
 
 export default function ViewReccuringTransactionsList() {
@@ -52,6 +53,7 @@ export default function ViewReccuringTransactionsList() {
             const result = await getExpenseCategories(token);
             if (result) {
                 setCategories(result);
+                await updateCategoriesTimeWindowEnd(result, token);
             } else {
                 console.log("Error with getting expense categories list.")
             }

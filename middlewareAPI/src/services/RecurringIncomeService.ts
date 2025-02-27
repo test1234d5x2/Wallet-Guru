@@ -1,4 +1,3 @@
-import RecurringIncomeRepository from "../repositories/RecurringIncomeRepository";
 import RecurrenceRule from "../models/recurrenceModels/RecurrenceRule";
 import RecurringIncome from "../models/recurrenceModels/RecurringIncome";
 import IncomeService from "./IncomeService";
@@ -13,12 +12,10 @@ const utf8Decoder = new TextDecoder();
 
 
 class RecurringIncomeService {
-    private repository: RecurringIncomeRepository;
     private incomeService: IncomeService;
     private contract: Contract;
 
     constructor(incomeService: IncomeService, recurringIncomeContract: Contract) {
-        this.repository = new RecurringIncomeRepository();
         this.incomeService = incomeService;
         this.contract = recurringIncomeContract;
     }

@@ -1,6 +1,7 @@
 import { RequestHandler } from "express";
 import Registry from "../registry/Registry";
 import getUserFromToken from "../utils/getUserFromToken";
+import BasicRecurrenceRule from "../models/recurrenceModels/BasicRecurrenceRule";
 
 
 /**
@@ -27,11 +28,19 @@ export const create: RequestHandler = async (req, res): Promise<void> => {
     const registry = await Registry.getInstance();
     const expenseCategoryService = registry.expenseCategoryService;
 
-    if (await expenseCategoryService.addExpenseCategory(userID, name, monthlyBudget, recurrenceRule)) {
+    const rule = new BasicRecurrenceRule(
+        recurrenceRule.frequency,
+        recurrenceRule.interval,
+        new Date(recurrenceRule.startDate),
+        recurrenceRule.nextTriggerDate ? new Date(recurrenceRule.nextTriggerDate) : undefined,
+        recurrenceRule.endDate ? new Date(recurrenceRule.endDate) : undefined
+    );
+
+    if (await expenseCategoryService.addExpenseCategory(userID, name, monthlyBudget, rule)) {
         res.status(201).json({ message: "Expense category created" });
     }
     else {
-        res.status(404).json({ message: "Failed to add the expense category."})
+        res.status(404).json({ message: "Failed to add the expense category." })
     }
 };
 
@@ -62,11 +71,19 @@ export const update: RequestHandler = async (req, res): Promise<void> => {
     const registry = await Registry.getInstance();
     const expenseCategoryService = registry.expenseCategoryService;
 
-    if (await expenseCategoryService.updateExpenseCategory(id, userID, name, monthlyBudget, recurrenceRule)) {
+    const rule = new BasicRecurrenceRule(
+        recurrenceRule.frequency,
+        recurrenceRule.interval,
+        new Date(recurrenceRule.startDate),
+        recurrenceRule.nextTriggerDate ? new Date(recurrenceRule.nextTriggerDate) : undefined,
+        recurrenceRule.endDate ? new Date(recurrenceRule.endDate) : undefined
+    );
+
+    if (await expenseCategoryService.updateExpenseCategory(id, userID, name, monthlyBudget, rule)) {
         res.status(200).json({ message: "Expense category updated" });
     }
     else {
-        res.status(404).json({ message: "Failed to update the expense category."});
+        res.status(404).json({ message: "Failed to update the expense category." });
     }
 };
 
@@ -96,7 +113,7 @@ export const remove: RequestHandler = async (req, res): Promise<void> => {
         res.status(200).json({ message: "Expense category deleted" });
     }
     else {
-        res.status(404).json({ message: "Failed to remove expense category."});
+        res.status(404).json({ message: "Failed to remove expense category." });
     }
 
 };

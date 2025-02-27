@@ -111,7 +111,7 @@ export default function Dashboard() {
         expenseCategoryItemsList.push(
             categories.slice(0, 3).map((category) => (
                 <React.Fragment key={uuid.v4() as string}>
-                    <ExpenseCategoryItem token={token} currentSpending={calculateMonthlyCategoryTotal(expenses, new Date(), category)} category={category} />
+                    <ExpenseCategoryItem token={token} currentSpending={calculateMonthlyCategoryTotal(expenses, category)} category={category} />
                     <View style={styles.dividerLine} />
                 </React.Fragment>
             ))

@@ -16,6 +16,7 @@ import Frequency from '@/enums/Frequency';
 import isValidFrequency from '@/utils/validation/isValidFrequency';
 import isInteger from '@/utils/validation/validateInteger';
 import BasicRecurrenceRule from '@/models/recurrenceModels/BasicRecurrenceRule';
+import updateCategoriesTimeWindowEnd from '@/utils/analytics/batchProcessRecurrencesUpdates/updateCategoriesTimeWindowEnd';
 
 
 export default function EditExpenseCategory() {
@@ -71,6 +72,7 @@ export default function EditExpenseCategory() {
             const result = await getExpenseCategories(token);
             if (result) {
                 setCategories(result);
+                await updateCategoriesTimeWindowEnd(result, token);
             } else {
                 console.log("Error with getting expense categories list.")
             }

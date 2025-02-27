@@ -14,6 +14,7 @@ import updateExpense from '@/utils/apiCalls/updateExpense';
 import getExpenseByID from '@/utils/apiCalls/getExpensesByID';
 import getExpenseCategories from '@/utils/apiCalls/getExpenseCategories';
 import pickImage from '@/utils/pickImage';
+import updateCategoriesTimeWindowEnd from '@/utils/analytics/batchProcessRecurrencesUpdates/updateCategoriesTimeWindowEnd';
 
 
 export default function EditExpense() {
@@ -49,6 +50,7 @@ export default function EditExpense() {
             const result = await getExpenseCategories(token);
             if (result) {
                 setCategories(result);
+                await updateCategoriesTimeWindowEnd(result, token);
             } else {
                 console.log("Error with getting expense categories list.")
             }

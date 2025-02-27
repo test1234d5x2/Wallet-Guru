@@ -15,7 +15,8 @@ export const create = async (req: Request, res: Response): Promise<void> => {
 
     const rule = new BasicRecurrenceRule(
         recurrenceRule.frequency,
-        recurrenceRule.interval, new Date(recurrenceRule.startDate),
+        recurrenceRule.interval,
+        new Date(recurrenceRule.startDate),
         recurrenceRule.nextTriggerDate ? new Date(recurrenceRule.nextTriggerDate) : undefined,
         recurrenceRule.endDate ? new Date(recurrenceRule.endDate) : undefined
     );
