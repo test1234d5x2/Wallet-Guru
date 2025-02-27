@@ -11,7 +11,6 @@ import DateInputField from '@/components/formComponents/inputFields/dateInputFie
 import ModalSelectionExpenseCategories from '@/components/modalSelection/modalSelectionExpenseCategories';
 import ModalSelectionTransactionTypes from '@/components/modalSelection/modalSelectionTransactionTypes';
 import TransactionType from '@/enums/TransactionType';
-import filterTransactionsByDate from '@/utils/filterTransactionsByDate';
 import filterExpensesByCategory from '@/utils/filterExpensesByCategory';
 import getExpenseCategories from '@/utils/apiCalls/getExpenseCategories';
 import getToken from '@/utils/tokenAccess/getToken';
@@ -21,6 +20,7 @@ import getRecurringExpenses from '@/utils/apiCalls/getRecurringExpenses';
 import getRecurringIncomes from '@/utils/apiCalls/getReccuringIncomes';
 import RecurringExpenseItem from '@/components/listItems/recurringExpenseItem';
 import RecurringIncomeItem from '@/components/listItems/recurringIncomeItem';
+import filterTransactionsByTimeWindow from '@/utils/filterTransactionsByTimeWindow';
 
 
 export default function ViewReccuringTransactionsList() {
@@ -97,7 +97,7 @@ export default function ViewReccuringTransactionsList() {
     let tomorrow = new Date();
     tomorrow = new Date(tomorrow.setDate(tomorrow.getDate() + 1))
 
-    transactions = filterTransactionsByDate(recurringIncomes, filterStartDate === null ? new Date(1800, 0, 1) : filterStartDate, filterEndDate === null ? tomorrow : filterEndDate)
+    transactions = filterTransactionsByTimeWindow(recurringIncomes, filterStartDate === null ? new Date(1800, 0, 1) : filterStartDate, filterEndDate === null ? tomorrow : filterEndDate)
     transactionDisplayElements.push(
         ...transactions.map((ri) => (
             <React.Fragment key={uuid.v4() as string}>
@@ -109,7 +109,7 @@ export default function ViewReccuringTransactionsList() {
         )),
     )
 
-    transactions = filterTransactionsByDate(recurringExpenses, filterStartDate === null ? new Date(1800, 0, 1) : filterStartDate, filterEndDate === null ? tomorrow : filterEndDate)
+    transactions = filterTransactionsByTimeWindow(recurringExpenses, filterStartDate === null ? new Date(1800, 0, 1) : filterStartDate, filterEndDate === null ? tomorrow : filterEndDate)
     if (selectedCategory) {
         transactions = filterExpensesByCategory(transactions, selectedCategory)
     }

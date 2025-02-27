@@ -12,11 +12,13 @@ import getToken from '@/utils/tokenAccess/getToken';
 import ExpenseCategory from '@/models/core/ExpenseCategory';
 import Expense from '@/models/core/Expense';
 import Income from '@/models/core/Income'
-import calculateMonthlyTransactionsTotal from '@/utils/calculateMonthlyTransactionsTotal';
 import getExpenses from '@/utils/apiCalls/getExpenses';
 import getIncomes from '@/utils/apiCalls/getIncomes';
 import getExpenseCategories from '@/utils/apiCalls/getExpenseCategories';
-import calculateMonthlyCategoryTotal from '@/utils/calculateMonthlyCategoryTotal';
+import calculateMonthlyCategoryTotal from '@/utils/calculateCategoryTotalForCurrentWindow';
+import calculateTransactionsTotalForTimeWindow from '@/utils/calculateTransactionsTotalForTimeWindow';
+import getStartOfMonth from '@/utils/getStartOfMonth';
+import getEndOfMonth from '@/utils/getEndOfMonth';
 
 
 export default function Dashboard() {
@@ -46,7 +48,7 @@ export default function Dashboard() {
             const result = await getExpenses(token);
             if (result) {
                 setExpenses(result);
-                setExpenseTotal(calculateMonthlyTransactionsTotal(result, new Date()));
+                setExpenseTotal(calculateTransactionsTotalForTimeWindow(result, getStartOfMonth(new Date()), getEndOfMonth(new Date())));
             } else {
                 console.log("Error with getting expense list")
             }
@@ -60,7 +62,7 @@ export default function Dashboard() {
             const result = await getIncomes(token);
             if (result) {
                 setIncomes(result);
-                setIncomeTotal(calculateMonthlyTransactionsTotal(result, new Date()))
+                setIncomeTotal(calculateTransactionsTotalForTimeWindow(result, getStartOfMonth(new Date()), getEndOfMonth(new Date())))
             } else {
                 console.log("Error with getting incomes list")
             }

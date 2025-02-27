@@ -135,6 +135,7 @@ class RecurringIncomeService {
                 return new RecurringIncome(i.userID, i.title, i.amount, new Date(i.date), i.notes, recurrenceRule, i.id);
             });
 
+            // TODO: Processes each due income twice. requires fixing.
             recurringIncomes.forEach(async recIncome => {
                 if (recIncome.recurrenceRule.shouldTrigger()) {
                     await this.incomeService.addIncome(recIncome.getUserID(), recIncome.title, recIncome.amount, new Date(), recIncome.notes);

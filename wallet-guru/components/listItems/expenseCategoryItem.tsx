@@ -7,6 +7,7 @@ import ListItemDeleteButton from './listItemDeleteButton';
 import ListItemEditButton from './listItemEditButton';
 import clearRouterHistory from '@/utils/clearRouterHistory';
 import deleteExpenseCategory from '@/utils/apiCalls/deleteExpenseCategory';
+import convertFrequencyToTextDisplay from '@/utils/convertFrequencyToTextDisplay';
 
 
 interface ExpenseCategoryProps {
@@ -55,6 +56,8 @@ export default function ExpenseCategoryItem(props: ExpenseCategoryProps) {
                 width={null}
             />
             <Text style={styles.label}>Budget: £{props.category.monthlyBudget.toFixed(2)}</Text>
+
+            <Text style={styles.label}>Time Window: Every {`${props.category.recurrenceRule.interval} ${convertFrequencyToTextDisplay(props.category.recurrenceRule.frequency)}${props.category.recurrenceRule.interval !== 1 ? "s": ""}`}</Text>
 
             <View style={styles.actionsContainer}>
                 <ListItemEditButton id={props.category.getID()} handleEdit={handleEdit} />

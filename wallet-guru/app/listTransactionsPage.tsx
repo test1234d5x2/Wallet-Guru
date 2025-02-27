@@ -13,7 +13,6 @@ import DateInputField from '@/components/formComponents/inputFields/dateInputFie
 import ModalSelectionExpenseCategories from '@/components/modalSelection/modalSelectionExpenseCategories';
 import ModalSelectionTransactionTypes from '@/components/modalSelection/modalSelectionTransactionTypes';
 import TransactionType from '@/enums/TransactionType';
-import filterTransactionsByDate from '@/utils/filterTransactionsByDate';
 import filterExpensesByCategory from '@/utils/filterExpensesByCategory';
 import Expense from '@/models/core/Expense';
 import Income from '@/models/core/Income';
@@ -21,6 +20,7 @@ import getExpenseCategories from '@/utils/apiCalls/getExpenseCategories';
 import getExpenses from '@/utils/apiCalls/getExpenses';
 import getIncomes from '@/utils/apiCalls/getIncomes';
 import getToken from '@/utils/tokenAccess/getToken';
+import filterTransactionsByTimeWindow from '@/utils/filterTransactionsByTimeWindow';
 
 
 export default function ViewTransactionsList() {
@@ -98,7 +98,7 @@ export default function ViewTransactionsList() {
     tomorrow = new Date(tomorrow.setDate(tomorrow.getDate() + 1))
 
     if (selectedType !== TransactionType.EXPENSE) {
-        transactions = filterTransactionsByDate(incomes, filterStartDate === null ? new Date(1800, 0, 1) : filterStartDate, filterEndDate === null ? tomorrow : filterEndDate)
+        transactions = filterTransactionsByTimeWindow(incomes, filterStartDate === null ? new Date(1800, 0, 1) : filterStartDate, filterEndDate === null ? tomorrow : filterEndDate)
         transactionDisplayElements.push(
             ...transactions.map((income) => (
                 <React.Fragment key={uuid.v4() as string}>
@@ -112,7 +112,7 @@ export default function ViewTransactionsList() {
     }
 
     if (selectedType !== TransactionType.INCOME) {
-        transactions = filterTransactionsByDate(expenses, filterStartDate === null ? new Date(1800, 0, 1) : filterStartDate, filterEndDate === null ? tomorrow : filterEndDate)
+        transactions = filterTransactionsByTimeWindow(expenses, filterStartDate === null ? new Date(1800, 0, 1) : filterStartDate, filterEndDate === null ? tomorrow : filterEndDate)
         if (selectedCategory) { transactions = filterExpensesByCategory(transactions, selectedCategory) }
         transactionDisplayElements.push(
             ...transactions.map((expense) => (

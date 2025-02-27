@@ -133,12 +133,13 @@ class RecurringExpenseService {
                 return new RecurringExpense(e.userID, e.title, e.amount, new Date(e.date), e.notes, e.categoryID, recurrenceRule, e.id);
             });
 
-            recurringExpenses.forEach(recExp => {
+            // TODO: Processes each due expense twice. requires fixing.
+            recurringExpenses.forEach( async recExp => {
                 if (recExp.recurrenceRule.shouldTrigger()) {
-                    this.expenseService.addExpense(recExp.getUserID(), recExp.title, recExp.amount, new Date(), recExp.notes, recExp.categoryID, recExp.receipt);
+                    await this.expenseService.addExpense(recExp.getUserID(), recExp.title, recExp.amount, new Date(), recExp.notes, recExp.categoryID, recExp.receipt);
                     recExp.recurrenceRule.computeNextTriggerDate();
 
-                    this.updateRecurringExpense(recExp.getID(), recExp.getUserID(), recExp.title, recExp.amount, recExp.date, recExp.notes, recExp.categoryID, recExp.recurrenceRule)
+                    await this.updateRecurringExpense(recExp.getID(), recExp.getUserID(), recExp.title, recExp.amount, recExp.date, recExp.notes, recExp.categoryID, recExp.recurrenceRule)
                 }
             });
             
