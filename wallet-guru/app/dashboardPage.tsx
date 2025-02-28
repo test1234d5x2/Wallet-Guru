@@ -15,10 +15,11 @@ import Income from '@/models/core/Income'
 import getExpenses from '@/utils/apiCalls/getExpenses';
 import getIncomes from '@/utils/apiCalls/getIncomes';
 import getExpenseCategories from '@/utils/apiCalls/getExpenseCategories';
-import calculateMonthlyCategoryTotal from '@/utils/calculateCategoryTotalForCurrentWindow';
 import calculateTransactionsTotalForTimeWindow from '@/utils/calculateTransactionsTotalForTimeWindow';
 import getStartOfMonth from '@/utils/getStartOfMonth';
 import getEndOfMonth from '@/utils/getEndOfMonth';
+import filterExpensesByCategory from '@/utils/filterExpensesByCategory';
+import MonthlySpendingDisplay from '@/components/widgets/MonthlySpendingDisplay';
 
 
 export default function Dashboard() {
@@ -111,7 +112,7 @@ export default function Dashboard() {
         expenseCategoryItemsList.push(
             categories.slice(0, 3).map((category) => (
                 <React.Fragment key={uuid.v4() as string}>
-                    <ExpenseCategoryItem token={token} currentSpending={calculateMonthlyCategoryTotal(expenses, category)} category={category} />
+                    <ExpenseCategoryItem token={token} currentSpending={calculateTransactionsTotalForTimeWindow(filterExpensesByCategory(expenses, category), category.recurrenceRule.startDate, category.recurrenceRule.nextTriggerDate)} category={category} />
                     <View style={styles.dividerLine} />
                 </React.Fragment>
             ))
@@ -123,27 +124,7 @@ export default function Dashboard() {
             <TopBar />
 
             <ScrollView contentContainerStyle={{ flexGrow: 1, rowGap: 50 }} style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
-                <View style={styles.section}>
-                    <View style={styles.sectionHeader}>
-                        <Text style={styles.sectionTitle}>This Month:</Text>
-                        <TouchableOpacity>
-                            <Link href="/analyticsPage">
-                                <Text style={styles.linkText}>View Analytics</Text>
-                            </Link>
-                        </TouchableOpacity>
-                    </View>
-                    <View style={styles.summaryContainer}>
-                        <View>
-                            <Text style={styles.label}>Income</Text>
-                            <Text style={styles.value}>£{incomeTotal.toFixed(2)}</Text>
-                        </View>
-                        <View style={styles.divider} />
-                        <View>
-                            <Text style={styles.label}>Spending</Text>
-                            <Text style={styles.value}>£{expenseTotal.toFixed(2)}</Text>
-                        </View>
-                    </View>
-                </View>
+                <MonthlySpendingDisplay income={incomeTotal} expenses={expenseTotal} month={new Date()} />
 
                 <View style={styles.section}>
                     <View style={styles.sectionHeader}>

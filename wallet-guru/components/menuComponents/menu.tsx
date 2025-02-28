@@ -42,7 +42,9 @@ export default function MainMenu() {
         {
             groupTitle: "Analytics",
             items: [
-                { title: "Spending Analytics", link: "/analyticsPage" },
+                { title: "Analytics Overview", link: "/analytics/overviewPage" },
+                { title: "Detailed Transaction Analytics", link: "/analytics/detailedTransactionAnalyticsPage" },
+                { title: "Expense Categories Analytics", link: "/analytics/expenseCategoryPage" },
             ],
         },
     ];

@@ -2,34 +2,31 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, Dimensions, Alert, ScrollView } from 'react-native';
 import setPageTitle from '@/components/pageTitle/setPageTitle';
 import TopBar from '@/components/topBars/topBar';
-import { PieChart, LineChart } from 'react-native-chart-kit';
+import { LineChart } from 'react-native-chart-kit';
 import { useRouter } from 'expo-router';
 import clearRouterHistory from '@/utils/clearRouterHistory';
-import getMonthName from '@/utils/getMonthName';
 import getToken from '@/utils/tokenAccess/getToken';
 import Expense from '@/models/core/Expense';
 import Income from '@/models/core/Income';
-import getCategoryDistribution from '@/utils/analytics/getCategoryDistribution';
-import ExpenseCategory from '@/models/core/ExpenseCategory';
 import getIncomeVsExpenses from '@/utils/analytics/getIncomeVsExpenses';
 import getSavingsTrends from '@/utils/analytics/getSavingsTrends';
-import getExpenseCategories from '@/utils/apiCalls/getExpenseCategories';
 import getExpenses from '@/utils/apiCalls/getExpenses';
 import getIncomes from '@/utils/apiCalls/getIncomes';
+import MonthlySpendingDisplay from '@/components/widgets/MonthlySpendingDisplay';
+import MonthSelector from '@/components/widgets/MonthSelector';
 
 
-// TODO: THIS WHOLE PAGE
+// TODO: Change to month by month instead of user-chosen dates.
 
 export default function Analytics() {
-    setPageTitle('Spending Analytics');
+    setPageTitle('Analytics Overview');
 
     const screenWidth = Dimensions.get('window').width;
     const router = useRouter();
     const [token, setToken] = useState<string>('');
-    const [selectedMonth, setSelectedMonth] = useState<Date>(new Date());
     const [expenses, setExpenses] = useState<Expense[]>([]);
     const [incomes, setIncomes] = useState<Income[]>([]);
-    const [categories, setCategories] = useState<ExpenseCategory[]>([]);
+    const [month, setMonth] = useState<Date>(new Date(Date.UTC(new Date().getUTCFullYear(), new Date().getUTCMonth())));
 
     getToken().then((data) => {
         if (!data) {
@@ -68,40 +65,13 @@ export default function Analytics() {
         getIncomesList();
     }, [token]);
 
-    useEffect(() => {
-        async function getCategories() {
-            const result = await getExpenseCategories(token);
-            if (result) {
-                setCategories(result);
-            } else {
-                console.log("Error with getting expense categories list.")
-            }
-        }
 
-        getCategories();
-    }, [token]);
-
-    const getColor = (index: number) => {
-        const colors = ['#C0C0C0', '#A9A9A9', '#E5E5E5', '#696969', '#000000'];
-        return colors[index % colors.length];
-    };
-
-
-    const currentDate = selectedMonth;
+    const currentDate = month;
     const lastFourMonths = Array.from({ length: 5 }, (_, i) => {
         const date = new Date(currentDate);
         date.setMonth(currentDate.getMonth() - i);
         return date;
     }).reverse();
-
-    const categoryTotals = getCategoryDistribution(expenses, categories);
-    const categoryDistribution = categoryTotals.map(({ name, total }, index) => ({
-        name,
-        population: total,
-        color: getColor(index),
-        legendFontColor: '#7F7F7F',
-        legendFontSize: 12,
-    }));
 
     const { incomeTotals, expenseTotals } = getIncomeVsExpenses(expenses, incomes, lastFourMonths)
     const savingsTrend = getSavingsTrends(expenses, incomes, lastFourMonths);
@@ -115,31 +85,8 @@ export default function Analytics() {
             <TopBar />
 
             <ScrollView contentContainerStyle={{ rowGap: 20, paddingBottom: 40 }} style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
-                <View>
-                    <Text style={styles.selectMonthText}>Select Month:</Text>
-                    {/*<ModalSelectionDates
-                        choices={monthsPassedSinceJoinDate(user.getDateJoined())}
-                        value={selectedMonth}
-                        setValue={setSelectedMonth}
-                    /> */}
-                </View>
-
-                <Text style={styles.header}>Category Distribution: {getMonthName(selectedMonth)} {selectedMonth.getFullYear()}</Text>
-                {categoryDistribution.filter(distribution => distribution.population !== 0).length === 0 ? <Text style={styles.message}>There were no expenses.</Text> : <PieChart
-                    data={categoryDistribution}
-                    width={screenWidth}
-                    height={220}
-                    chartConfig={{
-                        backgroundGradientFrom: '#fff',
-                        backgroundGradientTo: '#fff',
-                        decimalPlaces: 2,
-                        color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
-                        labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
-                    }}
-                    accessor="population"
-                    backgroundColor="transparent"
-                    paddingLeft="15"
-                />}
+                <MonthSelector month={month} setMonth={setMonth} />
+                <MonthlySpendingDisplay income={incomeTotals[incomeTotals.length - 1]} expenses={expenseTotals[expenseTotals.length - 1]} month={currentDate} />
 
                 <Text style={styles.header}>Income vs Expenditure</Text>
                 {expenseTotals.filter(value => value !== 0).length === 0 && incomeTotals.filter(value => value !== 0).length === 0 ? <Text style={styles.message}>There were no expenses or income records.</Text> :
@@ -183,7 +130,7 @@ export default function Analytics() {
                         }}
                     />}
 
-                <Text style={styles.header}>Savings Trends</Text>
+                <Text style={styles.header}>Cash Flow Trends</Text>
                 {expenseTotals.filter(value => value !== 0).length === 0 && incomeTotals.filter(value => value !== 0).length === 0 ? <Text style={styles.message}>There were no expenses or income records.</Text> :
                     <LineChart
                         data={{
@@ -195,11 +142,16 @@ export default function Analytics() {
                                     strokeWidth: 2,
                                 },
                             ],
-                            legend: ['Savings'],
+                            legend: ['Net Cash Flow'],
                         }}
                         width={screenWidth - 30}
                         height={300}
-                        yAxisLabel="£"
+                        yAxisLabel=""
+                        formatYLabel={(value) => {
+                            const num = parseFloat(value);
+                            return num < 0 ? `-£${Math.abs(num).toFixed(2)}` : `£${num.toFixed(2)}`;
+                        }}
+
                         chartConfig={{
                             backgroundGradientFrom: '#fff',
                             backgroundGradientTo: '#fff',
@@ -231,10 +183,10 @@ const styles = StyleSheet.create({
         rowGap: 20,
         flex: 1,
     },
-    selectMonthText: {
-        fontSize: 16,
-        fontWeight: 'bold',
-        marginBottom: 10,
+    divider: {
+        width: 1,
+        backgroundColor: "#ccc",
+        height: "100%",
     },
     header: {
         fontSize: 18,

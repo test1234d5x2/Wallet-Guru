@@ -11,7 +11,8 @@ import Expense from '@/models/core/Expense';
 import getExpenseCategories from '@/utils/apiCalls/getExpenseCategories';
 import getExpenses from '@/utils/apiCalls/getExpenses';
 import getToken from '@/utils/tokenAccess/getToken';
-import calculateCategoryTotalForCurrentWindow from '@/utils/calculateCategoryTotalForCurrentWindow';
+import filterExpensesByCategory from '@/utils/filterExpensesByCategory';
+import calculateTransactionsTotalForTimeWindow from '@/utils/calculateTransactionsTotalForTimeWindow';
 
 export default function ViewExpenseCategories() {
     setPageTitle("Expense Categories");
@@ -61,7 +62,7 @@ export default function ViewExpenseCategories() {
     const displayElements = [
         ...categories.map((category) => (
             <React.Fragment key={uuid.v4() as string}>
-                <ExpenseCategoryItem token={token} currentSpending={calculateCategoryTotalForCurrentWindow(expenses, category)} category={category} />
+                <ExpenseCategoryItem token={token} currentSpending={ calculateTransactionsTotalForTimeWindow(filterExpensesByCategory(expenses, category), category.recurrenceRule.startDate, category.recurrenceRule.nextTriggerDate)} category={category} />
                 <View style={styles.divider} />
             </React.Fragment>
         ))
