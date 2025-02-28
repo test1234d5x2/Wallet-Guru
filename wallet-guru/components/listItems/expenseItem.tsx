@@ -6,12 +6,14 @@ import ListItemEditButton from './listItemEditButton';
 import ListItemDeleteButton from './listItemDeleteButton';
 import clearRouterHistory from '@/utils/clearRouterHistory';
 import deleteExpense from '@/utils/apiCalls/deleteExpense';
+import getMonthNameShort from '@/utils/getMonthNameShort';
 
 
 interface ExpenseItemProps {
     expense: Expense;
     token: string;
     categoryName: string;
+    buttons: boolean;
 }
 
 export default function ExpenseItem(props: ExpenseItemProps) {
@@ -45,20 +47,20 @@ export default function ExpenseItem(props: ExpenseItemProps) {
     return (
         <View style={styles.transactionContainer}>
             <View style={styles.transactionTextContainer}>
-                <View>
+                <View style={{rowGap: 2}}>
                     <Text style={styles.transactionName}>{props.expense.title}</Text>
                     <Text style={styles.transactionCategory}>Category: {props.categoryName}</Text>
+                    {!props.buttons && <Text style={styles.transactionCategory}>{`${props.expense.date.getDate()} ${getMonthNameShort(props.expense.date)} ${props.expense.date.getFullYear()}`}</Text>}
                 </View>
                 <Text style={[styles.transactionAmount, styles.expenseAmount]}>
                     -£{Math.abs(props.expense.amount).toFixed(2)}
                 </Text>
             </View>
 
-
-            <View style={styles.actionsContainer}>
+            {props.buttons && <View style={styles.actionsContainer}>
                 <ListItemEditButton id={props.expense.getID()} handleEdit={handleEdit} />
                 <ListItemDeleteButton id={props.expense.getID()} handleDelete={handleDeleteTransaction} />
-            </View>
+            </View>}
         </View>
     )
 }
@@ -70,7 +72,8 @@ const styles = StyleSheet.create({
     },
     transactionTextContainer: {
         flexDirection: "row",
-        justifyContent: "space-between"
+        justifyContent: "space-between",
+        alignItems: "center",
     },
     transactionName: {
         fontSize: 16,

@@ -16,8 +16,6 @@ import MonthlySpendingDisplay from '@/components/widgets/MonthlySpendingDisplay'
 import MonthSelector from '@/components/widgets/MonthSelector';
 
 
-// TODO: Change to month by month instead of user-chosen dates.
-
 export default function Analytics() {
     setPageTitle('Analytics Overview');
 

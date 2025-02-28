@@ -90,7 +90,7 @@ export default function Dashboard() {
         transactionItemsList.push(
             expenses.slice(0, 3).map((expense) => (
                 <React.Fragment key={uuid.v4() as string}>
-                    <ExpenseItem token={token} expense={expense} categoryName={categories.find((cat) => cat.getID() === expense.categoryID)?.name || ""} />
+                    <ExpenseItem token={token} expense={expense} categoryName={categories.find((cat) => cat.getID() === expense.categoryID)?.name || ""} buttons />
                     <View style={styles.dividerLine} />
                 </React.Fragment>
             ))
