@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Alert, ScrollView } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Alert, ScrollView, StatusBar } from 'react-native';
 import ExpenseDetailsInputs from '@/components/formComponents/expenseDetailsInputs';
 import setPageTitle from '@/components/pageTitle/setPageTitle';
 import TopBar from '@/components/topBars/topBar';
@@ -138,6 +138,7 @@ export default function EditExpense() {
     return (
         <ScrollView contentContainerStyle={styles.container}>
             <TopBar />
+            <StatusBar barStyle={"dark-content"} />
 
             <View style={styles.expenseForm}>
                 <ExpenseDetailsInputs

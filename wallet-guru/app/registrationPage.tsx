@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, TouchableOpacity, Alert } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, Alert, StatusBar } from "react-native";
 import { useState } from "react";
 import AuthenticationInputs from "@/components/formComponents/authenticationInputs";
 import setPageTitle from "@/components/pageTitle/setPageTitle";
@@ -81,6 +81,7 @@ export default function Register() {
 
     return (
         <View style={styles.container}>
+            <StatusBar barStyle={"dark-content"} />
             <AuthenticationInputs email={email} password={password} setEmail={setEmail} setPassword={setPassword} />
 
             {error ? (

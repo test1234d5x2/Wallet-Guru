@@ -2,7 +2,7 @@ import setPageTitle from '@/components/pageTitle/setPageTitle';
 import TopBar from '@/components/topBars/topBar';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Alert, StatusBar } from 'react-native';
 import clearRouterHistory from '@/utils/clearRouterHistory';
 import Income from '@/models/core/Income';
 import getToken from '@/utils/tokenAccess/getToken';
@@ -80,6 +80,7 @@ export default function IncomeDetailsScreen() {
 
     return (
         <View style={styles.mainContainer}>
+            <StatusBar barStyle={"dark-content"} />
             <TopBar />
             {!income ? "" : <View style={styles.container}>
                 <Text style={styles.detail}>Amount: £{income.amount.toFixed(2)}</Text>

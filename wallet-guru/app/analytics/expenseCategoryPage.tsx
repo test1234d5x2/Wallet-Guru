@@ -17,7 +17,7 @@ import getToken from "@/utils/tokenAccess/getToken";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
-import { Alert, Dimensions, ScrollView, View, Text, StyleSheet } from "react-native";
+import { Alert, Dimensions, ScrollView, View, Text, StyleSheet, StatusBar } from "react-native";
 import { PieChart } from "react-native-chart-kit";
 import * as Progress from 'react-native-progress';
 
@@ -141,6 +141,7 @@ export default function ExpenseCategoriesAnalytics() {
 
     return (
         <View style={styles.container}>
+            <StatusBar barStyle={"dark-content"} />
             <TopBar />
             <ScrollView contentContainerStyle={styles.mainContent} style={{ flex: 1 }} showsVerticalScrollIndicator={false} >
                 <View style={styles.categoryDistributionSection}>

@@ -2,7 +2,7 @@ import setPageTitle from "@/components/pageTitle/setPageTitle";
 import TopBar from "@/components/topBars/topBar";
 import { Ionicons } from "@expo/vector-icons";
 import React, { useEffect, useState } from "react";
-import { View, Text, TouchableOpacity, StyleSheet, Alert } from "react-native";
+import { View, Text, TouchableOpacity, StyleSheet, Alert, StatusBar } from "react-native";
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import clearRouterHistory from "@/utils/clearRouterHistory";
 import getToken from "@/utils/tokenAccess/getToken";
@@ -87,6 +87,7 @@ export default function UpdateGoal() {
     return (
         <View style={styles.container}>
             <TopBar />
+            <StatusBar barStyle={"dark-content"} />
 
             {!goal ? "": 
             <View style={{rowGap: 15}}>

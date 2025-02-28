@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, StyleSheet, Alert, ScrollView, Text, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, Alert, ScrollView, Text, TouchableOpacity, StatusBar } from 'react-native';
 import setPageTitle from '@/components/pageTitle/setPageTitle';
 import TopBar from '@/components/topBars/topBar';
 import uuid from 'react-native-uuid';
@@ -70,6 +70,7 @@ export default function ViewExpenseCategories() {
 
     return (
         <View style={styles.container}>
+            <StatusBar barStyle={"dark-content"} />
             <TopBar />
             <ScrollView contentContainerStyle={{ rowGap: 20 }} showsVerticalScrollIndicator={false}>
                 {displayElements.length > 0 ? displayElements :

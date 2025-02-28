@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, StyleSheet, ScrollView, TouchableOpacity, Alert, Text } from 'react-native';
+import { View, StyleSheet, ScrollView, TouchableOpacity, Alert, Text, StatusBar } from 'react-native';
 import setPageTitle from '@/components/pageTitle/setPageTitle';
 import TopBar from '@/components/topBars/topBar';
 import uuid from 'react-native-uuid';
@@ -60,6 +60,7 @@ export default function AllGoals() {
 
     return (
         <View style={styles.container}>
+            <StatusBar barStyle={"dark-content"} />
             <TopBar />
             <ScrollView contentContainerStyle={{ rowGap: 30 }}>
                 {displayElements.length > 0 ? displayElements :

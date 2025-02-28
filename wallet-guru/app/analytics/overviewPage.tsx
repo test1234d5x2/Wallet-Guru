@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, Dimensions, Alert, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, Dimensions, Alert, ScrollView, StatusBar } from 'react-native';
 import setPageTitle from '@/components/pageTitle/setPageTitle';
 import TopBar from '@/components/topBars/topBar';
 import { LineChart } from 'react-native-chart-kit';
@@ -80,6 +80,7 @@ export default function Analytics() {
 
     return (
         <View style={styles.container}>
+            <StatusBar barStyle={"dark-content"} />
             <TopBar />
 
             <ScrollView contentContainerStyle={{ rowGap: 20, paddingBottom: 40 }} style={{ flex: 1 }} showsVerticalScrollIndicator={false}>

@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, TouchableOpacity, Alert } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, Alert, StatusBar } from "react-native";
 import { useState } from "react";
 import { Link, useRouter } from "expo-router";
 import setPageTitle from "@/components/pageTitle/setPageTitle";
@@ -81,6 +81,7 @@ export default function Login() {
 
     return (
         <View style={styles.container}>
+            <StatusBar barStyle={"dark-content"} />
             <AuthenticationInputs email={email} password={password} setEmail={setEmail} setPassword={setPassword} />
 
             {error ? (

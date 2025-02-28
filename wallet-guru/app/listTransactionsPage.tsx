@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useRouter } from 'expo-router';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert, StatusBar } from 'react-native';
 import setPageTitle from '@/components/pageTitle/setPageTitle';
 import TopBar from '@/components/topBars/topBar';
 import uuid from 'react-native-uuid';
@@ -138,6 +138,7 @@ export default function ViewTransactionsList() {
     return (
         <View style={styles.container}>
             <TopBar />
+            <StatusBar barStyle={"dark-content"} />
 
             <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ rowGap: 30 }}>
 

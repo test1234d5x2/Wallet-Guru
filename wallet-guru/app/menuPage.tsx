@@ -1,4 +1,4 @@
-import { View, StyleSheet } from "react-native";
+import { View, StyleSheet, StatusBar } from "react-native";
 import MainMenu from "@/components/menuComponents/menu";
 import setPageTitle from "@/components/pageTitle/setPageTitle";
 
@@ -9,6 +9,7 @@ export default function Menu() {
 
     return (
         <View style={styles.container}>
+            <StatusBar barStyle={"dark-content"} />
             <MainMenu />
         </View>
     )

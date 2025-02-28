@@ -4,7 +4,7 @@ import clearRouterHistory from "@/utils/clearRouterHistory";
 import getToken from "@/utils/tokenAccess/getToken";
 import { useRouter } from "expo-router";
 import { useState } from "react";
-import { Alert, View, StyleSheet, Dimensions, Text, TouchableOpacity } from "react-native";
+import { Alert, View, StyleSheet, Dimensions, Text, TouchableOpacity, StatusBar } from "react-native";
 import TopBar from "@/components/topBars/topBar";
 import changeUserPassword from "@/utils/apiCalls/changeUserPassword";
 
@@ -67,6 +67,7 @@ export default function ChangePasswordPage() {
 
     return (
         <View style={styles.container}>
+            <StatusBar barStyle={"dark-content"} />
             <TopBar />
 
             <View style={styles.changePasswordForm}>

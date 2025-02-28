@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Alert, ScrollView } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Alert, ScrollView, StatusBar } from 'react-native';
 import setPageTitle from '@/components/pageTitle/setPageTitle';
 import TopBar from '@/components/topBars/topBar';
 import GoalDetailsInputs from '@/components/formComponents/goalDetailsInputs';
@@ -120,6 +120,7 @@ export default function AddGoal() {
 
     return (
         <ScrollView contentContainerStyle={styles.container}>
+            <StatusBar barStyle={"dark-content"} />
             <TopBar />
 
             <View style={styles.goalForm}>

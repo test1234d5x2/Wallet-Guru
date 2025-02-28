@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useRouter } from 'expo-router';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert, StatusBar } from 'react-native';
 import setPageTitle from '@/components/pageTitle/setPageTitle';
 import TopBar from '@/components/topBars/topBar';
 import uuid from 'react-native-uuid';
@@ -128,6 +128,7 @@ export default function ViewReccuringTransactionsList() {
 
     const transactionDisplayElements = combinedTransactions.map((item) => (
         <React.Fragment key={uuid.v4() as string}>
+            <StatusBar barStyle={"dark-content"} />
             <TouchableOpacity onPress={() => handleTransactionClick(item.data)}>
                 {item.type === 'recurringIncome' ? (
                     <RecurringIncomeItem token={token} recurringIncome={item.data as RecurringIncome} />

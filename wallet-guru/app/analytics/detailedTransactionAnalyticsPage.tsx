@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, Dimensions, Alert, ScrollView, TouchableOpacity, FlatList } from 'react-native';
+import { View, Text, StyleSheet, Dimensions, Alert, ScrollView, TouchableOpacity, FlatList, StatusBar } from 'react-native';
 import setPageTitle from '@/components/pageTitle/setPageTitle';
 import TopBar from '@/components/topBars/topBar';
 import { LineChart } from 'react-native-chart-kit';
@@ -110,6 +110,7 @@ export default function SpendTrendAndTopExpenses() {
     return (
         <View style={styles.container}>
             <TopBar />
+            <StatusBar barStyle={"dark-content"} />
             <ScrollView contentContainerStyle={styles.mainContent} showsVerticalScrollIndicator={false}>
                 <View style={styles.monthSelector}>
                     <MonthSelector month={month} setMonth={setMonth} />

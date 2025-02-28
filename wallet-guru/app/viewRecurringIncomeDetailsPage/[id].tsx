@@ -2,7 +2,7 @@ import setPageTitle from '@/components/pageTitle/setPageTitle';
 import TopBar from '@/components/topBars/topBar';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Alert, StatusBar } from 'react-native';
 import clearRouterHistory from '@/utils/clearRouterHistory';
 import getToken from '@/utils/tokenAccess/getToken';
 import RecurringIncome from '@/models/recurrenceModels/RecurringIncome';
@@ -78,6 +78,7 @@ export default function IncomeDetailsScreen() {
     return (
         <View style={styles.mainContainer}>
             <TopBar />
+            <StatusBar barStyle={"dark-content"} />
             {recurringIncome && (
                 <View style={styles.container}>
                     <Text style={styles.detail}>Amount: £{recurringIncome.amount.toFixed(2)}</Text>

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Alert, StatusBar } from 'react-native';
 import * as Progress from 'react-native-progress';
 import setPageTitle from '@/components/pageTitle/setPageTitle';
 import TopBar from '@/components/topBars/topBar';
@@ -80,6 +80,7 @@ export default function ViewGoalDetails() {
     return (
         <View style={styles.mainContainer}>
             <TopBar />
+            <StatusBar barStyle={"dark-content"} />
 
             {goal && (
                 <View style={styles.container}>

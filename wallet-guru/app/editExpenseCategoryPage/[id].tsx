@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Alert, StatusBar } from 'react-native';
 import ExpenseCategoryInputs from '@/components/formComponents/expenseCategoryInputs';
 import setPageTitle from '@/components/pageTitle/setPageTitle';
 import TopBar from '@/components/topBars/topBar';
@@ -147,6 +147,7 @@ export default function EditExpenseCategory() {
     return (
         <View style={styles.container}>
             <TopBar />
+            <StatusBar barStyle={"dark-content"} />
 
             <View style={styles.expenseCategoryForm}>
                 <ExpenseCategoryInputs
