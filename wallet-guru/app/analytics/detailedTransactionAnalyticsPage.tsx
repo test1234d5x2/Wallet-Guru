@@ -164,7 +164,7 @@ export default function SpendTrendAndTopExpenses() {
                     <View style={styles.topExpensesContainer}>
                         {topExpenses.map((expense) => (
                             <React.Fragment>
-                                <ExpenseItem expense={expense} token={token} categoryName={categories.find((cat) => cat.getID() === expense.categoryID)?.name || ""} buttons={false} />
+                                <ExpenseItem key={expense.getID()} expense={expense} token={token} categoryName={categories.find((cat) => cat.getID() === expense.categoryID)?.name || ""} buttons={false} />
                                 <View style={styles.dividerLine} />
                             </React.Fragment>
                         ))}

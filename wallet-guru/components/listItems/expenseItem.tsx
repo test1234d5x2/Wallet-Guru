@@ -6,7 +6,7 @@ import ListItemEditButton from './listItemEditButton';
 import ListItemDeleteButton from './listItemDeleteButton';
 import clearRouterHistory from '@/utils/clearRouterHistory';
 import deleteExpense from '@/utils/apiCalls/deleteExpense';
-import getMonthNameShort from '@/utils/getMonthNameShort';
+import getMonthName from '@/utils/getMonthName';
 
 
 interface ExpenseItemProps {
@@ -50,7 +50,7 @@ export default function ExpenseItem(props: ExpenseItemProps) {
                 <View style={{rowGap: 2}}>
                     <Text style={styles.transactionName}>{props.expense.title}</Text>
                     <Text style={styles.transactionCategory}>Category: {props.categoryName}</Text>
-                    {!props.buttons && <Text style={styles.transactionCategory}>{`${props.expense.date.getDate()} ${getMonthNameShort(props.expense.date)} ${props.expense.date.getFullYear()}`}</Text>}
+                    {!props.buttons && <Text style={styles.transactionCategory}>{`${props.expense.date.getDate()} ${getMonthName(props.expense.date, "short")} ${props.expense.date.getFullYear()}`}</Text>}
                 </View>
                 <Text style={[styles.transactionAmount, styles.expenseAmount]}>
                     -£{Math.abs(props.expense.amount).toFixed(2)}
