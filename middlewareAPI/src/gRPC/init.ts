@@ -24,6 +24,8 @@ const tlsCertPath = envOrDefault('TLS_CERTIFICATE_PATH', "");
 // Gateway peer endpoint.
 const peerEndpoint = envOrDefault('PEER_ENDPOINT', "");
 
+
+// Not necessary unless dealing with localhost.
 const peerHostAlias = envOrDefault('PEER_HOST_ALIAS', '');
 
 
@@ -87,9 +89,14 @@ export default class Connection {
     private async newGrpcConnection(): Promise<grpc.Client> {
         const tlsRootCert = await fs.readFile(tlsCertPath);
         const tlsCredentials = grpc.credentials.createSsl(tlsRootCert);
-        return new grpc.Client(peerEndpoint, tlsCredentials, {
-            'grpc.ssl_target_name_override': peerHostAlias,
-        });
+        if (peerHostAlias) {
+            return new grpc.Client(peerEndpoint, tlsCredentials, {
+                'grpc.ssl_target_name_override': peerHostAlias,
+            });
+        }
+        else {
+            return new grpc.Client(peerEndpoint, tlsCredentials)
+        }
     }
 
     private async newIdentity(): Promise<Identity> {
