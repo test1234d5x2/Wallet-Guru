@@ -10,35 +10,35 @@ import * as crypto from 'crypto';
 const mspId = envOrDefault('MSP_ID', 'PeerOrgMSP');
 
 // Path to crypto materials.
-const cryptoPath = envOrDefault('CRYPTO_PATH', path.resolve(__dirname, '..', '..', 'fabric-ca', 'peerorg'));
+const cryptoPath = envOrDefault('CRYPTO_PATH', "");
 
 // Path to user private key directory.
-const keyDirectoryPath = envOrDefault('KEY_DIRECTORY_PATH', path.resolve(cryptoPath, 'peer1', 'msp', 'keystore'));
+const keyDirectoryPath = envOrDefault('KEY_DIRECTORY_PATH', "");
 
 // Path to user certificate directory.
-const certDirectoryPath = envOrDefault('CERT_DIRECTORY_PATH', path.resolve(cryptoPath, 'peer1', 'msp', 'signcerts'));
+const certDirectoryPath = envOrDefault('CERTIFICATE_DIRECTORY_PATH', "");
 
 // Path to peer tls certificate.
-const tlsCertPath = envOrDefault('TLS_CERT_PATH', path.resolve(cryptoPath, 'peer1', 'tls-msp', 'tlscacerts', 'tls-0-0-0-0-7052.pem'));
+const tlsCertPath = envOrDefault('TLS_CERTIFICATE_PATH', "");
 
 // Gateway peer endpoint.
-const peerEndpoint = envOrDefault('PEER_ENDPOINT', 'localhost:7051');
+const peerEndpoint = envOrDefault('PEER_ENDPOINT', "");
 
-const peerHostAlias = envOrDefault('PEER_HOST_ALIAS', 'peer1-peerorg');
-
-
+const peerHostAlias = envOrDefault('PEER_HOST_ALIAS', '');
 
 
 
-const channelName = envOrDefault('CHANNEL_NAME', 'expensechannel');
-const chaincodeName = envOrDefault('CHAINCODE_NAME', 'basic');
-const userContractName = "UserContract";
-const expenseCategoryContractName = "ExpenseCategoryContract";
-const expenseContractName = "ExpenseContract";
-const incomeContractName = "IncomeContract";
-const goalConractName = "GoalContract";
-const recurringExpenseContractName = "RecurringExpenseContract";
-const recurringIncomeContractName = "RecurringIncomeContract";
+
+
+const channelName = envOrDefault('CHANNEL_NAME', '');
+const chaincodeName = envOrDefault('CHAINCODE_NAME', '');
+const userContractName = envOrDefault('USER_CONTRACT_NAME', "");
+const expenseCategoryContractName = envOrDefault('EXPENSE_CATEGORY_CONTRACT_NAME', "");
+const expenseContractName = envOrDefault('EXPENSE_CONTRACT_NAME', "");
+const incomeContractName = envOrDefault('INCOME_CONTRACT_NAME', "");
+const goalConractName = envOrDefault('GOAL_CONTRACT_NAME', "");
+const recurringExpenseContractName = envOrDefault('RECURRING_EXPENSE_CONTRACT_NAME', "");
+const recurringIncomeContractName = envOrDefault('RECURRING_INCOME_CONTRACT_NAME', "");
 
 
 
@@ -129,3 +129,23 @@ export default class Connection {
 function envOrDefault(key: string, defaultValue: string): string {
     return process.env[key] || defaultValue;
 }
+
+
+
+
+console.log("MSP ID:", mspId);
+console.log("Crypto Path:", cryptoPath);
+console.log("Key Directory Path:", keyDirectoryPath);
+console.log("Certificate Directory Path:", certDirectoryPath);
+console.log("TLS Certificate Path:", tlsCertPath);
+console.log("Peer Endpoint:", peerEndpoint);
+console.log("Peer Host Alias:", peerHostAlias);
+console.log("Channel Name:", channelName);
+console.log("Chaincode Name:", chaincodeName);
+console.log("User Contract Name:", userContractName);
+console.log("Expense Category Contract Name:", expenseCategoryContractName);
+console.log("Expense Contract Name:", expenseContractName);
+console.log("Income Contract Name:", incomeContractName);
+console.log("Goal Contract Name:", goalConractName);
+console.log("Recurring Expense Contract Name:", recurringExpenseContractName);
+console.log("Recurring Income Contract Name:", recurringIncomeContractName);
