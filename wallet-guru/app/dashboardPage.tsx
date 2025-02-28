@@ -20,6 +20,8 @@ import getStartOfMonth from '@/utils/getStartOfMonth';
 import getEndOfMonth from '@/utils/getEndOfMonth';
 import filterExpensesByCategory from '@/utils/filterExpensesByCategory';
 import MonthlySpendingDisplay from '@/components/widgets/MonthlySpendingDisplay';
+import Transaction from '@/models/core/Transaction';
+import sortTransactionsByDate from '@/utils/sortTransactionsByDate';
 
 
 export default function Dashboard() {
@@ -85,27 +87,26 @@ export default function Dashboard() {
         getCategories();
     }, [token, expenses]);
 
-    const transactionItemsList = [];
-    if (expenses.length > 0) {
-        transactionItemsList.push(
-            expenses.slice(0, 3).map((expense) => (
-                <React.Fragment key={uuid.v4() as string}>
-                    <ExpenseItem token={token} expense={expense} categoryName={categories.find((cat) => cat.getID() === expense.categoryID)?.name || ""} buttons />
-                    <View style={styles.dividerLine} />
-                </React.Fragment>
-            ))
-        )
-    }
-    if (incomes.length > 0) {
-        transactionItemsList.push(
-            incomes.slice(0, 3).map((income) => (
-                <React.Fragment key={uuid.v4() as string}>
-                    <IncomeItem token={token} income={income} />
-                    <View style={styles.dividerLine} />
-                </React.Fragment>
-            ))
-        )
-    }
+    const combinedTransactions = [...expenses.map(expense => ({ type: 'expense', data: expense })), ...incomes.map(income => ({ type: 'income', data: income }))];
+    combinedTransactions.sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
+    const transactionItemsList = combinedTransactions.slice(0, 3).map(item => (
+        <React.Fragment key={uuid.v4() as string}>
+            {item.type === 'expense' ? (
+                <ExpenseItem
+                    token={token}
+                    expense={item.data as Expense}
+                    categoryName={
+                        categories.find(cat => cat.getID() === (item.data as Expense).categoryID)?.name || ""
+                    }
+                    buttons
+                />
+            ) : (
+                <IncomeItem token={token} income={item.data as Income} />
+            )}
+            <View style={styles.dividerLine} />
+        </React.Fragment>
+    ));
+
 
     const expenseCategoryItemsList = [];
     if (categories.length > 0) {

@@ -94,39 +94,46 @@ export default function ViewTransactionsList() {
         router.navigate(transaction.getPageURL());
     };
 
-    const transactionDisplayElements = [];
-    let transactions = [];
     let tomorrow = new Date();
-    tomorrow = new Date(tomorrow.setDate(tomorrow.getDate() + 1))
+    tomorrow = new Date(tomorrow.setDate(tomorrow.getDate() + 1));
+
+    const combinedTransactions = [];
 
     if (selectedType !== TransactionType.EXPENSE) {
-        transactions = filterTransactionsByTimeWindow(incomes, filterStartDate === null ? new Date(1800, 0, 1) : filterStartDate, filterEndDate === null ? tomorrow : filterEndDate)
-        transactionDisplayElements.push(
-            ...transactions.map((income) => (
-                <React.Fragment key={uuid.v4() as string}>
-                    <TouchableOpacity onPress={() => handleTransactionClick(income)}>
-                        <IncomeItem token={token} income={income} />
-                    </TouchableOpacity>
-                    <View style={styles.divider} />
-                </React.Fragment>
-            )),
-        )
+        const filteredIncomes = filterTransactionsByTimeWindow(incomes, filterStartDate === null ? new Date(1800, 0, 1) : filterStartDate, filterEndDate === null ? tomorrow : filterEndDate);
+        combinedTransactions.push(...filteredIncomes.map(income => ({ type: 'income', data: income })));
     }
 
     if (selectedType !== TransactionType.INCOME) {
-        transactions = filterTransactionsByTimeWindow(expenses, filterStartDate === null ? new Date(1800, 0, 1) : filterStartDate, filterEndDate === null ? tomorrow : filterEndDate)
-        if (selectedCategory) { transactions = filterExpensesByCategory(transactions, selectedCategory) }
-        transactionDisplayElements.push(
-            ...transactions.map((expense) => (
-                <React.Fragment key={uuid.v4() as string}>
-                    <TouchableOpacity onPress={() => handleTransactionClick(expense)}>
-                        <ExpenseItem token={token} expense={expense} categoryName={categories.find((cat) => cat.getID() === expense.categoryID)?.name || ""} buttons />
-                    </TouchableOpacity>
-                    <View style={styles.divider} />
-                </React.Fragment>
-            )),
-        )
+        let filteredExpenses = filterTransactionsByTimeWindow(expenses, filterStartDate === null ? new Date(1800, 0, 1) : filterStartDate, filterEndDate === null ? tomorrow : filterEndDate);
+        if (selectedCategory) {
+            filteredExpenses = filterExpensesByCategory(filteredExpenses, selectedCategory);
+        }
+        combinedTransactions.push(...filteredExpenses.map(expense => ({ type: 'expense', data: expense })));
     }
+    
+    combinedTransactions.sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
+
+    const transactionDisplayElements = combinedTransactions.map(item => (
+        <React.Fragment key={uuid.v4() as string}>
+            <TouchableOpacity onPress={() => handleTransactionClick(item.data)}>
+                {item.type === 'income' ? (
+                    <IncomeItem token={token} income={item.data as Income} />
+                ) : (
+                    <ExpenseItem
+                        token={token}
+                        expense={item.data as Expense}
+                        categoryName={
+                            categories.find(cat => cat.getID() === (item.data as Expense).categoryID)?.name || ""
+                        }
+                        buttons
+                    />
+                )}
+            </TouchableOpacity>
+            <View style={styles.divider} />
+        </React.Fragment>
+    ));
+
 
     return (
         <View style={styles.container}>

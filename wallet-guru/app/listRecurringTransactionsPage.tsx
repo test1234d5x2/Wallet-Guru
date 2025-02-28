@@ -94,37 +94,55 @@ export default function ViewReccuringTransactionsList() {
         router.navigate(transaction.getPageURL());
     };
 
-    const transactionDisplayElements = [];
-    let transactions = [];
     let tomorrow = new Date();
-    tomorrow = new Date(tomorrow.setDate(tomorrow.getDate() + 1))
+    tomorrow = new Date(tomorrow.setDate(tomorrow.getDate() + 1));
 
-    transactions = filterTransactionsByTimeWindow(recurringIncomes, filterStartDate === null ? new Date(1800, 0, 1) : filterStartDate, filterEndDate === null ? tomorrow : filterEndDate)
-    transactionDisplayElements.push(
-        ...transactions.map((ri) => (
-            <React.Fragment key={uuid.v4() as string}>
-                <TouchableOpacity onPress={() => handleTransactionClick(ri)}>
-                    <RecurringIncomeItem token={token} recurringIncome={ri} />
-                </TouchableOpacity>
-                <View style={styles.divider} />
-            </React.Fragment>
-        )),
-    )
+    const combinedTransactions = [];
 
-    transactions = filterTransactionsByTimeWindow(recurringExpenses, filterStartDate === null ? new Date(1800, 0, 1) : filterStartDate, filterEndDate === null ? tomorrow : filterEndDate)
-    if (selectedCategory) {
-        transactions = filterExpensesByCategory(transactions, selectedCategory)
+    if (selectedType !== TransactionType.EXPENSE) {
+        const filteredRecurringIncomes = filterTransactionsByTimeWindow(
+            recurringIncomes,
+            filterStartDate === null ? new Date(1800, 0, 1) : filterStartDate,
+            filterEndDate === null ? tomorrow : filterEndDate
+        );
+        combinedTransactions.push(
+            ...filteredRecurringIncomes.map((ri) => ({ type: 'recurringIncome', data: ri }))
+        );
     }
-    transactionDisplayElements.push(
-        ...transactions.map((rx) => (
-            <React.Fragment key={uuid.v4() as string}>
-                <TouchableOpacity onPress={() => handleTransactionClick(rx)}>
-                    <RecurringExpenseItem categoryName={categories.find((cat) => cat.getID() === rx.categoryID)?.name || ""} token={token} recurringExpense={rx} />
-                </TouchableOpacity>
-                <View style={styles.divider} />
-            </React.Fragment>
-        )),
-    )
+
+    if (selectedType !== TransactionType.INCOME) {
+        let filteredRecurringExpenses = filterTransactionsByTimeWindow(
+            recurringExpenses,
+            filterStartDate === null ? new Date(1800, 0, 1) : filterStartDate,
+            filterEndDate === null ? tomorrow : filterEndDate
+        );
+        if (selectedCategory) {
+            filteredRecurringExpenses = filterExpensesByCategory(filteredRecurringExpenses, selectedCategory);
+        }
+        combinedTransactions.push(
+            ...filteredRecurringExpenses.map((rx) => ({ type: 'recurringExpense', data: rx }))
+        );
+    }
+
+    combinedTransactions.sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
+
+    const transactionDisplayElements = combinedTransactions.map((item) => (
+        <React.Fragment key={uuid.v4() as string}>
+            <TouchableOpacity onPress={() => handleTransactionClick(item.data)}>
+                {item.type === 'recurringIncome' ? (
+                    <RecurringIncomeItem token={token} recurringIncome={item.data as RecurringIncome} />
+                ) : (
+                    <RecurringExpenseItem
+                        token={token}
+                        recurringExpense={item.data as RecurringExpense}
+                        categoryName={categories.find((cat) => cat.getID() === (item.data as RecurringExpense).categoryID)?.name || ""}
+                    />
+                )}
+            </TouchableOpacity>
+            <View style={styles.divider} />
+        </React.Fragment>
+    ));
+
 
     return (
         <View style={styles.container}>
