@@ -10,7 +10,7 @@ import Connection from "../gRPC/init";
 class Registry {
     private static instance: Registry;
     private connection: Connection;
-    private initialized = false; 
+    private initialized = false;
 
     public expenseService!: ExpenseService;
     public incomeService!: IncomeService;
@@ -28,16 +28,15 @@ class Registry {
         if (!Registry.instance) {
             Registry.instance = new Registry();
         }
-        // Ensure that we run init() if not yet initialized.
+        
         if (!Registry.instance.initialized) {
             await Registry.instance.init();
-            Registry.instance.initialized = true;
         }
         return Registry.instance;
     }
 
     private async init(): Promise<void> {
-        await this.connection.connect();
+        this.initialized = await this.connection.connect();
 
         const userContract = this.connection.getUserContract();
         const expenseContract = this.connection.getExpenseContract();
