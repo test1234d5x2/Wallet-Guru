@@ -1,29 +1,16 @@
 import * as grpc from '@grpc/grpc-js';
 import { connect, Gateway, hash, Identity, Signer, signers, Network, Contract } from '@hyperledger/fabric-gateway';
-import { promises as fs } from 'fs';
+import { promises as fs, readFileSync } from 'fs';
 import * as path from 'path';
 import * as crypto from 'crypto';
 
 
 
+// TODO: Find out a way to peer 2 to be the connection instead of peer 1 if peer 1 is disconnected.
+
+
 
 const mspId = envOrDefault('MSP_ID', 'PeerOrgMSP');
-
-// Path to crypto materials.
-const cryptoPath = envOrDefault('CRYPTO_PATH', "");
-
-// Path to user private key directory.
-const keyDirectoryPath = envOrDefault('KEY_DIRECTORY_PATH', "");
-
-// Path to user certificate directory.
-const certDirectoryPath = envOrDefault('CERTIFICATE_DIRECTORY_PATH', "");
-
-// Path to peer tls certificate.
-const tlsCertPath = envOrDefault('TLS_CERTIFICATE_PATH', "");
-
-// Gateway peer endpoint.
-const peerEndpoint = envOrDefault('PEER_ENDPOINT', "");
-
 
 // Not necessary unless dealing with localhost.
 const peerHostAlias = envOrDefault('PEER_HOST_ALIAS', '');
@@ -44,6 +31,13 @@ const recurringIncomeContractName = envOrDefault('RECURRING_INCOME_CONTRACT_NAME
 
 
 
+interface PeerConfig {
+    url: string;
+    tlsCertPath: string;
+    keyDirectoryPath: string;
+    certDirectoryPath: string;
+}
+
 
 export default class Connection {
     private static instance: Connection;
@@ -61,32 +55,124 @@ export default class Connection {
         return Connection.instance;
     }
 
-    public async connect() {
-        this.client = await this.newGrpcConnection();
-        this.gateway = connect({
-            client: this.client,
-            identity: await this.newIdentity(),
-            signer: await this.newSigner(),
-            hash: hash.sha256,
-            // Default timeouts for different gRPC calls
-            evaluateOptions: () => {
-                return { deadline: Date.now() + 5000 }; // 5 seconds
-            },
-            endorseOptions: () => {
-                return { deadline: Date.now() + 15000 }; // 15 seconds
-            },
-            submitOptions: () => {
-                return { deadline: Date.now() + 5000 }; // 5 seconds
-            },
-            commitStatusOptions: () => {
-                return { deadline: Date.now() + 60000 }; // 1 minute
-            },
+    public async connect(): Promise<boolean> {
+        const peers: PeerConfig[] = [];
+
+        for (let x = 1; x <= 2; x++) {
+            peers.push({
+                url: envOrDefault(`PEER${x}_ENDPOINT`, ""),
+                tlsCertPath: envOrDefault(`PEER${x}_TLS_CERTIFICATE_PATH`, ""),
+                keyDirectoryPath: envOrDefault(`PEER${x}_KEY_DIRECTORY_PATH`, ""),
+                certDirectoryPath: envOrDefault(`PEER${x}_CERTIFICATE_DIRECTORY_PATH`, ""),
+            })
+        }
+
+        const connectionTimeout = 5000; // 5 seconds timeout for each peer
+
+        try {
+            await promiseAny(peers.map(peer => this.tryConnectPeer(peer, connectionTimeout)));
+            console.log("Successfully connected to a peer.");
+            return true;
+        } catch (error) {
+            console.error("Unable to connect to any peer.");
+            console.error(`Last error: ${(error as Error).message}`);
+            return false;
+        }
+
+
+        // for (const peer of peers) {
+        //     console.log(peer)
+        //     try {
+        //         this.client = await this.newGrpcConnection(peer.tlsCertPath, peer.url);
+
+
+
+        //         this.gateway = connect({
+        //             client: this.client,
+        //             identity: await this.newIdentity(peer.certDirectoryPath),
+        //             signer: await this.newSigner(peer.keyDirectoryPath),
+        //             evaluateOptions: () => {
+        //                 return { deadline: Date.now() + 5000 }; // 5 seconds
+        //             },
+        //             endorseOptions: () => {
+        //                 return { deadline: Date.now() + 15000 }; // 15 seconds
+        //             },
+        //             submitOptions: () => {
+        //                 return { deadline: Date.now() + 5000 }; // 5 seconds
+        //             },
+        //             commitStatusOptions: () => {
+        //                 return { deadline: Date.now() + 60000 }; // 1 minute
+        //             },
+        //         });
+        //         this.network = this.gateway.getNetwork(channelName);
+        //         console.log("Ran")
+        //         return true
+        //     } catch (err) {
+        //         console.log(err)
+        //     }
+        // }
+        // return false
+    }
+
+    private async tryConnectPeer(peer: PeerConfig, connectionTimeout: number): Promise<boolean> {
+        const tlsRootCert = readFileSync(peer.tlsCertPath);
+        const endpoint = peer.url.replace('grpcs://', '');
+        const client = new grpc.Client(endpoint, grpc.credentials.createSsl(tlsRootCert));
+
+        return await new Promise((resolve, reject) => {
+            const timeoutId = setTimeout(() => {
+                client.close();
+                reject(new Error(`Timeout: Failed to connect to ${peer.url} within ${connectionTimeout / 1000} seconds`));
+            }, connectionTimeout);
+
+            client.waitForReady(Date.now() + connectionTimeout, async (err) => {
+                clearTimeout(timeoutId);
+                if (err) {
+                    reject(new Error(`Initial connection to ${peer.url} failed: ${err.message}`));
+                } else {
+                    try {
+                        this.gateway = connect({
+                            client,
+                            identity: await this.newIdentity(peer.certDirectoryPath),
+                            signer: await this.newSigner(peer.keyDirectoryPath),
+                        });
+                        this.network = this.gateway.getNetwork(channelName);
+                        resolve(true);
+                    } catch (err) {
+                        reject(new Error(`Failed to connect gateway for peer at ${peer.url}: ${(err as Error).message}`));
+                    }
+                }
+            });
         });
-        this.network = this.gateway.getNetwork(channelName);
     }
 
 
-    private async newGrpcConnection(): Promise<grpc.Client> {
+    // public async connect() {
+    //     this.client = await this.newGrpcConnection();
+    //     this.gateway = connect({
+    //         client: this.client,
+    //         identity: await this.newIdentity(),
+    //         signer: await this.newSigner(),
+    //         hash: hash.sha256,
+    //         // Default timeouts for different gRPC calls
+    //         evaluateOptions: () => {
+    //             return { deadline: Date.now() + 5000 }; // 5 seconds
+    //         },
+    //         endorseOptions: () => {
+    //             return { deadline: Date.now() + 15000 }; // 15 seconds
+    //         },
+    //         submitOptions: () => {
+    //             return { deadline: Date.now() + 5000 }; // 5 seconds
+    //         },
+    //         commitStatusOptions: () => {
+    //             return { deadline: Date.now() + 60000 }; // 1 minute
+    //         },
+    //     });
+    //     this.network = this.gateway.getNetwork(channelName);
+    // }
+
+
+    private async newGrpcConnection(tlsCertPath: string, peerEndpoint: string): Promise<grpc.Client> {
         const tlsRootCert = await fs.readFile(tlsCertPath);
         const tlsCredentials = grpc.credentials.createSsl(tlsRootCert);
         if (peerHostAlias) {
@@ -99,7 +185,7 @@ export default class Connection {
         }
     }
 
-    private async newIdentity(): Promise<Identity> {
+    private async newIdentity(certDirectoryPath: string): Promise<Identity> {
         const certPath = await this.getFirstDirFileName(certDirectoryPath);
         const credentials = await fs.readFile(certPath);
         return { mspId, credentials };
@@ -114,7 +200,7 @@ export default class Connection {
         return path.join(dirPath, file);
     }
 
-    private async newSigner(): Promise<Signer> {
+    private async newSigner(keyDirectoryPath: string): Promise<Signer> {
         const keyPath = await this.getFirstDirFileName(keyDirectoryPath);
         const privateKeyPem = await fs.readFile(keyPath);
         const privateKey = crypto.createPrivateKey(privateKeyPem);
@@ -138,14 +224,26 @@ function envOrDefault(key: string, defaultValue: string): string {
 }
 
 
+function promiseAny<T>(promises: Promise<T>[]): Promise<T> {
+    return new Promise((resolve, reject) => {
+        const errors: any[] = [];
+        let pending = promises.length;
+        promises.forEach((p, index) => {
+            Promise.resolve(p)
+                .then(resolve)
+                .catch(error => {
+                    errors[index] = error;
+                    pending--;
+                    if (pending === 0) {
+                        reject(new Error('All promises were rejected'));
+                    }
+                });
+        });
+    });
+}
 
 
 console.log("MSP ID:", mspId);
-console.log("Crypto Path:", cryptoPath);
-console.log("Key Directory Path:", keyDirectoryPath);
-console.log("Certificate Directory Path:", certDirectoryPath);
-console.log("TLS Certificate Path:", tlsCertPath);
-console.log("Peer Endpoint:", peerEndpoint);
 console.log("Peer Host Alias:", peerHostAlias);
 console.log("Channel Name:", channelName);
 console.log("Chaincode Name:", chaincodeName);
