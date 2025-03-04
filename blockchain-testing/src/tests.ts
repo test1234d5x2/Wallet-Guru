@@ -10,6 +10,10 @@ import * as crypto from 'crypto';
 import { promises as fs } from 'fs';
 import * as path from 'path';
 import { TextDecoder } from 'util';
+import dotenv from "dotenv";
+
+dotenv.config();
+
 
 const channelName = envOrDefault('CHANNEL_NAME', '');
 const chaincodeName = envOrDefault('CHAINCODE_NAME', '');
@@ -21,10 +25,9 @@ const goalConractName = "GoalContract";
 const recurringExpenseContractName = "RecurringExpenseContract";
 const recurringIncomeContractName = "RecurringIncomeContract";
 const mspId = envOrDefault('MSP_ID', '');
-const cryptoPath = envOrDefault('CRYPTO_PATH', '');
 const keyDirectoryPath = envOrDefault('KEY_DIRECTORY_PATH', '');
-const certDirectoryPath = envOrDefault('CERT_DIRECTORY_PATH', '');
-const tlsCertPath = envOrDefault('TLS_CERT_PATH', '');
+const certDirectoryPath = envOrDefault('CERTIFICATE_DIRECTORY_PATH', '');
+const tlsCertPath = envOrDefault('TLS_CERTIFICATE_PATH', '');
 const peerEndpoint = envOrDefault('PEER_ENDPOINT', '');
 const peerHostAlias = envOrDefault('PEER_HOST_ALIAS', '');
 const utf8Decoder = new TextDecoder();
@@ -189,6 +192,9 @@ main().catch((error: unknown) => {
 async function newGrpcConnection(): Promise<grpc.Client> {
     const tlsRootCert = await fs.readFile(tlsCertPath);
     const tlsCredentials = grpc.credentials.createSsl(tlsRootCert);
+    if (!peerHostAlias) {
+        return new grpc.Client(peerEndpoint, tlsCredentials);
+    }
     return new grpc.Client(peerEndpoint, tlsCredentials, {
         'grpc.ssl_target_name_override': peerHostAlias,
     });
@@ -225,7 +231,6 @@ function displayInputParameters(): void {
     console.log(`chaincodeName:     ${chaincodeName}`);
     console.log(`userContractName:  ${userContractName}`);
     console.log(`mspId:             ${mspId}`);
-    console.log(`cryptoPath:        ${cryptoPath}`);
     console.log(`keyDirectoryPath:  ${keyDirectoryPath}`);
     console.log(`certDirectoryPath: ${certDirectoryPath}`);
     console.log(`tlsCertPath:       ${tlsCertPath}`);
