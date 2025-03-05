@@ -1,4 +1,5 @@
 import ExpenseCategory from "../models/core/ExpenseCategory";
+import testRecurrenceRuleDetails from "./recurrenceRuleTests";
 
 
 export function testExpenseCategoryDetails(data: ExpenseCategory, expected: ExpenseCategory): boolean {
@@ -12,6 +13,12 @@ export function testExpenseCategoryDetails(data: ExpenseCategory, expected: Expe
 
     console.log(`User ID: ${data.getUserID()} === ${expected.getUserID()}`)
 
+    if (data.getUserID() !== expected.getUserID()) {
+        result = false;
+    }
+
+    console.log(`Name: ${data.name} === ${expected.name}`)
+
     if (data.name !== expected.name) {
         result = false;
     }
@@ -22,11 +29,8 @@ export function testExpenseCategoryDetails(data: ExpenseCategory, expected: Expe
         result = false;
     }
 
-    console.log(`Recurrence Rule: ${data.recurrenceRule.toJSON()} === ${expected.recurrenceRule.toJSON()}`)
-
-    if (data.recurrenceRule.toJSON() !== expected.recurrenceRule.toJSON()) {
-        result = false;
-    }
+    console.log("Recurrence Rule Tests:")
+    result = testRecurrenceRuleDetails(data.recurrenceRule, expected.recurrenceRule);
 
     return result
 }

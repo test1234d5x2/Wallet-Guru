@@ -62,8 +62,7 @@ export class RecurringIncomeContract extends Contract {
         }
 
         // Validate required fields, including the id provided by the client
-        if (!incomeInput.id || !incomeInput.userID || incomeInput.amount === undefined || !incomeInput.title ||
-            !incomeInput.date || !incomeInput.recurrenceRule) {
+        if (!incomeInput.id || !incomeInput.userID || incomeInput.amount === undefined || !incomeInput.title || !incomeInput.date || !incomeInput.recurrenceRule) {
             throw new Error('Missing required fields: id, userID, title, amount, notes, date, recurrenceRule');
         }
 
@@ -77,7 +76,7 @@ export class RecurringIncomeContract extends Contract {
             title: incomeInput.title,
             userID: incomeInput.userID,
             amount: amountNum,
-            notes: incomeInput.notes || undefined,
+            notes: incomeInput.notes,
             date: incomeInput.date,
             recurrenceRule: incomeInput.recurrenceRule,
         };
@@ -117,8 +116,7 @@ export class RecurringIncomeContract extends Contract {
         }
 
         // Validate required fields for update
-        if (!incomeInput.id || !incomeInput.userID || !incomeInput.title ||
-            incomeInput.amount === undefined || !incomeInput.date || !incomeInput.recurrenceRule) {
+        if (!incomeInput.id || !incomeInput.userID || !incomeInput.title ||incomeInput.amount === undefined || !incomeInput.date || !incomeInput.recurrenceRule) {
             throw new Error('Missing required fields: id, userID, title, amount, notes, date, recurrenceRule');
         }
 
@@ -136,7 +134,7 @@ export class RecurringIncomeContract extends Contract {
 
         storedIncome.title = incomeInput.title;
         storedIncome.amount = amountNum;
-        storedIncome.notes = incomeInput.notes || undefined;
+        storedIncome.notes = incomeInput.notes;
         storedIncome.date = incomeInput.date;
         storedIncome.recurrenceRule = incomeInput.recurrenceRule;
 

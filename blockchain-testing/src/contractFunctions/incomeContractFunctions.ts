@@ -7,15 +7,12 @@ const utf8Decoder = new TextDecoder();
 
 
 export async function createIncome(contract: Contract, i: Income): Promise<void> {
-    console.log('\n--> Submit Transaction: Create Income,');
-
     try {
         await contract.submitTransaction(
             "createIncome",
             JSON.stringify(i.toJSON())
         )
 
-        console.log("Created Income")
     } catch (err: any) {
         console.log(err)
     }
@@ -24,15 +21,12 @@ export async function createIncome(contract: Contract, i: Income): Promise<void>
 }
 
 export async function updateIncome(contract: Contract, i: Income) {
-    console.log('\n--> Submit Transaction: Update Income,');
-
     try {
         await contract.submitTransaction(
             "updateIncome",
             JSON.stringify(i.toJSON())
         )
 
-        console.log("Updated Income")
     } catch (err: any) {
         console.log(err)
     }
@@ -41,9 +35,7 @@ export async function updateIncome(contract: Contract, i: Income) {
 }
 
 
-export async function deleteIncome(contract: Contract, userID: string, incomeID: string) {
-    console.log('\n--> Submit Transaction: Delete Income,');
-
+export async function deleteIncome(contract: Contract, userID: string, incomeID: string): Promise<boolean> {
     try {
         await contract.submitTransaction(
             "deleteIncome",
@@ -51,20 +43,18 @@ export async function deleteIncome(contract: Contract, userID: string, incomeID:
             incomeID
         )
 
-        console.log("Deleted Income")
+        return true
     } catch (err: any) {
         console.log(err)
     }
 
-    return
+    return false
 }
 
 
 
 
 export async function listIncomesByUser(contract: Contract, userID: string): Promise<Income[]> {
-    console.log('\n--> Evaluate Transaction: List Income By User,');
-
     try {
         const resultBytes = await contract.evaluateTransaction(
             "listIncomesByUser",
@@ -73,12 +63,9 @@ export async function listIncomesByUser(contract: Contract, userID: string): Pro
 
         const resultJson = utf8Decoder.decode(resultBytes);
         const result = JSON.parse(resultJson);
-        const incomes: Income[] = result.incomes;
-
-        console.log(incomes)
+        const incomes: Income[] = result.incomes.map((i: any) => new Income(i.userID, i.title, i.amount, new Date(i.date), i.notes, i.id));
         return incomes
     } catch (err) {
-        console.log("Failed To Get Incomes")
         console.log(err)
     }
 
@@ -87,8 +74,6 @@ export async function listIncomesByUser(contract: Contract, userID: string): Pro
 
 
 export async function getIncomeByID(contract: Contract, userID: string, id: string): Promise<Income | undefined> {
-    console.log('\n--> Evaluate Transaction: Find Income By ID,');
-
     try {
         const resultBytes = await contract.evaluateTransaction(
             "getIncomeByID",
@@ -97,11 +82,9 @@ export async function getIncomeByID(contract: Contract, userID: string, id: stri
         )
 
         const resultJson = utf8Decoder.decode(resultBytes);
-        const result = JSON.parse(resultJson);
-        console.log(result)
-        return result;
+        const data = JSON.parse(resultJson);
+        return new Income(data.userID, data.title, data.amount, new Date(data.date), data.notes, data.id);
     } catch (err) {
-        console.log("Failed To Get Income");
         console.log(err)
     }
 

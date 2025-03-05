@@ -27,7 +27,7 @@ def combine_files_from_directories(base_folder, directories, output_file):
 
 if __name__ == "__main__":
     base_folder = os.path.dirname(os.path.abspath(__file__))
-    directories = ["wallet-guru", "middlewareAPI", "middlewareAPINonPersistent", "recurrenceRuleTest"]
+    directories = ["wallet-guru", "middlewareAPI", "middlewareAPINonPersistent", "recurrenceRuleTest", "blockchain-testing"]
     output_file = input("Enter the output file name (e.g., combined_output.txt): ").strip()
 
     combine_files_from_directories(base_folder, directories, output_file)

@@ -102,7 +102,7 @@ class ExpenseService {
 
             const resultJson = utf8Decoder.decode(resultBytes);
             const data: any = JSON.parse(resultJson);
-            return new Expense(data.userID, data.title, data.amount, new Date(data.date), data.notes, data.categoryID, data.receipt, data.id);;
+            return new Expense(data.userID, data.title, data.amount, new Date(data.date), data.notes, data.categoryID, data.receipt, data.id);
         } catch (err) {
             console.log(err)
         }

@@ -22,9 +22,9 @@ export function testUserDetails(data: User, expected: User): boolean {
         result = false;
     }
 
-    console.log(`Date Joined: ${data.getDateJoined()} === ${expected.getDateJoined()}`)
+    console.log(`Date Joined: ${data.getDateJoined().toISOString()} === ${expected.getDateJoined().toISOString()}`)
 
-    if (data.getDateJoined().toISOString() !== expected.getDateJoined().toISOString()) {
+    if (data.getDateJoined().getTime() !== expected.getDateJoined().getTime()) {
         result = false;
     }
 

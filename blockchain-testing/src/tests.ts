@@ -1,9 +1,3 @@
-/*
- * Copyright IBM Corp. All Rights Reserved.
- *
- * SPDX-License-Identifier: Apache-2.0
- */
-
 import * as grpc from '@grpc/grpc-js';
 import { connect, Contract, hash, Identity, Signer, signers } from '@hyperledger/fabric-gateway';
 import * as crypto from 'crypto';
@@ -22,14 +16,19 @@ import GoalStatus from './enums/GoalStatus';
 import User from './models/core/User';
 import UserStatus from './enums/UserStatus';
 import { createNewUser, findByID, deleteUser, loginUser, userExists, changePassword } from './contractFunctions/userContractFunctions';
-import { createExpenseCategory, deleteExpenseCategory, getExpenseCategoryByID } from './contractFunctions/expenseCategoryContractFunctions';
-import { deleteExpense } from './contractFunctions/expenseContractFunctions';
-import { deleteIncome } from './contractFunctions/incomeContractFunctions';
-import { deleteGoal } from './contractFunctions/goalContractFunctions';
-import { deleteRecurringExpense } from './contractFunctions/recurringExpenseContractFunctions';
-import { deleteRecurringIncome } from './contractFunctions/recurringIncomeContractFunctions';
+import { createExpenseCategory, deleteExpenseCategory, getExpenseCategoryByID, listExpenseCategoriesByUser, updateExpenseCategory } from './contractFunctions/expenseCategoryContractFunctions';
+import { createExpense, deleteExpense, getExpenseByID, listExpensesByUser, updateExpense } from './contractFunctions/expenseContractFunctions';
+import { createIncome, deleteIncome, getIncomeByID, listIncomesByUser, updateIncome } from './contractFunctions/incomeContractFunctions';
+import { createGoal, deleteGoal, getGoalByID, listGoalsByUser, updateGoal } from './contractFunctions/goalContractFunctions';
+import { createRecurringExpense, deleteRecurringExpense, getRecurringExpenseByID, listRecurringExpensesByUser, updateRecurringExpense } from './contractFunctions/recurringExpenseContractFunctions';
+import { createRecurringIncome, deleteRecurringIncome, getRecurringIncomeByID, listRecurringIncomesByUser, updateRecurringIncome } from './contractFunctions/recurringIncomeContractFunctions';
 import { testUserDetails } from './tests/userTests';
 import { testExpenseCategoryDetails } from './tests/expenseCategoryTests';
+import { testExpenseDetails } from './tests/expenseTests';
+import { testIncomeDetails } from './tests/incomeTests';
+import { testGoalDetails } from './tests/goalTests';
+import { testRecurrenceExpenseDetails } from './tests/recurringExpenseTests';
+import { testRecurringIncomeDetails } from './tests/recurringIncomeTests';
 
 
 dotenv.config();
@@ -65,7 +64,12 @@ const recurringIncome = new RecurringIncome(userID, "title", 50, new Date(), "",
 
 
 
-async function main(): Promise<void> {
+let numberOfTests = 0;
+let passedCount = 0;
+
+
+
+async function testSuite(): Promise<void> {
     displayInputParameters();
 
     const client = await newGrpcConnection();
@@ -110,12 +114,19 @@ async function main(): Promise<void> {
         if (!retrievedUser) {
             console.log("************* findByID Failed *************")
             await bringDown(userContract, expenseContract, expenseCategoryContract, incomeContract, goalContract, recurringIncomeContract, recurringExpenseContract);
+            numberOfTests++
+            displayResults(numberOfTests, passedCount)
             return
         }
         else {
             console.log()
             console.log("Testing Create User:")
-            console.log("Result:", testUserDetails(retrievedUser, user) ? "Pass" : "Fail")
+            if (testUserDetails(retrievedUser, user)) {
+                passedCount++
+                console.log("Result: Pass")
+            }
+            else console.log("Result: Fail")
+            numberOfTests++;
             console.log()
         }
 
@@ -123,19 +134,31 @@ async function main(): Promise<void> {
         if (!loginUserID) {
             console.log("************* loginUser Failed *************")
             await bringDown(userContract, expenseContract, expenseCategoryContract, incomeContract, goalContract, recurringIncomeContract, recurringExpenseContract);
+            numberOfTests++
+            displayResults(numberOfTests, passedCount)
             return
         }
         else {
             console.log()
             console.log("Testing Login User:")
-            console.log("Result:", loginUserID === user.getUserID() ? "Pass" : "Fail")
+            if (loginUserID === user.getUserID()) {
+                passedCount++
+                console.log("Result: Pass")
+            }
+            else console.log("Result: Fail")
+            numberOfTests++
             console.log()
         }
 
         const userExistsValue = await userExists(userContract, user.getEmail());
         console.log()
         console.log("Testing User Exists:")
-        console.log("Result:", userExistsValue)
+        if (userExistsValue) {
+            console.log("Result: Pass")
+            passedCount++
+        }
+        else console.log("Result: Fail")
+        numberOfTests++
         console.log()
 
 
@@ -146,14 +169,24 @@ async function main(): Promise<void> {
         if (!retrievedUser) {
             console.log("************* findByID Failed *************")
             await bringDown(userContract, expenseContract, expenseCategoryContract, incomeContract, goalContract, recurringIncomeContract, recurringExpenseContract);
+            numberOfTests++
+            displayResults(numberOfTests, passedCount)
             return
         }
         else {
             console.log()
             console.log("Testing Change Password:")
-            console.log("Result:", testUserDetails(retrievedUser, user) ? "Pass" : "Fail")
+            if (testUserDetails(retrievedUser, user)) {
+                passedCount++
+                console.log("Result: Pass")
+            }
+            else console.log("Result: Fail")
+            numberOfTests++;
             console.log()
         }
+
+
+
 
 
 
@@ -165,82 +198,496 @@ async function main(): Promise<void> {
         if (!retrievedExpenseCategory) {
             console.log("************* getExpenseCategoryByID Failed *************")
             await bringDown(userContract, expenseContract, expenseCategoryContract, incomeContract, goalContract, recurringIncomeContract, recurringExpenseContract);
+            numberOfTests++
+            displayResults(numberOfTests, passedCount)
             return
         }
         else {
             console.log()
-            console.log("Testing Create User:")
-            console.log("Result:", testExpenseCategoryDetails(retrievedExpenseCategory, expenseCategory) ? "Pass" : "Fail")
+            console.log("Testing Create Expense Category:")
+            if (testExpenseCategoryDetails(retrievedExpenseCategory, expenseCategory)) {
+                passedCount++
+                console.log("Result: Pass")
+            }
+            else console.log("Result: Fail")
+            numberOfTests++;
             console.log()
         }
 
-        // expenseCategory.monthlyBudget = 300;
-        // await updateExpenseCategory(expenseCategoryContract, expenseCategory)
+        expenseCategory.monthlyBudget = 300;
+        await updateExpenseCategory(expenseCategoryContract, expenseCategory)
+        retrievedExpenseCategory = await getExpenseCategoryByID(expenseCategoryContract, user.getUserID(), expenseCategory.getID());
+        if (!retrievedExpenseCategory) {
+            console.log("************* getExpenseCategoryByID Failed *************")
+            await bringDown(userContract, expenseContract, expenseCategoryContract, incomeContract, goalContract, recurringIncomeContract, recurringExpenseContract);
+            numberOfTests++
+            displayResults(numberOfTests, passedCount)
+            return
+        }
+        else {
+            console.log()
+            console.log("Testing Update Expense Category:")
+            if (testExpenseCategoryDetails(retrievedExpenseCategory, expenseCategory)) {
+                passedCount++
+                console.log("Result: Pass")
+            }
+            else console.log("Result: Fail")
+            numberOfTests++;
+            console.log()
+        }
 
-        // await listExpenseCategoriesByUser(expenseCategoryContract, userID)
-
-        // await getExpenseCategoryByID(expenseCategoryContract, expenseCategory.getUserID(), expenseCategory.getID());
-
-        // await createExpense(expenseContract, expense);
-
-        // expense.amount = 100
-        // await updateExpense(expenseContract, expense)
-
-        // await listExpensesByUser(expenseContract, userID);
-
-        // await getExpenseByID(expenseContract, userID, expense.getID())
-
-
-
-        // await createIncome(incomeContract, income);
-
-        // income.amount = 100;
-        // await updateIncome(incomeContract, income);
-
-        // await listIncomesByUser(incomeContract, userID)
-
-        // await getIncomeByID(incomeContract, userID, income.getID())
-
-
-
-
-        // await createGoal(goalContract, goal)
-
-        // await updateGoal(goalContract, userID, goal.getID(), 500);
-
-        // await listGoalsByUser(goalContract, userID);
-
-        // await getGoalByID(goalContract, userID, goal.getID());
-
-
-        // await createRecurringExpense(recurringExpenseContract, recurringExpense);
-
-        // recurringExpense.amount = 1000
-        // await updateRecurringExpense(recurringExpenseContract, recurringExpense);
-
-        // await listRecurringExpensesByUser(recurringExpenseContract, userID);
-
-        // await getRecurringExpenseByID(recurringExpenseContract, userID, recurringExpense.getID());
-
-        // await listAllRecurringExpenses(recurringExpenseContract);
+        let a = await listExpenseCategoriesByUser(expenseCategoryContract, userID)
+        if (a.length <= 0) {
+            console.log("************* listExpenseCategoriesByUser Failed *************")
+            await bringDown(userContract, expenseContract, expenseCategoryContract, incomeContract, goalContract, recurringIncomeContract, recurringExpenseContract);
+            numberOfTests++
+            displayResults(numberOfTests, passedCount)
+            return
+        }
+        else {
+            console.log()
+            console.log("Testing List Expense Category By User:")
+            if (testExpenseCategoryDetails(a[0] as ExpenseCategory, expenseCategory)) {
+                passedCount++
+                console.log("Result: Pass")
+            }
+            else console.log("Result: Fail")
+            numberOfTests++;
+            console.log()
+        }
 
 
 
 
 
-        // await createRecurringIncome(recurringIncomeContract, recurringIncome);
 
-        // recurringIncome.amount = 10000;
-        // await updateRecurringIncome(recurringIncomeContract, recurringIncome);
+        await createExpense(expenseContract, expense);
+        let retrievedExpense = await getExpenseByID(expenseContract, expense.getUserID(), expense.getID());
+        if (!retrievedExpense) {
+            console.log("************* getExpenseByID Failed *************")
+            await bringDown(userContract, expenseContract, expenseCategoryContract, incomeContract, goalContract, recurringIncomeContract, recurringExpenseContract)
+            numberOfTests++
+            displayResults(numberOfTests, passedCount)
+            return
+        }
+        else {
+            console.log()
+            console.log("Testing Create Expense:")
+            if (testExpenseDetails(retrievedExpense, expense)) {
+                passedCount++
+                console.log("Result: Pass")
+            }
+            else console.log("Result: Fail")
+            numberOfTests++;
+            console.log()
+        }
 
-        // await listRecurringIncomesByUser(recurringIncomeContract, userID);
 
-        // await getRecurringIncomeByID(recurringIncomeContract, userID, recurringIncome.getID());
+        expense.amount = 100
+        await updateExpense(expenseContract, expense)
+        retrievedExpense = await getExpenseByID(expenseContract, expense.getUserID(), expense.getID());
+        if (!retrievedExpense) {
+            console.log("************* getExpenseByID Failed *************")
+            await bringDown(userContract, expenseContract, expenseCategoryContract, incomeContract, goalContract, recurringIncomeContract, recurringExpenseContract)
+            numberOfTests++
+            displayResults(numberOfTests, passedCount)
+            return
+        }
+        else {
+            console.log()
+            console.log("Testing Update Expense:")
+            if (testExpenseDetails(retrievedExpense, expense)) {
+                passedCount++
+                console.log("Result: Pass")
+            }
+            else console.log("Result: Fail")
+            numberOfTests++;
+            console.log()
+        }
 
-        // await listAllRecurringIncomes(recurringIncomeContract);
+        let expensesList = await listExpensesByUser(expenseContract, userID);
+        if (expensesList.length === 0) {
+            console.log("************* listExpensesByUser Failed *************")
+            await bringDown(userContract, expenseContract, expenseCategoryContract, incomeContract, goalContract, recurringIncomeContract, recurringExpenseContract);
+            numberOfTests++
+            displayResults(numberOfTests, passedCount)
+            return
+        }
+        else {
+            console.log()
+            console.log("Testing List Expense By User:")
+            if (testExpenseDetails(expensesList[0] as Expense, expense)) {
+                passedCount++
+                console.log("Result: Pass")
+            }
+            else console.log("Result: Fail")
+            numberOfTests++;
+            console.log()
+        }
 
 
-        await bringDown(userContract, expenseContract, expenseCategoryContract, incomeContract, goalContract, recurringIncomeContract, recurringExpenseContract);
+
+
+
+
+
+
+        await createIncome(incomeContract, income);
+        let retrievedIncome = await getIncomeByID(incomeContract, userID, income.getID())
+        if (!retrievedIncome) {
+            console.log("************* getIncomeByID Failed *************")
+            await bringDown(userContract, expenseContract, expenseCategoryContract, incomeContract, goalContract, recurringIncomeContract, recurringExpenseContract)
+            numberOfTests++
+            displayResults(numberOfTests, passedCount)
+            return
+        }
+        else {
+            console.log()
+            console.log("Testing Create Income:")
+            if (testIncomeDetails(retrievedIncome, income)) {
+                passedCount++
+                console.log("Result: Pass")
+            }
+            else console.log("Result: Fail")
+            numberOfTests++;
+            console.log()
+        }
+
+        income.amount = 100;
+        await updateIncome(incomeContract, income);
+        if (!retrievedIncome) {
+            console.log("************* getIncomeByID Failed *************")
+            await bringDown(userContract, expenseContract, expenseCategoryContract, incomeContract, goalContract, recurringIncomeContract, recurringExpenseContract)
+            numberOfTests++
+            displayResults(numberOfTests, passedCount)
+            return
+        }
+        else {
+            console.log()
+            console.log("Testing Update Income:")
+            if (testIncomeDetails(retrievedIncome, income)) {
+                passedCount++
+                console.log("Result: Pass")
+            }
+            else console.log("Result: Fail")
+            numberOfTests++;
+            console.log()
+        }
+
+
+        let incomesList = await listIncomesByUser(incomeContract, userID)
+        if (incomesList.length === 0) {
+            console.log("************* listIncomesByUser Failed *************")
+            await bringDown(userContract, expenseContract, expenseCategoryContract, incomeContract, goalContract, recurringIncomeContract, recurringExpenseContract);
+            numberOfTests++
+            displayResults(numberOfTests, passedCount)
+            return
+        }
+        else {
+            console.log()
+            console.log("Testing List Income By User:")
+            if (testIncomeDetails(incomesList[0] as Income, income)) {
+                passedCount++
+                console.log("Result: Pass")
+            }
+            else console.log("Result: Fail")
+            numberOfTests++;
+            console.log()
+        }
+
+
+
+
+
+
+
+
+        await createGoal(goalContract, goal)
+        let retrievedGoal = await getGoalByID(goalContract, userID, goal.getID())
+        if (!retrievedGoal) {
+            console.log("************* getGoalByID Failed *************")
+            await bringDown(userContract, expenseContract, expenseCategoryContract, incomeContract, goalContract, recurringIncomeContract, recurringExpenseContract)
+            numberOfTests++
+            displayResults(numberOfTests, passedCount)
+            return
+        }
+        else {
+            console.log()
+            console.log("Testing Create Goal:")
+            if (testGoalDetails(retrievedGoal, goal)) {
+                passedCount++
+                console.log("Result: Pass")
+            }
+            else console.log("Result: Fail")
+            numberOfTests++;
+            console.log()
+        }
+
+        goal.updateCurrent(500)
+        await updateGoal(goalContract, userID, goal.getID(), 500);
+        retrievedGoal = await getGoalByID(goalContract, userID, goal.getID())
+        if (!retrievedGoal) {
+            console.log("************* getGoalByID Failed *************")
+            await bringDown(userContract, expenseContract, expenseCategoryContract, incomeContract, goalContract, recurringIncomeContract, recurringExpenseContract)
+            numberOfTests++
+            displayResults(numberOfTests, passedCount)
+            return
+        }
+        else {
+            console.log()
+            console.log("Testing Update Goal:")
+            if (testGoalDetails(retrievedGoal, goal)) {
+                passedCount++
+                console.log("Result: Pass")
+            }
+            else console.log("Result: Fail")
+            numberOfTests++;
+            console.log()
+        }
+
+        let goalsList = await listGoalsByUser(goalContract, userID);
+        if (goalsList.length === 0) {
+            console.log("************* listGoalsByUser Failed *************")
+            await bringDown(userContract, expenseContract, expenseCategoryContract, incomeContract, goalContract, recurringIncomeContract, recurringExpenseContract);
+            numberOfTests++
+            displayResults(numberOfTests, passedCount)
+            return
+        }
+        else {
+            console.log()
+            console.log("Testing List Goals By User:")
+            if (testGoalDetails(goalsList[0] as Goal, goal)) {
+                passedCount++
+                console.log("Result: Pass")
+            }
+            else console.log("Result: Fail")
+            numberOfTests++;
+            console.log()
+        }
+
+
+
+
+
+
+
+        await createRecurringExpense(recurringExpenseContract, recurringExpense);
+        let retrievedRecurringExpense = await getRecurringExpenseByID(recurringExpenseContract, userID, recurringExpense.getID())
+        if (!retrievedRecurringExpense) {
+            console.log("************* getRecurringExpenseByID Failed *************")
+            await bringDown(userContract, expenseContract, expenseCategoryContract, incomeContract, goalContract, recurringIncomeContract, recurringExpenseContract)
+            numberOfTests++
+            displayResults(numberOfTests, passedCount)
+            return
+        }
+        else {
+            console.log()
+            console.log("Testing Create Recurring Expense:")
+            if (testRecurrenceExpenseDetails(retrievedRecurringExpense, recurringExpense)) {
+                passedCount++
+                console.log("Result: Pass")
+            }
+            else console.log("Result: Fail")
+            numberOfTests++;
+            console.log()
+        }
+
+        recurringExpense.amount = 1000
+        await updateRecurringExpense(recurringExpenseContract, recurringExpense);
+        retrievedRecurringExpense = await getRecurringExpenseByID(recurringExpenseContract, userID, recurringExpense.getID())
+        if (!retrievedRecurringExpense) {
+            console.log("************* getRecurringExpenseByID Failed *************")
+            await bringDown(userContract, expenseContract, expenseCategoryContract, incomeContract, goalContract, recurringIncomeContract, recurringExpenseContract)
+            numberOfTests++
+            displayResults(numberOfTests, passedCount)
+            return
+        }
+        else {
+            console.log()
+            console.log("Testing Update Recurring Expense:")
+            if (testRecurrenceExpenseDetails(retrievedRecurringExpense, recurringExpense)) {
+                passedCount++
+                console.log("Result: Pass")
+            }
+            else console.log("Result: Fail")
+            numberOfTests++;
+            console.log()
+        }
+
+        let recurringExpenseList = await listRecurringExpensesByUser(recurringExpenseContract, userID);
+        if (recurringExpenseList.length === 0) {
+            console.log("************* listRecurringExpensesByUser Failed *************")
+            await bringDown(userContract, expenseContract, expenseCategoryContract, incomeContract, goalContract, recurringIncomeContract, recurringExpenseContract);
+            numberOfTests++
+            displayResults(numberOfTests, passedCount)
+            return
+        }
+        else {
+            console.log()
+            console.log("Testing List Recurring Expenses By User:")
+            if (testRecurrenceExpenseDetails(recurringExpenseList[0] as RecurringExpense, recurringExpense)) {
+                passedCount++
+                console.log("Result: Pass")
+            }
+            else console.log("Result: Fail")
+            numberOfTests++;
+            console.log()
+        }
+
+
+
+
+
+        await createRecurringIncome(recurringIncomeContract, recurringIncome);
+        let retrievedRecurringIncome = await getRecurringIncomeByID(recurringIncomeContract, userID, recurringIncome.getID())
+        if (!retrievedRecurringIncome) {
+            console.log("************* getRecurringIncomeByID Failed *************")
+            await bringDown(userContract, expenseContract, expenseCategoryContract, incomeContract, goalContract, recurringIncomeContract, recurringExpenseContract)
+            numberOfTests++
+            displayResults(numberOfTests, passedCount)
+            return
+        }
+        else {
+            console.log()
+            console.log("Testing Create Recurring Income:")
+            if (testRecurringIncomeDetails(retrievedRecurringIncome, recurringIncome)) {
+                passedCount++
+                console.log("Result: Pass")
+            }
+            else console.log("Result: Fail")
+            numberOfTests++;
+            console.log()
+        }
+
+        recurringIncome.amount = 10000;
+        await updateRecurringIncome(recurringIncomeContract, recurringIncome);
+        retrievedRecurringIncome = await getRecurringIncomeByID(recurringIncomeContract, userID, recurringIncome.getID())
+        if (!retrievedRecurringIncome) {
+            console.log("************* getRecurringIncomeByID Failed *************")
+            await bringDown(userContract, expenseContract, expenseCategoryContract, incomeContract, goalContract, recurringIncomeContract, recurringExpenseContract)
+            numberOfTests++
+            displayResults(numberOfTests, passedCount)
+            return
+        }
+        else {
+            console.log()
+            console.log("Testing Update Recurring Income:")
+            if (testRecurringIncomeDetails(retrievedRecurringIncome, recurringIncome)) {
+                passedCount++
+                console.log("Result: Pass")
+            }
+            else console.log("Result: Fail")
+            numberOfTests++;
+            console.log()
+        }
+
+        let recurringIncomeList = await listRecurringIncomesByUser(recurringIncomeContract, userID);
+        if(recurringIncomeList.length === 0) {
+            console.log("************* listRecurringExpensesByUser Failed *************")
+            await bringDown(userContract, expenseContract, expenseCategoryContract, incomeContract, goalContract, recurringIncomeContract, recurringExpenseContract);
+            numberOfTests++
+            displayResults(numberOfTests, passedCount)
+            return
+        }
+        else {
+            console.log()
+            console.log("Testing List Recurring Incomes By User:")
+            if (testRecurringIncomeDetails(recurringIncomeList[0] as RecurringIncome, recurringIncome)) {
+                passedCount++
+                console.log("Result: Pass")
+            }
+            else console.log("Result: Fail")
+            numberOfTests++;
+            console.log()
+        }
+
+
+
+
+
+        const recurringIncomeDeleted = await deleteRecurringIncome(recurringIncomeContract, userID, recurringIncome.getID())
+        console.log()
+        console.log("Testing Recurring Income Deleted:")
+        if (recurringIncomeDeleted) {
+            passedCount++
+            console.log("Result: Pass")
+        }
+        else console.log("Result: Fail")
+        numberOfTests++
+        console.log()
+
+
+
+        const recurringExpenseDeleted = await deleteRecurringExpense(recurringExpenseContract, userID, recurringExpense.getID());
+        console.log()
+        console.log("Testing Recurring Expense Deleted:")
+        if (recurringExpenseDeleted) {
+            passedCount++
+            console.log("Result: Pass")
+        }
+        else console.log("Result: Fail")
+        numberOfTests++
+        console.log()
+
+
+        const goalDeleted = await deleteGoal(goalContract, userID, goal.getID())
+        console.log()
+        console.log("Testing Goal Deleted:")
+        if (goalDeleted) {
+            passedCount++
+            console.log("Result: Pass")
+        }
+        else console.log("Result: Fail")
+        numberOfTests++
+        console.log()
+
+
+        const incomeDelete = await deleteIncome(incomeContract, userID, income.getID())
+        console.log()
+        console.log("Testing Income Deleted:")
+        if (incomeDelete) {
+            passedCount++
+            console.log("Result: Pass")
+        }
+        else console.log("Result: Fail")
+        numberOfTests++
+        console.log()
+
+        const expenseDeleted = await deleteExpense(expenseContract, userID, expense.getID())
+        console.log()
+        console.log("Testing Expense Deleted:")
+        if (expenseDeleted) {
+            passedCount++
+            console.log("Result: Pass")
+        }
+        else console.log("Result: Fail")
+        numberOfTests++
+        console.log()
+
+
+        const expenseCategoryDeleted = await deleteExpenseCategory(expenseCategoryContract, userID, expenseCategory.getID())
+        console.log()
+        console.log("Testing Expense Category Deleted:")
+        if (expenseCategoryDeleted) {
+            passedCount++
+            console.log("Result: Pass")
+        }
+        else console.log("Result: Fail")
+        numberOfTests++
+        console.log()
+
+        const userDeletedValue = await deleteUser(userContract, user.getEmail());
+        console.log()
+        console.log("Testing User Deleted:")
+        if (userDeletedValue) {
+            passedCount++
+            console.log("Result: Pass")
+        }
+        else console.log("Result: Fail")
+        numberOfTests++
+        console.log()
+
+        displayResults(numberOfTests, passedCount)
 
 
     } finally {
@@ -249,7 +696,7 @@ async function main(): Promise<void> {
     }
 }
 
-main().catch((error: unknown) => {
+testSuite().catch((error: unknown) => {
     console.error('******** FAILED to run the application:', error);
     process.exitCode = 1;
 });
@@ -312,23 +759,19 @@ function displayInputParameters(): void {
 
 async function bringDown(userContract: Contract, expenseContract: Contract, expenseCategoryContract: Contract, incomeContract: Contract, goalContract: Contract, recurringIncomeContract: Contract, recurringExpenseContract: Contract) {
     await deleteRecurringIncome(recurringIncomeContract, userID, recurringIncome.getID())
-    await deleteRecurringExpense(recurringExpenseContract, userID, recurringExpense.getID());
+    await deleteRecurringExpense(recurringExpenseContract, userID, recurringExpense.getID())
     await deleteGoal(goalContract, userID, goal.getID())
     await deleteIncome(incomeContract, userID, income.getID())
     await deleteExpense(expenseContract, userID, expense.getID())
+    await deleteExpenseCategory(expenseCategoryContract, userID, expenseCategory.getID())
+    await deleteUser(userContract, user.getEmail())
+}
 
 
-
-    const expenseCategoryDeleted = await deleteExpenseCategory(expenseCategoryContract, userID, expenseCategory.getID())
+function displayResults(numberOfTests: number, passedCount: number) {
+    console.log("")
+    console.log("Passed Tests:", passedCount)
+    console.log("Number of Tests:", numberOfTests)
     console.log()
-    console.log("Testing Expense Category Deleted:")
-    console.log("Result:", expenseCategoryDeleted ? "Pass" : "Fail")
-    console.log()
-
-
-    const userDeletedValue = await deleteUser(userContract, user.getEmail());
-    console.log()
-    console.log("Testing User Deleted:")
-    console.log("Result:", userDeletedValue ? "Pass" : "Fail")
-    console.log()
+    return
 }

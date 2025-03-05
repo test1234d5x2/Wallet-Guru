@@ -69,14 +69,7 @@ export class ExpenseContract extends Contract {
         }
 
         // Validate required fields (now including "id")
-        if (
-            !expenseInput.id ||
-            !expenseInput.userID ||
-            !expenseInput.title ||
-            !expenseInput.categoryID ||
-            expenseInput.amount === undefined ||
-            !expenseInput.date
-        ) {
+        if (!expenseInput.id || !expenseInput.userID || !expenseInput.title || !expenseInput.categoryID || expenseInput.amount === undefined || !expenseInput.date) {
             throw new Error('Missing required expense fields: id, userID, title, categoryID, amount, notes, date');
         }
 
@@ -91,9 +84,9 @@ export class ExpenseContract extends Contract {
             title: expenseInput.title,
             categoryID: expenseInput.categoryID,
             amount: amountNum,
-            notes: expenseInput.notes || undefined,
+            notes: expenseInput.notes,
             date: expenseInput.date,
-            receipt: expenseInput.receipt || undefined,
+            receipt: expenseInput.receipt,
         };
 
         const key = this.getExpenseKey(ctx, expenseInput.userID, expenseInput.id);
@@ -138,14 +131,7 @@ export class ExpenseContract extends Contract {
         }
 
         // Validate required fields for update
-        if (
-            !expenseInput.id ||
-            !expenseInput.userID ||
-            !expenseInput.title ||
-            !expenseInput.categoryID ||
-            expenseInput.amount === undefined ||
-            !expenseInput.date
-        ) {
+        if (!expenseInput.id || !expenseInput.userID || !expenseInput.title || !expenseInput.categoryID || expenseInput.amount === undefined || !expenseInput.date) {
             throw new Error('Missing required expense fields: id, userID, title, categoryID, amount, notes, date');
         }
 
@@ -164,9 +150,9 @@ export class ExpenseContract extends Contract {
         storedExpense.title = expenseInput.title;
         storedExpense.categoryID = expenseInput.categoryID;
         storedExpense.amount = amountNum;
-        storedExpense.notes = expenseInput.notes || undefined;
+        storedExpense.notes = expenseInput.notes;
         storedExpense.date = expenseInput.date;
-        storedExpense.receipt = expenseInput.receipt || undefined;
+        storedExpense.receipt = expenseInput.receipt;
 
         await ctx.stub.putState(key, Buffer.from(this.deterministicStringify(storedExpense)));
         return JSON.stringify({ message: 'Expense updated' });
@@ -211,10 +197,10 @@ export class ExpenseContract extends Contract {
         if (!userID) {
             throw new Error('Missing user ID');
         }
-        
+
         const results: Expense[] = [];
         const iterator = ctx.stub.getStateByPartialCompositeKey('Expense', [userID]);
-        
+
         // Using the new async iterator approach.
         for await (const res of iterator) {
             if (res.value) {

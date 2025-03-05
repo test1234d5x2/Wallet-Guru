@@ -7,15 +7,11 @@ const utf8Decoder = new TextDecoder();
 
 
 export async function createGoal(contract: Contract, i: Goal): Promise<void> {
-    console.log('\n--> Submit Transaction: Create Goal,');
-
     try {
         await contract.submitTransaction(
             "createGoal",
             JSON.stringify(i.toJSON())
         )
-
-        console.log("Created Goal")
     } catch (err: any) {
         console.log(err)
     }
@@ -28,8 +24,6 @@ export async function createGoal(contract: Contract, i: Goal): Promise<void> {
 
 
 export async function updateGoal(contract: Contract, userID: string, goalID: string, current: number) {
-    console.log('\n--> Submit Transaction: Update Goal,');
-
     try {
         await contract.submitTransaction(
             "updateGoal",
@@ -38,7 +32,6 @@ export async function updateGoal(contract: Contract, userID: string, goalID: str
             current.toString(),
         )
 
-        console.log("Updated Goal")
     } catch (err: any) {
         console.log(err)
     }
@@ -47,9 +40,7 @@ export async function updateGoal(contract: Contract, userID: string, goalID: str
 }
 
 
-export async function deleteGoal(contract: Contract, userID: string, goalID: string) {
-    console.log('\n--> Submit Transaction: Delete Goal,');
-
+export async function deleteGoal(contract: Contract, userID: string, goalID: string): Promise<boolean> {
     try {
         await contract.submitTransaction(
             "deleteGoal",
@@ -57,12 +48,12 @@ export async function deleteGoal(contract: Contract, userID: string, goalID: str
             goalID
         )
 
-        console.log("Deleted Goal")
+        return true
     } catch (err: any) {
         console.log(err)
     }
 
-    return
+    return false
 }
 
 
@@ -78,12 +69,10 @@ export async function listGoalsByUser(contract: Contract, userID: string): Promi
 
         const resultJson = utf8Decoder.decode(resultBytes);
         const result = JSON.parse(resultJson);
-        const goals: Goal[] = result.goals;
-
-        console.log(goals)
+        const goals: Goal[] = result.goals.map((goal: any) => new Goal(goal.title, goal.userID, goal.description, goal.target, new Date(goal.targetDate), goal.status, goal.id, goal.current));
         return goals
-    } catch {
-        console.log("Failed To Get Goals")
+    } catch (err) {
+        console.log(err)
     }
 
     return [];
@@ -91,8 +80,6 @@ export async function listGoalsByUser(contract: Contract, userID: string): Promi
 
 
 export async function getGoalByID(contract: Contract, userID: string, id: string): Promise<Goal | undefined> {
-    console.log('\n--> Evaluate Transaction: Find Expense By ID,');
-
     try {
         const resultBytes = await contract.evaluateTransaction(
             "getGoalByID",
@@ -101,11 +88,9 @@ export async function getGoalByID(contract: Contract, userID: string, id: string
         )
 
         const resultJson = utf8Decoder.decode(resultBytes);
-        const result = JSON.parse(resultJson);
-        console.log(result)
-        return result;
+        const data = JSON.parse(resultJson);
+        return new Goal(data.title, data.userID, data.description, data.target, new Date(data.targetDate), data.status, data.id, data.current);
     } catch (err) {
-        console.log("Failed To Get Goal");
         console.log(err)
     }
 

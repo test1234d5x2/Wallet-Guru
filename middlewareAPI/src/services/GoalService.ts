@@ -101,7 +101,7 @@ class GoalService {
     
             const resultJson = utf8Decoder.decode(resultBytes);
             const data = JSON.parse(resultJson);
-            return new Goal(data.title, data.userID, data.description, data.target, data.targetDate, data.status, data.id, data.current);;
+            return new Goal(data.title, data.userID, data.description, data.target, data.targetDate, data.status, data.id, data.current);
         } catch (err) {
             console.log(err)
         }

@@ -78,7 +78,7 @@ export class IncomeContract extends Contract {
             title: incomeInput.title,
             userID: incomeInput.userID,
             amount: amountNum,
-            notes: incomeInput.notes || undefined,
+            notes: incomeInput.notes,
             date: incomeInput.date,
         };
 
@@ -136,7 +136,7 @@ export class IncomeContract extends Contract {
         // Update fields with client-provided data
         storedIncome.title = incomeInput.title;
         storedIncome.amount = amountNum;
-        storedIncome.notes = incomeInput.notes || undefined;
+        storedIncome.notes = incomeInput.notes;
         storedIncome.date = incomeInput.date;
 
         await ctx.stub.putState(key, Buffer.from(this.deterministicStringify(storedIncome)));

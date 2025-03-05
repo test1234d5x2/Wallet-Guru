@@ -65,8 +65,7 @@ export class RecurringExpenseContract extends Contract {
         }
 
         // Validate required fields including the id now provided by the client
-        if (!expenseInput.id || !expenseInput.userID || !expenseInput.title || !expenseInput.categoryID ||
-            expenseInput.amount === undefined || !expenseInput.date || !expenseInput.recurrenceRule) {
+        if (!expenseInput.id || !expenseInput.userID || !expenseInput.title || !expenseInput.categoryID || expenseInput.amount === undefined || !expenseInput.date || !expenseInput.recurrenceRule) {
             throw new Error('Missing required fields: id, userID, title, categoryID, amount, notes, date, recurrenceRule');
         }
 
@@ -81,7 +80,7 @@ export class RecurringExpenseContract extends Contract {
             userID: expenseInput.userID,
             categoryID: expenseInput.categoryID,
             amount: amountNum,
-            notes: expenseInput.notes || undefined,
+            notes: expenseInput.notes,
             date: expenseInput.date,
             recurrenceRule: expenseInput.recurrenceRule,
         };
@@ -121,8 +120,7 @@ export class RecurringExpenseContract extends Contract {
         }
 
         // Validate required fields for update
-        if (!expenseInput.id || !expenseInput.userID || !expenseInput.categoryID || !expenseInput.title ||
-            expenseInput.amount === undefined || !expenseInput.date || !expenseInput.recurrenceRule) {
+        if (!expenseInput.id || !expenseInput.userID || !expenseInput.categoryID || !expenseInput.title || expenseInput.amount === undefined || !expenseInput.date || !expenseInput.recurrenceRule) {
             throw new Error('Missing required fields: id, userID, categoryID, title, amount, notes, date, recurrenceRule');
         }
 
@@ -141,7 +139,7 @@ export class RecurringExpenseContract extends Contract {
         storedExpense.title = expenseInput.title;
         storedExpense.categoryID = expenseInput.categoryID;
         storedExpense.amount = amountNum;
-        storedExpense.notes = expenseInput.notes || undefined;
+        storedExpense.notes = expenseInput.notes;
         storedExpense.date = expenseInput.date;
         storedExpense.recurrenceRule = expenseInput.recurrenceRule;
 

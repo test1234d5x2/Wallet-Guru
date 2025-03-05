@@ -11,9 +11,7 @@ export async function createExpenseCategory(contract: Contract, ec: ExpenseCateg
     await contract.submitTransaction(
         "createExpenseCategory",
         JSON.stringify(ec.toJSON())
-    ).then((data) => {
-        console.log("Category Created")
-    }).catch((err: Error) => {
+    ).catch((err: Error) => {
         console.log(err)
     })
 
@@ -28,9 +26,7 @@ export async function updateExpenseCategory(contract: Contract, ec: ExpenseCateg
     await contract.submitTransaction(
         "updateExpenseCategory",
         JSON.stringify(ec.toJSON()),
-    ).then((data) => {
-        console.log("Category Updated")
-    }).catch((err: Error) => {
+    ).catch((err: Error) => {
         console.log(err)
     })
 
@@ -49,12 +45,19 @@ export async function listExpenseCategoriesByUser(contract: Contract, userID: st
 
         const resultJson = utf8Decoder.decode(resultBytes);
         const result = JSON.parse(resultJson);
-        const categories: ExpenseCategory[] = result.categories;
-
-        console.log(categories)
-        return categories
+        const categories: ExpenseCategory[] = result.categories.map((category: any) => {
+            const recurrenceRule = new BasicRecurrenceRule(
+                category.recurrenceRule.frequency,
+                category.recurrenceRule.interval,
+                new Date(category.recurrenceRule.startDate),
+                category.recurrenceRule.nextTriggerDate ? new Date(category.recurrenceRule.nextTriggerDate) : undefined,
+                category.recurrenceRule.endDate ? new Date(category.recurrenceRule.endDate) : undefined
+            )
+            return new ExpenseCategory(category.userID, category.name, category.monthlyBudget, recurrenceRule, category.id);
+        });
+        return categories;
     } catch (err) {
-        console.log("Failed To Get Expense Categories")
+        console.log(err)
     }
 
     return [];
@@ -85,7 +88,6 @@ export async function getExpenseCategoryByID(contract: Contract, userID: string,
         const data: ExpenseCategory = new ExpenseCategory(result.userID, result.name, result.monthlyBudget, recurrenceRule, result.id);
         return data;
     } catch (err) {
-        console.log("Failed To Get Expense Category");
         console.log(err)
     }
 
@@ -103,7 +105,6 @@ export async function deleteExpenseCategory(contract: Contract, userID: string, 
             id,
         )
 
-        console.log("Deleted Expense Category")
         return true;
     }
     catch (err: any) {

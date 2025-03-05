@@ -1,21 +1,19 @@
 import { Contract } from "@hyperledger/fabric-gateway";
 import RecurringIncome from "../models/recurrenceModels/RecurringIncome";
 import { TextDecoder } from 'util';
+import BasicRecurrenceRule from "../models/recurrenceModels/BasicRecurrenceRule";
 
 
 const utf8Decoder = new TextDecoder();
 
 
 export async function createRecurringIncome(contract: Contract, e: RecurringIncome): Promise<void> {
-    console.log('\n--> Submit Transaction: Create Recurring Income,');
-
     try {
         await contract.submitTransaction(
             "createRecurringIncome",
             JSON.stringify(e.toJSON())
         )
 
-        console.log("Created Recurring Income")
     } catch (err: any) {
         console.log(err)
     }
@@ -25,15 +23,12 @@ export async function createRecurringIncome(contract: Contract, e: RecurringInco
 
 
 export async function updateRecurringIncome(contract: Contract, e: RecurringIncome) {
-    console.log('\n--> Submit Transaction: Update Recurring Income,');
-
     try {
         await contract.submitTransaction(
             "updateRecurringIncome",
             JSON.stringify(e.toJSON())
         )
 
-        console.log("Updated Recurring Income")
     } catch (err: any) {
         console.log(err)
     }
@@ -43,8 +38,6 @@ export async function updateRecurringIncome(contract: Contract, e: RecurringInco
 
 
 export async function deleteRecurringIncome(contract: Contract, userID: string, incomeID: string) {
-    console.log('\n--> Submit Transaction: Delete Recurring Income,');
-
     try {
         await contract.submitTransaction(
             "deleteRecurringIncome",
@@ -52,18 +45,16 @@ export async function deleteRecurringIncome(contract: Contract, userID: string, 
             incomeID,
         )
 
-        console.log("Deleted Recurring Income")
+        return true
     } catch (err: any) {
         console.log(err)
     }
 
-    return
+    return false
 }
 
 
 export async function listRecurringIncomesByUser(contract: Contract, userID: string): Promise<RecurringIncome[]> {
-    console.log('\n--> Evaluate Transaction: List Recurring Incomes By User,');
-
     try {
         const resultBytes = await contract.evaluateTransaction(
             "listRecurringIncomesByUser",
@@ -72,12 +63,12 @@ export async function listRecurringIncomesByUser(contract: Contract, userID: str
 
         const resultJson = utf8Decoder.decode(resultBytes);
         const result = JSON.parse(resultJson);
-        const recurringIncomes: RecurringIncome[] = result.recurringIncomes;
-
-        console.log(recurringIncomes)
-        return recurringIncomes
+        const recurringIncomes: RecurringIncome[] = result.recurringIncomes.map((i: any) => {
+            const recurrenceRule = new BasicRecurrenceRule(i.recurrenceRule.frequency, i.recurrenceRule.interval, new Date(i.recurrenceRule.startDate), new Date(i.recurrenceRule.nextTriggerDate), new Date(i.recurrenceRule.endDate))
+            return new RecurringIncome(i.userID, i.title, i.amount, new Date(i.date), i.notes, recurrenceRule, i.id);
+        });
+        return recurringIncomes;
     } catch (err: any) {
-        console.log("Failed To Get Recurring Incomes")
         console.log(err)
     }
 
@@ -86,8 +77,6 @@ export async function listRecurringIncomesByUser(contract: Contract, userID: str
 
 
 export async function getRecurringIncomeByID(contract: Contract, userID: string, id: string): Promise<RecurringIncome | undefined> {
-    console.log('\n--> Evaluate Transaction: Find Recurring Income By ID,');
-
     try {
         const resultBytes = await contract.evaluateTransaction(
             "getRecurringIncomeByID",
@@ -96,11 +85,10 @@ export async function getRecurringIncomeByID(contract: Contract, userID: string,
         )
 
         const resultJson = utf8Decoder.decode(resultBytes);
-        const result = JSON.parse(resultJson);
-        console.log(result)
-        return result;
+        const data = JSON.parse(resultJson);
+        const recurrenceRule = new BasicRecurrenceRule(data.recurrenceRule.frequency, data.recurrenceRule.interval, new Date(data.recurrenceRule.startDate), new Date(data.recurrenceRule.nextTriggerDate), new Date(data.recurrenceRule.endDate))
+        return new RecurringIncome(data.userID, data.title, data.amount, new Date(data.date), data.notes, recurrenceRule, data.id);
     } catch (err) {
-        console.log("Failed To Get Recurring Income");
         console.log(err)
     }
 
@@ -110,24 +98,24 @@ export async function getRecurringIncomeByID(contract: Contract, userID: string,
 
 
 
+// Not needed for testing
+// export async function listAllRecurringIncomes(contract: Contract): Promise<RecurringIncome[]> {
+//     console.log('\n--> Evaluate Transaction: List All Recurring Incomes,');
 
-export async function listAllRecurringIncomes(contract: Contract): Promise<RecurringIncome[]> {
-    console.log('\n--> Evaluate Transaction: List All Recurring Incomes,');
+//     try {
+//         const resultBytes = await contract.evaluateTransaction(
+//             "listAllRecurringIncomes",
+//         )
 
-    try {
-        const resultBytes = await contract.evaluateTransaction(
-            "listAllRecurringIncomes",
-        )
+//         const resultJson = utf8Decoder.decode(resultBytes);
+//         const result = JSON.parse(resultJson);
+//         const recurringIncomes: RecurringIncome[] = result.recurringIncomes;
+//         console.log(recurringIncomes);
+//         return recurringIncomes
+//     } catch (err) {
+//         console.log("Failed To Get All Recurring Incomes")
+//         console.log(err)
+//     }
 
-        const resultJson = utf8Decoder.decode(resultBytes);
-        const result = JSON.parse(resultJson);
-        const recurringIncomes: RecurringIncome[] = result.recurringIncomes;
-        console.log(recurringIncomes);
-        return recurringIncomes
-    } catch (err) {
-        console.log("Failed To Get All Recurring Incomes")
-        console.log(err)
-    }
-
-    return [];
-}
+//     return [];
+// }
