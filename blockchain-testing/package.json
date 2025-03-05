@@ -2,8 +2,8 @@
     "name": "blockchain-testing",
     "version": "1.0.0",
     "description": "Blockchain Testing",
-    "main": "dist/index.js",
-    "typings": "dist/index.d.ts",
+    "main": "dist/tests.js",
+    "typings": "dist/tests.d.ts",
     "engines": {
         "node": ">=18"
     },
@@ -13,7 +13,7 @@
         "lint": "eslint src",
         "prepare": "npm run build",
         "pretest": "npm run lint",
-        "start": "node dist/app.js"
+        "dev": "node dist/tests.js"
     },
     "engineStrict": true,
     "author": "Hyperledger",

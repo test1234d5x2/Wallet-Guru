@@ -1,14 +1,13 @@
 import { Contract } from "@hyperledger/fabric-gateway";
 import ExpenseCategory from "../models/core/ExpenseCategory";
 import { TextDecoder } from 'util';
+import BasicRecurrenceRule from "../models/recurrenceModels/BasicRecurrenceRule";
 
 
 const utf8Decoder = new TextDecoder();
 
 
 export async function createExpenseCategory(contract: Contract, ec: ExpenseCategory): Promise<void> {
-    console.log('\n--> Submit Transaction: Create Expense Category,');
-
     await contract.submitTransaction(
         "createExpenseCategory",
         JSON.stringify(ec.toJSON())
@@ -26,9 +25,6 @@ export async function createExpenseCategory(contract: Contract, ec: ExpenseCateg
 
 
 export async function updateExpenseCategory(contract: Contract, ec: ExpenseCategory): Promise<void> {
-    console.log('\n--> Submit Transaction: Update Expense Category,');
-
-
     await contract.submitTransaction(
         "updateExpenseCategory",
         JSON.stringify(ec.toJSON()),
@@ -45,8 +41,6 @@ export async function updateExpenseCategory(contract: Contract, ec: ExpenseCateg
 
 
 export async function listExpenseCategoriesByUser(contract: Contract, userID: string): Promise<ExpenseCategory[]> {
-    console.log('\n--> Evaluate Transaction: List Expense Categories By User,');
-
     try {
         const resultBytes = await contract.evaluateTransaction(
             "listExpenseCategoriesByUser",
@@ -72,8 +66,6 @@ export async function listExpenseCategoriesByUser(contract: Contract, userID: st
 
 
 export async function getExpenseCategoryByID(contract: Contract, userID: string, id: string): Promise<ExpenseCategory | undefined> {
-    console.log('\n--> Evaluate Transaction: Find Expense Category By ID,');
-
     try {
         const resultBytes = await contract.evaluateTransaction(
             "getExpenseCategoryByID",
@@ -83,8 +75,15 @@ export async function getExpenseCategoryByID(contract: Contract, userID: string,
 
         const resultJson = utf8Decoder.decode(resultBytes);
         const result = JSON.parse(resultJson);
-        console.log(result)
-        return result;
+        const recurrenceRule = new BasicRecurrenceRule(
+            result.recurrenceRule.frequency,
+            result.recurrenceRule.interval,
+            new Date(result.recurrenceRule.startDate),
+            result.recurrenceRule.nextTriggerDate ? new Date(result.recurrenceRule.nextTriggerDate) : undefined,
+            result.recurrenceRule.endDate ? new Date(result.recurrenceRule.endDate) : undefined
+        )
+        const data: ExpenseCategory = new ExpenseCategory(result.userID, result.name, result.monthlyBudget, recurrenceRule, result.id);
+        return data;
     } catch (err) {
         console.log("Failed To Get Expense Category");
         console.log(err)
@@ -97,8 +96,6 @@ export async function getExpenseCategoryByID(contract: Contract, userID: string,
 
 
 export async function deleteExpenseCategory(contract: Contract, userID: string, id: string): Promise<boolean> {
-    console.log('\n--> Submit Transaction: Delete Expense Category,');
-
     try {
         await contract.submitTransaction(
             "deleteExpenseCategory",

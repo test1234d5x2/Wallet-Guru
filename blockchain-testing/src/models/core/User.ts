@@ -9,16 +9,17 @@ class User {
     private status: UserStatus;
 
     constructor(username: string, password: string, id?: string, dateJoined?: Date, status?: UserStatus) {
-        this.id = v4();
+        this.id = id || v4();
         this.username = username;
         this.password = password;  // In real systems, hash this!
-        this.dateJoined = new Date();
-        this.status = UserStatus.PENDING;
+        this.dateJoined = dateJoined || new Date();
+        this.status = status || UserStatus.PENDING;
     }
 
     public getUserID(): string { return this.id; }
     public getEmail(): string { return this.username; }
     public getPassword(): string { return this.password; }
+    public setPassword(pw: string): void { this.password = pw; }
     public getDateJoined(): Date { return this.dateJoined; }
     public setUserStatus(newStatus: UserStatus): void { this.status = newStatus; }
     public getUserStatus(): UserStatus { return this.status; }
