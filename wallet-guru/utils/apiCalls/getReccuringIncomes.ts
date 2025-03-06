@@ -24,7 +24,7 @@ export default async function getRecurringIncomes(token: string): Promise<Recurr
 
     const data = await response.json();
     const incomes: RecurringIncome[] = data.recurringIncomes.map((i: any) => {
-        const recurrenceRule = new BasicRecurrenceRule(i.recurrenceRule.frequency, i.recurrenceRule.interval, new Date(i.recurrenceRule.startDate), new Date(i.recurrenceRule.nextTriggerDate), new Date(i.recurrenceRule.endDate))
+        const recurrenceRule = new BasicRecurrenceRule(i.recurrenceRule.frequency, i.recurrenceRule.interval, new Date(i.recurrenceRule.startDate), new Date(i.recurrenceRule.nextTriggerDate), i.recurrenceRule.endDate ? new Date(i.recurrenceRule.endDate): undefined)
         return new RecurringIncome(i.userID, i.title, i.amount, new Date(i.date), i.notes, recurrenceRule, i.id);
     });
     return incomes;

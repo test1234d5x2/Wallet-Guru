@@ -355,6 +355,7 @@ async function testSuite(): Promise<void> {
 
         income.amount = 100;
         await updateIncome(incomeContract, income);
+        retrievedIncome = await getIncomeByID(incomeContract, userID, income.getID())
         if (!retrievedIncome) {
             console.log("************* getIncomeByID Failed *************")
             await bringDown(userContract, expenseContract, expenseCategoryContract, incomeContract, goalContract, recurringIncomeContract, recurringExpenseContract)

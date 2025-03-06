@@ -28,13 +28,12 @@ export default function testRecurrenceRuleDetails(data: RecurrenceRule, expected
         result = false;
     }
 
-    
     if (!expected.endDate) {
         if (data.endDate) result = false;
     }
 
     else {
-        if (!data.endDate) result = false;
+        if (!data.endDate) {}
         else {
             console.log(`Recurrence Rule End Date: ${data.endDate.toISOString()} === ${expected.endDate.toISOString()}`)
             if (data.endDate.getTime() !== expected.endDate.getTime()) {

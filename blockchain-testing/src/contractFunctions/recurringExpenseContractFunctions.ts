@@ -64,7 +64,7 @@ export async function listRecurringExpensesByUser(contract: Contract, userID: st
         const resultJson = utf8Decoder.decode(resultBytes);
         const result = JSON.parse(resultJson);
         const recurringExpenses: RecurringExpense[] = result.recurringExpenses.map((e: any) => {
-            const recurrenceRule = new BasicRecurrenceRule(e.recurrenceRule.frequency, e.recurrenceRule.interval, new Date(e.recurrenceRule.startDate), new Date(e.recurrenceRule.nextTriggerDate), new Date(e.recurrenceRule.endDate))
+            const recurrenceRule = new BasicRecurrenceRule(e.recurrenceRule.frequency, e.recurrenceRule.interval, new Date(e.recurrenceRule.startDate), new Date(e.recurrenceRule.nextTriggerDate), e.recurrenceRule.endDate ? new Date(e.recurrenceRule.endDate): undefined)
             return new RecurringExpense(e.userID, e.title, e.amount, new Date(e.date), e.notes, e.categoryID, recurrenceRule, e.id);
         });
         return recurringExpenses;
@@ -86,7 +86,7 @@ export async function getRecurringExpenseByID(contract: Contract, userID: string
 
         const resultJson = utf8Decoder.decode(resultBytes);
         const data = JSON.parse(resultJson);
-        const recurrenceRule = new BasicRecurrenceRule(data.recurrenceRule.frequency, data.recurrenceRule.interval, new Date(data.recurrenceRule.startDate), new Date(data.recurrenceRule.nextTriggerDate), new Date(data.recurrenceRule.endDate))
+        const recurrenceRule = new BasicRecurrenceRule(data.recurrenceRule.frequency, data.recurrenceRule.interval, new Date(data.recurrenceRule.startDate), new Date(data.recurrenceRule.nextTriggerDate), data.recurrenceRule.endDate ? new Date(data.recurrenceRule.endDate): undefined)
         return new RecurringExpense(data.userID, data.title, data.amount, new Date(data.date), data.notes, data.categoryID, recurrenceRule, data.id);
     } catch (err) {
         console.log(err)

@@ -54,7 +54,7 @@ export function testRecurrenceExpenseDetails(data: RecurringExpense, expected: R
     }
 
     console.log("Recurrence Rule Tests:")
-    result = testRecurrenceRuleDetails(data.recurrenceRule, expected.recurrenceRule);
+    let recurrenceResult = testRecurrenceRuleDetails(data.recurrenceRule, expected.recurrenceRule);
 
-    return result
+    return result && recurrenceResult
 }

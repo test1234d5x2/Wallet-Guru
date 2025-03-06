@@ -42,7 +42,7 @@ export function testRecurringIncomeDetails(data: RecurringIncome, expected: Recu
     }
 
     console.log("Recurrence Rule Tests:")
-    result = testRecurrenceRuleDetails(data.recurrenceRule, expected.recurrenceRule);
+    let recurrenceResult = testRecurrenceRuleDetails(data.recurrenceRule, expected.recurrenceRule);
 
-    return result
+    return result && recurrenceResult
 }
