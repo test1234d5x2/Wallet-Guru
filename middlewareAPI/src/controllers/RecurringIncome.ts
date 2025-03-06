@@ -29,7 +29,6 @@ export const create = async (req: Request, res: Response): Promise<void> => {
         return
     }
 
-    recurringIncomeService.processDueRecurringIncomes();
     res.status(201).json({ message: 'Recurring Income created successfully' });
 };
 
@@ -59,7 +58,6 @@ export const update = async (req: Request, res: Response): Promise<void> => {
         return
     }
 
-    recurringIncomeService.processDueRecurringIncomes();
     res.status(200).json({ message: 'Recurring Income updated successfully' });
 };
 
@@ -80,7 +78,6 @@ export const remove = async (req: Request, res: Response): Promise<void> => {
         return
     }
 
-    recurringIncomeService.processDueRecurringIncomes();
     res.status(200).json({ message: 'Recurring Income deleted successfully' });
 };
 

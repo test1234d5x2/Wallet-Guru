@@ -29,7 +29,6 @@ export const create = async (req: Request, res: Response): Promise<void> => {
         return
     }
 
-    recurringExpenseService.processDueRecurringExpenses();
     res.status(201).json({ message: 'Recurring Expense created successfully' });
 };
 
@@ -58,7 +57,6 @@ export const update = async (req: Request, res: Response): Promise<void> => {
         return
     }
 
-    recurringExpenseService.processDueRecurringExpenses();
     res.status(200).json({ message: 'Recurring Expense updated successfully' });
 };
 
@@ -77,7 +75,7 @@ export const remove = async (req: Request, res: Response): Promise<void> => {
     if (!await recurringExpenseService.deleteRecurringExpense(id, userID)) {
         res.status(404).json({ message: 'Failed to delete recurring expense.' });
     }
-    recurringExpenseService.processDueRecurringExpenses();
+
     res.status(200).json({ message: 'Recurring Expense deleted successfully' });
 };
 

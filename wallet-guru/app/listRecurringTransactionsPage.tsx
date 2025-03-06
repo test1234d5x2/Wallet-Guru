@@ -79,6 +79,7 @@ export default function ViewReccuringTransactionsList() {
         async function getIncomesList() {
             const result = await getRecurringIncomes(token);
             if (result) {
+                console.log("Here")
                 setRecurringIncomes(result);
             } else {
                 console.log("Error with getting recurring incomes list")
