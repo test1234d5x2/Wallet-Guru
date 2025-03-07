@@ -169,8 +169,6 @@ export default function Dashboard() {
                         </View>
                     }
                 </View>
-
-                <BottomNav />
             </ScrollView>
         </View>
     );

@@ -15,25 +15,25 @@ const navItems: NavItem[] = [
         name: 'index',
         label: 'Dashboard',
         icon: 'home-outline',
-        route: '/index',
+        route: '/dashboardPage',
     },
     {
         name: 'transactions',
         label: 'Transactions',
         icon: 'list-outline',
-        route: '/transactions',
+        route: '/listTransactionsPage',
     },
     {
         name: 'analytics',
         label: 'Analytics',
         icon: 'stats-chart-outline',
-        route: '/analytics',
+        route: '/analytics/overviewPage',
     },
     {
         name: 'goals',
         label: 'Goals',
         icon: 'trophy-outline',
-        route: '/goals',
+        route: '/allGoalsPage',
     },
 ];
 
@@ -43,7 +43,7 @@ const BottomNav: React.FC = () => {
 
     const handleNavigation = (route: string) => {
         if (currentPath !== route) {
-            router.push('/dashboardPage');
+            router.push(`${route}`);
         }
     };
 
@@ -83,6 +83,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#fff',
         justifyContent: 'space-around',
         alignItems: 'center',
+
     },
     navItem: {
         alignItems: 'center',
