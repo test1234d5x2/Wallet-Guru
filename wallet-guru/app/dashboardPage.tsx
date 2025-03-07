@@ -20,8 +20,7 @@ import getStartOfMonth from '@/utils/getStartOfMonth';
 import getEndOfMonth from '@/utils/getEndOfMonth';
 import filterExpensesByCategory from '@/utils/filterExpensesByCategory';
 import MonthlySpendingDisplay from '@/components/widgets/MonthlySpendingDisplay';
-import Transaction from '@/models/core/Transaction';
-import sortTransactionsByDate from '@/utils/sortTransactionsByDate';
+import BottomNav from '@/components/bottomNav/bottomNav';
 
 
 export default function Dashboard() {
@@ -170,6 +169,8 @@ export default function Dashboard() {
                         </View>
                     }
                 </View>
+
+                <BottomNav />
             </ScrollView>
         </View>
     );
