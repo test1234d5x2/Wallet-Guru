@@ -98,7 +98,7 @@ export const remove: RequestHandler = async (req, res): Promise<void> => {
         res.status(200).json({ message: "Income deleted" });
     }
     else {
-        res.status(200).json({ message: "Failed to delete income." });
+        res.status(404).json({ message: "Failed to delete income." });
     }
 };
 

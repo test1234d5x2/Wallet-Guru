@@ -22,18 +22,18 @@ export const create: RequestHandler = async (req, res): Promise<void> => {
         return;
     }
 
+    if (!title || amount === undefined || !date || !expenseCategoryID) {
+        res.status(400).json({ message: "Missing required fields" });
+        return;
+    }
+
     const registry = await Registry.getInstance(); 
     const expenseCategoryService = registry.expenseCategoryService;
     const expenseService = registry.expenseService;
 
-    const expenseCategory = expenseCategoryService.findByID(expenseCategoryID, userID);
+    const expenseCategory = await expenseCategoryService.findByID(expenseCategoryID, userID);
     if (!expenseCategory) {
         res.status(404).json({ message: "The expense category could not be found." });
-        return;
-    }
-
-    if (!title || amount === undefined || !date || !expenseCategoryID) {
-        res.status(400).json({ message: "Missing required fields" });
         return;
     }
 
@@ -61,9 +61,16 @@ export const update: RequestHandler = async (req, res): Promise<void> => {
     const { id } = req.params;
     const { title, amount, date, notes, expenseCategoryID, receipt } = req.body;
 
+    console.log(expenseCategoryID)
+
     const userID = getUserFromToken(req);
     if (!userID) {
         res.status(401).json({ error: "You must be logged in to update an expense." });
+        return;
+    }
+
+    if (!id || !title || amount === undefined || !date || !expenseCategoryID) {
+        res.status(400).json({ error: "Missing required fields" });
         return;
     }
 
@@ -74,11 +81,6 @@ export const update: RequestHandler = async (req, res): Promise<void> => {
     const expenseCategory = await expenseCategoryService.findByID(expenseCategoryID, userID);
     if (!expenseCategory) {
         res.status(404).json({ error: "The expense category could not be found." });
-        return;
-    }
-
-    if (!id || !title || amount === undefined || !date || !expenseCategoryID) {
-        res.status(400).json({ error: "Missing required fields" });
         return;
     }
 

@@ -140,11 +140,11 @@ export const remove: RequestHandler = async (req, res): Promise<void> => {
     const registry = await Registry.getInstance();
     const goalService = registry.goalService;
 
-    try {
-        await goalService.deleteGoal(id, userID);
+    if (await goalService.deleteGoal(id, userID)) {
         res.status(200).json({ message: "Goal deleted" });
-    } catch (err: any) {
-        res.status(500).json({ error: "Error deleting goal", details: err.message });
+    }
+    else {
+        res.status(404).json({ error: "Error deleting goal" });
     }
 };
 

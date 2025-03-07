@@ -13,6 +13,11 @@ export const create = async (req: Request, res: Response): Promise<void> => {
         return;
     }
 
+    if (!title || amount === undefined || !date || !recurrenceRule) {
+        res.status(400).json({ message: "Missing required fields: title, amount, date, recurrenceRule" });
+        return;
+    }
+
     const rule = new BasicRecurrenceRule(
         recurrenceRule.frequency,
         recurrenceRule.interval,
@@ -39,6 +44,11 @@ export const update = async (req: Request, res: Response): Promise<void> => {
     const userID = getUserFromToken(req);
     if (!userID) {
         res.status(401).json({ message: "You must be logged in to update a recurring income transaction." });
+        return;
+    }
+
+    if (!title || amount === undefined || !date || !recurrenceRule) {
+        res.status(400).json({ message: "Missing required fields: title, amount, date, recurrenceRule" });
         return;
     }
 
