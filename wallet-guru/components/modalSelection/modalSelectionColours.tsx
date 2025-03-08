@@ -8,7 +8,7 @@ interface ModalSelectionProps {
     setValue: (text: string) => void
 }
 
-const modalSelectionColours = (props: ModalSelectionProps) => {
+const ModalSelectionColours = (props: ModalSelectionProps) => {
 
     const [showDropdown, setShowDropdown] = useState<boolean>(false)
     let displayText = props.value
@@ -110,4 +110,4 @@ const styles = StyleSheet.create({
     },
 })
 
-export default modalSelectionColours;
+export default ModalSelectionColours;

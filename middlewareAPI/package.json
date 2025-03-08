@@ -24,6 +24,7 @@
     "fabric-common": "^2.2.20",
     "fabric-network": "^2.2.20",
     "jsonwebtoken": "^9.0.2",
+    "node-tesseract-ocr": "^2.2.1",
     "uuid": "^11.1.0",
     "validator": "^13.12.0"
   },

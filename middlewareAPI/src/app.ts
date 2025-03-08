@@ -19,7 +19,7 @@ if (process.env.PORT) {
 }
 
 let tempIP = 'localhost';
-if (process.env.IP) {tempIP = process.env.IP}
+if (process.env.IP) { tempIP = process.env.IP }
 
 const IP = tempIP;
 const PORT = tempPort;
@@ -34,7 +34,7 @@ app.use("/api/expense-categories", expenseCategoryRoutes);
 app.use("/api/incomes", incomeRoutes);
 app.use("/api/goals", goalRoutes);
 app.use("/api/recurring-expenses", recurringExpenseRouter);
-app.use("/api/recurring-incomes", recurringIncomeRouter )
+app.use("/api/recurring-incomes", recurringIncomeRouter)
 
 app.listen(PORT, IP, () => console.log(`Server running on  https://${IP}:${PORT}`));
 

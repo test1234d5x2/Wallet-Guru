@@ -17,6 +17,7 @@ import isValidFrequency from '@/utils/validation/isValidFrequency';
 import isInteger from '@/utils/validation/validateInteger';
 import BasicRecurrenceRule from '@/models/recurrenceModels/BasicRecurrenceRule';
 import updateCategoriesTimeWindowEnd from '@/utils/analytics/batchProcessRecurrencesUpdates/updateCategoriesTimeWindowEnd';
+import getColourSelection from '@/utils/getColourSelection';
 
 
 export default function EditExpenseCategory() {
@@ -32,6 +33,7 @@ export default function EditExpenseCategory() {
     const [frequency, setFrequency] = useState<Frequency>(Frequency.Daily);
     const [interval, setFrequencyInterval] = useState<string>('');
     const [startDate, setStartDate] = useState<Date | null>(null);
+    const [colour, setColour] = useState<string | null>(null)
     const [error, setError] = useState<string>('');
 
     getToken().then((data) => {
@@ -161,6 +163,9 @@ export default function EditExpenseCategory() {
                     setFrequency={setFrequency}
                     setFrequencyInterval={setFrequencyInterval}
                     setStartDate={setStartDate}
+                    colour={colour}
+                    setColour={setColour}
+                    colourChoices={getColourSelection()}
                 />
             </View>
 

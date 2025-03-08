@@ -17,6 +17,7 @@ import isInteger from '@/utils/validation/validateInteger';
 import RecurrenceRule from '@/models/recurrenceModels/RecurrenceRule';
 import BasicRecurrenceRule from '@/models/recurrenceModels/BasicRecurrenceRule';
 import updateCategoriesTimeWindowEnd from '@/utils/analytics/batchProcessRecurrencesUpdates/updateCategoriesTimeWindowEnd';
+import getColourSelection from '@/utils/getColourSelection';
 
 
 async function addExpenseCategory(token: string, name: string, monthlyBudget: number, recurrenceRule: RecurrenceRule) {
@@ -60,6 +61,7 @@ export default function AddExpenseCategory() {
     const [frequency, setFrequency] = useState<Frequency>(Frequency.Daily);
     const [interval, setFrequencyInterval] = useState<string>('');
     const [startDate, setStartDate] = useState<Date | null>(null);
+    const [colour, setColour] = useState<string | null>(null)
     const [error, setError] = useState<string>('');
     const router = useRouter();
 
@@ -164,6 +166,9 @@ export default function AddExpenseCategory() {
                     setFrequency={setFrequency}
                     setFrequencyInterval={setFrequencyInterval}
                     setStartDate={setStartDate}
+                    colour={colour}
+                    setColour={setColour}
+                    colourChoices={getColourSelection()}
                 />
             </View>
 

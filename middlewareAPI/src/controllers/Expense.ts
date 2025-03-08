@@ -1,6 +1,8 @@
 import { RequestHandler } from "express";
 import Registry from "../registry/Registry";
 import getUserFromToken from "../utils/getUserFromToken";
+import path from "path";
+import tesseract from 'node-tesseract-ocr';
 
 
 /**
@@ -27,7 +29,7 @@ export const create: RequestHandler = async (req, res): Promise<void> => {
         return;
     }
 
-    const registry = await Registry.getInstance(); 
+    const registry = await Registry.getInstance();
     const expenseCategoryService = registry.expenseCategoryService;
     const expenseService = registry.expenseService;
 
@@ -41,7 +43,7 @@ export const create: RequestHandler = async (req, res): Promise<void> => {
         res.status(201).json({ message: "Expense created" });
     }
     else {
-        res.status(404).json({message: "Failed to add expense."});
+        res.status(404).json({ message: "Failed to add expense." });
     }
 };
 
@@ -74,7 +76,7 @@ export const update: RequestHandler = async (req, res): Promise<void> => {
         return;
     }
 
-    const registry = await Registry.getInstance(); 
+    const registry = await Registry.getInstance();
     const expenseCategoryService = registry.expenseCategoryService;
     const expenseService = registry.expenseService;
 
@@ -111,7 +113,7 @@ export const remove: RequestHandler = async (req, res): Promise<void> => {
         return;
     }
 
-    const registry = await Registry.getInstance(); 
+    const registry = await Registry.getInstance();
     const expenseService = registry.expenseService;
 
     if (await expenseService.deleteExpense(id, userID)) {
@@ -136,6 +138,16 @@ export const listByUser: RequestHandler = async (req, res): Promise<void> => {
 
     const registry = await Registry.getInstance();
     const expenseService = registry.expenseService;
+
+
+    const imagePath = path.join(__dirname, '..', 'images', 'test-image.jpg');
+    const config = {
+        lang: 'eng',
+        oem: 1,
+        psm: 3
+    };
+    const text = await tesseract.recognize(imagePath, config);
+    console.log(text)
 
     const expenses = await expenseService.getAllExpensesByUser(userID);
     res.status(200).json({ expenses });
