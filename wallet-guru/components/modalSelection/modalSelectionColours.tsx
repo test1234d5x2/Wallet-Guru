@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, FlatList, TouchableOpacity, StyleSheet, Modal, Pressable, SafeAreaView, Alert } from 'react-native';
+import { View, Text, FlatList, TouchableOpacity, StyleSheet, Modal, Pressable, SafeAreaView } from 'react-native';
 
 
 interface ModalSelectionProps {
@@ -8,7 +8,7 @@ interface ModalSelectionProps {
     setValue: (text: string) => void
 }
 
-const ModalSelectionExpenseCategories = (props: ModalSelectionProps) => {
+const modalSelectionColours = (props: ModalSelectionProps) => {
 
     const [showDropdown, setShowDropdown] = useState<boolean>(false)
     let displayText = props.value
@@ -110,4 +110,4 @@ const styles = StyleSheet.create({
     },
 })
 
-export default ModalSelectionExpenseCategories;
+export default modalSelectionColours;
