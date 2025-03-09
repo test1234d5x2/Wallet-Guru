@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Alert, ScrollView, Image, Dimensions, StatusBar } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Alert, ScrollView, Image, Dimensions, StatusBar, ActivityIndicator } from 'react-native';
 import ExpenseDetailsInputs from '@/components/formComponents/expenseDetailsInputs';
 import setPageTitle from '@/components/pageTitle/setPageTitle';
 import TopBar from '@/components/topBars/topBar';
@@ -13,7 +13,6 @@ import getToken from '@/utils/tokenAccess/getToken';
 import getExpenseCategories from '@/utils/apiCalls/getExpenseCategories';
 import pickImage from '@/utils/pickImage';
 import updateCategoriesTimeWindowEnd from '@/utils/analytics/batchProcessRecurrencesUpdates/updateCategoriesTimeWindowEnd';
-
 
 async function addExpense(token: string, title: string, amount: number, date: Date, expenseCategoryID: string, notes: string, receipt?: string) {
     const API_DOMAIN = process.env.EXPO_PUBLIC_BLOCKCHAIN_MIDDLEWARE_API_IP_ADDRESS;
@@ -45,8 +44,6 @@ async function addExpense(token: string, title: string, amount: number, date: Da
     };
 }
 
-
-
 export default function AddExpense() {
     setPageTitle("Add Expense");
 
@@ -61,6 +58,7 @@ export default function AddExpense() {
     const [notes, setNotes] = useState<string>('');
     const [receipt, setReceipt] = useState<string>('');
     const [error, setError] = useState<string>('');
+    const [isLoading, setIsLoading] = useState<boolean>(false);
 
     getToken().then((data) => {
         if (!data) {
@@ -87,7 +85,6 @@ export default function AddExpense() {
 
         getCategories();
     }, [token]);
-
 
     const validateForm = () => {
         if (!title || !amount || !date || !category) {
@@ -126,13 +123,17 @@ export default function AddExpense() {
 
     const handleAddExpense = () => {
         if (validateForm() && category) {
-            addExpense(token, title, parseFloat(amount), date as Date, category.getID(), notes, receipt).then((data) => {
-                Alert.alert('Success', 'Expense added successfully!');
-                clearRouterHistory(router);
-                router.replace("/listTransactionsPage");
-            }).catch((error: Error) => {
-                setError(error.message)
-            })
+            setIsLoading(true);
+            addExpense(token, title, parseFloat(amount), date as Date, category.getID(), notes, receipt)
+                .then(() => {
+                    Alert.alert('Success', 'Expense added successfully!');
+                    clearRouterHistory(router);
+                    router.replace("/listTransactionsPage");
+                }).catch((error: Error) => {
+                    setError(error.message)
+                }).finally(() => {
+                    setIsLoading(false);
+                });
         };
     };
 
@@ -157,21 +158,31 @@ export default function AddExpense() {
                 />
             </View>
 
-            {receipt ? <View style={styles.centeredTextContainer}><Text>Receipt Set</Text></View>: ""}
+            {receipt ? (
+                <View style={styles.centeredTextContainer}>
+                    <Text>Receipt Set</Text>
+                </View>
+            ) : null}
 
-            {error ? <View style={styles.centeredTextContainer}><Text style={styles.errorText}>{error}</Text></View> : null}
+            {error ? (
+                <View style={styles.centeredTextContainer}>
+                    <Text style={styles.errorText}>{error}</Text>
+                </View>
+            ) : null}
 
             <View style={styles.centeredTextContainer}>
                 <TouchableOpacity onPress={() => pickImage(setReceipt)}>
                     <Text style={styles.scanText}>Upload Receipt</Text>
                 </TouchableOpacity>
-                
             </View>
 
-            <TouchableOpacity style={styles.addButton} onPress={handleAddExpense}>
-                <Text style={styles.addButtonText}>Add Expense</Text>
+            <TouchableOpacity style={styles.addButton} onPress={handleAddExpense} disabled={isLoading}>
+                {isLoading ? (
+                    <ActivityIndicator color="#fff" />
+                ) : (
+                    <Text style={styles.addButtonText}>Add Expense</Text>
+                )}
             </TouchableOpacity>
-
         </ScrollView>
     );
 }

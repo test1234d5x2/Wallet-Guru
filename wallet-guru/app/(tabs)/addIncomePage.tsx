@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Alert, ScrollView, StatusBar } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Alert, ScrollView, StatusBar, ActivityIndicator } from 'react-native';
 import setPageTitle from '@/components/pageTitle/setPageTitle';
 import TopBar from '@/components/topBars/topBar';
 import IncomeDetailsInputs from '@/components/formComponents/incomeDetailsInputs';
@@ -10,14 +10,13 @@ import { isValidDate, isTodayOrBefore } from '@/utils/validation/validateDate';
 import clearRouterHistory from '@/utils/clearRouterHistory';
 import getToken from '@/utils/tokenAccess/getToken';
 
-
 async function addIncome(token: string, title: string, amount: number, date: Date, notes: string) {
     const API_DOMAIN = process.env.EXPO_PUBLIC_BLOCKCHAIN_MIDDLEWARE_API_IP_ADDRESS;
     if (!API_DOMAIN) {
         throw new Error("Domain could not be found.");
     };
 
-    const ADD_INCOME_URL = `http://${API_DOMAIN}/api/incomes/`
+    const ADD_INCOME_URL = `http://${API_DOMAIN}/api/incomes/`;
 
     const response = await fetch(ADD_INCOME_URL, {
         method: "POST",
@@ -39,8 +38,6 @@ async function addIncome(token: string, title: string, amount: number, date: Dat
     }
 }
 
-
-
 export default function AddIncome() {
     setPageTitle("Add Income");
 
@@ -51,8 +48,8 @@ export default function AddIncome() {
     const [date, setDate] = useState<Date | null>(null);
     const [notes, setNotes] = useState<string>('');
     const [error, setError] = useState<string>('');
+    const [isLoading, setIsLoading] = useState<boolean>(false);
     const router = useRouter();
-
 
     getToken().then((data) => {
         if (!data) {
@@ -103,14 +100,17 @@ export default function AddIncome() {
 
     const handleAddIncome = () => {
         if (validateForm()) {
-            addIncome(token, title, parseFloat(amount), date as Date, notes).then((data) => {
-                Alert.alert('Success', 'Income added successfully!');
-                clearRouterHistory(router);
-                router.replace("/listTransactionsPage");
-            }).catch((error: Error) => {
-                setError(error.message)
-            });
-
+            setIsLoading(true);
+            addIncome(token, title, parseFloat(amount), date as Date, notes)
+                .then(() => {
+                    Alert.alert('Success', 'Income added successfully!');
+                    clearRouterHistory(router);
+                    router.replace("/listTransactionsPage");
+                }).catch((error: Error) => {
+                    setError(error.message);
+                }).finally(() => {
+                    setIsLoading(false);
+                });
         }
     };
 
@@ -132,10 +132,18 @@ export default function AddIncome() {
                 />
             </View>
 
-            {error ? <View style={styles.centeredTextContainer}><Text style={styles.errorText}>{error}</Text></View> : null}
+            {error ? (
+                <View style={styles.centeredTextContainer}>
+                    <Text style={styles.errorText}>{error}</Text>
+                </View>
+            ) : null}
 
-            <TouchableOpacity style={styles.addButton} onPress={handleAddIncome}>
-                <Text style={styles.addButtonText}>Add Income</Text>
+            <TouchableOpacity style={styles.addButton} onPress={handleAddIncome} disabled={isLoading}>
+                {isLoading ? (
+                    <ActivityIndicator color="#fff" />
+                ) : (
+                    <Text style={styles.addButtonText}>Add Income</Text>
+                )}
             </TouchableOpacity>
         </ScrollView>
     );

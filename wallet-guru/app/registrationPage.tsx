@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, TouchableOpacity, Alert, StatusBar } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, Alert, StatusBar, ActivityIndicator } from "react-native";
 import { useState } from "react";
 import AuthenticationInputs from "@/components/formComponents/authenticationInputs";
 import setPageTitle from "@/components/pageTitle/setPageTitle";
@@ -7,19 +7,11 @@ import isValidEmail from "@/utils/validation/validateEmail";
 import clearRouterHistory from "@/utils/clearRouterHistory";
 
 
-
-interface CreateUserResponse {
-    message: string;
-
-}
-
-
-
-async function createUser(email: string, password: string): Promise<CreateUserResponse> {
+async function createUser(email: string, password: string): Promise<void> {
     const API_DOMAIN = process.env.EXPO_PUBLIC_BLOCKCHAIN_MIDDLEWARE_API_IP_ADDRESS;
     if (!API_DOMAIN) {
-        throw new Error("Domain could not be found.")
-    };
+        throw new Error("Domain could not be found.");
+    }
 
     const CREATE_USER_URL = `http://${API_DOMAIN}/api/users/`;
 
@@ -35,13 +27,7 @@ async function createUser(email: string, password: string): Promise<CreateUserRe
         const error = await response.json();
         throw new Error(error.message);
     }
-
-    const data: CreateUserResponse = await response.json();
-    return data;
 }
-
-
-
 
 export default function Register() {
     setPageTitle("Create User");
@@ -49,13 +35,12 @@ export default function Register() {
     const [email, setEmail] = useState<string>('');
     const [password, setPassword] = useState<string>('');
     const [error, setError] = useState<string>('');
+    const [isLoading, setIsLoading] = useState<boolean>(false);
     const router = useRouter();
-
 
     const handleRedirection = () => {
         clearRouterHistory(router);
         router.replace("/loginPage");
-        return;
     };
 
     const handleRegistration = async () => {
@@ -69,20 +54,30 @@ export default function Register() {
             return;
         }
 
-        await createUser(email, password).then((data) => {
-            Alert.alert("Success", "User registered successfully!");
-            handleRedirection();
-        }).catch((error: Error) => {
-            setError(error.message);
-        });
+        setIsLoading(true);
 
-        return;
+        await createUser(email, password)
+            .then((data) => {
+                Alert.alert("Success", "User registered successfully!");
+                handleRedirection();
+            })
+            .catch((error: Error) => {
+                setError(error.message);
+            })
+            .finally(() => {
+                setIsLoading(false);
+            });
     };
 
     return (
         <View style={styles.container}>
             <StatusBar barStyle={"dark-content"} />
-            <AuthenticationInputs email={email} password={password} setEmail={setEmail} setPassword={setPassword} />
+            <AuthenticationInputs
+                email={email}
+                password={password}
+                setEmail={setEmail}
+                setPassword={setPassword}
+            />
 
             {error ? (
                 <View style={styles.errorTextContainer}>
@@ -96,8 +91,16 @@ export default function Register() {
                 </TouchableOpacity>
             </View>
 
-            <TouchableOpacity style={styles.loginButton} onPress={handleRegistration}>
-                <Text style={styles.loginButtonText}>Register</Text>
+            <TouchableOpacity
+                style={styles.loginButton}
+                onPress={handleRegistration}
+                disabled={isLoading}  // Button disabled based on isLoading
+            >
+                {isLoading ? (
+                    <ActivityIndicator color="#fff" />
+                ) : (
+                    <Text style={styles.loginButtonText}>Register</Text>
+                )}
             </TouchableOpacity>
         </View>
     );
@@ -116,6 +119,7 @@ const styles = StyleSheet.create({
         padding: 15,
         borderRadius: 10,
         alignItems: 'center',
+        justifyContent: 'center'
     },
     loginButtonText: {
         color: '#fff',

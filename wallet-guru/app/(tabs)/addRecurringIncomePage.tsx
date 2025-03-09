@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Alert, ScrollView, StatusBar } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Alert, ScrollView, StatusBar, ActivityIndicator } from 'react-native';
 import setPageTitle from '@/components/pageTitle/setPageTitle';
 import TopBar from '@/components/topBars/topBar';
 import validateEmpty from '@/utils/validation/validateEmpty';
 import isNumeric from '@/utils/validation/validateNumeric';
 import { useRouter } from 'expo-router';
-import { isValidDate, isTodayOrBefore } from '@/utils/validation/validateDate';
+import { isValidDate } from '@/utils/validation/validateDate';
 import clearRouterHistory from '@/utils/clearRouterHistory';
 import getToken from '@/utils/tokenAccess/getToken';
 import Frequency from '@/enums/Frequency';
@@ -15,14 +15,13 @@ import isValidFrequency from '@/utils/validation/isValidFrequency';
 import RecurrenceRule from '@/models/recurrenceModels/RecurrenceRule';
 import BasicRecurrenceRule from '@/models/recurrenceModels/BasicRecurrenceRule';
 
-
 async function addRecurrentIncome(token: string, title: string, amount: number, date: Date, notes: string, recurrenceRule: RecurrenceRule) {
     const API_DOMAIN = process.env.EXPO_PUBLIC_BLOCKCHAIN_MIDDLEWARE_API_IP_ADDRESS;
     if (!API_DOMAIN) {
         throw new Error("Domain could not be found.");
     };
 
-    const ADD_INCOME_URL = `http://${API_DOMAIN}/api/recurring-incomes/`
+    const ADD_INCOME_URL = `http://${API_DOMAIN}/api/recurring-incomes/`;
 
     const response = await fetch(ADD_INCOME_URL, {
         method: "POST",
@@ -45,8 +44,6 @@ async function addRecurrentIncome(token: string, title: string, amount: number, 
     }
 }
 
-
-
 export default function AddRecurrentIncome() {
     setPageTitle("Add Recurrent Income");
 
@@ -60,8 +57,8 @@ export default function AddRecurrentIncome() {
     const [endDate, setEndDate] = useState<Date | null>(null);
     const [notes, setNotes] = useState<string>('');
     const [error, setError] = useState<string>('');
+    const [isLoading, setIsLoading] = useState<boolean>(false);
     const router = useRouter();
-
 
     getToken().then((data) => {
         if (!data) {
@@ -89,16 +86,13 @@ export default function AddRecurrentIncome() {
         if (validateEmpty(amount)) {
             setError("The amount field must be filled properly.");
             return false;
-        }
-        else if (!isNumeric(amount)) {
+        } else if (!isNumeric(amount)) {
+            setError("The amount field must be a number greater than 0.");
+            return false;
+        } else if (parseFloat(amount) <= 0) {
             setError("The amount field must be a number greater than 0.");
             return false;
         }
-        else if (parseFloat(amount) <= 0) {
-            setError("The amount field must be a number greater than 0.");
-            return false;
-        }
-
 
         if (!isValidDate(startDate)) {
             setError("Please select a valid date.");
@@ -116,11 +110,10 @@ export default function AddRecurrentIncome() {
         }
 
         if (!isInteger(interval)) {
-            setError("Please select a date.");
+            setError("Please select a valid interval.");
             return false;
-        }
-        else if (parseInt(interval) <= 0) {
-            setError("Please select a date.");
+        } else if (parseInt(interval) <= 0) {
+            setError("Please select a valid interval.");
             return false;
         }
 
@@ -135,14 +128,26 @@ export default function AddRecurrentIncome() {
 
     const handleAddRecurrentIncome = () => {
         if (validateForm()) {
-            const recurrenceRule = new BasicRecurrenceRule(frequency, parseFloat(interval), startDate as Date, undefined, endDate as Date)
-            addRecurrentIncome(token, title, parseFloat(amount), new Date(), notes, recurrenceRule).then((data) => {
-                Alert.alert('Success', 'Income added successfully!');
-                clearRouterHistory(router);
-                router.replace("/listRecurringTransactionsPage");
-            }).catch((error: Error) => {
-                setError(error.message)
-            });
+            setIsLoading(true);
+            const recurrenceRule = new BasicRecurrenceRule(
+                frequency,
+                parseFloat(interval),
+                startDate as Date,
+                undefined,
+                endDate as Date
+            );
+            addRecurrentIncome(token, title, parseFloat(amount), new Date(), notes, recurrenceRule)
+                .then(() => {
+                    Alert.alert('Success', 'Income added successfully!');
+                    clearRouterHistory(router);
+                    router.replace("/listRecurringTransactionsPage");
+                })
+                .catch((error: Error) => {
+                    setError(error.message);
+                })
+                .finally(() => {
+                    setIsLoading(false);
+                });
         }
     };
 
@@ -170,10 +175,18 @@ export default function AddRecurrentIncome() {
                 />
             </View>
 
-            {error ? <View style={styles.centeredTextContainer}><Text style={styles.errorText}>{error}</Text></View> : null}
+            {error ? (
+                <View style={styles.centeredTextContainer}>
+                    <Text style={styles.errorText}>{error}</Text>
+                </View>
+            ) : null}
 
-            <TouchableOpacity style={styles.addButton} onPress={handleAddRecurrentIncome}>
-                <Text style={styles.addButtonText}>Add Recurrent Income</Text>
+            <TouchableOpacity style={styles.addButton} onPress={handleAddRecurrentIncome} disabled={isLoading}>
+                {isLoading ? (
+                    <ActivityIndicator color="#fff" />
+                ) : (
+                    <Text style={styles.addButtonText}>Add Recurrent Income</Text>
+                )}
             </TouchableOpacity>
         </ScrollView>
     );

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Alert, Dimensions, StatusBar, ScrollView } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Alert, Dimensions, StatusBar, ScrollView, ActivityIndicator } from 'react-native';
 import ExpenseCategoryInputs from '@/components/formComponents/expenseCategoryInputs';
 import setPageTitle from '@/components/pageTitle/setPageTitle';
 import TopBar from '@/components/topBars/topBar';
@@ -18,7 +18,6 @@ import RecurrenceRule from '@/models/recurrenceModels/RecurrenceRule';
 import BasicRecurrenceRule from '@/models/recurrenceModels/BasicRecurrenceRule';
 import updateCategoriesTimeWindowEnd from '@/utils/analytics/batchProcessRecurrencesUpdates/updateCategoriesTimeWindowEnd';
 import getColourSelection from '@/utils/getColourSelection';
-
 
 async function addExpenseCategory(token: string, name: string, monthlyBudget: number, recurrenceRule: RecurrenceRule, colour: string) {
     const API_DOMAIN = process.env.EXPO_PUBLIC_BLOCKCHAIN_MIDDLEWARE_API_IP_ADDRESS;
@@ -48,9 +47,6 @@ async function addExpenseCategory(token: string, name: string, monthlyBudget: nu
     }
 }
 
-
-
-
 export default function AddExpenseCategory() {
     setPageTitle("Add Expense Category");
 
@@ -62,10 +58,10 @@ export default function AddExpenseCategory() {
     const [frequency, setFrequency] = useState<Frequency>(Frequency.Daily);
     const [interval, setFrequencyInterval] = useState<string>('');
     const [startDate, setStartDate] = useState<Date | null>(null);
-    const [colour, setColour] = useState<string | null>(null)
+    const [colour, setColour] = useState<string | null>(null);
     const [error, setError] = useState<string>('');
+    const [isLoading, setIsLoading] = useState<boolean>(false);
     const router = useRouter();
-
 
     getToken().then((data) => {
         if (!data) {
@@ -119,7 +115,6 @@ export default function AddExpenseCategory() {
             return false;
         }
 
-
         if (!isValidFrequency(frequency)) {
             setError("Please select a valid frequency.");
             return false;
@@ -140,13 +135,22 @@ export default function AddExpenseCategory() {
 
     const handleAddCategory = () => {
         if (validateForm()) {
-            addExpenseCategory(token, categoryName, parseFloat(monthlyLimit), new BasicRecurrenceRule(frequency, parseFloat(interval), startDate as Date), colour || "#FFFFFF").then((data) => {
+            setIsLoading(true);
+            addExpenseCategory(
+                token,
+                categoryName,
+                parseFloat(monthlyLimit),
+                new BasicRecurrenceRule(frequency, parseFloat(interval), startDate as Date),
+                colour || "#FFFFFF"
+            ).then(() => {
                 Alert.alert('Success', `Category "${categoryName}" added with a limit of £${monthlyLimit}`);
                 clearRouterHistory(router);
                 router.replace("/expenseCategoriesOverviewPage");
             }).catch((error: Error) => {
-                setError(error.message)
-            })
+                setError(error.message);
+            }).finally(() => {
+                setIsLoading(false);
+            });
         }
     };
 
@@ -175,8 +179,12 @@ export default function AddExpenseCategory() {
 
             {error === '' ? null : <Text style={styles.errorText}>{error}</Text>}
 
-            <TouchableOpacity style={styles.addButton} onPress={handleAddCategory}>
-                <Text style={styles.addButtonText}>Add Category</Text>
+            <TouchableOpacity style={styles.addButton} onPress={handleAddCategory} disabled={isLoading}>
+                {isLoading ? (
+                    <ActivityIndicator color="#fff" />
+                ) : (
+                    <Text style={styles.addButtonText}>Add Category</Text>
+                )}
             </TouchableOpacity>
         </ScrollView>
     );

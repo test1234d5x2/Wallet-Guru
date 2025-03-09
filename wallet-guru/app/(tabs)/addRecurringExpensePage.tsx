@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Alert, ScrollView, StatusBar } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Alert, ScrollView, StatusBar, ActivityIndicator } from 'react-native';
 import setPageTitle from '@/components/pageTitle/setPageTitle';
 import TopBar from '@/components/topBars/topBar';
 import validateEmpty from '@/utils/validation/validateEmpty';
@@ -17,7 +17,6 @@ import isValidFrequency from '@/utils/validation/isValidFrequency';
 import RecurrenceRule from '@/models/recurrenceModels/RecurrenceRule';
 import BasicRecurrenceRule from '@/models/recurrenceModels/BasicRecurrenceRule';
 import updateCategoriesTimeWindowEnd from '@/utils/analytics/batchProcessRecurrencesUpdates/updateCategoriesTimeWindowEnd';
-
 
 async function addRecurrentExpense(token: string, title: string, amount: number, date: Date, categoryID: string, notes: string, recurrenceRule: RecurrenceRule) {
     const API_DOMAIN = process.env.EXPO_PUBLIC_BLOCKCHAIN_MIDDLEWARE_API_IP_ADDRESS;
@@ -49,8 +48,6 @@ async function addRecurrentExpense(token: string, title: string, amount: number,
     };
 }
 
-
-
 export default function AddRecurrentExpense() {
     setPageTitle("Add Recurrent Expense");
 
@@ -67,6 +64,7 @@ export default function AddRecurrentExpense() {
     const [endDate, setEndDate] = useState<Date | null>(null);
     const [notes, setNotes] = useState<string>('');
     const [error, setError] = useState<string>('');
+    const [isLoading, setIsLoading] = useState<boolean>(false);
 
     getToken().then((data) => {
         if (!data) {
@@ -94,7 +92,6 @@ export default function AddRecurrentExpense() {
         getCategories();
     }, [token]);
 
-
     const validateForm = (): boolean => {
         if (!title || !amount || !startDate || !category || !frequency || !interval) {
             setError("Fill in all the required fields.");
@@ -119,7 +116,6 @@ export default function AddRecurrentExpense() {
             return false;
         }
 
-
         if (!isValidDate(startDate)) {
             setError("Please select a valid date.");
             return false;
@@ -136,11 +132,11 @@ export default function AddRecurrentExpense() {
         }
 
         if (!isInteger(interval)) {
-            setError("Please select a date.");
+            setError("Please select a valid interval.");
             return false;
         }
         else if (parseInt(interval) <= 0) {
-            setError("Please select a date.");
+            setError("Please select a valid interval.");
             return false;
         }
 
@@ -155,15 +151,21 @@ export default function AddRecurrentExpense() {
 
     const handleAddRecurrentExpense = () => {
         if (validateForm()) {
-            const recurrenceRule = new BasicRecurrenceRule(frequency, parseFloat(interval), startDate as Date, undefined, endDate as Date)
-            addRecurrentExpense(token, title, parseFloat(amount), new Date(), (category as ExpenseCategory).getID(), notes, recurrenceRule).then((data) => {
-                Alert.alert('Success', 'Recurrent expense added successfully!');
-                clearRouterHistory(router);
-                router.replace("/listRecurringTransactionsPage");
-            }).catch((error: Error) => {
-                setError(error.message);
-            })
-        };
+            setIsLoading(true);
+            const recurrenceRule = new BasicRecurrenceRule(frequency, parseFloat(interval), startDate as Date, undefined, endDate as Date);
+            addRecurrentExpense(token, title, parseFloat(amount), new Date(), (category as ExpenseCategory).getID(), notes, recurrenceRule)
+                .then(() => {
+                    Alert.alert('Success', 'Recurrent expense added successfully!');
+                    clearRouterHistory(router);
+                    router.replace("/listRecurringTransactionsPage");
+                })
+                .catch((error: Error) => {
+                    setError(error.message);
+                })
+                .finally(() => {
+                    setIsLoading(false);
+                });
+        }
     };
 
     return (
@@ -193,10 +195,18 @@ export default function AddRecurrentExpense() {
                 />
             </View>
 
-            {error ? <View style={styles.centeredTextContainer}><Text style={styles.errorText}>{error}</Text></View> : null}
+            {error ? (
+                <View style={styles.centeredTextContainer}>
+                    <Text style={styles.errorText}>{error}</Text>
+                </View>
+            ) : null}
 
-            <TouchableOpacity style={styles.addButton} onPress={handleAddRecurrentExpense}>
-                <Text style={styles.addButtonText}>Add Recurrent Expense</Text>
+            <TouchableOpacity style={styles.addButton} onPress={handleAddRecurrentExpense} disabled={isLoading}>
+                {isLoading ? (
+                    <ActivityIndicator color="#fff" />
+                ) : (
+                    <Text style={styles.addButtonText}>Add Recurrent Expense</Text>
+                )}
             </TouchableOpacity>
         </ScrollView>
     );

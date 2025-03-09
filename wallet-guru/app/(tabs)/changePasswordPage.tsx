@@ -4,10 +4,9 @@ import clearRouterHistory from "@/utils/clearRouterHistory";
 import getToken from "@/utils/tokenAccess/getToken";
 import { useRouter } from "expo-router";
 import { useState } from "react";
-import { Alert, View, StyleSheet, Dimensions, Text, TouchableOpacity, StatusBar } from "react-native";
+import { Alert, View, StyleSheet, Dimensions, Text, TouchableOpacity, StatusBar, ActivityIndicator } from "react-native";
 import TopBar from "@/components/topBars/topBar";
 import changeUserPassword from "@/utils/apiCalls/changeUserPassword";
-
 
 export default function ChangePasswordPage() {
     setPageTitle("Change Password");
@@ -18,6 +17,7 @@ export default function ChangePasswordPage() {
     const [newPassword, setNewPassword] = useState<string>('');
     const [verifyNewPassword, setVerification] = useState<string>('');
     const [error, setError] = useState<string>('');
+    const [isLoading, setIsLoading] = useState<boolean>(false);
     const router = useRouter();
 
     getToken().then((data) => {
@@ -27,7 +27,6 @@ export default function ChangePasswordPage() {
             router.replace("/loginPage");
             return;
         }
-
         setToken(data.token);
         setEmail(data.email);
     });
@@ -45,7 +44,6 @@ export default function ChangePasswordPage() {
             setError("New password must be different from the old password.");
             return false;
         }
-
         setError("");
         return true;
     };
@@ -54,15 +52,21 @@ export default function ChangePasswordPage() {
         if (!validateForm()) {
             return;
         }
-        changeUserPassword(token, email, newPassword).then((complete) => {
-            if (complete) {
-                Alert.alert("Success", "Password changed successfully.");
-                clearRouterHistory(router);
-                router.replace("/accountOverviewPage");
-            }
-        }).catch((err: Error) => {
-            setError(err.message);
-        })
+        setIsLoading(true);
+        changeUserPassword(token, email, newPassword)
+            .then((complete) => {
+                if (complete) {
+                    Alert.alert("Success", "Password changed successfully.");
+                    clearRouterHistory(router);
+                    router.replace("/accountOverviewPage");
+                }
+            })
+            .catch((err: Error) => {
+                setError(err.message);
+            })
+            .finally(() => {
+                setIsLoading(false);
+            });
     };
 
     return (
@@ -87,8 +91,16 @@ export default function ChangePasswordPage() {
                 </View>
             ) : null}
 
-            <TouchableOpacity style={styles.changePasswordButton} onPress={handleChangePassword}>
-                <Text style={styles.changePasswordButtonText}>Change Password</Text>
+            <TouchableOpacity
+                style={styles.changePasswordButton}
+                onPress={handleChangePassword}
+                disabled={isLoading}
+            >
+                {isLoading ? (
+                    <ActivityIndicator color="#fff" />
+                ) : (
+                    <Text style={styles.changePasswordButtonText}>Change Password</Text>
+                )}
             </TouchableOpacity>
         </View>
     );
