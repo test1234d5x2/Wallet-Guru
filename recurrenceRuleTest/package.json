@@ -17,5 +17,8 @@
     "nodemon": "^3.1.9",
     "ts-node": "^10.9.2",
     "typescript": "^5.7.3"
+  },
+  "dependencies": {
+    "date-fns": "^4.1.0"
   }
 }

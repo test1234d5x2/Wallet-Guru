@@ -137,7 +137,13 @@ class RecurringExpenseService {
                     await this.expenseService.addExpense(recExp.getUserID(), recExp.title, recExp.amount, new Date(), recExp.notes, recExp.categoryID, recExp.receipt);
                     recExp.recurrenceRule.computeNextTriggerDate();
 
-                    await this.updateRecurringExpense(recExp.getID(), recExp.getUserID(), recExp.title, recExp.amount, recExp.date, recExp.notes, recExp.categoryID, recExp.recurrenceRule)
+                    if (recExp.recurrenceRule.shouldEnd()) {
+                        await this.deleteRecurringExpense(recExp.getID(), recExp.getUserID())
+                    }
+
+                    else {
+                        await this.updateRecurringExpense(recExp.getID(), recExp.getUserID(), recExp.title, recExp.amount, recExp.date, recExp.notes, recExp.categoryID, recExp.recurrenceRule)
+                    }
                 }
             });
             

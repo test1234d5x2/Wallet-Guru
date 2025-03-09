@@ -137,7 +137,13 @@ class RecurringIncomeService {
                     await this.incomeService.addIncome(recIncome.getUserID(), recIncome.title, recIncome.amount, new Date(), recIncome.notes);
                     recIncome.recurrenceRule.computeNextTriggerDate();
 
-                    await this.updateRecurringIncome(recIncome.getID(), recIncome.getUserID(), recIncome.title, recIncome.amount, recIncome.date, recIncome.notes, recIncome.recurrenceRule);
+                    if (recIncome.recurrenceRule.shouldEnd()) {
+                        await this.deleteRecurringIncome(recIncome.getID(), recIncome.getUserID())
+                    }
+                    
+                    else {
+                        await this.updateRecurringIncome(recIncome.getID(), recIncome.getUserID(), recIncome.title, recIncome.amount, recIncome.date, recIncome.notes, recIncome.recurrenceRule);
+                    }
                 }
             });
             

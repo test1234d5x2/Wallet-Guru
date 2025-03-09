@@ -7,7 +7,6 @@ export default function MainMenu() {
             groupTitle: "Dashboard",
             items: [
                 { title: "Dashboard", link: "/dashboardPage" },
-                { title: "Colour Picker", link: "/colourPicker" }
             ],
         },
         {

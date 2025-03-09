@@ -21,6 +21,14 @@ export default abstract class RecurrenceRule {
         ))
     }
 
+    public shouldEnd(): boolean {
+        if (this.endDate) {
+            return this.nextTriggerDate > this.endDate;
+        }
+
+        return false;
+    }
+
     public shouldTrigger(): boolean {
         const now = new Date();
         return now >= this.nextTriggerDate;

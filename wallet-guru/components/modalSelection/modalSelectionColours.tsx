@@ -11,7 +11,6 @@ interface ModalSelectionProps {
 const ModalSelectionColours = (props: ModalSelectionProps) => {
 
     const [showDropdown, setShowDropdown] = useState<boolean>(false)
-    let displayText = props.value
 
     return (
         <View>
@@ -19,7 +18,7 @@ const ModalSelectionColours = (props: ModalSelectionProps) => {
                 <TouchableOpacity style={styles.dropdown} onPress={() => { setShowDropdown(true) }}>
                     <View style={styles.row}>
                         <Text style={styles.dropdownText}>Colour:</Text>
-                        <View style={[styles.circle, {backgroundColor: props.value || 'white'}]} />
+                        <View style={[styles.circle, { backgroundColor: props.value || 'white' }]} />
                     </View>
 
                 </TouchableOpacity>
@@ -28,6 +27,7 @@ const ModalSelectionColours = (props: ModalSelectionProps) => {
                     <SafeAreaView style={styles.modalOverlay}>
                         <View style={styles.modalContainer}>
                             <FlatList
+                                contentContainerStyle={styles.choicesContainer}
                                 data={props.choices}
                                 keyExtractor={(item, index) => index.toString()}
                                 renderItem={({ item }) => (
@@ -38,7 +38,7 @@ const ModalSelectionColours = (props: ModalSelectionProps) => {
                                             setShowDropdown(false);
                                         }}
                                     >
-                                        <View style={[styles.circle, {backgroundColor: item}]} />
+                                        <View style={[styles.circle, { backgroundColor: item }]} />
                                     </TouchableOpacity>
                                 )}
                             />
@@ -93,6 +93,12 @@ const styles = StyleSheet.create({
         elevation: 5,
         zIndex: 1000,
     },
+    choicesContainer: {
+        flexDirection: "row",
+        flexWrap: "wrap",
+        justifyContent: "space-between",
+        alignItems: "center"
+    },
     modalDismissArea: {
         position: "absolute",
         top: 0,
@@ -103,6 +109,7 @@ const styles = StyleSheet.create({
     dropdownOption: {
         padding: 15,
         borderBottomWidth: 1,
+        borderRightWidth: 1,
         borderColor: '#ccc',
     },
     optionText: {

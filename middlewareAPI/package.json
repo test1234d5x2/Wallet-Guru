@@ -18,6 +18,7 @@
     "@hyperledger/fabric-gateway": "^1.7.1",
     "@types/validator": "^13.12.2",
     "cors": "^2.8.5",
+    "date-fns": "^4.1.0",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
     "fabric-ca-client": "^2.2.20",
