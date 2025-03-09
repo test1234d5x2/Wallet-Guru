@@ -57,6 +57,7 @@ export default function EditExpenseCategory() {
                 setFrequency(category.recurrenceRule.frequency);
                 setFrequencyInterval(category.recurrenceRule.interval.toString());
                 setStartDate(category.recurrenceRule.startDate);
+                setColour(category.colour)
             }).catch((error: Error) => {
                 Alert.alert("Expense Category Not Found")
                 console.log(error.message);
@@ -134,7 +135,7 @@ export default function EditExpenseCategory() {
     const handleEditCategory = () => {
         if (validateForm()) {
             const recurrenceRule = new BasicRecurrenceRule(frequency, parseFloat(interval), startDate as Date);
-            updateExpenseCategory(token, id as string, categoryName, parseFloat(monthlyLimit), recurrenceRule).then((complete) => {
+            updateExpenseCategory(token, id as string, categoryName, parseFloat(monthlyLimit), recurrenceRule, colour || "#FFFFFF").then((complete) => {
                 if (complete) {
                     Alert.alert('Success', `Category "${categoryName}" updated with a limit of £${monthlyLimit}`);
                     clearRouterHistory(router);

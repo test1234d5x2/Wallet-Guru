@@ -32,7 +32,7 @@ export default async function getExpenseCategories(token: string): Promise<Expen
             category.recurrenceRule.nextTriggerDate ? new Date(category.recurrenceRule.nextTriggerDate): undefined,
             category.recurrenceRule.endDate ? new Date(category.recurrenceRule.endDate): undefined
         )
-        return new ExpenseCategory(category.userID, category.name, category.monthlyBudget, recurrenceRule, category.id);
+        return new ExpenseCategory(category.userID, category.name, category.monthlyBudget, recurrenceRule, category.id, category.colour);
     });
 
     return categories;

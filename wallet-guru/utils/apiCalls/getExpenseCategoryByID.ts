@@ -31,5 +31,5 @@ export default async function getExpenseCategoryByID(token: string, id: string):
         data.recurrenceRule.nextTriggerDate ? new Date(data.recurrenceRule.nextTriggerDate) : undefined,
         data.recurrenceRule.endDate ? new Date(data.recurrenceRule.endDate) : undefined
     )
-    return new ExpenseCategory(data.userID, data.name, data.monthlyBudget, recurrenceRule, data.id);
+    return new ExpenseCategory(data.userID, data.name, data.monthlyBudget, recurrenceRule, data.id, data.colour);
 }

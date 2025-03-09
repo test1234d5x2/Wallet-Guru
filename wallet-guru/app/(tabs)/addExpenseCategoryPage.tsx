@@ -20,7 +20,7 @@ import updateCategoriesTimeWindowEnd from '@/utils/analytics/batchProcessRecurre
 import getColourSelection from '@/utils/getColourSelection';
 
 
-async function addExpenseCategory(token: string, name: string, monthlyBudget: number, recurrenceRule: RecurrenceRule) {
+async function addExpenseCategory(token: string, name: string, monthlyBudget: number, recurrenceRule: RecurrenceRule, colour: string) {
     const API_DOMAIN = process.env.EXPO_PUBLIC_BLOCKCHAIN_MIDDLEWARE_API_IP_ADDRESS;
     if (!API_DOMAIN) {
         throw new Error("Domain could not be found.");
@@ -37,7 +37,8 @@ async function addExpenseCategory(token: string, name: string, monthlyBudget: nu
         body: JSON.stringify({
             name,
             monthlyBudget,
-            recurrenceRule
+            recurrenceRule,
+            colour
         })
     });
 
@@ -139,7 +140,7 @@ export default function AddExpenseCategory() {
 
     const handleAddCategory = () => {
         if (validateForm()) {
-            addExpenseCategory(token, categoryName, parseFloat(monthlyLimit), new BasicRecurrenceRule(frequency, parseFloat(interval), startDate as Date)).then((data) => {
+            addExpenseCategory(token, categoryName, parseFloat(monthlyLimit), new BasicRecurrenceRule(frequency, parseFloat(interval), startDate as Date), colour || "#FFFFFF").then((data) => {
                 Alert.alert('Success', `Category "${categoryName}" added with a limit of £${monthlyLimit}`);
                 clearRouterHistory(router);
                 router.replace("/expenseCategoriesOverviewPage");

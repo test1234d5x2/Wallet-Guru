@@ -12,7 +12,7 @@ import BasicRecurrenceRule from "../models/recurrenceModels/BasicRecurrenceRule"
  * - recurrenceRule (RecurrenceRule)
  */
 export const create: RequestHandler = async (req, res): Promise<void> => {
-    const { name, monthlyBudget, recurrenceRule } = req.body;
+    const { name, monthlyBudget, recurrenceRule, colour } = req.body;
 
     const userID = getUserFromToken(req);
     if (!userID) {
@@ -20,8 +20,8 @@ export const create: RequestHandler = async (req, res): Promise<void> => {
         return;
     }
 
-    if (!name || monthlyBudget === undefined) {
-        res.status(400).json({ error: "Missing required fields: name, monthlyBudget" });
+    if (!name || monthlyBudget === undefined || !recurrenceRule || !colour) {
+        res.status(400).json({ error: "Missing required fields: name, monthlyBudget, recurrenceRule, colour" });
         return;
     }
 
@@ -36,7 +36,7 @@ export const create: RequestHandler = async (req, res): Promise<void> => {
         recurrenceRule.endDate ? new Date(recurrenceRule.endDate) : undefined
     );
 
-    if (await expenseCategoryService.addExpenseCategory(userID, name, monthlyBudget, rule)) {
+    if (await expenseCategoryService.addExpenseCategory(userID, name, monthlyBudget, rule, colour)) {
         res.status(201).json({ message: "Expense category created" });
     }
     else {
@@ -55,7 +55,7 @@ export const create: RequestHandler = async (req, res): Promise<void> => {
  */
 export const update: RequestHandler = async (req, res): Promise<void> => {
     const { id } = req.params;
-    const { name, monthlyBudget, recurrenceRule } = req.body;
+    const { name, monthlyBudget, recurrenceRule, colour } = req.body;
 
     const userID = getUserFromToken(req);
     if (!userID) {
@@ -63,8 +63,8 @@ export const update: RequestHandler = async (req, res): Promise<void> => {
         return;
     }
 
-    if (!id || !name || monthlyBudget === undefined) {
-        res.status(400).json({ error: "Missing required fields: id, name, monthlyBudget" });
+    if (!id || !name || monthlyBudget === undefined || !recurrenceRule || !colour) {
+        res.status(400).json({ error: "Missing required fields: id, name, monthlyBudget, recurrenceRule, colour" });
         return;
     }
 
@@ -79,7 +79,7 @@ export const update: RequestHandler = async (req, res): Promise<void> => {
         recurrenceRule.endDate ? new Date(recurrenceRule.endDate) : undefined
     );
 
-    if (await expenseCategoryService.updateExpenseCategory(id, userID, name, monthlyBudget, rule)) {
+    if (await expenseCategoryService.updateExpenseCategory(id, userID, name, monthlyBudget, rule, colour)) {
         res.status(200).json({ message: "Expense category updated" });
     }
     else {

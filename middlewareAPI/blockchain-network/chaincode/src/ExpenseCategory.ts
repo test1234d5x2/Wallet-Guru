@@ -10,7 +10,8 @@ export interface ExpenseCategory {
     userID: string;
     name: string;
     monthlyBudget: number;
-    recurrenceRule: any; // Recurrence rule stored as an object.
+    recurrenceRule: any;
+    colour: string;
 }
 
 /**
@@ -61,8 +62,8 @@ export class ExpenseCategoryContract extends Contract {
         }
 
         // Validate required fields (id must be provided by the client)
-        if (!expenseCategoryInput.id || !expenseCategoryInput.userID || !expenseCategoryInput.name || expenseCategoryInput.monthlyBudget === undefined || !expenseCategoryInput.recurrenceRule) {
-            throw new Error('Missing required fields: id, userID, name, monthlyBudget');
+        if (!expenseCategoryInput.id || !expenseCategoryInput.userID || !expenseCategoryInput.name || expenseCategoryInput.monthlyBudget === undefined || !expenseCategoryInput.recurrenceRule || !expenseCategoryInput.colour) {
+            throw new Error('Missing required fields: id, userID, name, monthlyBudget, recurrenceRule, colour');
         }
 
         const categoryID = expenseCategoryInput.id;
@@ -77,6 +78,7 @@ export class ExpenseCategoryContract extends Contract {
             name: expenseCategoryInput.name,
             monthlyBudget: monthlyBudgetNum,
             recurrenceRule: expenseCategoryInput.recurrenceRule,
+            colour: expenseCategoryInput.colour,
         };
 
         const key = this.getExpenseCategoryKey(ctx, expenseCategory.userID, categoryID);
@@ -113,12 +115,10 @@ export class ExpenseCategoryContract extends Contract {
         }
 
         // Validate required fields for update
-        if (!expenseCategoryInput.id || !expenseCategoryInput.userID || !expenseCategoryInput.name || expenseCategoryInput.monthlyBudget === undefined || !expenseCategoryInput.recurrenceRule) {
-            throw new Error('Missing required fields: id, userID, name, monthlyBudget, recurrenceRule');
+        if (!expenseCategoryInput.id || !expenseCategoryInput.userID || !expenseCategoryInput.name || expenseCategoryInput.monthlyBudget === undefined || !expenseCategoryInput.recurrenceRule || !expenseCategoryInput.colour) {
+            throw new Error('Missing required fields: id, userID, name, monthlyBudget, recurrenceRule, colour');
         }
 
-        console.log(expenseCategoryInput)
-        console.log(expenseCategoryInput.recurrenceRule)
 
         const key = this.getExpenseCategoryKey(ctx, expenseCategoryInput.userID, expenseCategoryInput.id);
         const categoryBytes = await ctx.stub.getState(key);
@@ -127,7 +127,6 @@ export class ExpenseCategoryContract extends Contract {
         }
 
         const storedExpenseCategory: ExpenseCategory = JSON.parse(categoryBytes.toString());
-        console.log(storedExpenseCategory)
         storedExpenseCategory.name = expenseCategoryInput.name;
 
         const monthlyBudgetNum = Number(expenseCategoryInput.monthlyBudget);
@@ -136,6 +135,7 @@ export class ExpenseCategoryContract extends Contract {
         }
         storedExpenseCategory.monthlyBudget = monthlyBudgetNum;
         storedExpenseCategory.recurrenceRule = expenseCategoryInput.recurrenceRule;
+        storedExpenseCategory.colour = expenseCategoryInput.colour;
 
         await ctx.stub.putState(key, Buffer.from(this.deterministicStringify(storedExpenseCategory)));
         return JSON.stringify({ message: 'Expense category updated' });

@@ -16,8 +16,8 @@ class ExpenseCategoryService {
         this.expenseCategoryContract = expenseCategoryContract;
     }
 
-    public async addExpenseCategory(userID: string, name: string, monthlyBudget: number, recurrenceRule: RecurrenceRule): Promise<boolean> {
-        const category = new ExpenseCategory(userID, name, monthlyBudget, recurrenceRule);
+    public async addExpenseCategory(userID: string, name: string, monthlyBudget: number, recurrenceRule: RecurrenceRule, colour: string): Promise<boolean> {
+        const category = new ExpenseCategory(userID, name, monthlyBudget, recurrenceRule, undefined, colour);
         try {
             await this.expenseCategoryContract.submitTransaction(
                 "createExpenseCategory",
@@ -32,7 +32,7 @@ class ExpenseCategoryService {
         return false;
     }
 
-    public async updateExpenseCategory(id: string, userID: string, name: string, monthlyBudget: number, recurrenceRule: BasicRecurrenceRule): Promise<boolean> {
+    public async updateExpenseCategory(id: string, userID: string, name: string, monthlyBudget: number, recurrenceRule: BasicRecurrenceRule, colour: string): Promise<boolean> {
 
         try {
             const category = await this.findByID(id, userID);
@@ -43,6 +43,7 @@ class ExpenseCategoryService {
             category.name = name;
             category.monthlyBudget = monthlyBudget;
             category.recurrenceRule = recurrenceRule;
+            category.colour = colour;
 
             await this.expenseCategoryContract.submitTransaction(
                 "updateExpenseCategory",
@@ -90,7 +91,7 @@ class ExpenseCategoryService {
                     category.recurrenceRule.nextTriggerDate ? new Date(category.recurrenceRule.nextTriggerDate) : undefined,
                     category.recurrenceRule.endDate ? new Date(category.recurrenceRule.endDate) : undefined
                 )
-                return new ExpenseCategory(category.userID, category.name, category.monthlyBudget, recurrenceRule, category.id);
+                return new ExpenseCategory(category.userID, category.name, category.monthlyBudget, recurrenceRule, category.id, category.colour);
             });
             return categories;
         } catch (err) {
@@ -117,7 +118,7 @@ class ExpenseCategoryService {
                 data.recurrenceRule.nextTriggerDate ? new Date(data.recurrenceRule.nextTriggerDate) : undefined,
                 data.recurrenceRule.endDate ? new Date(data.recurrenceRule.endDate) : undefined
             )
-            return new ExpenseCategory(data.userID, data.name, data.monthlyBudget, recurrenceRule, data.id);
+            return new ExpenseCategory(data.userID, data.name, data.monthlyBudget, recurrenceRule, data.id, data.colour);
         } catch (err) {
             console.log(err)
         }

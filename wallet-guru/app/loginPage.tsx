@@ -7,6 +7,7 @@ import clearRouterHistory from "@/utils/clearRouterHistory";
 import saveToken from "@/utils/tokenAccess/saveToken";
 import getToken from '@/utils/tokenAccess/getToken';
 import verifyToken from "@/utils/apiCalls/verifyToken";
+import removeToken from "@/utils/tokenAccess/deleteToken";
 
 interface LoginResponse {
     message: string;
@@ -58,6 +59,7 @@ export default function Login() {
             }
             catch (err: any) {
                 console.log(err.message)
+                await removeToken()
             }
         }
     });

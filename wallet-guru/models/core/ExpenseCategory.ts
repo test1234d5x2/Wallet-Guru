@@ -7,13 +7,15 @@ class ExpenseCategory {
     name: string;
     monthlyBudget: number;
     recurrenceRule: BasicRecurrenceRule;
+    colour: string
 
-    constructor(userID: string, name: string, monthlyBudget: number, recurrenceRule: BasicRecurrenceRule, id?: string) {
+    constructor(userID: string, name: string, monthlyBudget: number, recurrenceRule: BasicRecurrenceRule, id?: string, colour?: string) {
         this.id = id || uuid.v4();
         this.userID = userID;
         this.name = name;
         this.monthlyBudget = monthlyBudget;
         this.recurrenceRule = recurrenceRule;
+        this.colour = colour || "#FFFFFF";
     }
 
     getID(): string {
@@ -48,6 +50,7 @@ class ExpenseCategory {
             name: this.name,
             monthlyBudget: this.monthlyBudget,
             recurrenceRule: this.recurrenceRule,
+            colour: this.colour
         };
     }
 }
