@@ -18,11 +18,13 @@ export default function AuthenticationInputs(props: AuthenticationInputsProps) {
             <EmailInputField
                 email={props.email}
                 setEmail={(props.setEmail)}
+                required
             />
 
             <PasswordInputField
                 password={props.password}
-                setPassword={props.setPassword} 
+                setPassword={props.setPassword}
+                required
             />
 
         </View>

@@ -30,17 +30,19 @@ export default function ExpenseDetailsInputs(props: ExpenseDetailsInputsProps) {
                 placeholder="Title"
                 value={props.title}
                 setValue={props.setTitle}
+                required
             />
 
             <NumericInputField
                 placeholder="Amount"
                 value={props.amount}
                 setValue={props.setAmount}
+                required
             />
 
-            <DateInputField date={props.date} setDate={props.setDate} />
+            <DateInputField date={props.date} setDate={props.setDate} required />
 
-            <ModalSelectionExpenseCategories choices={props.categoriesList} value={props.category} setValue={props.setCategory} />
+            <ModalSelectionExpenseCategories choices={props.categoriesList} value={props.category} setValue={props.setCategory} required />
 
             <StandardInputField
                 placeholder="Notes"

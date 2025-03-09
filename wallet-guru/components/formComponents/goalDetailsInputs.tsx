@@ -25,20 +25,23 @@ export default function GoalDetailsInputs(props: GoalDetailsInputsProps) {
                 placeholder="Title"
                 value={props.title}
                 setValue={props.setTitle}
+                required
             />
 
             <NumericInputField
                 placeholder="Target"
                 value={props.target}
                 setValue={props.setTarget}
+                required
             />
 
-            <DateInputField date={props.date} setDate={props.setDate} />
+            <DateInputField date={props.date} setDate={props.setDate} required />
 
             <StandardInputField
                 placeholder="Description"
                 value={props.description}
                 setValue={props.setDesc}
+                required
             />
         </ScrollView>
     )

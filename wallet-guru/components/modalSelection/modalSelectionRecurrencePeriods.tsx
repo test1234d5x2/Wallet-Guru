@@ -1,12 +1,13 @@
 import RecurrencePeriod from '@/enums/Frequency';
 import React, { useState } from 'react';
-import { View, Text, FlatList, TouchableOpacity, StyleSheet, Modal, Pressable, SafeAreaView, Alert } from 'react-native';
+import { View, Text, FlatList, TouchableOpacity, StyleSheet, Modal, Pressable, SafeAreaView } from 'react-native';
 
 
 interface ModalSelectionProps {
     choices: Array<RecurrencePeriod>
     value: RecurrencePeriod | null
     setValue: (text: RecurrencePeriod) => void
+    required?: boolean
 }
 
 const ModalSelectionRecurrencePeriods = (props: ModalSelectionProps) => {
@@ -17,8 +18,8 @@ const ModalSelectionRecurrencePeriods = (props: ModalSelectionProps) => {
     return (
         <View>
             <TouchableOpacity style={styles.input}>
-                <TouchableOpacity style={styles.dropdown} onPress={() => {setShowDropdown(true)}}>
-                    <Text style={styles.dropdownText}>Frequency Period: {displayText == undefined ? "": displayText}</Text>
+                <TouchableOpacity style={styles.dropdown} onPress={() => { setShowDropdown(true) }}>
+                    <Text style={styles.dropdownText}>Frequency Period: {displayText == undefined ? "" : displayText}</Text>
                 </TouchableOpacity>
 
                 <Modal visible={showDropdown} transparent={true} onRequestClose={() => setShowDropdown(false)}>
@@ -47,7 +48,7 @@ const ModalSelectionRecurrencePeriods = (props: ModalSelectionProps) => {
                     </SafeAreaView>
                 </Modal>
             </TouchableOpacity>
-            
+            <Text style={styles.requiredText}>{props.required ? "Required" : "Optional"}</Text>
         </View>
     )
 }
@@ -61,6 +62,11 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         paddingLeft: 15,
         fontSize: 16,
+    },
+    requiredText: {
+        paddingLeft: 15,
+        color: "rgba(0,0,0,0.55)",
+        fontSize: 12,
     },
     dropdown: {
         backgroundColor: '#fff',

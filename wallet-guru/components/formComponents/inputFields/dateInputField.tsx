@@ -6,42 +6,50 @@ interface DateInputFieldProps {
     date: Date | null
     setDate: (text: Date) => void
     placeholder?: string
+    required?: boolean
 }
 
 
 export default function DateInputField(props: DateInputFieldProps) {
-    
+
     const [show, setShow] = useState<boolean>(false)
 
     const handleDateChange = (event: any, selectedDate?: Date) => {
         const currentDate = selectedDate || props.date
-        if (currentDate !== null) {props.setDate(currentDate)}
+        if (currentDate !== null) { props.setDate(currentDate) }
         setShow(false)
-        
+
     }
 
     const togglePicker = () => {
-        setShow(show === true ? false: true)
+        setShow(show === true ? false : true)
     }
 
     let text = "Date"
-    if (props.placeholder) {text = props.placeholder}
+    if (props.placeholder) { text = props.placeholder }
 
     return (
-        <View style={styles.dateFieldContainer}>
-            <Text style={{fontSize: 16}} onPress={togglePicker}>{text}: {props.date === null ? "": props.date.toDateString()}</Text>
-            {show && <DateTimePicker
-                value={props.date || new Date()}
-                onChange={handleDateChange}
-                mode="date" 
-                display="default"
-            />}
+        <View style={styles.inputContainer}>
+            <View style={styles.dateFieldContainer}>
+                <Text style={{ fontSize: 16 }} onPress={togglePicker}>{text}: {props.date === null ? "" : props.date.toDateString()}</Text>
+                {show && <DateTimePicker
+                    value={props.date || new Date()}
+                    onChange={handleDateChange}
+                    mode="date"
+                    display="default"
+                />}
+            </View>
+            <Text style={styles.requiredText}>{props.required ? "Required" : "Optional"}</Text>
         </View>
-        
+
+
     )
 }
 
 const styles = StyleSheet.create({
+    inputContainer: {
+        rowGap: 5
+    },
     dateFieldContainer: {
         paddingVertical: 20,
         paddingHorizontal: 15,
@@ -51,5 +59,10 @@ const styles = StyleSheet.create({
         rowGap: 20,
         flexDirection: "row",
         alignItems: "center"
+    },
+    requiredText: {
+        paddingLeft: 15,
+        color: "rgba(0,0,0,0.55)",
+        fontSize: 12,
     }
 })

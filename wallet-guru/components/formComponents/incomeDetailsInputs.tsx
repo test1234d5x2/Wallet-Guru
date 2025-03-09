@@ -25,15 +25,17 @@ export default function IncomeDetailsInputs(props: IncomeDetailsInputsProps) {
                 placeholder="Title"
                 value={props.title}
                 setValue={props.setTitle}
+                required
             />
 
             <NumericInputField
                 placeholder="Amount"
                 value={props.amount}
                 setValue={props.setAmount}
+                required
             />
 
-            <DateInputField date={props.date} setDate={props.setDate} />
+            <DateInputField date={props.date} setDate={props.setDate} required />
 
             <StandardInputField
                 placeholder="Notes"

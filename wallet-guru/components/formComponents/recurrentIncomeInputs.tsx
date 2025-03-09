@@ -33,21 +33,23 @@ export default function RecurrentIncomeDetailsInputs(props: RecurrentIncomeDetai
                 placeholder="Title"
                 value={props.title}
                 setValue={props.setTitle}
+                required
             />
 
             <NumericInputField
                 placeholder="Amount"
                 value={props.amount}
                 setValue={props.setAmount}
+                required
             />
 
-            <DateInputField date={props.startDate} setDate={props.setStartDate} placeholder={'Start Date'} />
+            <DateInputField date={props.startDate} setDate={props.setStartDate} placeholder={'Start Date'} required />
 
             <DateInputField date={props.endDate} setDate={props.setEndDate} placeholder={'End Date'} />
 
-            <ModalSelectionRecurrencePeriods choices={Object.keys(Frequency) as Frequency[]} value={props.frequency} setValue={props.setFrequency} />
+            <ModalSelectionRecurrencePeriods choices={Object.keys(Frequency) as Frequency[]} value={props.frequency} setValue={props.setFrequency} required />
 
-            <NumericInputField placeholder='Interval' value={props.interval} setValue={props.setFrequencyInterval} />
+            <NumericInputField placeholder='Interval' value={props.interval} setValue={props.setFrequencyInterval} required />
 
             <StandardInputField
                 placeholder="Notes"

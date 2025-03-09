@@ -7,6 +7,7 @@ interface ModalSelectionProps {
     choices: Array<ExpenseCategory>
     value: ExpenseCategory | null
     setValue: (text: ExpenseCategory) => void
+    required?: boolean
 }
 
 const ModalSelectionExpenseCategories = (props: ModalSelectionProps) => {
@@ -15,7 +16,7 @@ const ModalSelectionExpenseCategories = (props: ModalSelectionProps) => {
     let displayText = props.value?.name
 
     return (
-        <View>
+        <View style={{ rowGap: 5 }}>
             <TouchableOpacity style={styles.input} onPress={() => {
                 if (props.choices.length > 0) {
                     setShowDropdown(true)
@@ -32,7 +33,7 @@ const ModalSelectionExpenseCategories = (props: ModalSelectionProps) => {
                         Alert.alert("No Expense Categories", "You have not created any expense categories to pick from.")
                     }
                 }}>
-                    <Text style={styles.dropdownText}>Category: {displayText == undefined ? "": displayText}</Text>
+                    <Text style={styles.dropdownText}>Category: {displayText == undefined ? "" : displayText}</Text>
                 </TouchableOpacity>
 
                 <Modal visible={showDropdown} transparent={true} onRequestClose={() => setShowDropdown(false)}>
@@ -61,7 +62,7 @@ const ModalSelectionExpenseCategories = (props: ModalSelectionProps) => {
                     </SafeAreaView>
                 </Modal>
             </TouchableOpacity>
-            
+            <Text style={styles.requiredText}>{props.required ? "Required" : "Optional"}</Text>
         </View>
     )
 }
@@ -75,6 +76,11 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         paddingLeft: 15,
         fontSize: 16,
+    },
+    requiredText: {
+        paddingLeft: 15,
+        color: "rgba(0,0,0,0.55)",
+        fontSize: 12,
     },
     dropdown: {
         backgroundColor: '#fff',

@@ -6,6 +6,7 @@ interface ModalSelectionProps {
     choices: Array<string>
     value: string | null
     setValue: (text: string) => void
+    required?: boolean
 }
 
 const ModalSelectionColours = (props: ModalSelectionProps) => {
@@ -13,14 +14,13 @@ const ModalSelectionColours = (props: ModalSelectionProps) => {
     const [showDropdown, setShowDropdown] = useState<boolean>(false)
 
     return (
-        <View>
+        <View style={{rowGap: 5}}>
             <TouchableOpacity style={styles.input} onPress={() => { setShowDropdown(true) }}>
                 <TouchableOpacity style={styles.dropdown} onPress={() => { setShowDropdown(true) }}>
                     <View style={styles.row}>
                         <Text style={styles.dropdownText}>Colour:</Text>
                         <View style={[styles.circle, { backgroundColor: props.value || 'white' }]} />
                     </View>
-
                 </TouchableOpacity>
 
                 <Modal visible={showDropdown} transparent={true} onRequestClose={() => setShowDropdown(false)}>
@@ -50,7 +50,7 @@ const ModalSelectionColours = (props: ModalSelectionProps) => {
                     </SafeAreaView>
                 </Modal>
             </TouchableOpacity>
-
+            <Text style={styles.requiredText}>{props.required ? "Required" : "Optional"}</Text>
         </View>
     )
 }
@@ -64,6 +64,11 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         paddingLeft: 15,
         fontSize: 16,
+    },
+    requiredText: {
+        paddingLeft: 15,
+        color: "rgba(0,0,0,0.55)",
+        fontSize: 12,
     },
     dropdown: {
         backgroundColor: '#fff',
