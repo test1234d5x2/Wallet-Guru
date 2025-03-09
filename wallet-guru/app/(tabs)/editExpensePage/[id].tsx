@@ -124,7 +124,7 @@ export default function EditExpense() {
     const handleEditExpense = () => {
         if (validateForm()) {
             if (!category) return;
-            updateExpense(token, id as string, title, parseFloat(amount), date, notes, category.getID()).then((complete) => {
+            updateExpense(token, id as string, title, parseFloat(amount), date, notes, category.getID(), receipt).then((complete) => {
                 if (!complete) return
                 Alert.alert('Success', 'Expense updated successfully!');
                 clearRouterHistory(router);
