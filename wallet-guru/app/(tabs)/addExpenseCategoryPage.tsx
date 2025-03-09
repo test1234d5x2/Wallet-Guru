@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Alert, Dimensions, StatusBar } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Alert, Dimensions, StatusBar, ScrollView } from 'react-native';
 import ExpenseCategoryInputs from '@/components/formComponents/expenseCategoryInputs';
 import setPageTitle from '@/components/pageTitle/setPageTitle';
 import TopBar from '@/components/topBars/topBar';
@@ -150,7 +150,7 @@ export default function AddExpenseCategory() {
     };
 
     return (
-        <View style={styles.container}>
+        <ScrollView contentContainerStyle={styles.container} showsVerticalScrollIndicator={false}>
             <StatusBar barStyle={"dark-content"} />
             <TopBar />
 
@@ -177,7 +177,7 @@ export default function AddExpenseCategory() {
             <TouchableOpacity style={styles.addButton} onPress={handleAddCategory}>
                 <Text style={styles.addButtonText}>Add Category</Text>
             </TouchableOpacity>
-        </View>
+        </ScrollView>
     );
 }
 

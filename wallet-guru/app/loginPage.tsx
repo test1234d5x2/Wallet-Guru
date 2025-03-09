@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, TouchableOpacity, Alert, StatusBar } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, Alert, StatusBar, ScrollView } from "react-native";
 import { useState } from "react";
 import { Link, useRouter } from "expo-router";
 import setPageTitle from "@/components/pageTitle/setPageTitle";
@@ -80,7 +80,7 @@ export default function Login() {
     };
 
     return (
-        <View style={styles.container}>
+        <ScrollView contentContainerStyle={styles.container} showsVerticalScrollIndicator={false}>
             <StatusBar barStyle={"dark-content"} />
             <AuthenticationInputs email={email} password={password} setEmail={setEmail} setPassword={setPassword} />
 
@@ -101,7 +101,7 @@ export default function Login() {
             <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
                 <Text style={styles.loginButtonText}>Login</Text>
             </TouchableOpacity>
-        </View>
+        </ScrollView>
     );
 }
 
