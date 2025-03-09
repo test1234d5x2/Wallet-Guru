@@ -38,11 +38,7 @@ export default abstract class RecurrenceRule {
     }
 
     public computeNextTriggerDate(): Date {
-        const now = new Date(Date.UTC(
-            new Date().getUTCFullYear(),
-            new Date().getUTCMonth(),
-            new Date().getUTCDate(),
-        ));
+        const now = this.nextTriggerDate
 
         while (this.nextTriggerDate <= now) {
             switch (this.frequency) {
