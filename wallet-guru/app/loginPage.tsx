@@ -6,6 +6,7 @@ import AuthenticationInputs from "@/components/formComponents/authenticationInpu
 import clearRouterHistory from "@/utils/clearRouterHistory";
 import saveToken from "@/utils/tokenAccess/saveToken";
 import getToken from '@/utils/tokenAccess/getToken';
+import verifyToken from "@/utils/apiCalls/verifyToken";
 
 interface LoginResponse {
     message: string;
@@ -47,12 +48,17 @@ export default function Login() {
     const [error, setError] = useState<string>('');
     const router = useRouter();
 
-    getToken().then((data) => {
+    getToken().then(async (data) => {
         if (data) {
-            Alert.alert("You are already logged in.");
-            clearRouterHistory(router);
-            router.replace("/dashboardPage");
-            return
+            try {
+                await verifyToken(data.token, data.email)
+                Alert.alert("You are already logged in.");
+                clearRouterHistory(router);
+                router.replace("/dashboardPage");
+            }
+            catch (err: any) {
+                console.log(err.message)
+            }
         }
     });
 
@@ -62,7 +68,7 @@ export default function Login() {
             return;
         }
 
-        await login(email, password).then( async (data) => {
+        await login(email, password).then(async (data) => {
             const token = data.token;
 
             await saveToken(token, email).then((data2) => {

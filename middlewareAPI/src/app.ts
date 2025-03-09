@@ -8,6 +8,7 @@ import incomeRoutes from "./routes/Income";
 import goalRoutes from "./routes/Goal";
 import recurringExpenseRouter from "./routes/RecurringExpense";
 import recurringIncomeRouter from "./routes/RecurringIncome";
+import verifyTokenRouter from "./routes/token";
 
 dotenv.config();
 
@@ -35,6 +36,7 @@ app.use("/api/incomes", incomeRoutes);
 app.use("/api/goals", goalRoutes);
 app.use("/api/recurring-expenses", recurringExpenseRouter);
 app.use("/api/recurring-incomes", recurringIncomeRouter)
+app.use("/api/verify-token", verifyTokenRouter)
 
 app.listen(PORT, IP, () => console.log(`Server running on  https://${IP}:${PORT}`));
 
