@@ -126,6 +126,9 @@ export default function ViewTransactionsList() {
                         categoryName={
                             categories.find(cat => cat.getID() === (item.data as Expense).categoryID)?.name || ""
                         }
+                        categoryColor={
+                            categories.find(cat => cat.getID() === (item.data as Expense).categoryID)?.colour || ""
+                        }
                         buttons
                     />
                 )}

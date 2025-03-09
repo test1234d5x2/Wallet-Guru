@@ -8,7 +8,7 @@ import ListItemEditButton from './listItemEditButton';
 import clearRouterHistory from '@/utils/clearRouterHistory';
 import deleteExpenseCategory from '@/utils/apiCalls/deleteExpenseCategory';
 import convertFrequencyToTextDisplay from '@/utils/convertFrequencyToTextDisplay';
-
+import { StrongPill } from './categoryDisplayPills';
 
 interface ExpenseCategoryProps {
     category: ExpenseCategory;
@@ -47,7 +47,7 @@ export default function ExpenseCategoryItem(props: ExpenseCategoryProps) {
 
     return (
         <View style={styles.categoryContainer}>
-            <Text style={styles.categoryName}>{props.category.name}</Text>
+            <StrongPill colour={props.category.colour} text={props.category.name} />
 
             <Text style={styles.label}>Spending: £{props.currentSpending.toFixed(2)}</Text>
             <Progress.Bar
@@ -70,10 +70,6 @@ export default function ExpenseCategoryItem(props: ExpenseCategoryProps) {
 const styles = StyleSheet.create({
     categoryContainer: {
         rowGap: 10,
-    },
-    categoryName: {
-        fontSize: 16,
-        fontWeight: 'bold',
     },
     label: {
         fontSize: 14,

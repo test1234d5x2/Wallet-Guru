@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, Dimensions, Alert, ScrollView, TouchableOpacity, FlatList, StatusBar } from 'react-native';
+import { View, Text, StyleSheet, Dimensions, Alert, ScrollView, StatusBar } from 'react-native';
 import setPageTitle from '@/components/pageTitle/setPageTitle';
 import TopBar from '@/components/topBars/topBar';
 import { LineChart } from 'react-native-chart-kit';
@@ -165,7 +165,7 @@ export default function SpendTrendAndTopExpenses() {
                     <View style={styles.topExpensesContainer}>
                         {topExpenses.map((expense) => (
                             <React.Fragment>
-                                <ExpenseItem key={expense.getID()} expense={expense} token={token} categoryName={categories.find((cat) => cat.getID() === expense.categoryID)?.name || ""} buttons={false} />
+                                <ExpenseItem key={expense.getID()} expense={expense} token={token} categoryName={categories.find((cat) => cat.getID() === expense.categoryID)?.name || ""} buttons={false} categoryColor={categories.find((cat) => cat.getID() === expense.categoryID)?.colour || ""} />
                                 <View style={styles.dividerLine} />
                             </React.Fragment>
                         ))}

@@ -97,6 +97,9 @@ export default function Dashboard() {
                     categoryName={
                         categories.find(cat => cat.getID() === (item.data as Expense).categoryID)?.name || ""
                     }
+                    categoryColor={
+                        categories.find(cat => cat.getID() === (item.data as Expense).categoryID)?.colour || ""
+                    }
                     buttons
                 />
             ) : (
