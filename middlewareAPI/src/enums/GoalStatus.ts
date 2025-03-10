@@ -4,4 +4,4 @@ enum GoalStatus {
     Archived = "Archived",
 }
 
-export default GoalStatus;
+export default GoalStatus

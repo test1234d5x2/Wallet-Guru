@@ -5,7 +5,7 @@ export default async function updateCategoriesTimeWindowEnd(categories: ExpenseC
     categories.forEach( async (cat) => {
         if (cat.recurrenceRule.shouldTrigger()) {
             cat.recurrenceRule.computeNextTriggerDate()
-            await updateExpenseCategory(token, cat.getID(), cat.name, cat.monthlyBudget, cat.recurrenceRule);
+            await updateExpenseCategory(token, cat.getID(), cat.name, cat.monthlyBudget, cat.recurrenceRule, cat.colour);
         }
     })
 }

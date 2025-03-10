@@ -94,7 +94,7 @@ export default function Register() {
             <TouchableOpacity
                 style={styles.loginButton}
                 onPress={handleRegistration}
-                disabled={isLoading}  // Button disabled based on isLoading
+                disabled={isLoading}
             >
                 {isLoading ? (
                     <ActivityIndicator color="#fff" />

@@ -1,88 +1,84 @@
-import { Contract } from "@hyperledger/fabric-gateway";
-import ExpenseCategory from "../models/core/ExpenseCategory";
-import RecurrenceRule from "../models/recurrenceModels/RecurrenceRule";
-import { TextDecoder } from 'util';
-import BasicRecurrenceRule from "../models/recurrenceModels/BasicRecurrenceRule";
+import { Contract } from '@hyperledger/fabric-gateway'
+import ExpenseCategory from '../models/core/ExpenseCategory'
+import RecurrenceRule from '../models/recurrenceModels/RecurrenceRule'
+import { TextDecoder } from 'util'
+import BasicRecurrenceRule from '../models/recurrenceModels/BasicRecurrenceRule'
 
-
-const utf8Decoder = new TextDecoder();
-
-
+const utf8Decoder = new TextDecoder()
 
 class ExpenseCategoryService {
-    private expenseCategoryContract: Contract;
+    private expenseCategoryContract: Contract
 
     constructor(expenseCategoryContract: Contract) {
-        this.expenseCategoryContract = expenseCategoryContract;
+        this.expenseCategoryContract = expenseCategoryContract
     }
 
     public async addExpenseCategory(userID: string, name: string, monthlyBudget: number, recurrenceRule: RecurrenceRule, colour: string): Promise<boolean> {
-        const category = new ExpenseCategory(userID, name, monthlyBudget, recurrenceRule, undefined, colour);
+        const category = new ExpenseCategory(userID, name, monthlyBudget, recurrenceRule, undefined, colour)
         try {
             await this.expenseCategoryContract.submitTransaction(
-                "createExpenseCategory",
+                'createExpenseCategory',
                 JSON.stringify(category.toJSON())
-            )
-
-            return true;
-        } catch (err) {
-            console.log(err);
-        }
-
-        return false;
-    }
-
-    public async updateExpenseCategory(id: string, userID: string, name: string, monthlyBudget: number, recurrenceRule: BasicRecurrenceRule, colour: string): Promise<boolean> {
-
-        try {
-            const category = await this.findByID(id, userID);
-            if (!category) {
-                throw new Error("Category not found");
-            }
-
-            category.name = name;
-            category.monthlyBudget = monthlyBudget;
-            category.recurrenceRule = recurrenceRule;
-            category.colour = colour;
-
-            await this.expenseCategoryContract.submitTransaction(
-                "updateExpenseCategory",
-                JSON.stringify(category.toJSON()),
             )
 
             return true
         } catch (err) {
-            console.log(err);
+            console.log(err)
         }
 
-        return false;
+        return false
+    }
+
+    public async updateExpenseCategory(id: string, userID: string, name: string, monthlyBudget: number, recurrenceRule: BasicRecurrenceRule, colour: string): Promise<boolean> {
+        try {
+            const category = await this.findByID(id, userID)
+            if (!category) {
+                throw new Error('Category not found')
+            }
+
+            category.name = name
+            category.monthlyBudget = monthlyBudget
+            category.recurrenceRule = recurrenceRule
+            category.colour = colour
+
+            await this.expenseCategoryContract.submitTransaction(
+                'updateExpenseCategory',
+                JSON.stringify(category.toJSON())
+            )
+
+            return true
+        } catch (err) {
+            console.log(err)
+        }
+
+        return false
     }
 
     public async deleteExpenseCategory(id: string, userID: string): Promise<boolean> {
         try {
             await this.expenseCategoryContract.submitTransaction(
-                "deleteExpenseCategory",
+                'deleteExpenseCategory',
                 userID,
-                id,
+                id
             )
 
-            return true;
+            return true
         } catch (err) {
-            console.log(err);
+            console.log(err)
         }
 
-        return false;
+        return false
     }
 
     public async getAllCategoriesByUser(userID: string): Promise<ExpenseCategory[]> {
         try {
             const resultBytes = await this.expenseCategoryContract.evaluateTransaction(
-                "listExpenseCategoriesByUser",
-                userID,
+                'listExpenseCategoriesByUser',
+                userID
             )
 
-            const resultJson = utf8Decoder.decode(resultBytes);
-            const result = JSON.parse(resultJson);
+            const resultJson = utf8Decoder.decode(resultBytes)
+            const result = JSON.parse(resultJson)
             const categories: ExpenseCategory[] = result.categories.map((category: any) => {
                 const recurrenceRule = new BasicRecurrenceRule(
                     category.recurrenceRule.frequency,
@@ -91,26 +87,26 @@ class ExpenseCategoryService {
                     category.recurrenceRule.nextTriggerDate ? new Date(category.recurrenceRule.nextTriggerDate) : undefined,
                     category.recurrenceRule.endDate ? new Date(category.recurrenceRule.endDate) : undefined
                 )
-                return new ExpenseCategory(category.userID, category.name, category.monthlyBudget, recurrenceRule, category.id, category.colour);
-            });
-            return categories;
+                return new ExpenseCategory(category.userID, category.name, category.monthlyBudget, recurrenceRule, category.id, category.colour)
+            })
+            return categories
         } catch (err) {
-            console.log(err);
+            console.log(err)
         }
 
-        return [];
+        return []
     }
 
     public async findByID(id: string, userID: string): Promise<ExpenseCategory | undefined> {
         try {
             const resultBytes = await this.expenseCategoryContract.evaluateTransaction(
-                "getExpenseCategoryByID",
+                'getExpenseCategoryByID',
                 userID,
-                id,
+                id
             )
 
-            const resultJson = utf8Decoder.decode(resultBytes);
-            const data = JSON.parse(resultJson);
+            const resultJson = utf8Decoder.decode(resultBytes)
+            const data = JSON.parse(resultJson)
             const recurrenceRule = new BasicRecurrenceRule(
                 data.recurrenceRule.frequency,
                 data.recurrenceRule.interval,
@@ -118,13 +114,13 @@ class ExpenseCategoryService {
                 data.recurrenceRule.nextTriggerDate ? new Date(data.recurrenceRule.nextTriggerDate) : undefined,
                 data.recurrenceRule.endDate ? new Date(data.recurrenceRule.endDate) : undefined
             )
-            return new ExpenseCategory(data.userID, data.name, data.monthlyBudget, recurrenceRule, data.id, data.colour);
+            return new ExpenseCategory(data.userID, data.name, data.monthlyBudget, recurrenceRule, data.id, data.colour)
         } catch (err) {
             console.log(err)
         }
 
-        return undefined;
+        return undefined
     }
 }
 
-export default ExpenseCategoryService;
+export default ExpenseCategoryService

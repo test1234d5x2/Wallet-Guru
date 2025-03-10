@@ -1,45 +1,45 @@
-import {v4} from 'uuid';
-import BasicRecurrenceRule from '../recurrenceModels/BasicRecurrenceRule';
+import { v4 } from 'uuid'
+import BasicRecurrenceRule from '../recurrenceModels/BasicRecurrenceRule'
 
 class ExpenseCategory {
-    private id: string;
-    private userID: string;
-    name: string;
-    monthlyBudget: number;
-    recurrenceRule: BasicRecurrenceRule;
-    colour: string;
+    private id: string
+    private userID: string
+    name: string
+    monthlyBudget: number
+    recurrenceRule: BasicRecurrenceRule
+    colour: string
 
     constructor(userID: string, name: string, monthlyBudget: number, recurrenceRule: BasicRecurrenceRule, id?: string, colour?: string) {
-        this.id = id || v4();
-        this.userID = userID;
-        this.name = name;
-        this.monthlyBudget = monthlyBudget;
-        this.recurrenceRule = recurrenceRule;
-        this.colour = colour || "#FFFFFF"
+        this.id = id || v4()
+        this.userID = userID
+        this.name = name
+        this.monthlyBudget = monthlyBudget
+        this.recurrenceRule = recurrenceRule
+        this.colour = colour || '#FFFFFF'
     }
 
     getID(): string {
-        return this.id;
+        return this.id
     }
 
     getUserID(): string {
-        return this.userID;
+        return this.userID
     }
 
     calculateBudgetUsed(currentSpending: number): number {
-        return currentSpending / this.monthlyBudget;
+        return currentSpending / this.monthlyBudget
     }
 
     shouldResetBudget(): boolean {
         if (this.recurrenceRule) {
-            return this.recurrenceRule.shouldTrigger();
+            return this.recurrenceRule.shouldTrigger()
         }
-        return false;
+        return false
     }
 
-    updateBudgetCycle(): void {
+    updateBudgetCycle() {
         if (this.recurrenceRule && this.recurrenceRule.shouldTrigger()) {
-            this.recurrenceRule.nextTriggerDate = this.recurrenceRule.computeNextTriggerDate();
+            this.recurrenceRule.nextTriggerDate = this.recurrenceRule.computeNextTriggerDate()
         }
     }
 
@@ -51,8 +51,8 @@ class ExpenseCategory {
             monthlyBudget: this.monthlyBudget,
             recurrenceRule: this.recurrenceRule,
             colour: this.colour,
-        };
+        }
     }
 }
 
-export default ExpenseCategory;
+export default ExpenseCategory

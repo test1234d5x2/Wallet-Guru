@@ -50,44 +50,31 @@ export default function ViewTransactionsList() {
 
     useEffect(() => {
         async function getCategories() {
-            const result = await getExpenseCategories(token);
-            if (result) {
-                setCategories(result);
-                await updateCategoriesTimeWindowEnd(result, token);
+            const categories = await getExpenseCategories(token);
+            if (categories) {
+                setCategories(categories);
+                await updateCategoriesTimeWindowEnd(categories, token);
             } else {
                 console.log("Error with getting expense categories list.")
             }
-        }
 
-        getCategories();
-    }, [token]);
-
-    useEffect(() => {
-        async function getExpenseList() {
-            const result = await getExpenses(token);
-            if (result) {
-                setExpenses(result);
+            const expenses = await getExpenses(token);
+            if (expenses) {
+                setExpenses(expenses);
             } else {
                 console.log("Error with getting expense list")
             }
-        }
 
-        getExpenseList();
-    }, [token, categories]);
-
-    useEffect(() => {
-        async function getIncomesList() {
-            const result = await getIncomes(token);
-            if (result) {
-                setIncomes(result);
+            const incomes = await getIncomes(token);
+            if (incomes) {
+                setIncomes(incomes);
             } else {
                 console.log("Error with getting incomes list")
             }
         }
 
-        getIncomesList();
+        getCategories();
     }, [token]);
-
 
     const handleTransactionClick = (transaction: Transaction) => {
         clearRouterHistory(router);

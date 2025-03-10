@@ -1,117 +1,113 @@
-import RecurrenceRule from "../models/recurrenceModels/RecurrenceRule";
-import RecurringIncome from "../models/recurrenceModels/RecurringIncome";
-import IncomeService from "./IncomeService";
-import { Contract } from "@hyperledger/fabric-gateway";
-import { TextDecoder } from 'util';
-import BasicRecurrenceRule from "../models/recurrenceModels/BasicRecurrenceRule";
+import RecurrenceRule from '../models/recurrenceModels/RecurrenceRule'
+import RecurringIncome from '../models/recurrenceModels/RecurringIncome'
+import IncomeService from './IncomeService'
+import { Contract } from '@hyperledger/fabric-gateway'
+import { TextDecoder } from 'util'
+import BasicRecurrenceRule from '../models/recurrenceModels/BasicRecurrenceRule'
 
-
-
-const utf8Decoder = new TextDecoder();
-
-
+const utf8Decoder = new TextDecoder()
 
 class RecurringIncomeService {
-    private incomeService: IncomeService;
-    private contract: Contract;
+    private incomeService: IncomeService
+    private contract: Contract
 
     constructor(incomeService: IncomeService, recurringIncomeContract: Contract) {
-        this.incomeService = incomeService;
-        this.contract = recurringIncomeContract;
+        this.incomeService = incomeService
+        this.contract = recurringIncomeContract
     }
 
     public async addRecurringIncome(userID: string, title: string, amount: number, date: Date, notes: string, recurrenceRule: RecurrenceRule): Promise<boolean> {
-        const recurringIncome = new RecurringIncome(userID, title, amount, date, notes, recurrenceRule);
+        const recurringIncome = new RecurringIncome(userID, title, amount, date, notes, recurrenceRule)
 
         try {
             await this.contract.submitTransaction(
-                "createRecurringIncome",
+                'createRecurringIncome',
                 JSON.stringify(recurringIncome.toJSON())
             )
 
-            return true;
+            return true
         } catch (err: any) {
             console.log(err)
         }
 
-        return false;
+        return false
     }
 
     public async updateRecurringIncome(id: string, userID: string, title: string, amount: number, date: Date, notes: string, recurrenceRule: RecurrenceRule): Promise<boolean> {
         try {
-            const recurringIncome = await this.findByID(id, userID);
+            const recurringIncome = await this.findByID(id, userID)
             if (!recurringIncome) {
-                throw new Error("The recurring income does not exist");
+                throw new Error('The recurring income does not exist')
             }
 
-            recurringIncome.title = title;
-            recurringIncome.amount = amount;
-            recurringIncome.date = date;
-            recurringIncome.notes = notes;
-            recurringIncome.recurrenceRule = recurrenceRule;
+            recurringIncome.title = title
+            recurringIncome.amount = amount
+            recurringIncome.date = date
+            recurringIncome.notes = notes
+            recurringIncome.recurrenceRule = recurrenceRule
 
             await this.contract.submitTransaction(
-                "updateRecurringIncome",
+                'updateRecurringIncome',
                 JSON.stringify(recurringIncome.toJSON())
             )
 
-            return true;
+            return true
         } catch (err: any) {
             console.log(err)
         }
 
-        return false;
+        return false
     }
 
     public async deleteRecurringIncome(id: string, userID: string): Promise<boolean> {
         try {
             await this.contract.submitTransaction(
-                "deleteRecurringIncome",
+                'deleteRecurringIncome',
                 userID,
-                id,
+                id
             )
 
-            return true;
+            return true
         } catch (err: any) {
             console.log(err)
         }
 
-        return false;
+        return false
     }
 
     public async getAllRecurringIncomesByUser(userID: string): Promise<RecurringIncome[]> {
         try {
             const resultBytes = await this.contract.evaluateTransaction(
-                "listRecurringIncomesByUser",
-                userID,
+                'listRecurringIncomesByUser',
+                userID
             )
 
-            const resultJson = utf8Decoder.decode(resultBytes);
-            const result = JSON.parse(resultJson);
-            const recurringIncomes: RecurringIncome[] = result.recurringIncomes.map((i: any) => {
-                const recurrenceRule = new BasicRecurrenceRule(i.recurrenceRule.frequency, i.recurrenceRule.interval, new Date(i.recurrenceRule.startDate), new Date(i.recurrenceRule.nextTriggerDate), new Date(i.recurrenceRule.endDate))
-                return new RecurringIncome(i.userID, i.title, i.amount, new Date(i.date), i.notes, recurrenceRule, i.id);
-            });
-            return recurringIncomes;
+            const resultJson = utf8Decoder.decode(resultBytes)
+            const result = JSON.parse(resultJson)
+            const recurringIncomes = result.recurringIncomes.map((i: any) => {
+                const recurrenceRule = new BasicRecurrenceRule(i.recurrenceRule.frequency, i.recurrenceRule.interval, new Date(i.recurrenceRule.startDate), new Date(i.recurrenceRule.nextTriggerDate), i.recurrenceRule.endDate ? new Date(i.recurrenceRule.endDate) : undefined)
+                return new RecurringIncome(i.userID, i.title, i.amount, new Date(i.date), i.notes, recurrenceRule, i.id)
+            })
+            return recurringIncomes
         } catch (err: any) {
             console.log(err)
         }
 
-        return [];
+        return []
     }
 
     public async findByID(id: string, userID: string): Promise<RecurringIncome | undefined> {
         try {
             const resultBytes = await this.contract.evaluateTransaction(
-                "getRecurringIncomeByID",
+                'getRecurringIncomeByID',
                 userID,
-                id,
+                id
             )
 
-            const resultJson = utf8Decoder.decode(resultBytes);
-            const data = JSON.parse(resultJson);
-            const recurrenceRule = new BasicRecurrenceRule(data.recurrenceRule.frequency, data.recurrenceRule.interval, new Date(data.recurrenceRule.startDate), new Date(data.recurrenceRule.nextTriggerDate), data.recurrenceRule.endDate ? new Date(data.recurrenceRule.endDate): undefined)
-            return new RecurringIncome(data.userID, data.title, data.amount, new Date(data.date), data.notes, recurrenceRule, data.id);
+            const resultJson = utf8Decoder.decode(resultBytes)
+            const data = JSON.parse(resultJson)
+            const recurrenceRule = new BasicRecurrenceRule(data.recurrenceRule.frequency, data.recurrenceRule.interval, new Date(data.recurrenceRule.startDate), new Date(data.recurrenceRule.nextTriggerDate), data.recurrenceRule.endDate ? new Date(data.recurrenceRule.endDate) : undefined)
+            return new RecurringIncome(data.userID, data.title, data.amount, new Date(data.date), data.notes, recurrenceRule, data.id)
         } catch (err) {
             console.log(err)
         }
@@ -122,35 +118,33 @@ class RecurringIncomeService {
     public async processDueRecurringIncomes(): Promise<void> {
         try {
             const resultBytes = await this.contract.evaluateTransaction(
-                "listAllRecurringIncomes",
+                'listAllRecurringIncomes'
             )
 
-            const resultJson = utf8Decoder.decode(resultBytes);
-            const result = JSON.parse(resultJson);
-            const recurringIncomes: RecurringIncome[] = result.recurringIncomes.map((i: any) => {
-                const recurrenceRule = new BasicRecurrenceRule(i.recurrenceRule.frequency, i.recurrenceRule.interval, new Date(i.recurrenceRule.startDate), new Date(i.recurrenceRule.nextTriggerDate), i.recurrenceRule.endDate ? new Date(i.recurrenceRule.endDate): undefined)
-                return new RecurringIncome(i.userID, i.title, i.amount, new Date(i.date), i.notes, recurrenceRule, i.id);
-            });
+            const resultJson = utf8Decoder.decode(resultBytes)
+            const result = JSON.parse(resultJson)
+            const recurringIncomes = result.recurringIncomes.map((i: any) => {
+                const recurrenceRule = new BasicRecurrenceRule(i.recurrenceRule.frequency, i.recurrenceRule.interval, new Date(i.recurrenceRule.startDate), new Date(i.recurrenceRule.nextTriggerDate), i.recurrenceRule.endDate ? new Date(i.recurrenceRule.endDate) : undefined)
+                return new RecurringIncome(i.userID, i.title, i.amount, new Date(i.date), i.notes, recurrenceRule, i.id)
+            })
 
-            recurringIncomes.forEach(async recIncome => {
+            for (const recIncome of recurringIncomes) {
                 if (recIncome.recurrenceRule.shouldTrigger()) {
-                    await this.incomeService.addIncome(recIncome.getUserID(), recIncome.title, recIncome.amount, new Date(), recIncome.notes);
-                    recIncome.recurrenceRule.computeNextTriggerDate();
+                    await this.incomeService.addIncome(recIncome.getUserID(), recIncome.title, recIncome.amount, new Date(), recIncome.notes)
+                    recIncome.recurrenceRule.computeNextTriggerDate()
 
                     if (recIncome.recurrenceRule.shouldEnd()) {
                         await this.deleteRecurringIncome(recIncome.getID(), recIncome.getUserID())
-                    }
-                    
-                    else {
-                        await this.updateRecurringIncome(recIncome.getID(), recIncome.getUserID(), recIncome.title, recIncome.amount, recIncome.date, recIncome.notes, recIncome.recurrenceRule);
+                    } else {
+                        await this.updateRecurringIncome(recIncome.getID(), recIncome.getUserID(), recIncome.title, recIncome.amount, recIncome.date, recIncome.notes, recIncome.recurrenceRule)
                     }
                 }
-            });
-            
+            }
+
         } catch (err) {
             console.log(err)
         }
     }
 }
 
-export default RecurringIncomeService;
+export default RecurringIncomeService

@@ -1,8 +1,6 @@
 import * as SecureStore from "expo-secure-store";
 
-/**
- * Remove JWT token securely
- */
+
 export default async function removeToken(): Promise<void> {
     try {
         await SecureStore.deleteItemAsync("jwtToken");
