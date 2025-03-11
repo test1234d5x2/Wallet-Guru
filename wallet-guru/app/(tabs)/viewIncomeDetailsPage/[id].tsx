@@ -1,62 +1,59 @@
-import setPageTitle from '@/components/pageTitle/setPageTitle';
-import TopBar from '@/components/topBars/topBar';
-import { useLocalSearchParams, useRouter } from 'expo-router';
-import React, { useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Alert, StatusBar } from 'react-native';
-import clearRouterHistory from '@/utils/clearRouterHistory';
-import Income from '@/models/core/Income';
-import getToken from '@/utils/tokenAccess/getToken';
-import getIncomeByID from '@/utils/apiCalls/getIncomeByID';
-import deleteIncome from '@/utils/apiCalls/deleteIncome';
-
+import setPageTitle from '@/components/pageTitle/setPageTitle'
+import TopBar from '@/components/topBars/topBar'
+import { useLocalSearchParams, useRouter } from 'expo-router'
+import React, { useEffect, useState } from 'react'
+import { View, Text, TouchableOpacity, StyleSheet, Alert, StatusBar } from 'react-native'
+import clearRouterHistory from '@/utils/clearRouterHistory'
+import Income from '@/models/core/Income'
+import getToken from '@/utils/tokenAccess/getToken'
+import getIncomeByID from '@/utils/apiCalls/getIncomeByID'
+import deleteIncome from '@/utils/apiCalls/deleteIncome'
 
 export default function IncomeDetailsScreen() {
-    const { id } = useLocalSearchParams();
+    const { id } = useLocalSearchParams()
 
-    const router = useRouter();
-    const [token, setToken] = useState<string>('');
-    const [email, setEmail] = useState<string>('');
-    const [income, setIncome] = useState<Income>();
-    const [error, setError] = useState<string>('');
+    const router = useRouter()
+    const [token, setToken] = useState<string>("")
+    const [email, setEmail] = useState<string>("")
+    const [income, setIncome] = useState<Income>()
+    const [error, setError] = useState<string>("")
 
-    setPageTitle(!income ? "" : income.title);
-
+    setPageTitle(!income ? "" : income.title)
 
     getToken().then((data) => {
         if (!data) {
-            Alert.alert('Error', 'You must be logged in to access this page.');
-            clearRouterHistory(router);
-            router.replace("/loginPage");
-            return;
+            Alert.alert('Error', 'You must be logged in to access this page.')
+            clearRouterHistory(router)
+            router.replace("/loginPage")
+            return
         }
 
-        setToken(data.token);
-        setEmail(data.email);
-    });
+        setToken(data.token)
+        setEmail(data.email)
+    })
 
     useEffect(() => {
         async function getIncome() {
             getIncomeByID(token, id as string).then((data) => {
-                setIncome(data);
+                setIncome(data)
             }).catch((error: Error) => {
                 Alert.alert("Income Not Found")
-                console.log(error.message);
-                clearRouterHistory(router);
-                router.replace("/listTransactionsPage");
+                console.log(error.message)
+                clearRouterHistory(router)
+                router.replace("/listTransactionsPage")
             })
         }
 
-        if (token) getIncome();
-    }, [token]);
-
+        if (token) getIncome()
+    }, [token])
 
     const handleEdit = () => {
         if (!income) {
-            clearRouterHistory(router);
-            router.navigate("/loginPage");
-            return;
+            clearRouterHistory(router)
+            router.navigate("/loginPage")
+            return
         }
-        router.navigate(income.getEditURL());
+        router.navigate(income.getEditURL())
     }
 
     const handleDelete = () => {
@@ -66,16 +63,16 @@ export default function IncomeDetailsScreen() {
                 text: 'Delete', style: 'destructive', onPress: () => {
                     deleteIncome(token, id as string).then((complete) => {
                         if (complete) {
-                            Alert.alert('Success', 'Income deleted successfully!');
-                            clearRouterHistory(router);
-                            router.replace("/listTransactionsPage");
+                            Alert.alert('Success', 'Income deleted successfully!')
+                            clearRouterHistory(router)
+                            router.replace("/listTransactionsPage")
                         }
                     }).catch((err: Error) => {
                         setError(err.message)
                     })
                 }
             },
-        ]);
+        ])
     }
 
     return (
@@ -166,4 +163,4 @@ const styles = StyleSheet.create({
         color: 'red',
         fontSize: 14,
     },
-});
+})

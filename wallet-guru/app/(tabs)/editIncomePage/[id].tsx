@@ -1,109 +1,108 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Alert, ScrollView, StatusBar } from 'react-native';
-import setPageTitle from '@/components/pageTitle/setPageTitle';
-import TopBar from '@/components/topBars/topBar';
-import IncomeDetailsInputs from '@/components/formComponents/incomeDetailsInputs';
-import { useLocalSearchParams, useRouter } from 'expo-router';
-import validateEmpty from '@/utils/validation/validateEmpty';
-import isNumeric from '@/utils/validation/validateNumeric';
-import { isValidDate, isTodayOrBefore } from '@/utils/validation/validateDate';
-import clearRouterHistory from '@/utils/clearRouterHistory';
-import getToken from '@/utils/tokenAccess/getToken';
-import getIncomeByID from '@/utils/apiCalls/getIncomeByID';
-import updateIncome from '@/utils/apiCalls/updateIncome';
+import React, { useEffect, useState } from 'react'
+import { View, Text, TouchableOpacity, StyleSheet, Alert, ScrollView, StatusBar } from 'react-native'
+import setPageTitle from '@/components/pageTitle/setPageTitle'
+import TopBar from '@/components/topBars/topBar'
+import IncomeDetailsInputs from '@/components/formComponents/incomeDetailsInputs'
+import { useLocalSearchParams, useRouter } from 'expo-router'
+import validateEmpty from '@/utils/validation/validateEmpty'
+import isNumeric from '@/utils/validation/validateNumeric'
+import { isValidDate, isTodayOrBefore } from '@/utils/validation/validateDate'
+import clearRouterHistory from '@/utils/clearRouterHistory'
+import getToken from '@/utils/tokenAccess/getToken'
+import getIncomeByID from '@/utils/apiCalls/getIncomeByID'
+import updateIncome from '@/utils/apiCalls/updateIncome'
 
 export default function EditIncome() {
-    setPageTitle("Edit Income");
+    setPageTitle("Edit Income")
 
-    const { id } = useLocalSearchParams();
-    const router = useRouter();
-    const [token, setToken] = useState<string>('');
-    const [email, setEmail] = useState<string>('');
-    const [title, setTitle] = useState<string>('');
-    const [amount, setAmount] = useState<string>('');
-    const [date, setDate] = useState<Date>(new Date());
-    const [notes, setNotes] = useState<string>('');
-    const [error, setError] = useState<string>('');
-
+    const { id } = useLocalSearchParams()
+    const router = useRouter()
+    const [token, setToken] = useState<string>('')
+    const [email, setEmail] = useState<string>('')
+    const [title, setTitle] = useState<string>('')
+    const [amount, setAmount] = useState<string>('')
+    const [date, setDate] = useState<Date>(new Date())
+    const [notes, setNotes] = useState<string>('')
+    const [error, setError] = useState<string>('')
 
     getToken().then((data) => {
         if (!data) {
-            Alert.alert('Error', 'You must be logged in to access this page.');
-            clearRouterHistory(router);
-            router.replace("/loginPage");
-            return;
+            Alert.alert('Error', 'You must be logged in to access this page.')
+            clearRouterHistory(router)
+            router.replace("/loginPage")
+            return
         }
 
-        setToken(data.token);
-        setEmail(data.email);
-    });
+        setToken(data.token)
+        setEmail(data.email)
+    })
 
     useEffect(() => {
         async function getIncome() {
             getIncomeByID(token, id as string).then((income) => {
-                setTitle(income.title);
-                setAmount(income.amount.toString());
-                setDate(income.date);
-                setNotes(income.notes);
+                setTitle(income.title)
+                setAmount(income.amount.toString())
+                setDate(income.date)
+                setNotes(income.notes)
             }).catch((error: Error) => {
                 Alert.alert("Income Not Found")
-                console.log(error.message);
-                clearRouterHistory(router);
-                router.replace("/listTransactionsPage");
+                console.log(error.message)
+                clearRouterHistory(router)
+                router.replace("/listTransactionsPage")
             })
         }
 
-        if (token) getIncome();
-    }, [token]);
+        if (token) getIncome()
+    }, [token])
 
     const validateForm = () => {
         if (!title || !amount || !date) {
-            setError("Fill in all the required fields.");
-            return false;
+            setError("Fill in all the required fields.")
+            return false
         }
 
         if (validateEmpty(title)) {
-            setError("The title field must be filled properly.");
-            return false;
+            setError("The title field must be filled properly.")
+            return false
         }
 
         if (validateEmpty(amount)) {
-            setError("The amount field must be filled properly.");
-            return false;
+            setError("The amount field must be filled properly.")
+            return false
         }
 
         if (!isNumeric(amount)) {
-            setError("The amount field must be a number.");
-            return false;
+            setError("The amount field must be a number.")
+            return false
         }
 
         if (!isValidDate(date)) {
-            setError("Please select a date.");
-            return false;
+            setError("Please select a date.")
+            return false
         }
 
         if (!isTodayOrBefore(date)) {
-            setError("Please select a date that is today or before today.");
-            return false;
+            setError("Please select a date that is today or before today.")
+            return false
         }
 
-        setError("");
-        return true;
-    };
+        setError("")
+        return true
+    }
 
     const handleEditIncome = () => {
         if (validateForm()) {
             updateIncome(token, id as string, title, parseFloat(amount), date, notes).then((complete) => {
                 if (complete) {
-                    Alert.alert('Success', 'Income updated successfully!');
-                    clearRouterHistory(router);
-                    router.replace(`/viewIncomeDetailsPage/${id}`);
+                    Alert.alert('Success', 'Income updated successfully!')
+                    clearRouterHistory(router)
+                    router.replace(`/viewIncomeDetailsPage/${id}`)
                 }
             }).catch((error: Error) => {
                 setError(error.message)
             })
         }
-    };
+    }
 
     return (
         <ScrollView contentContainerStyle={styles.container}>
@@ -129,7 +128,7 @@ export default function EditIncome() {
                 <Text style={styles.addButtonText}>Edit Income</Text>
             </TouchableOpacity>
         </ScrollView>
-    );
+    )
 }
 
 const styles = StyleSheet.create({
@@ -137,28 +136,28 @@ const styles = StyleSheet.create({
         rowGap: 20,
         padding: 20,
         backgroundColor: '#fff',
-        flex: 1,
+        flex: 1
     },
     incomeForm: {
-        marginBottom: 40,
+        marginBottom: 40
     },
     addButton: {
         backgroundColor: '#007BFF',
         padding: 15,
         borderRadius: 5,
-        alignItems: 'center',
+        alignItems: 'center'
     },
     addButtonText: {
         color: '#fff',
         fontSize: 16,
-        fontWeight: 'bold',
+        fontWeight: 'bold'
     },
     centeredTextContainer: {
         justifyContent: "center",
-        alignItems: "center",
+        alignItems: "center"
     },
     errorText: {
         color: 'red',
-        fontSize: 14,
-    },
-});
+        fontSize: 14
+    }
+})

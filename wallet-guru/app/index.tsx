@@ -1,7 +1,7 @@
-import setPageTitle from "@/components/pageTitle/setPageTitle";
-import { useRouter } from "expo-router";
-import { useEffect, useState } from "react";
-import { ActivityIndicator, StatusBar, View, StyleSheet } from "react-native";
+import setPageTitle from "@/components/pageTitle/setPageTitle"
+import { useRouter } from "expo-router"
+import { useEffect, useState } from "react"
+import { ActivityIndicator, StatusBar, View, StyleSheet } from "react-native"
 
 export default function Index() {
 

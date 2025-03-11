@@ -23,7 +23,6 @@ import getToken from '@/utils/tokenAccess/getToken';
 import filterTransactionsByTimeWindow from '@/utils/filterTransactionsByTimeWindow';
 import updateCategoriesTimeWindowEnd from '@/utils/analytics/batchProcessRecurrencesUpdates/updateCategoriesTimeWindowEnd';
 
-
 export default function ViewTransactionsList() {
     setPageTitle("Transactions");
 
@@ -37,68 +36,85 @@ export default function ViewTransactionsList() {
     const [expenses, setExpenses] = useState<Expense[]>([]);
     const [incomes, setIncomes] = useState<Income[]>([]);
 
-    getToken().then((data) => {
-        if (!data) {
-            Alert.alert('Error', 'You must be logged in to access this page.');
-            clearRouterHistory(router);
-            router.replace("/loginPage");
-            return;
-        }
+    useEffect(() => {
+        const fetchToken = async () => {
+            const data = await getToken();
+            if (!data) {
+                Alert.alert('Error', 'You must be logged in to access this page.');
+                clearRouterHistory(router);
+                router.replace('/loginPage');
+                return;
+            }
+            setToken(data.token);
+        };
 
-        setToken(data.token);
-    });
+        fetchToken();
+    }, []);
 
     useEffect(() => {
         async function getCategories() {
-            const categories = await getExpenseCategories(token);
-            if (categories) {
-                setCategories(categories);
-                await updateCategoriesTimeWindowEnd(categories, token);
+            const result = await getExpenseCategories(token)
+            if (result) {
+                setCategories(result)
+                await updateCategoriesTimeWindowEnd(result, token)
             } else {
-                console.log("Error with getting expense categories list.")
+                console.log("Error with getting expense categories list")
             }
+        }
 
-            const expenses = await getExpenses(token);
-            if (expenses) {
-                setExpenses(expenses);
+        getCategories()
+    }, [token])
+
+    useEffect(() => {
+        async function getExpenseList() {
+            const result = await getExpenses(token)
+            if (result) {
+                setExpenses(result)
             } else {
-                console.log("Error with getting expense list")
+                console.log("Error with getting expenses list")
             }
+        }
 
-            const incomes = await getIncomes(token);
-            if (incomes) {
-                setIncomes(incomes);
+        getExpenseList()
+    }, [token, categories])
+
+    useEffect(() => {
+        async function getIncomesList() {
+            const result = await getIncomes(token)
+            if (result) {
+                console.log("Here")
+                setIncomes(result)
             } else {
                 console.log("Error with getting incomes list")
             }
         }
 
-        getCategories();
-    }, [token]);
+        getIncomesList()
+    }, [token])
 
     const handleTransactionClick = (transaction: Transaction) => {
         clearRouterHistory(router);
         router.navigate(transaction.getPageURL());
     };
 
-    let tomorrow = new Date();
-    tomorrow = new Date(tomorrow.setDate(tomorrow.getDate() + 1));
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
 
     const combinedTransactions = [];
 
     if (selectedType !== TransactionType.EXPENSE) {
-        const filteredIncomes = filterTransactionsByTimeWindow(incomes, filterStartDate === null ? new Date(1800, 0, 1) : filterStartDate, filterEndDate === null ? tomorrow : filterEndDate);
+        const filteredIncomes = filterTransactionsByTimeWindow(incomes, filterStartDate || new Date(1800, 0, 1), filterEndDate || tomorrow);
         combinedTransactions.push(...filteredIncomes.map(income => ({ type: 'income', data: income })));
     }
 
     if (selectedType !== TransactionType.INCOME) {
-        let filteredExpenses = filterTransactionsByTimeWindow(expenses, filterStartDate === null ? new Date(1800, 0, 1) : filterStartDate, filterEndDate === null ? tomorrow : filterEndDate);
+        let filteredExpenses = filterTransactionsByTimeWindow(expenses, filterStartDate || new Date(1800, 0, 1), filterEndDate || tomorrow);
         if (selectedCategory) {
             filteredExpenses = filterExpensesByCategory(filteredExpenses, selectedCategory);
         }
         combinedTransactions.push(...filteredExpenses.map(expense => ({ type: 'expense', data: expense })));
     }
-    
+
     combinedTransactions.sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
 
     const transactionDisplayElements = combinedTransactions.map(item => (
@@ -110,12 +126,8 @@ export default function ViewTransactionsList() {
                     <ExpenseItem
                         token={token}
                         expense={item.data as Expense}
-                        categoryName={
-                            categories.find(cat => cat.getID() === (item.data as Expense).categoryID)?.name || ""
-                        }
-                        categoryColor={
-                            categories.find(cat => cat.getID() === (item.data as Expense).categoryID)?.colour || ""
-                        }
+                        categoryName={categories.find(cat => cat.getID() === (item.data as Expense).categoryID)?.name || ''}
+                        categoryColor={categories.find(cat => cat.getID() === (item.data as Expense).categoryID)?.colour || ''}
                         buttons
                     />
                 )}
@@ -124,39 +136,32 @@ export default function ViewTransactionsList() {
         </React.Fragment>
     ));
 
-
     return (
         <View style={styles.container}>
             <TopBar />
-            <StatusBar barStyle={"dark-content"} />
+            <StatusBar barStyle={'dark-content'} />
 
             <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ rowGap: 30 }}>
-
-                <View style={{ flexDirection: "column", rowGap: 20 }}>
+                <View style={{ flexDirection: 'column', rowGap: 20 }}>
                     <Text style={styles.filterTitle}>Filters:</Text>
-                    <View>
-                        <ModalSelectionTransactionTypes choices={Object.values(TransactionType) as TransactionType[]} value={selectedType} setValue={setSelectedType} />
-                    </View>
-                    {selectedType === TransactionType.EXPENSE ? <View><ModalSelectionExpenseCategories choices={categories} value={selectedCategory} setValue={setSelectedCategory} /></View> : ""}
+                    <ModalSelectionTransactionTypes choices={Object.values(TransactionType) as TransactionType[]} value={selectedType} setValue={setSelectedType} />
+                    {selectedType === TransactionType.EXPENSE && (
+                        <ModalSelectionExpenseCategories choices={categories} value={selectedCategory} setValue={setSelectedCategory} />
+                    )}
                     <DateInputField date={filterStartDate} setDate={setFilterStartDate} placeholder='Start Date' />
                     <DateInputField date={filterEndDate} setDate={setFilterEndDate} placeholder='End Date' />
-
                 </View>
 
                 <View style={{ rowGap: 30 }}>
-                    {transactionDisplayElements.length > 0 ? transactionDisplayElements :
+                    {transactionDisplayElements.length > 0 ? transactionDisplayElements : (
                         <View style={styles.messageContainer}>
                             <Text style={styles.message}>There are currently no transactions.</Text>
-                            <TouchableOpacity>
-                                <Link href="/addExpensePage" replace>
-                                    <Text style={styles.linkText}>Add an expense</Text>
-                                </Link>
-                            </TouchableOpacity>
+                            <Link href="/addExpensePage" replace>
+                                <Text style={styles.linkText}>Add an expense</Text>
+                            </Link>
                         </View>
-
-                    }
+                    )}
                 </View>
-
             </ScrollView>
         </View>
     );
@@ -171,23 +176,23 @@ const styles = StyleSheet.create({
     },
     filterTitle: {
         fontSize: 18,
-        fontWeight: "bold",
+        fontWeight: 'bold',
     },
     divider: {
         height: 1,
-        backgroundColor: "#ccc",
+        backgroundColor: '#ccc',
     },
     linkText: {
         fontSize: 16,
-        color: "#007BFF",
-        textDecorationLine: "underline",
+        color: '#007BFF',
+        textDecorationLine: 'underline',
     },
     messageContainer: {
-        alignItems: "center",
+        alignItems: 'center',
         rowGap: 10,
     },
     message: {
-        textAlign: "center",
+        textAlign: 'center',
         fontSize: 16,
-    }
+    },
 });

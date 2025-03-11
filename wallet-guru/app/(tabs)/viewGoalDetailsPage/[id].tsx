@@ -1,58 +1,58 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Alert, StatusBar } from 'react-native';
-import * as Progress from 'react-native-progress';
-import setPageTitle from '@/components/pageTitle/setPageTitle';
-import TopBar from '@/components/topBars/topBar';
-import { useLocalSearchParams, useRouter } from 'expo-router';
-import clearRouterHistory from '@/utils/clearRouterHistory';
-import Goal from '@/models/core/Goal';
-import getToken from '@/utils/tokenAccess/getToken';
-import getGoalByID from '@/utils/apiCalls/getGoalByID';
-import deleteGoal from '@/utils/apiCalls/deleteGoal';
+import React, { useEffect, useState } from 'react'
+import { View, Text, TouchableOpacity, StyleSheet, Alert, StatusBar } from 'react-native'
+import * as Progress from 'react-native-progress'
+import setPageTitle from '@/components/pageTitle/setPageTitle'
+import TopBar from '@/components/topBars/topBar'
+import { useLocalSearchParams, useRouter } from 'expo-router'
+import clearRouterHistory from '@/utils/clearRouterHistory'
+import Goal from '@/models/core/Goal'
+import getToken from '@/utils/tokenAccess/getToken'
+import getGoalByID from '@/utils/apiCalls/getGoalByID'
+import deleteGoal from '@/utils/apiCalls/deleteGoal'
 
 export default function ViewGoalDetails() {
-    const { id } = useLocalSearchParams();
-    const router = useRouter();
-    const [token, setToken] = useState<string>('');
-    const [email, setEmail] = useState<string>('');
-    const [goal, setGoal] = useState<Goal>();
-    const [error, setError] = useState<string>('');
+    const { id } = useLocalSearchParams()
+    const router = useRouter()
+    const [token, setToken] = useState<string>("")
+    const [email, setEmail] = useState<string>("")
+    const [goal, setGoal] = useState<Goal>()
+    const [error, setError] = useState<string>("")
 
-    setPageTitle(!goal ? "" : goal.title);
+    setPageTitle(!goal ? "" : goal.title)
 
     getToken().then((data) => {
         if (!data) {
-            Alert.alert('Error', 'You must be logged in to access this page.');
-            clearRouterHistory(router);
-            router.replace("/loginPage");
-            return;
+            Alert.alert('Error', 'You must be logged in to access this page.')
+            clearRouterHistory(router)
+            router.replace("/loginPage")
+            return
         }
-        setToken(data.token);
-        setEmail(data.email);
-    });
+        setToken(data.token)
+        setEmail(data.email)
+    })
 
     useEffect(() => {
         async function getGoal() {
             getGoalByID(token, id as string)
                 .then((data) => setGoal(data))
                 .catch((error: Error) => {
-                    Alert.alert("Goal Not Found");
-                    console.log(error.message);
-                    clearRouterHistory(router);
-                    router.replace("/allGoalsPage");
-                });
+                    Alert.alert("Goal Not Found")
+                    console.log(error.message)
+                    clearRouterHistory(router)
+                    router.replace("/allGoalsPage")
+                })
         }
-        if (token) getGoal();
-    }, [token]);
+        if (token) getGoal()
+    }, [token])
 
     const handleUpdateProgress = () => {
         if (!goal) {
-            clearRouterHistory(router);
-            router.navigate("/loginPage");
-            return;
+            clearRouterHistory(router)
+            router.navigate("/loginPage")
+            return
         }
-        router.navigate(`/updateGoalPage/${goal.getID()}`);
-    };
+        router.navigate(`/updateGoalPage/${goal.getID()}`)
+    }
 
     const handleDeleteGoal = () => {
         Alert.alert('Delete Goal', 'Are you sure you want to delete this goal?', [
@@ -64,18 +64,18 @@ export default function ViewGoalDetails() {
                     deleteGoal(token, id as string)
                         .then((complete) => {
                             if (complete) {
-                                Alert.alert('Success', 'Goal deleted successfully!');
-                                clearRouterHistory(router);
-                                router.replace("/allGoalsPage");
+                                Alert.alert('Success', 'Goal deleted successfully!')
+                                clearRouterHistory(router)
+                                router.replace("/allGoalsPage")
                             }
                         })
                         .catch((err: Error) => {
-                            setError(err.message);
-                        });
+                            setError(err.message)
+                        })
                 },
             },
-        ]);
-    };
+        ])
+    }
 
     return (
         <View style={styles.mainContainer}>
@@ -112,7 +112,7 @@ export default function ViewGoalDetails() {
                 </View>
             )}
         </View>
-    );
+    )
 }
 
 const styles = StyleSheet.create({
@@ -164,4 +164,4 @@ const styles = StyleSheet.create({
         color: 'red',
         fontSize: 14,
     },
-});
+})

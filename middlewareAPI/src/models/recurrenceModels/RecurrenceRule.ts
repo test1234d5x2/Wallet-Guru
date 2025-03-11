@@ -54,10 +54,6 @@ export default abstract class RecurrenceRule {
                 default:
                     throw new Error('Unsupported frequency')
             }
-
-            if (this.endDate && this.nextTriggerDate > this.endDate) {
-                throw new Error('Next trigger date exceeds end date')
-            }
         }
 
         return this.nextTriggerDate

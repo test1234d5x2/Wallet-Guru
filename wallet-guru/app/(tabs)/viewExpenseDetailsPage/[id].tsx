@@ -1,86 +1,81 @@
-import setPageTitle from '@/components/pageTitle/setPageTitle';
-import TopBar from '@/components/topBars/topBar';
-import { useLocalSearchParams, useRouter } from 'expo-router';
-import React, { useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Alert, StatusBar } from 'react-native';
-import clearRouterHistory from '@/utils/clearRouterHistory';
-import Expense from '@/models/core/Expense';
-import getToken from '@/utils/tokenAccess/getToken';
-import getExpenseByID from '@/utils/apiCalls/getExpensesByID';
-import deleteExpense from '@/utils/apiCalls/deleteExpense';
-import ExpenseCategory from '@/models/core/ExpenseCategory';
-import getExpenseCategories from '@/utils/apiCalls/getExpenseCategories';
-import ViewReceiptModal from '@/components/modalView/viewReceiptModal';
-
+import setPageTitle from '@/components/pageTitle/setPageTitle'
+import TopBar from '@/components/topBars/topBar'
+import { useLocalSearchParams, useRouter } from 'expo-router'
+import React, { useEffect, useState } from 'react'
+import { View, Text, TouchableOpacity, StyleSheet, Alert, StatusBar } from 'react-native'
+import clearRouterHistory from '@/utils/clearRouterHistory'
+import Expense from '@/models/core/Expense'
+import getToken from '@/utils/tokenAccess/getToken'
+import getExpenseByID from '@/utils/apiCalls/getExpensesByID'
+import deleteExpense from '@/utils/apiCalls/deleteExpense'
+import ExpenseCategory from '@/models/core/ExpenseCategory'
+import getExpenseCategories from '@/utils/apiCalls/getExpenseCategories'
+import ViewReceiptModal from '@/components/modalView/viewReceiptModal'
 
 export default function ExpenseDetailsScreen() {
-    const { id } = useLocalSearchParams();
+    const { id } = useLocalSearchParams()
 
-    const router = useRouter();
-    const [token, setToken] = useState<string>('');
-    const [email, setEmail] = useState<string>('');
-    const [expense, setExpense] = useState<Expense>();
-    const [category, setCategory] = useState<ExpenseCategory>();
-    const [error, setError] = useState<string>('');
-    const [viewReceipt, setViewReceipt] = useState<boolean>(false);
+    const router = useRouter()
+    const [token, setToken] = useState<string>("")
+    const [email, setEmail] = useState<string>("")
+    const [expense, setExpense] = useState<Expense>()
+    const [category, setCategory] = useState<ExpenseCategory>()
+    const [error, setError] = useState<string>("")
+    const [viewReceipt, setViewReceipt] = useState<boolean>(false)
 
     setPageTitle(!expense ? "" : expense.title)
 
-
     getToken().then((data) => {
         if (!data) {
-            Alert.alert('Error', 'You must be logged in to access this page.');
-            clearRouterHistory(router);
-            router.replace("/loginPage");
-            return;
+            Alert.alert('Error', 'You must be logged in to access this page.')
+            clearRouterHistory(router)
+            router.replace("/loginPage")
+            return
         }
-        setToken(data.token);
-        setEmail(data.email);
-    });
-
+        setToken(data.token)
+        setEmail(data.email)
+    })
 
     useEffect(() => {
         async function getExpense() {
             getExpenseByID(token, id as string).then((expense) => {
-                setExpense(expense);
+                setExpense(expense)
             }).catch((error: Error) => {
                 Alert.alert("Expense Not Found")
-                console.log(error.message);
-                clearRouterHistory(router);
-                router.replace("/listTransactionsPage");
+                console.log(error.message)
+                clearRouterHistory(router)
+                router.replace("/listTransactionsPage")
             })
         }
 
-        if (token) getExpense();
-    }, [token]);
-
+        if (token) getExpense()
+    }, [token])
 
     useEffect(() => {
         async function getExpenseCategory() {
             if (expense) {
                 getExpenseCategories(token).then((categories) => {
-                    setCategory(categories.find((cat) => cat.getID() === expense.categoryID));
+                    setCategory(categories.find((cat) => cat.getID() === expense.categoryID))
                 }).catch((error: Error) => {
                     Alert.alert("Error", "Could not load the category name.")
-                    console.log(error.message);
-                    clearRouterHistory(router);
-                    router.replace("/listTransactionsPage");
+                    console.log(error.message)
+                    clearRouterHistory(router)
+                    router.replace("/listTransactionsPage")
                 })
             }
         }
 
-        if (token && expense) getExpenseCategory();
-    }, [token, expense]);
-
+        if (token && expense) getExpenseCategory()
+    }, [token, expense])
 
     const handleEdit = () => {
         if (!expense) {
-            clearRouterHistory(router);
-            router.navigate("/loginPage");
-            return;
+            clearRouterHistory(router)
+            router.navigate("/loginPage")
+            return
         }
-        router.navigate(expense.getEditURL());
-    };
+        router.navigate(expense.getEditURL())
+    }
 
     const handleDelete = () => {
         Alert.alert('Delete Expense', 'Are you sure you want to delete this expense?', [
@@ -89,56 +84,56 @@ export default function ExpenseDetailsScreen() {
                 text: 'Delete', style: 'destructive', onPress: () => {
                     deleteExpense(token, id as string).then((complete) => {
                         if (complete) {
-                            Alert.alert('Success', 'Expense deleted successfully!');
-                            clearRouterHistory(router);
-                            router.replace("/listTransactionsPage");
+                            Alert.alert('Success', 'Expense deleted successfully!')
+                            clearRouterHistory(router)
+                            router.replace("/listTransactionsPage")
                         }
                     }).catch((err: Error) => {
-                        setError(err.message);
+                        setError(err.message)
                     })
                 },
             },
-        ]);
-    };
+        ])
+    }
 
     return (
         <View style={styles.mainContainer}>
             <TopBar />
             <StatusBar barStyle={"dark-content"} />
 
-            {!expense ? "" : <View style={styles.container}>
-                <Text style={styles.detail}>Category: {!category ? "" : category.name}</Text>
-                <Text style={styles.detail}>Amount: £{Math.abs(expense.amount).toFixed(2)}</Text>
-                <Text style={styles.detail}>Date: {expense.date.toDateString()}</Text>
-                <View>
-                    <Text style={styles.notesTitle}>Notes:</Text>
-                    <Text style={styles.notes}>{expense.notes}</Text>
-                </View>
-
-                {error !== '' && (
-                    <View style={styles.errorTextContainer}>
-                        <Text style={styles.errorText}>{error}</Text>
+            {expense && (
+                <View style={styles.container}>
+                    <Text style={styles.detail}>Category: {category ? category.name : ""}</Text>
+                    <Text style={styles.detail}>Amount: £{Math.abs(expense.amount).toFixed(2)}</Text>
+                    <Text style={styles.detail}>Date: {expense.date.toDateString()}</Text>
+                    <View>
+                        <Text style={styles.notesTitle}>Notes:</Text>
+                        <Text style={styles.notes}>{expense.notes}</Text>
                     </View>
-                )}
 
-                <TouchableOpacity onPress={() => setViewReceipt(true)}>
-                    <Text style={styles.viewReceipt}>View Receipt</Text>
-                </TouchableOpacity>
-                <View style={styles.buttonContainer}>
-                    <TouchableOpacity style={[styles.button, styles.editButton]} onPress={handleEdit}>
-                        <Text style={styles.buttonText}>Edit</Text>
+                    {error !== '' && (
+                        <View style={styles.errorTextContainer}>
+                            <Text style={styles.errorText}>{error}</Text>
+                        </View>
+                    )}
+
+                    <TouchableOpacity onPress={() => setViewReceipt(true)}>
+                        <Text style={styles.viewReceipt}>View Receipt</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity style={[styles.button, styles.deleteButton]} onPress={handleDelete}>
-                        <Text style={styles.buttonText}>Delete</Text>
-                    </TouchableOpacity>
+                    <View style={styles.buttonContainer}>
+                        <TouchableOpacity style={[styles.button, styles.editButton]} onPress={handleEdit}>
+                            <Text style={styles.buttonText}>Edit</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity style={[styles.button, styles.deleteButton]} onPress={handleDelete}>
+                            <Text style={styles.buttonText}>Delete</Text>
+                        </TouchableOpacity>
+                    </View>
+
+                    {expense.receipt && <ViewReceiptModal uri={expense.receipt} visible={viewReceipt} setViewReceipt={setViewReceipt} />}
                 </View>
-
-                {expense.receipt ? <ViewReceiptModal uri={expense.receipt} visible={viewReceipt} setViewReceipt={setViewReceipt} />: ""}
-            </View>}
-
-            
+            )}
         </View>
-    );
+    )
 }
 
 const styles = StyleSheet.create({
@@ -205,4 +200,4 @@ const styles = StyleSheet.create({
         color: 'red',
         fontSize: 14,
     },
-});
+})

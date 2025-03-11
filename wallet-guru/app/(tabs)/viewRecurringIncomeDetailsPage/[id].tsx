@@ -1,58 +1,58 @@
-import setPageTitle from '@/components/pageTitle/setPageTitle';
-import TopBar from '@/components/topBars/topBar';
-import { useLocalSearchParams, useRouter } from 'expo-router';
-import React, { useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Alert, StatusBar } from 'react-native';
-import clearRouterHistory from '@/utils/clearRouterHistory';
-import getToken from '@/utils/tokenAccess/getToken';
-import RecurringIncome from '@/models/recurrenceModels/RecurringIncome';
-import convertFrequencyToTextDisplay from '@/utils/convertFrequencyToTextDisplay';
-import deleteRecurringIncome from '@/utils/apiCalls/deleteRecurringIncome';
-import getRecurringIncomeByID from '@/utils/apiCalls/getRecurringIncomeByID';
+import setPageTitle from '@/components/pageTitle/setPageTitle'
+import TopBar from '@/components/topBars/topBar'
+import { useLocalSearchParams, useRouter } from 'expo-router'
+import React, { useEffect, useState } from 'react'
+import { View, Text, TouchableOpacity, StyleSheet, Alert, StatusBar } from 'react-native'
+import clearRouterHistory from '@/utils/clearRouterHistory'
+import getToken from '@/utils/tokenAccess/getToken'
+import RecurringIncome from '@/models/recurrenceModels/RecurringIncome'
+import convertFrequencyToTextDisplay from '@/utils/convertFrequencyToTextDisplay'
+import deleteRecurringIncome from '@/utils/apiCalls/deleteRecurringIncome'
+import getRecurringIncomeByID from '@/utils/apiCalls/getRecurringIncomeByID'
 
 export default function IncomeDetailsScreen() {
-    const { id } = useLocalSearchParams();
-    const router = useRouter();
-    const [token, setToken] = useState<string>('');
-    const [email, setEmail] = useState<string>('');
-    const [recurringIncome, setRecurringIncome] = useState<RecurringIncome>();
-    const [error, setError] = useState<string>('');
+    const { id } = useLocalSearchParams()
+    const router = useRouter()
+    const [token, setToken] = useState<string>("")
+    const [email, setEmail] = useState<string>("")
+    const [recurringIncome, setRecurringIncome] = useState<RecurringIncome>()
+    const [error, setError] = useState<string>("")
 
-    setPageTitle(!recurringIncome ? "" : recurringIncome.title);
+    setPageTitle(!recurringIncome ? "" : recurringIncome.title)
 
     getToken().then((data) => {
         if (!data) {
-            Alert.alert('Error', 'You must be logged in to access this page.');
-            clearRouterHistory(router);
-            router.replace("/loginPage");
-            return;
+            Alert.alert('Error', 'You must be logged in to access this page')
+            clearRouterHistory(router)
+            router.replace("/loginPage")
+            return
         }
-        setToken(data.token);
-        setEmail(data.email);
-    });
+        setToken(data.token)
+        setEmail(data.email)
+    })
 
     useEffect(() => {
         async function getIncome() {
             getRecurringIncomeByID(token, id as string).then((data) => {
-                setRecurringIncome(data);
+                setRecurringIncome(data)
             }).catch((error: Error) => {
-                Alert.alert("Income Not Found");
-                console.log(error.message);
-                clearRouterHistory(router);
-                router.replace("/listTransactionsPage");
-            });
+                Alert.alert("Income Not Found")
+                console.log(error.message)
+                clearRouterHistory(router)
+                router.replace("/listTransactionsPage")
+            })
         }
-        if (token) getIncome();
-    }, [token]);
+        if (token) getIncome()
+    }, [token])
 
     const handleEdit = () => {
         if (!recurringIncome) {
-            clearRouterHistory(router);
-            router.navigate("/loginPage");
-            return;
+            clearRouterHistory(router)
+            router.navigate("/loginPage")
+            return
         }
-        router.navigate(recurringIncome.getEditURL());
-    };
+        router.navigate(recurringIncome.getEditURL())
+    }
 
     const handleDelete = () => {
         Alert.alert('Delete Recurring Income', 'Are you sure you want to delete this recurring income source?', [
@@ -63,17 +63,17 @@ export default function IncomeDetailsScreen() {
                 onPress: () => {
                     deleteRecurringIncome(token, id as string).then((complete) => {
                         if (complete) {
-                            Alert.alert('Success', 'Income deleted successfully!');
-                            clearRouterHistory(router);
-                            router.replace("/listRecurringTransactionsPage");
+                            Alert.alert('Success', 'Income deleted successfully!')
+                            clearRouterHistory(router)
+                            router.replace("/listRecurringTransactionsPage")
                         }
                     }).catch((err: Error) => {
-                        setError(err.message);
-                    });
+                        setError(err.message)
+                    })
                 }
-            },
-        ]);
-    };
+            }
+        ])
+    }
 
     return (
         <View style={styles.mainContainer}>
@@ -112,7 +112,7 @@ export default function IncomeDetailsScreen() {
                 </View>
             )}
         </View>
-    );
+    )
 }
 
 const styles = StyleSheet.create({
@@ -128,22 +128,22 @@ const styles = StyleSheet.create({
     },
     detail: {
         fontSize: 16,
-        marginBottom: 10,
+        marginBottom: 10
     },
     notesTitle: {
         fontSize: 16,
         fontWeight: 'bold',
         marginTop: 20,
-        marginBottom: 5,
+        marginBottom: 5
     },
     notes: {
         fontSize: 14,
-        color: '#555',
+        color: '#555'
     },
     buttonContainer: {
         flexDirection: 'row',
         justifyContent: 'space-between',
-        marginTop: 30,
+        marginTop: 30
     },
     button: {
         flex: 1,
@@ -151,25 +151,25 @@ const styles = StyleSheet.create({
         paddingVertical: 15,
         borderRadius: 30,
         justifyContent: 'center',
-        alignItems: 'center',
+        alignItems: 'center'
     },
     editButton: {
-        backgroundColor: '#007BFF',
+        backgroundColor: '#007BFF'
     },
     deleteButton: {
-        backgroundColor: '#FF4C4C',
+        backgroundColor: '#FF4C4C'
     },
     buttonText: {
         fontSize: 20,
         color: '#fff',
-        fontWeight: 'bold',
+        fontWeight: 'bold'
     },
     errorTextContainer: {
         justifyContent: "center",
-        alignItems: "center",
+        alignItems: "center"
     },
     errorText: {
         color: 'red',
-        fontSize: 14,
-    },
-});
+        fontSize: 14
+    }
+})

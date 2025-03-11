@@ -1,106 +1,103 @@
-import { View, Text, StyleSheet, TouchableOpacity, Alert, StatusBar, ScrollView } from "react-native";
-import { useState } from "react";
-import { Link, useRouter } from "expo-router";
-import setPageTitle from "@/components/pageTitle/setPageTitle";
-import AuthenticationInputs from "@/components/formComponents/authenticationInputs";
-import clearRouterHistory from "@/utils/clearRouterHistory";
-import saveToken from "@/utils/tokenAccess/saveToken";
-import getToken from '@/utils/tokenAccess/getToken';
-import verifyToken from "@/utils/apiCalls/verifyToken";
-import removeToken from "@/utils/tokenAccess/deleteToken";
+import { View, Text, StyleSheet, TouchableOpacity, Alert, StatusBar, ScrollView } from 'react-native'
+import { useState, useEffect } from 'react'
+import { Link, useRouter } from 'expo-router'
+import setPageTitle from '@/components/pageTitle/setPageTitle'
+import AuthenticationInputs from '@/components/formComponents/authenticationInputs'
+import clearRouterHistory from '@/utils/clearRouterHistory'
+import saveToken from '@/utils/tokenAccess/saveToken'
+import getToken from '@/utils/tokenAccess/getToken'
+import verifyToken from '@/utils/apiCalls/verifyToken'
+import removeToken from '@/utils/tokenAccess/deleteToken'
 
 interface LoginResponse {
-    message: string;
-    token: string;
+    message: string
+    token: string
 }
 
-
 async function login(email: string, password: string): Promise<LoginResponse> {
-    const API_DOMAIN = process.env.EXPO_PUBLIC_BLOCKCHAIN_MIDDLEWARE_API_IP_ADDRESS;
+    const API_DOMAIN = process.env.EXPO_PUBLIC_BLOCKCHAIN_MIDDLEWARE_API_IP_ADDRESS
     if (!API_DOMAIN) {
-        throw new Error("Domain could not be found.")
-    };
+        console.warn('API domain not set in environment variables')
+        throw new Error('Domain could not be found')
+    }
 
-    const LOGIN_URL = `http://${API_DOMAIN}/api/users/login`;
+    const LOGIN_URL = `http://${API_DOMAIN}/api/users/login`
 
     const response = await fetch(LOGIN_URL, {
-        method: "POST",
+        method: 'POST',
         headers: {
-            "Content-Type": "application/json",
+            'Content-Type': 'application/json',
         },
         body: JSON.stringify({ username: email, password }),
     })
 
     if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.message);
+        const error = await response.json()
+        throw new Error(error.message)
     }
 
-    const data: LoginResponse = await response.json();
-    return data;
+    const data: LoginResponse = await response.json()
+    return data
 }
 
-
 export default function Login() {
-    setPageTitle("Login");
+    setPageTitle('Login')
 
-    const [email, setEmail] = useState<string>('');
-    const [password, setPassword] = useState<string>('');
-    const [error, setError] = useState<string>('');
-    const router = useRouter();
+    const [email, setEmail] = useState<string>('')
+    const [password, setPassword] = useState<string>('')
+    const [error, setError] = useState<string>('')
+    const router = useRouter()
 
-    getToken().then(async (data) => {
-        if (data) {
-            try {
-                await verifyToken(data.token, data.email)
-                Alert.alert("You are already logged in.");
-                clearRouterHistory(router);
-                router.replace("/dashboardPage");
-            }
-            catch (err: any) {
-                console.log(err.message)
-                await removeToken()
+    useEffect(() => {
+        const checkToken = async () => {
+            const data = await getToken()
+            if (data) {
+                try {
+                    await verifyToken(data.token, data.email)
+                    Alert.alert('You are already logged in.')
+                    clearRouterHistory(router)
+                    router.replace('/dashboardPage')
+                } catch (err: any) {
+                    console.log(err.message)
+                    await removeToken()
+                }
             }
         }
-    });
+        checkToken()
+    }, [])
 
     const handleLogin = async () => {
         if (!email || !password) {
-            setError("Please input both email and password");
-            return;
+            setError('Please input both email and password')
+            return
         }
 
-        await login(email, password).then(async (data) => {
-            const token = data.token;
-
-            await saveToken(token, email).then((data2) => {
-                setError("");
-                clearRouterHistory(router);
-                router.replace("/dashboardPage");
-            }).catch((error) => {
-                setError("Failed to login. Please try again.");
-            })
-        }).catch((error: Error) => {
-            setError(error.message);
-        });
-
-        return;
-    };
+        try {
+            const data = await login(email, password)
+            await saveToken(data.token, email)
+            setError('')
+            clearRouterHistory(router)
+            router.replace('/dashboardPage')
+        } catch (error: any) {
+            console.log('Login error:', error.message)
+            setError(error.message || 'Failed to login. Please try again.')
+        }
+    }
 
     return (
         <ScrollView contentContainerStyle={styles.container} showsVerticalScrollIndicator={false}>
-            <StatusBar barStyle={"dark-content"} />
+            <StatusBar barStyle={'dark-content'} />
             <AuthenticationInputs email={email} password={password} setEmail={setEmail} setPassword={setPassword} />
 
-            {error ? (
+            {error && (
                 <View style={styles.errorTextContainer}>
                     <Text style={styles.errorText}>{error}</Text>
                 </View>
-            ) : null}
+            )}
 
             <View style={styles.newUserTextContainer}>
                 <TouchableOpacity>
-                    <Link href={"/registrationPage"} replace={true}>
+                    <Link href={'/registrationPage'} replace>
                         <Text style={styles.newUserText}>New User? Register Here</Text>
                     </Link>
                 </TouchableOpacity>
@@ -110,12 +107,12 @@ export default function Login() {
                 <Text style={styles.loginButtonText}>Login</Text>
             </TouchableOpacity>
         </ScrollView>
-    );
+    )
 }
 
 const styles = StyleSheet.create({
     container: {
-        backgroundColor: "white",
+        backgroundColor: 'white',
         flex: 1,
         rowGap: 20,
         padding: 20,
@@ -133,21 +130,21 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
     },
     newUserTextContainer: {
-        justifyContent: "center",
-        alignItems: "center",
+        justifyContent: 'center',
+        alignItems: 'center',
     },
     newUserText: {
         fontSize: 14,
         color: 'rgba(0,0,0,0.5)',
         textDecorationLine: 'underline',
-        textAlign: "center",
+        textAlign: 'center',
     },
     errorTextContainer: {
-        justifyContent: "center",
-        alignItems: "center",
+        justifyContent: 'center',
+        alignItems: 'center',
     },
     errorText: {
         color: 'red',
         fontSize: 14,
     },
-});
+})

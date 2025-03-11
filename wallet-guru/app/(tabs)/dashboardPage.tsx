@@ -1,93 +1,91 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Alert, StatusBar } from 'react-native';
-import { Link, useRouter } from 'expo-router';
-import setPageTitle from '@/components/pageTitle/setPageTitle';
-import TopBar from '@/components/topBars/topBar';
-import uuid from 'react-native-uuid';
-import ExpenseCategoryItem from '@/components/listItems/expenseCategoryItem';
-import ExpenseItem from '@/components/listItems/expenseItem';
-import IncomeItem from '@/components/listItems/incomeItem';
-import clearRouterHistory from '@/utils/clearRouterHistory';
-import getToken from '@/utils/tokenAccess/getToken';
-import ExpenseCategory from '@/models/core/ExpenseCategory';
-import Expense from '@/models/core/Expense';
+import React, { useEffect, useState } from 'react'
+import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Alert, StatusBar } from 'react-native'
+import { Link, useRouter } from 'expo-router'
+import setPageTitle from '@/components/pageTitle/setPageTitle'
+import TopBar from '@/components/topBars/topBar'
+import uuid from 'react-native-uuid'
+import ExpenseCategoryItem from '@/components/listItems/expenseCategoryItem'
+import ExpenseItem from '@/components/listItems/expenseItem'
+import IncomeItem from '@/components/listItems/incomeItem'
+import clearRouterHistory from '@/utils/clearRouterHistory'
+import getToken from '@/utils/tokenAccess/getToken'
+import ExpenseCategory from '@/models/core/ExpenseCategory'
+import Expense from '@/models/core/Expense'
 import Income from '@/models/core/Income'
-import getExpenses from '@/utils/apiCalls/getExpenses';
-import getIncomes from '@/utils/apiCalls/getIncomes';
-import getExpenseCategories from '@/utils/apiCalls/getExpenseCategories';
-import calculateTransactionsTotalForTimeWindow from '@/utils/calculateTransactionsTotalForTimeWindow';
-import getStartOfMonth from '@/utils/getStartOfMonth';
-import getEndOfMonth from '@/utils/getEndOfMonth';
-import filterExpensesByCategory from '@/utils/filterExpensesByCategory';
-import MonthlySpendingDisplay from '@/components/widgets/MonthlySpendingDisplay';
-import BottomNav from '@/components/bottomNav/bottomNav';
-
+import getExpenses from '@/utils/apiCalls/getExpenses'
+import getIncomes from '@/utils/apiCalls/getIncomes'
+import getExpenseCategories from '@/utils/apiCalls/getExpenseCategories'
+import calculateTransactionsTotalForTimeWindow from '@/utils/calculateTransactionsTotalForTimeWindow'
+import getStartOfMonth from '@/utils/getStartOfMonth'
+import getEndOfMonth from '@/utils/getEndOfMonth'
+import filterExpensesByCategory from '@/utils/filterExpensesByCategory'
+import MonthlySpendingDisplay from '@/components/widgets/MonthlySpendingDisplay'
 
 export default function Dashboard() {
-    setPageTitle("Dashboard");
+    setPageTitle("Dashboard")
 
-    const [token, setToken] = useState<string>('');
-    const [categories, setCategories] = useState<ExpenseCategory[]>([]);
-    const [expenses, setExpenses] = useState<Expense[]>([]);
-    const [incomes, setIncomes] = useState<Income[]>([]);
-    const [incomeTotal, setIncomeTotal] = useState<number>(0);
-    const [expenseTotal, setExpenseTotal] = useState<number>(0);
-    const router = useRouter();
+    const [token, setToken] = useState<string>('')
+    const [categories, setCategories] = useState<ExpenseCategory[]>([])
+    const [expenses, setExpenses] = useState<Expense[]>([])
+    const [incomes, setIncomes] = useState<Income[]>([])
+    const [incomeTotal, setIncomeTotal] = useState<number>(0)
+    const [expenseTotal, setExpenseTotal] = useState<number>(0)
+    const router = useRouter()
 
     getToken().then((data) => {
         if (!data) {
-            Alert.alert('Error', 'You must be logged in to access this page.');
-            clearRouterHistory(router);
-            router.replace("/loginPage");
-            return;
+            Alert.alert('Error', 'You must be logged in to access this page')
+            clearRouterHistory(router)
+            router.replace("/loginPage")
+            return
         }
 
-        setToken(data.token);
-    });
+        setToken(data.token)
+    })
 
     useEffect(() => {
         async function getExpenseList() {
-            const result = await getExpenses(token);
+            const result = await getExpenses(token)
             if (result) {
-                setExpenses(result);
-                setExpenseTotal(calculateTransactionsTotalForTimeWindow(result, getStartOfMonth(new Date()), getEndOfMonth(new Date())));
+                setExpenses(result)
+                setExpenseTotal(calculateTransactionsTotalForTimeWindow(result, getStartOfMonth(new Date()), getEndOfMonth(new Date())))
             } else {
                 console.log("Error with getting expense list")
             }
         }
 
-        getExpenseList();
-    }, [token]);
+        getExpenseList()
+    }, [token])
 
     useEffect(() => {
         async function getIncomesList() {
-            const result = await getIncomes(token);
+            const result = await getIncomes(token)
             if (result) {
-                setIncomes(result);
+                setIncomes(result)
                 setIncomeTotal(calculateTransactionsTotalForTimeWindow(result, getStartOfMonth(new Date()), getEndOfMonth(new Date())))
             } else {
                 console.log("Error with getting incomes list")
             }
         }
 
-        getIncomesList();
-    }, [token]);
+        getIncomesList()
+    }, [token])
 
     useEffect(() => {
         async function getCategories() {
-            const result = await getExpenseCategories(token);
+            const result = await getExpenseCategories(token)
             if (result) {
-                setCategories(result);
+                setCategories(result)
             } else {
-                console.log("Error with getting expense categories list.")
+                console.log("Error with getting expense categories list")
             }
         }
 
-        getCategories();
-    }, [token, expenses]);
+        getCategories()
+    }, [token, expenses])
 
-    const combinedTransactions = [...expenses.map(expense => ({ type: 'expense', data: expense })), ...incomes.map(income => ({ type: 'income', data: income }))];
-    combinedTransactions.sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
+    const combinedTransactions = [...expenses.map(expense => ({ type: 'expense', data: expense })), ...incomes.map(income => ({ type: 'income', data: income }))]
+    combinedTransactions.sort((a, b) => b.data.date.getTime() - a.data.date.getTime())
     const transactionItemsList = combinedTransactions.slice(0, 3).map(item => (
         <React.Fragment key={uuid.v4() as string}>
             {item.type === 'expense' ? (
@@ -107,10 +105,9 @@ export default function Dashboard() {
             )}
             <View style={styles.dividerLine} />
         </React.Fragment>
-    ));
+    ))
 
-
-    const expenseCategoryItemsList = [];
+    const expenseCategoryItemsList = []
     if (categories.length > 0) {
         expenseCategoryItemsList.push(
             categories.slice(0, 3).map((category) => (
@@ -141,14 +138,13 @@ export default function Dashboard() {
                     </View>
                     {transactionItemsList.length > 0 ? transactionItemsList :
                         <View style={styles.messageContainer}>
-                            <Text style={styles.message}>There are currently no transactions.</Text>
+                            <Text style={styles.message}>There are currently no transactions</Text>
                             <TouchableOpacity>
                                 <Link href="/addExpensePage" replace>
                                     <Text style={styles.linkText}>Add an expense</Text>
                                 </Link>
                             </TouchableOpacity>
                         </View>
-
                     }
                 </View>
 
@@ -163,7 +159,7 @@ export default function Dashboard() {
                     </View>
                     {expenseCategoryItemsList.length > 0 ? expenseCategoryItemsList :
                         <View style={styles.messageContainer}>
-                            <Text style={styles.message}>There are currently no expense categories. </Text>
+                            <Text style={styles.message}>There are currently no expense categories</Text>
                             <TouchableOpacity>
                                 <Link href="/addExpenseCategoryPage" replace>
                                     <Text style={styles.linkText}>Add an expense category</Text>
@@ -174,7 +170,7 @@ export default function Dashboard() {
                 </View>
             </ScrollView>
         </View>
-    );
+    )
 }
 
 const styles = StyleSheet.create({
@@ -233,4 +229,4 @@ const styles = StyleSheet.create({
         textAlign: "center",
         fontSize: 16,
     }
-});
+})

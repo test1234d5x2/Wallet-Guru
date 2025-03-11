@@ -1,6 +1,6 @@
-import { View, StyleSheet, StatusBar } from "react-native";
-import MainMenu from "@/components/menuComponents/menu";
-import setPageTitle from "@/components/pageTitle/setPageTitle";
+import { View, StyleSheet, StatusBar } from "react-native"
+import MainMenu from "@/components/menuComponents/menu"
+import setPageTitle from "@/components/pageTitle/setPageTitle"
 
 
 export default function Menu() {

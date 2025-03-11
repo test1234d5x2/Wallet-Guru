@@ -1,7 +1,6 @@
-import React from 'react';
-import { View, StyleSheet, SafeAreaView } from 'react-native';
-import { Stack, Slot } from 'expo-router';
-import BottomNav from '@/components/bottomNav/bottomNav';
+import React from 'react'
+import { View, StyleSheet, SafeAreaView } from 'react-native'
+import { Stack, Slot } from 'expo-router'
   
 
 export default function RootLayout() {
@@ -12,9 +11,8 @@ export default function RootLayout() {
                     <Slot />
                 </Stack>
             </View>
-            <BottomNav />
         </SafeAreaView>
-    );
+    )
 }
 
 const styles = StyleSheet.create({
@@ -25,4 +23,4 @@ const styles = StyleSheet.create({
     content: {
         flex: 1,
     },
-});
+})
