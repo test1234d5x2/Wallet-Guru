@@ -1,57 +1,57 @@
-import Frequency from "../enums/Frequency";
+import Frequency from "../enums/Frequency"
 
 export default abstract class RecurrenceRule {
-    frequency: Frequency;
-    interval: number;
-    startDate: Date;
-    nextTriggerDate: Date;
-    endDate?: Date;
+    frequency: Frequency
+    interval: number
+    startDate: Date
+    nextTriggerDate: Date
+    endDate?: Date
 
     constructor(frequency: Frequency, interval: number, startDate: Date, endDate?: Date) {
-        this.frequency = frequency;
-        this.interval = interval;
-        this.startDate = startDate;
-        this.endDate = endDate;
+        this.frequency = frequency
+        this.interval = interval
+        this.startDate = startDate
+        this.endDate = endDate
 
         this.nextTriggerDate = new Date(Date.UTC(
             startDate.getUTCFullYear(),
             startDate.getUTCMonth(),
-            startDate.getUTCDate(),
-        ));
+            startDate.getUTCDate()
+        ))
     }
 
     public shouldTrigger(): boolean {
-        const now = new Date();
-        return now >= this.nextTriggerDate;
+        const now = new Date()
+        return now >= this.nextTriggerDate
     }
 
     public computeNextTriggerDate(): Date {
         const now = new Date(Date.UTC(
             new Date().getUTCFullYear(),
             new Date().getUTCMonth(),
-            new Date().getUTCDate(),
-        ));
+            new Date().getUTCDate()
+        ))
 
         while (this.nextTriggerDate <= now) {
             switch (this.frequency) {
                 case Frequency.Daily:
-                    this.nextTriggerDate.setUTCDate(this.nextTriggerDate.getUTCDate() + this.interval);
-                    break;
+                    this.nextTriggerDate.setUTCDate(this.nextTriggerDate.getUTCDate() + this.interval)
+                    break
                 case Frequency.Weekly:
-                    this.nextTriggerDate.setUTCDate(this.nextTriggerDate.getUTCDate() + this.interval * 7);
-                    break;
+                    this.nextTriggerDate.setUTCDate(this.nextTriggerDate.getUTCDate() + this.interval * 7)
+                    break
                 case Frequency.Monthly:
-                    this.nextTriggerDate.setUTCMonth(this.nextTriggerDate.getUTCMonth() + this.interval);
-                    break;
+                    this.nextTriggerDate.setUTCMonth(this.nextTriggerDate.getUTCMonth() + this.interval)
+                    break
                 case Frequency.Yearly:
-                    this.nextTriggerDate.setUTCFullYear(this.nextTriggerDate.getUTCFullYear() + this.interval);
-                    break;
+                    this.nextTriggerDate.setUTCFullYear(this.nextTriggerDate.getUTCFullYear() + this.interval)
+                    break
                 default:
-                    throw new Error("Unsupported frequency");
+                    throw new Error("Unsupported frequency")
             }
         }
 
-        return this.nextTriggerDate;
+        return this.nextTriggerDate
     }
 
     public toJSON() {
@@ -60,7 +60,7 @@ export default abstract class RecurrenceRule {
             interval: this.interval,
             startDate: this.startDate,
             nextTriggerDate: this.nextTriggerDate,
-            endDate: this.endDate,
+            endDate: this.endDate
         }
     }
 }

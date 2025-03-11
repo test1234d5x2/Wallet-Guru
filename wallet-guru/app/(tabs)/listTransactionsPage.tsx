@@ -82,7 +82,6 @@ export default function ViewTransactionsList() {
         async function getIncomesList() {
             const result = await getIncomes(token)
             if (result) {
-                console.log("Here")
                 setIncomes(result)
             } else {
                 console.log("Error with getting incomes list")
