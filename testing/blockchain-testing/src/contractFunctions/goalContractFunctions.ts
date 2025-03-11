@@ -19,10 +19,6 @@ export async function createGoal(contract: Contract, i: Goal): Promise<void> {
     return
 }
 
-
-
-
-
 export async function updateGoal(contract: Contract, userID: string, goalID: string, current: number) {
     try {
         await contract.submitTransaction(
@@ -55,7 +51,6 @@ export async function deleteGoal(contract: Contract, userID: string, goalID: str
 
     return false
 }
-
 
 
 export async function listGoalsByUser(contract: Contract, userID: string): Promise<Goal[]> {

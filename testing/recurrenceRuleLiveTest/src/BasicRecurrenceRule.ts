@@ -1,8 +1,8 @@
-import Frequency from './Frequency';
-import RecurrenceRule from './RecurrenceRule';
+import Frequency from './Frequency'
+import RecurrenceRule from './RecurrenceRule'
 
 export default class BasicRecurrenceRule extends RecurrenceRule {
     constructor(frequency: Frequency, interval: number, startDate: Date, endDate?: Date) {
-        super(frequency, interval, startDate, endDate);
+        super(frequency, interval, startDate, endDate)
     }
 }

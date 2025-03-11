@@ -132,7 +132,6 @@ describe("Expense Category API Tests", function () {
         });
 
         it("should fail when required fields are missing", async () => {
-            // Missing name and monthlyBudget
             await request(app)
                 .put(`/api/expense-categories/${expenseCategoryId}`)
                 .set("Authorization", `Bearer ${token}`)

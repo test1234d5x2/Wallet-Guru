@@ -3,4 +3,4 @@ enum UserStatus {
     PENDING = "PENDING"
 }
 
-export default UserStatus;
+export default UserStatus

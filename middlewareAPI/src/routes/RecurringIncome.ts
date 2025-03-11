@@ -1,4 +1,3 @@
-// src/routes/RecurringIncomeRoutes.ts
 import { Router } from 'express'
 import { create, findByID, listByUser, remove, update } from '../controllers/RecurringIncome'
 

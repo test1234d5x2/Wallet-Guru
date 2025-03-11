@@ -1,78 +1,78 @@
-import * as grpc from '@grpc/grpc-js';
-import { connect, Contract, hash, Identity, Signer, signers } from '@hyperledger/fabric-gateway';
-import * as crypto from 'crypto';
-import { promises as fs } from 'fs';
-import * as path from 'path';
-import dotenv from "dotenv";
-import Expense from './models/core/Expense';
-import ExpenseCategory from './models/core/ExpenseCategory';
-import Goal from './models/core/Goal';
-import Income from './models/core/Income';
-import BasicRecurrenceRule from './models/recurrenceModels/BasicRecurrenceRule';
-import RecurringExpense from './models/recurrenceModels/RecurringExpense';
-import RecurringIncome from './models/recurrenceModels/RecurringIncome';
-import Frequency from './enums/Frequency';
-import GoalStatus from './enums/GoalStatus';
-import User from './models/core/User';
-import UserStatus from './enums/UserStatus';
-import { createNewUser, findByID, deleteUser, loginUser, userExists, changePassword } from './contractFunctions/userContractFunctions';
-import { createExpenseCategory, deleteExpenseCategory, getExpenseCategoryByID, listExpenseCategoriesByUser, updateExpenseCategory } from './contractFunctions/expenseCategoryContractFunctions';
-import { createExpense, deleteExpense, getExpenseByID, listExpensesByUser, updateExpense } from './contractFunctions/expenseContractFunctions';
-import { createIncome, deleteIncome, getIncomeByID, listIncomesByUser, updateIncome } from './contractFunctions/incomeContractFunctions';
-import { createGoal, deleteGoal, getGoalByID, listGoalsByUser, updateGoal } from './contractFunctions/goalContractFunctions';
-import { createRecurringExpense, deleteRecurringExpense, getRecurringExpenseByID, listRecurringExpensesByUser, updateRecurringExpense } from './contractFunctions/recurringExpenseContractFunctions';
-import { createRecurringIncome, deleteRecurringIncome, getRecurringIncomeByID, listRecurringIncomesByUser, updateRecurringIncome } from './contractFunctions/recurringIncomeContractFunctions';
-import { testUserDetails } from './tests/userTests';
-import { testExpenseCategoryDetails } from './tests/expenseCategoryTests';
-import { testExpenseDetails } from './tests/expenseTests';
-import { testIncomeDetails } from './tests/incomeTests';
-import { testGoalDetails } from './tests/goalTests';
-import { testRecurrenceExpenseDetails } from './tests/recurringExpenseTests';
-import { testRecurringIncomeDetails } from './tests/recurringIncomeTests';
+import * as grpc from '@grpc/grpc-js'
+import { connect, Contract, hash, Identity, Signer, signers } from '@hyperledger/fabric-gateway'
+import * as crypto from 'crypto'
+import { promises as fs } from 'fs'
+import * as path from 'path'
+import dotenv from "dotenv"
+import Expense from './models/core/Expense'
+import ExpenseCategory from './models/core/ExpenseCategory'
+import Goal from './models/core/Goal'
+import Income from './models/core/Income'
+import BasicRecurrenceRule from './models/recurrenceModels/BasicRecurrenceRule'
+import RecurringExpense from './models/recurrenceModels/RecurringExpense'
+import RecurringIncome from './models/recurrenceModels/RecurringIncome'
+import Frequency from './enums/Frequency'
+import GoalStatus from './enums/GoalStatus'
+import User from './models/core/User'
+import UserStatus from './enums/UserStatus'
+import { createNewUser, findByID, deleteUser, loginUser, userExists, changePassword } from './contractFunctions/userContractFunctions'
+import { createExpenseCategory, deleteExpenseCategory, getExpenseCategoryByID, listExpenseCategoriesByUser, updateExpenseCategory } from './contractFunctions/expenseCategoryContractFunctions'
+import { createExpense, deleteExpense, getExpenseByID, listExpensesByUser, updateExpense } from './contractFunctions/expenseContractFunctions'
+import { createIncome, deleteIncome, getIncomeByID, listIncomesByUser, updateIncome } from './contractFunctions/incomeContractFunctions'
+import { createGoal, deleteGoal, getGoalByID, listGoalsByUser, updateGoal } from './contractFunctions/goalContractFunctions'
+import { createRecurringExpense, deleteRecurringExpense, getRecurringExpenseByID, listRecurringExpensesByUser, updateRecurringExpense } from './contractFunctions/recurringExpenseContractFunctions'
+import { createRecurringIncome, deleteRecurringIncome, getRecurringIncomeByID, listRecurringIncomesByUser, updateRecurringIncome } from './contractFunctions/recurringIncomeContractFunctions'
+import { testUserDetails } from './tests/userTests'
+import { testExpenseCategoryDetails } from './tests/expenseCategoryTests'
+import { testExpenseDetails } from './tests/expenseTests'
+import { testIncomeDetails } from './tests/incomeTests'
+import { testGoalDetails } from './tests/goalTests'
+import { testRecurrenceExpenseDetails } from './tests/recurringExpenseTests'
+import { testRecurringIncomeDetails } from './tests/recurringIncomeTests'
 
 
-dotenv.config();
+dotenv.config()
 
 
-const channelName = envOrDefault('CHANNEL_NAME', '');
-const chaincodeName = envOrDefault('CHAINCODE_NAME', '');
-const userContractName = "UserContract";
-const expenseCategoryContractName = "ExpenseCategoryContract";
-const expenseContractName = "ExpenseContract";
-const incomeContractName = "IncomeContract";
-const goalConractName = "GoalContract";
-const recurringExpenseContractName = "RecurringExpenseContract";
-const recurringIncomeContractName = "RecurringIncomeContract";
-const mspId = envOrDefault('MSP_ID', '');
-const keyDirectoryPath = envOrDefault('KEY_DIRECTORY_PATH', '');
-const certDirectoryPath = envOrDefault('CERTIFICATE_DIRECTORY_PATH', '');
-const tlsCertPath = envOrDefault('TLS_CERTIFICATE_PATH', '');
-const peerEndpoint = envOrDefault('PEER_ENDPOINT', '');
-const peerHostAlias = envOrDefault('PEER_HOST_ALIAS', '');
+const channelName = envOrDefault('CHANNEL_NAME', '')
+const chaincodeName = envOrDefault('CHAINCODE_NAME', '')
+const userContractName = "UserContract"
+const expenseCategoryContractName = "ExpenseCategoryContract"
+const expenseContractName = "ExpenseContract"
+const incomeContractName = "IncomeContract"
+const goalConractName = "GoalContract"
+const recurringExpenseContractName = "RecurringExpenseContract"
+const recurringIncomeContractName = "RecurringIncomeContract"
+const mspId = envOrDefault('MSP_ID', '')
+const keyDirectoryPath = envOrDefault('KEY_DIRECTORY_PATH', '')
+const certDirectoryPath = envOrDefault('CERTIFICATE_DIRECTORY_PATH', '')
+const tlsCertPath = envOrDefault('TLS_CERTIFICATE_PATH', '')
+const peerEndpoint = envOrDefault('PEER_ENDPOINT', '')
+const peerHostAlias = envOrDefault('PEER_HOST_ALIAS', '')
 
 
 const userDate = new Date(Date.UTC(2020, 1, 1))
-const userID = crypto.randomUUID().toString();
+const userID = crypto.randomUUID().toString()
 const user = new User("1234", "t", userID, userDate, UserStatus.PENDING)
-const brr = new BasicRecurrenceRule(Frequency.Daily, 1, new Date(), new Date());
+const brr = new BasicRecurrenceRule(Frequency.Daily, 1, new Date(), new Date())
 const expenseCategory = new ExpenseCategory(userID, 'Bills', 500, brr)
-const expense = new Expense(userID, "title", 50, new Date(), "", expenseCategory.getID());
-const income = new Income(userID, "title", 500, new Date(), "");
-const goal = new Goal("title", userID, "sajhvdjahsvd", 1000, new Date(), GoalStatus.Active);
-const recurringExpense = new RecurringExpense(userID, "title", 50, new Date(), "", expenseCategory.getID(), brr);
-const recurringIncome = new RecurringIncome(userID, "title", 50, new Date(), "", brr);
+const expense = new Expense(userID, "title", 50, new Date(), "", expenseCategory.getID())
+const income = new Income(userID, "title", 500, new Date(), "")
+const goal = new Goal("title", userID, "sajhvdjahsvd", 1000, new Date(), GoalStatus.Active)
+const recurringExpense = new RecurringExpense(userID, "title", 50, new Date(), "", expenseCategory.getID(), brr)
+const recurringIncome = new RecurringIncome(userID, "title", 50, new Date(), "", brr)
 
 
 
-let numberOfTests = 0;
-let passedCount = 0;
+let numberOfTests = 0
+let passedCount = 0
 
 
 
 async function testSuite(): Promise<void> {
-    displayInputParameters();
+    displayInputParameters()
 
-    const client = await newGrpcConnection();
+    const client = await newGrpcConnection()
 
     const gateway = connect({
         client,
@@ -80,40 +80,40 @@ async function testSuite(): Promise<void> {
         signer: await newSigner(),
         hash: hash.sha256,
         evaluateOptions: () => {
-            return { deadline: Date.now() + 5000 };
+            return { deadline: Date.now() + 5000 }
         },
         endorseOptions: () => {
-            return { deadline: Date.now() + 15000 };
+            return { deadline: Date.now() + 15000 }
         },
         submitOptions: () => {
-            return { deadline: Date.now() + 5000 };
+            return { deadline: Date.now() + 5000 }
         },
         commitStatusOptions: () => {
-            return { deadline: Date.now() + 60000 };
+            return { deadline: Date.now() + 60000 }
         },
     });
 
     try {
-        const network = gateway.getNetwork(channelName);
+        const network = gateway.getNetwork(channelName)
 
-        const userContract = network.getContract(chaincodeName, userContractName);
-        const expenseCategoryContract = network.getContract(chaincodeName, expenseCategoryContractName);
-        const expenseContract = network.getContract(chaincodeName, expenseContractName);
-        const incomeContract = network.getContract(chaincodeName, incomeContractName);
-        const goalContract = network.getContract(chaincodeName, goalConractName);
-        const recurringExpenseContract = network.getContract(chaincodeName, recurringExpenseContractName);
-        const recurringIncomeContract = network.getContract(chaincodeName, recurringIncomeContractName);
-
-
-
-        await createNewUser(userContract, user.getUserID(), user.getEmail(), user.getPassword(), user.getDateJoined());
+        const userContract = network.getContract(chaincodeName, userContractName)
+        const expenseCategoryContract = network.getContract(chaincodeName, expenseCategoryContractName)
+        const expenseContract = network.getContract(chaincodeName, expenseContractName)
+        const incomeContract = network.getContract(chaincodeName, incomeContractName)
+        const goalContract = network.getContract(chaincodeName, goalConractName)
+        const recurringExpenseContract = network.getContract(chaincodeName, recurringExpenseContractName)
+        const recurringIncomeContract = network.getContract(chaincodeName, recurringIncomeContractName)
 
 
 
-        let retrievedUser = await findByID(userContract, userID);
+        await createNewUser(userContract, user.getUserID(), user.getEmail(), user.getPassword(), user.getDateJoined())
+
+
+
+        let retrievedUser = await findByID(userContract, userID)
         if (!retrievedUser) {
             console.log("************* findByID Failed *************")
-            await bringDown(userContract, expenseContract, expenseCategoryContract, incomeContract, goalContract, recurringIncomeContract, recurringExpenseContract);
+            await bringDown(userContract, expenseContract, expenseCategoryContract, incomeContract, goalContract, recurringIncomeContract, recurringExpenseContract)
             numberOfTests++
             displayResults(numberOfTests, passedCount)
             return
@@ -126,14 +126,14 @@ async function testSuite(): Promise<void> {
                 console.log("Result: Pass")
             }
             else console.log("Result: Fail")
-            numberOfTests++;
+            numberOfTests++
             console.log()
         }
 
-        const loginUserID = await loginUser(userContract, user.getEmail(), user.getPassword());
+        const loginUserID = await loginUser(userContract, user.getEmail(), user.getPassword())
         if (!loginUserID) {
             console.log("************* loginUser Failed *************")
-            await bringDown(userContract, expenseContract, expenseCategoryContract, incomeContract, goalContract, recurringIncomeContract, recurringExpenseContract);
+            await bringDown(userContract, expenseContract, expenseCategoryContract, incomeContract, goalContract, recurringIncomeContract, recurringExpenseContract)
             numberOfTests++
             displayResults(numberOfTests, passedCount)
             return
@@ -150,7 +150,7 @@ async function testSuite(): Promise<void> {
             console.log()
         }
 
-        const userExistsValue = await userExists(userContract, user.getEmail());
+        const userExistsValue = await userExists(userContract, user.getEmail())
         console.log()
         console.log("Testing User Exists:")
         if (userExistsValue) {
@@ -162,13 +162,13 @@ async function testSuite(): Promise<void> {
         console.log()
 
 
-        const newPasswordValue = "AnActualPassword";
-        user.setPassword(newPasswordValue);
+        const newPasswordValue = "AnActualPassword"
+        user.setPassword(newPasswordValue)
         await changePassword(userContract, user.getEmail(), "AnActualPassword")
         retrievedUser = await findByID(userContract, userID);
         if (!retrievedUser) {
             console.log("************* findByID Failed *************")
-            await bringDown(userContract, expenseContract, expenseCategoryContract, incomeContract, goalContract, recurringIncomeContract, recurringExpenseContract);
+            await bringDown(userContract, expenseContract, expenseCategoryContract, incomeContract, goalContract, recurringIncomeContract, recurringExpenseContract)
             numberOfTests++
             displayResults(numberOfTests, passedCount)
             return
@@ -181,7 +181,7 @@ async function testSuite(): Promise<void> {
                 console.log("Result: Pass")
             }
             else console.log("Result: Fail")
-            numberOfTests++;
+            numberOfTests++
             console.log()
         }
 
@@ -192,12 +192,12 @@ async function testSuite(): Promise<void> {
 
 
 
-        await createExpenseCategory(expenseCategoryContract, expenseCategory);
+        await createExpenseCategory(expenseCategoryContract, expenseCategory)
 
-        let retrievedExpenseCategory = await getExpenseCategoryByID(expenseCategoryContract, user.getUserID(), expenseCategory.getID());
+        let retrievedExpenseCategory = await getExpenseCategoryByID(expenseCategoryContract, user.getUserID(), expenseCategory.getID())
         if (!retrievedExpenseCategory) {
             console.log("************* getExpenseCategoryByID Failed *************")
-            await bringDown(userContract, expenseContract, expenseCategoryContract, incomeContract, goalContract, recurringIncomeContract, recurringExpenseContract);
+            await bringDown(userContract, expenseContract, expenseCategoryContract, incomeContract, goalContract, recurringIncomeContract, recurringExpenseContract)
             numberOfTests++
             displayResults(numberOfTests, passedCount)
             return
@@ -210,16 +210,16 @@ async function testSuite(): Promise<void> {
                 console.log("Result: Pass")
             }
             else console.log("Result: Fail")
-            numberOfTests++;
+            numberOfTests++
             console.log()
         }
 
-        expenseCategory.monthlyBudget = 300;
+        expenseCategory.monthlyBudget = 300
         await updateExpenseCategory(expenseCategoryContract, expenseCategory)
-        retrievedExpenseCategory = await getExpenseCategoryByID(expenseCategoryContract, user.getUserID(), expenseCategory.getID());
+        retrievedExpenseCategory = await getExpenseCategoryByID(expenseCategoryContract, user.getUserID(), expenseCategory.getID())
         if (!retrievedExpenseCategory) {
             console.log("************* getExpenseCategoryByID Failed *************")
-            await bringDown(userContract, expenseContract, expenseCategoryContract, incomeContract, goalContract, recurringIncomeContract, recurringExpenseContract);
+            await bringDown(userContract, expenseContract, expenseCategoryContract, incomeContract, goalContract, recurringIncomeContract, recurringExpenseContract)
             numberOfTests++
             displayResults(numberOfTests, passedCount)
             return
@@ -232,14 +232,14 @@ async function testSuite(): Promise<void> {
                 console.log("Result: Pass")
             }
             else console.log("Result: Fail")
-            numberOfTests++;
+            numberOfTests++
             console.log()
         }
 
         let a = await listExpenseCategoriesByUser(expenseCategoryContract, userID)
         if (a.length <= 0) {
             console.log("************* listExpenseCategoriesByUser Failed *************")
-            await bringDown(userContract, expenseContract, expenseCategoryContract, incomeContract, goalContract, recurringIncomeContract, recurringExpenseContract);
+            await bringDown(userContract, expenseContract, expenseCategoryContract, incomeContract, goalContract, recurringIncomeContract, recurringExpenseContract)
             numberOfTests++
             displayResults(numberOfTests, passedCount)
             return
@@ -252,7 +252,7 @@ async function testSuite(): Promise<void> {
                 console.log("Result: Pass")
             }
             else console.log("Result: Fail")
-            numberOfTests++;
+            numberOfTests++
             console.log()
         }
 
@@ -261,8 +261,8 @@ async function testSuite(): Promise<void> {
 
 
 
-        await createExpense(expenseContract, expense);
-        let retrievedExpense = await getExpenseByID(expenseContract, expense.getUserID(), expense.getID());
+        await createExpense(expenseContract, expense)
+        let retrievedExpense = await getExpenseByID(expenseContract, expense.getUserID(), expense.getID())
         if (!retrievedExpense) {
             console.log("************* getExpenseByID Failed *************")
             await bringDown(userContract, expenseContract, expenseCategoryContract, incomeContract, goalContract, recurringIncomeContract, recurringExpenseContract)
@@ -278,14 +278,14 @@ async function testSuite(): Promise<void> {
                 console.log("Result: Pass")
             }
             else console.log("Result: Fail")
-            numberOfTests++;
+            numberOfTests++
             console.log()
         }
 
 
         expense.amount = 100
         await updateExpense(expenseContract, expense)
-        retrievedExpense = await getExpenseByID(expenseContract, expense.getUserID(), expense.getID());
+        retrievedExpense = await getExpenseByID(expenseContract, expense.getUserID(), expense.getID())
         if (!retrievedExpense) {
             console.log("************* getExpenseByID Failed *************")
             await bringDown(userContract, expenseContract, expenseCategoryContract, incomeContract, goalContract, recurringIncomeContract, recurringExpenseContract)
@@ -301,14 +301,14 @@ async function testSuite(): Promise<void> {
                 console.log("Result: Pass")
             }
             else console.log("Result: Fail")
-            numberOfTests++;
+            numberOfTests++
             console.log()
         }
 
-        let expensesList = await listExpensesByUser(expenseContract, userID);
+        let expensesList = await listExpensesByUser(expenseContract, userID)
         if (expensesList.length === 0) {
             console.log("************* listExpensesByUser Failed *************")
-            await bringDown(userContract, expenseContract, expenseCategoryContract, incomeContract, goalContract, recurringIncomeContract, recurringExpenseContract);
+            await bringDown(userContract, expenseContract, expenseCategoryContract, incomeContract, goalContract, recurringIncomeContract, recurringExpenseContract)
             numberOfTests++
             displayResults(numberOfTests, passedCount)
             return
@@ -321,7 +321,7 @@ async function testSuite(): Promise<void> {
                 console.log("Result: Pass")
             }
             else console.log("Result: Fail")
-            numberOfTests++;
+            numberOfTests++
             console.log()
         }
 
@@ -332,7 +332,7 @@ async function testSuite(): Promise<void> {
 
 
 
-        await createIncome(incomeContract, income);
+        await createIncome(incomeContract, income)
         let retrievedIncome = await getIncomeByID(incomeContract, userID, income.getID())
         if (!retrievedIncome) {
             console.log("************* getIncomeByID Failed *************")
@@ -349,12 +349,12 @@ async function testSuite(): Promise<void> {
                 console.log("Result: Pass")
             }
             else console.log("Result: Fail")
-            numberOfTests++;
+            numberOfTests++
             console.log()
         }
 
         income.amount = 100;
-        await updateIncome(incomeContract, income);
+        await updateIncome(incomeContract, income)
         retrievedIncome = await getIncomeByID(incomeContract, userID, income.getID())
         if (!retrievedIncome) {
             console.log("************* getIncomeByID Failed *************")
@@ -392,7 +392,7 @@ async function testSuite(): Promise<void> {
                 console.log("Result: Pass")
             }
             else console.log("Result: Fail")
-            numberOfTests++;
+            numberOfTests++
             console.log()
         }
 
@@ -420,12 +420,12 @@ async function testSuite(): Promise<void> {
                 console.log("Result: Pass")
             }
             else console.log("Result: Fail")
-            numberOfTests++;
+            numberOfTests++
             console.log()
         }
 
         goal.updateCurrent(500)
-        await updateGoal(goalContract, userID, goal.getID(), 500);
+        await updateGoal(goalContract, userID, goal.getID(), 500)
         retrievedGoal = await getGoalByID(goalContract, userID, goal.getID())
         if (!retrievedGoal) {
             console.log("************* getGoalByID Failed *************")
@@ -442,11 +442,11 @@ async function testSuite(): Promise<void> {
                 console.log("Result: Pass")
             }
             else console.log("Result: Fail")
-            numberOfTests++;
+            numberOfTests++
             console.log()
         }
 
-        let goalsList = await listGoalsByUser(goalContract, userID);
+        let goalsList = await listGoalsByUser(goalContract, userID)
         if (goalsList.length === 0) {
             console.log("************* listGoalsByUser Failed *************")
             await bringDown(userContract, expenseContract, expenseCategoryContract, incomeContract, goalContract, recurringIncomeContract, recurringExpenseContract);
@@ -472,7 +472,7 @@ async function testSuite(): Promise<void> {
 
 
 
-        await createRecurringExpense(recurringExpenseContract, recurringExpense);
+        await createRecurringExpense(recurringExpenseContract, recurringExpense)
         let retrievedRecurringExpense = await getRecurringExpenseByID(recurringExpenseContract, userID, recurringExpense.getID())
         if (!retrievedRecurringExpense) {
             console.log("************* getRecurringExpenseByID Failed *************")
@@ -489,12 +489,12 @@ async function testSuite(): Promise<void> {
                 console.log("Result: Pass")
             }
             else console.log("Result: Fail")
-            numberOfTests++;
+            numberOfTests++
             console.log()
         }
 
         recurringExpense.amount = 1000
-        await updateRecurringExpense(recurringExpenseContract, recurringExpense);
+        await updateRecurringExpense(recurringExpenseContract, recurringExpense)
         retrievedRecurringExpense = await getRecurringExpenseByID(recurringExpenseContract, userID, recurringExpense.getID())
         if (!retrievedRecurringExpense) {
             console.log("************* getRecurringExpenseByID Failed *************")
@@ -511,14 +511,14 @@ async function testSuite(): Promise<void> {
                 console.log("Result: Pass")
             }
             else console.log("Result: Fail")
-            numberOfTests++;
+            numberOfTests++
             console.log()
         }
 
         let recurringExpenseList = await listRecurringExpensesByUser(recurringExpenseContract, userID);
         if (recurringExpenseList.length === 0) {
             console.log("************* listRecurringExpensesByUser Failed *************")
-            await bringDown(userContract, expenseContract, expenseCategoryContract, incomeContract, goalContract, recurringIncomeContract, recurringExpenseContract);
+            await bringDown(userContract, expenseContract, expenseCategoryContract, incomeContract, goalContract, recurringIncomeContract, recurringExpenseContract)
             numberOfTests++
             displayResults(numberOfTests, passedCount)
             return
@@ -531,7 +531,7 @@ async function testSuite(): Promise<void> {
                 console.log("Result: Pass")
             }
             else console.log("Result: Fail")
-            numberOfTests++;
+            numberOfTests++
             console.log()
         }
 
@@ -556,12 +556,12 @@ async function testSuite(): Promise<void> {
                 console.log("Result: Pass")
             }
             else console.log("Result: Fail")
-            numberOfTests++;
+            numberOfTests++
             console.log()
         }
 
-        recurringIncome.amount = 10000;
-        await updateRecurringIncome(recurringIncomeContract, recurringIncome);
+        recurringIncome.amount = 10000
+        await updateRecurringIncome(recurringIncomeContract, recurringIncome)
         retrievedRecurringIncome = await getRecurringIncomeByID(recurringIncomeContract, userID, recurringIncome.getID())
         if (!retrievedRecurringIncome) {
             console.log("************* getRecurringIncomeByID Failed *************")
@@ -578,14 +578,14 @@ async function testSuite(): Promise<void> {
                 console.log("Result: Pass")
             }
             else console.log("Result: Fail")
-            numberOfTests++;
+            numberOfTests++
             console.log()
         }
 
-        let recurringIncomeList = await listRecurringIncomesByUser(recurringIncomeContract, userID);
+        let recurringIncomeList = await listRecurringIncomesByUser(recurringIncomeContract, userID)
         if(recurringIncomeList.length === 0) {
             console.log("************* listRecurringExpensesByUser Failed *************")
-            await bringDown(userContract, expenseContract, expenseCategoryContract, incomeContract, goalContract, recurringIncomeContract, recurringExpenseContract);
+            await bringDown(userContract, expenseContract, expenseCategoryContract, incomeContract, goalContract, recurringIncomeContract, recurringExpenseContract)
             numberOfTests++
             displayResults(numberOfTests, passedCount)
             return
@@ -598,7 +598,7 @@ async function testSuite(): Promise<void> {
                 console.log("Result: Pass")
             }
             else console.log("Result: Fail")
-            numberOfTests++;
+            numberOfTests++
             console.log()
         }
 
@@ -619,7 +619,7 @@ async function testSuite(): Promise<void> {
 
 
 
-        const recurringExpenseDeleted = await deleteRecurringExpense(recurringExpenseContract, userID, recurringExpense.getID());
+        const recurringExpenseDeleted = await deleteRecurringExpense(recurringExpenseContract, userID, recurringExpense.getID())
         console.log()
         console.log("Testing Recurring Expense Deleted:")
         if (recurringExpenseDeleted) {
@@ -692,69 +692,69 @@ async function testSuite(): Promise<void> {
 
 
     } finally {
-        gateway.close();
-        client.close();
+        gateway.close()
+        client.close()
     }
 }
 
 testSuite().catch((error: unknown) => {
-    console.error('******** FAILED to run the application:', error);
-    process.exitCode = 1;
+    console.error('******** FAILED to run the application:', error)
+    process.exitCode = 1
 });
 
 async function newGrpcConnection(): Promise<grpc.Client> {
-    const tlsRootCert = await fs.readFile(tlsCertPath);
-    const tlsCredentials = grpc.credentials.createSsl(tlsRootCert);
+    const tlsRootCert = await fs.readFile(tlsCertPath)
+    const tlsCredentials = grpc.credentials.createSsl(tlsRootCert)
     if (!peerHostAlias) {
-        return new grpc.Client(peerEndpoint, tlsCredentials);
+        return new grpc.Client(peerEndpoint, tlsCredentials)
     }
     return new grpc.Client(peerEndpoint, tlsCredentials, {
         'grpc.ssl_target_name_override': peerHostAlias,
-    });
+    })
 }
 
 async function newIdentity(): Promise<Identity> {
-    const certPath = await getFirstDirFileName(certDirectoryPath);
-    const credentials = await fs.readFile(certPath);
-    return { mspId, credentials };
+    const certPath = await getFirstDirFileName(certDirectoryPath)
+    const credentials = await fs.readFile(certPath)
+    return { mspId, credentials }
 }
 
 async function getFirstDirFileName(dirPath: string): Promise<string> {
-    const files = await fs.readdir(dirPath);
-    const file = files[0];
+    const files = await fs.readdir(dirPath)
+    const file = files[0]
     if (!file) {
-        throw new Error(`No files in directory: ${dirPath}`);
+        throw new Error(`No files in directory: ${dirPath}`)
     }
-    return path.join(dirPath, file);
+    return path.join(dirPath, file)
 }
 
 async function newSigner(): Promise<Signer> {
-    const keyPath = await getFirstDirFileName(keyDirectoryPath);
-    const privateKeyPem = await fs.readFile(keyPath);
-    const privateKey = crypto.createPrivateKey(privateKeyPem);
-    return signers.newPrivateKeySigner(privateKey);
+    const keyPath = await getFirstDirFileName(keyDirectoryPath)
+    const privateKeyPem = await fs.readFile(keyPath)
+    const privateKey = crypto.createPrivateKey(privateKeyPem)
+    return signers.newPrivateKeySigner(privateKey)
 }
 
 function envOrDefault(key: string, defaultValue: string): string {
-    return process.env[key] || defaultValue;
+    return process.env[key] || defaultValue
 }
 
 function displayInputParameters(): void {
-    console.log("channelName:", channelName);
-    console.log("chaincodeName:", chaincodeName);
-    console.log("userContractName:", userContractName);
-    console.log("expenseCategoryContractName:", expenseCategoryContractName);
-    console.log("expenseContractName:", expenseContractName);
-    console.log("incomeContractName:", incomeContractName);
-    console.log("goalConractName:", goalConractName);
-    console.log("recurringExpenseContractName:", recurringExpenseContractName);
-    console.log("recurringIncomeContractName:", recurringIncomeContractName);
-    console.log("mspId:", mspId);
-    console.log("keyDirectoryPath:", keyDirectoryPath);
-    console.log("certDirectoryPath:", certDirectoryPath);
-    console.log("tlsCertPath:", tlsCertPath);
-    console.log("peerEndpoint:", peerEndpoint);
-    console.log("peerHostAlias:", peerHostAlias);
+    console.log("channelName:", channelName)
+    console.log("chaincodeName:", chaincodeName)
+    console.log("userContractName:", userContractName)
+    console.log("expenseCategoryContractName:", expenseCategoryContractName)
+    console.log("expenseContractName:", expenseContractName)
+    console.log("incomeContractName:", incomeContractName)
+    console.log("goalConractName:", goalConractName)
+    console.log("recurringExpenseContractName:", recurringExpenseContractName)
+    console.log("recurringIncomeContractName:", recurringIncomeContractName)
+    console.log("mspId:", mspId)
+    console.log("keyDirectoryPath:", keyDirectoryPath)
+    console.log("certDirectoryPath:", certDirectoryPath)
+    console.log("tlsCertPath:", tlsCertPath)
+    console.log("peerEndpoint:", peerEndpoint)
+    console.log("peerHostAlias:", peerHostAlias)
 }
 
 

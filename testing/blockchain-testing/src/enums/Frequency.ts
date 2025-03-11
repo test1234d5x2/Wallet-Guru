@@ -5,4 +5,4 @@ enum Frequency {
     Yearly = 'Yearly'
 }
 
-export default Frequency;
+export default Frequency
