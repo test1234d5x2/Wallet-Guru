@@ -76,7 +76,7 @@ export default function ViewTransactionsList() {
         }
 
         getExpenseList()
-    }, [token, categories])
+    }, [token])
 
     useEffect(() => {
         async function getIncomesList() {

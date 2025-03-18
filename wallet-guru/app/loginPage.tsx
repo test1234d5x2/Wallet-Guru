@@ -17,7 +17,6 @@ interface LoginResponse {
 async function login(email: string, password: string): Promise<LoginResponse> {
     const API_DOMAIN = process.env.EXPO_PUBLIC_BLOCKCHAIN_MIDDLEWARE_API_IP_ADDRESS
     if (!API_DOMAIN) {
-        console.warn('API domain not set in environment variables')
         throw new Error('Domain could not be found')
     }
 
