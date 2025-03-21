@@ -171,7 +171,7 @@ export default function AddExpense() {
             ) : null}
 
             <View style={styles.centeredTextContainer}>
-                <TouchableOpacity onPress={() => pickImage(setReceipt)}>
+                <TouchableOpacity onPress={() => pickImage(setReceipt, setDate, setAmount, setTitle)}>
                     <Text style={styles.scanText}>Upload Receipt</Text>
                 </TouchableOpacity>
             </View>

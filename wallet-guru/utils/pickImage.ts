@@ -5,7 +5,7 @@ import * as FileSystem from 'expo-file-system';
 
 const GEMINI_API_KEY = process.env.EXPO_PUBLIC_GEMINI_API_KEY
 
-const pickImage = async (setReceipt: (r: string) => void) => {
+const pickImage = async (setReceipt: (r: string) => void, setDate: (text: Date|null) => void, setAmount: (text: string) => void, setTitle: (text: string) => void) => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (status !== 'granted') {
         Alert.alert('Permission Required', 'Gallery permission is needed to select an image.');
@@ -37,14 +37,16 @@ const pickImage = async (setReceipt: (r: string) => void) => {
                     },
                 },
                 {
-                    text: 'Extract the date, amount, and place from this receipt. Respond in JSON format. Do not add anything else to the response. If the data is not available, leave it empty.',
+                    text: 'Extract the date, amount, and name of place from this receipt. Respond in JSON format. Do not add anything else to the response. If the data is not available, leave it empty. Return dates in ISO format',
                 },
             ]);
 
             const data = response.response.text()
             const cleanedData = data.replace("json", "").replaceAll("```", "")
             const jsonData = JSON.parse(cleanedData)
-            console.log(jsonData)
+            setTitle(jsonData.place)
+            setAmount(jsonData.amount)
+            setDate(new Date(jsonData.date))
         } catch (error) {
             console.error('Error reading file:', error);
         }
