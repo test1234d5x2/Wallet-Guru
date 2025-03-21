@@ -1,12 +1,9 @@
 import setPageTitle from "@/components/pageTitle/setPageTitle"
-import testRun from "@/utils/prompt"
 import { useRouter } from "expo-router"
 import { useEffect, useState } from "react"
 import { ActivityIndicator, StatusBar, View, StyleSheet } from "react-native"
 
 export default function Index() {
-
-    testRun()
 
     setPageTitle("Welcome!")
 
