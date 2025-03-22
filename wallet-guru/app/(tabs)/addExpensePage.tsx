@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { View, Text, TouchableOpacity, StyleSheet, Alert, ScrollView, Image, Dimensions, StatusBar, ActivityIndicator } from 'react-native'
+import { View, Text, TouchableOpacity, StyleSheet, Alert, ScrollView, StatusBar, ActivityIndicator } from 'react-native'
 import ExpenseDetailsInputs from '@/components/formComponents/expenseDetailsInputs'
 import setPageTitle from '@/components/pageTitle/setPageTitle'
 import TopBar from '@/components/topBars/topBar'
@@ -49,6 +49,7 @@ export default function AddExpense() {
 
     const router = useRouter()
     const [token, setToken] = useState<string>("")
+    const [waitingAutofill, setWaiting] = useState<boolean>(false)
     const [email, setEmail] = useState<string>("")
     const [categories, setCategories] = useState<ExpenseCategory[]>([])
     const [title, setTitle] = useState<string>("")
@@ -142,6 +143,8 @@ export default function AddExpense() {
             <StatusBar barStyle={"dark-content"} />
             <TopBar />
 
+            {waitingAutofill ? <View style={styles.loadingIndicator}><ActivityIndicator color={"black"} /></View> : ""}
+
             <View style={styles.expenseForm}>
                 <ExpenseDetailsInputs
                     title={title}
@@ -171,7 +174,7 @@ export default function AddExpense() {
             ) : null}
 
             <View style={styles.centeredTextContainer}>
-                <TouchableOpacity onPress={() => pickImage(setReceipt, setDate, setAmount, setTitle)}>
+                <TouchableOpacity onPress={() => pickImage(setReceipt, setDate, setAmount, setTitle, setWaiting)}>
                     <Text style={styles.scanText}>Upload Receipt</Text>
                 </TouchableOpacity>
             </View>
@@ -220,5 +223,17 @@ const styles = StyleSheet.create({
     errorText: {
         color: 'red',
         fontSize: 14
+    },
+    loadingIndicator: {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        zIndex: 2,
+        backgroundColor: 'white',
+        justifyContent: 'center',
+        alignItems: 'center',
+
     }
 })
