@@ -1,13 +1,12 @@
-import { Router } from 'express';
-import { create, findByID, listByUser, remove, update } from '../controllers/RecurringExpense';
+import { Router } from 'express'
+import { create, findByID, listByUser, remove, update } from '../controllers/RecurringExpense'
 
+const router = Router()
 
-const router = Router();
+router.post('/', create)
+router.put('/:id', update)
+router.delete('/:id', remove)
+router.get('/', listByUser)
+router.get('/:id', findByID)
 
-router.post('/', create);
-router.put('/:id', update);
-router.delete('/:id', remove);
-router.get('/', listByUser);
-router.get('/:id', findByID);
-
-export default router;
+export default router
