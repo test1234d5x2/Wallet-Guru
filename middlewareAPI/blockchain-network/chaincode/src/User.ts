@@ -35,12 +35,113 @@ export class UserContract extends Contract {
             email,
             password,
             dateJoined,
-            status: UserStatus.PENDING
+            status: UserStatus.PENDING,
         }
 
         await ctx.stub.putState(userKey, Buffer.from(this.deterministicUser(newUser)))
         return JSON.stringify({ message: 'User created' })
     }
+
+    @Transaction(false)
+    @Returns('string')
+    public async loginUser(ctx: Context, email: string, password: string): Promise<string> {
+        if (!email || !password) {
+            throw new Error('email and password are required')
+        }
+
+        const userKey = this.getUserKey(ctx, email)
+        const userBytes = await ctx.stub.getState(userKey)
+        if (!userBytes || userBytes.length === 0) {
+            throw new Error('User does not exist')
+        }
+
+        const user: User = JSON.parse(userBytes.toString())
+        if (user.password !== password) {
+            throw new Error('Invalid credentials')
+        }
+
+        return JSON.stringify({ userID: user.id })
+    }
+
+    @Transaction()
+    @Returns('string')
+    public async deleteUser(ctx: Context, email: string): Promise<string> {
+        if (!email) {
+            throw new Error('Email is required')
+        }
+
+        const userKey = this.getUserKey(ctx, email)
+        const userBytes = await ctx.stub.getState(userKey)
+        if (!userBytes || userBytes.length === 0) {
+            throw new Error('User does not exist')
+        }
+
+        const user: User = JSON.parse(userBytes.toString())
+        if (user.email !== email) {
+            throw new Error('Caller not authorized to delete this user')
+        }
+
+        await ctx.stub.deleteState(userKey)
+        return JSON.stringify({ message: 'User deleted' })
+    }
+
+    @Transaction(false)
+    @Returns('string')
+    public async userExists(ctx: Context, email: string): Promise<string> {
+        if (!email) {
+            throw new Error('Email is required')
+        }
+
+        const userKey = this.getUserKey(ctx, email)
+        const userBytes = await ctx.stub.getState(userKey)
+        const exists = userBytes && userBytes.length > 0
+        return JSON.stringify({ exists })
+    }
+
+    @Transaction(false)
+    @Returns('string')
+    public async findByID(ctx: Context, userID: string): Promise<string> {
+        if (!userID) {
+            throw new Error('User ID is required')
+        }
+
+        const iterator = ctx.stub.getStateByPartialCompositeKey('User', [])
+        let foundUser: User | null = null
+
+        for await (const res of iterator) {
+            const userStr = res.value.toString()
+            const user: User = JSON.parse(userStr)
+            if (user.id === userID) {
+                foundUser = user
+                break
+            }
+        }
+        if (!foundUser) {
+            throw new Error('User not found')
+        }
+        return JSON.stringify(foundUser)
+    }
+
+    @Transaction()
+    @Returns('string')
+    public async changePassword(ctx: Context, email: string, newPassword: string): Promise<string> {
+        if (!email || !newPassword) {
+            throw new Error('Email and new password are required')
+        }
+
+        const userKey = this.getUserKey(ctx, email)
+        const userBytes = await ctx.stub.getState(userKey)
+        if (!userBytes || userBytes.length === 0) {
+            throw new Error('User does not exist')
+        }
+
+        const user: User = JSON.parse(userBytes.toString())
+        user.password = newPassword
+
+        await ctx.stub.putState(userKey, Buffer.from(this.deterministicUser(user)))
+        return JSON.stringify({ message: 'Password updated successfully' })
+    }
+
 }
 
 export interface User {
