@@ -6,7 +6,7 @@ const registry = Registry.getInstance()
 const expenseCategoryService = registry.expenseCategoryService
 
 export const create: RequestHandler = (req, res) => {
-    const { name, monthlyBudget, recurrenceRule } = req.body
+    const { name, monthlyBudget, recurrenceRule, colour } = req.body
 
     const userID = getUserFromToken(req)
     if (!userID) {
@@ -14,18 +14,18 @@ export const create: RequestHandler = (req, res) => {
         return
     }
 
-    if (!name || monthlyBudget === undefined) {
+    if (!name || monthlyBudget === undefined || !colour) {
         res.status(400).json({ error: "Missing required fields: name, monthlyBudget" })
         return
     }
 
-    expenseCategoryService.addExpenseCategory(userID, name, monthlyBudget, recurrenceRule)
+    expenseCategoryService.addExpenseCategory(userID, name, monthlyBudget, recurrenceRule, colour)
     res.status(201).json({ message: "Expense category created" })
 }
 
 export const update: RequestHandler = (req, res) => {
     const { id } = req.params
-    const { name, monthlyBudget, recurrenceRule } = req.body
+    const { name, monthlyBudget, recurrenceRule, colour } = req.body
 
     const userID = getUserFromToken(req)
     if (!userID) {
@@ -33,12 +33,12 @@ export const update: RequestHandler = (req, res) => {
         return
     }
 
-    if (!id || !name || monthlyBudget === undefined) {
+    if (!id || !name || monthlyBudget === undefined || !colour) {
         res.status(400).json({ error: "Missing required fields: id, name, monthlyBudget" })
         return
     }
 
-    expenseCategoryService.updateExpenseCategory(id, name, monthlyBudget, recurrenceRule)
+    expenseCategoryService.updateExpenseCategory(id, name, monthlyBudget, recurrenceRule, colour)
     res.status(200).json({ message: "Expense category updated" })
 }
 

@@ -10,12 +10,12 @@ class ExpenseCategoryService {
         this.repository = new ExpenseCategoryRepository()
     }
 
-    public addExpenseCategory(userID: string, name: string, monthlyBudget: number, recurrenceRule: RecurrenceRule): void {
-        const category = new ExpenseCategory(userID, name, monthlyBudget, recurrenceRule)
+    public addExpenseCategory(userID: string, name: string, monthlyBudget: number, recurrenceRule: RecurrenceRule, colour: string): void {
+        const category = new ExpenseCategory(userID, name, monthlyBudget, recurrenceRule, colour)
         this.repository.add(category)
     }
 
-    public updateExpenseCategory(id: string, name: string, monthlyBudget: number, recurrenceRule: RecurrenceRule): void {
+    public updateExpenseCategory(id: string, name: string, monthlyBudget: number, recurrenceRule: RecurrenceRule, colour: string): void {
         const category = this.repository.findByID(id)
         if (!category) {
             throw new Error(`Category does not exist`)
@@ -23,6 +23,7 @@ class ExpenseCategoryService {
         category.name = name
         category.monthlyBudget = monthlyBudget
         category.recurrenceRule = recurrenceRule
+        category.colour = colour
     }
 
     public deleteExpenseCategory(id: string): void {

@@ -7,13 +7,15 @@ class ExpenseCategory {
     name: string
     monthlyBudget: number
     recurrenceRule: BasicRecurrenceRule
+    colour: string
 
-    constructor(userID: string, name: string, monthlyBudget: number, recurrenceRule: BasicRecurrenceRule) {
+    constructor(userID: string, name: string, monthlyBudget: number, recurrenceRule: BasicRecurrenceRule, colour: string) {
         this.id = v4()
         this.userID = userID
         this.name = name
         this.monthlyBudget = monthlyBudget
         this.recurrenceRule = recurrenceRule
+        this.colour = colour
     }
 
     getID(): string {
@@ -48,6 +50,7 @@ class ExpenseCategory {
             name: this.name,
             monthlyBudget: this.monthlyBudget,
             recurrenceRule: this.recurrenceRule,
+            colour: this.colour,
         }
     }
 }
