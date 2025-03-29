@@ -7,7 +7,6 @@ type PillProps = {
 };
 
 const getTextColor = (bgColor: string): string => {
-    // Convert hex to RGB
     const hex = bgColor.replace("#", "");
     const r = parseInt(hex.substring(0, 2), 16);
     const g = parseInt(hex.substring(2, 4), 16);
