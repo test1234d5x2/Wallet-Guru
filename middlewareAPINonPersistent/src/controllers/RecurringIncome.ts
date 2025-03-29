@@ -18,6 +18,7 @@ export const create = (req: Request, res: Response): void => {
         recurrenceRule.frequency,
         recurrenceRule.interval,
         new Date(recurrenceRule.startDate),
+        undefined,
         recurrenceRule.endDate ? new Date(recurrenceRule.endDate) : undefined
     )
 

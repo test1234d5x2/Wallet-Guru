@@ -37,7 +37,7 @@ export default abstract class RecurrenceRule {
     }
 
     public computeNextTriggerDate(): Date {
-        const now = this.nextTriggerDate
+        const now = new Date()
 
         while (this.nextTriggerDate <= now) {
             switch (this.frequency) {
