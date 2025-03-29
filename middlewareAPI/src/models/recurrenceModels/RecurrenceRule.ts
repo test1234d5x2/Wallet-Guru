@@ -1,5 +1,6 @@
 import Frequency from '../../enums/Frequency'
 import { addDays, addWeeks, addMonths, addYears } from 'date-fns'
+import toUTC from '../../utils/toUTC'
 
 export default abstract class RecurrenceRule {
     frequency: Frequency
@@ -15,11 +16,7 @@ export default abstract class RecurrenceRule {
         this.nextTriggerDate = nextTriggerDate || startDate
         this.endDate = endDate
 
-        this.nextTriggerDate = new Date(Date.UTC(
-            this.nextTriggerDate.getUTCFullYear(),
-            this.nextTriggerDate.getUTCMonth(),
-            this.nextTriggerDate.getUTCDate()
-        ))
+        this.nextTriggerDate = toUTC(this.nextTriggerDate)
     }
 
     public shouldEnd(): boolean {
