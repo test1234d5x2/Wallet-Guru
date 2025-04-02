@@ -131,6 +131,9 @@ export class ExpenseCategoryContract extends Contract {
             throw new Error('Missing required field: userID')
         }
 
+        // Adapted to specific context.
+        // Hyperledger Fabric, 29/11/2021
+        // Website: https://hyperledger.github.io/fabric-chaincode-node/release-2.2/api/tutorial-using-iterators.html
         const results: ExpenseCategory[] = []
         const iterator = ctx.stub.getStateByPartialCompositeKey('ExpenseCategory', [userID])
 

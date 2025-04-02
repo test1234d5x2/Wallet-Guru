@@ -130,6 +130,9 @@ export class IncomeContract extends Contract {
             throw new Error('Missing user ID')
         }
 
+        // Adapted to specific context.
+        // Hyperledger Fabric, 29/11/2021
+        // Website: https://hyperledger.github.io/fabric-chaincode-node/release-2.2/api/tutorial-using-iterators.html
         const results: Income[] = []
         const iterator = ctx.stub.getStateByPartialCompositeKey('Income', [userID])
         
