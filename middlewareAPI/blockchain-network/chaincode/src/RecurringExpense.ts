@@ -128,4 +128,65 @@ export class RecurringExpenseContract extends Contract {
         await ctx.stub.deleteState(key)
         return JSON.stringify({ message: 'Recurring expense deleted' })
     }
+
+
+    @Transaction(false)
+    @Returns('string')
+    public async listRecurringExpensesByUser(ctx: Context, userID: string): Promise<string> {
+        if (!userID) {
+            throw new Error('Missing user ID');
+        }
+
+        // Adapted to specific context.
+        // Hyperledger Fabric, 29/11/2021
+        // Website: https://hyperledger.github.io/fabric-chaincode-node/release-2.2/api/tutorial-using-iterators.html
+        const results: RecurringExpense[] = [];
+        const iterator = ctx.stub.getStateByPartialCompositeKey('RecurringExpense', [userID]);
+
+        for await (const res of iterator) {
+            if (res.value) {
+                const expense: RecurringExpense = JSON.parse(res.value.toString());
+                if (expense.userID === userID) {
+                    results.push(expense);
+                }
+            }
+        }
+
+        return JSON.stringify({ recurringExpenses: results });
+    }
+
+    @Transaction(false)
+    @Returns('string')
+    public async getRecurringExpenseByID(ctx: Context, userID: string, recurringexpenseID: string): Promise<string> {
+        if (!recurringexpenseID) {
+            throw new Error('Missing recurring expense ID');
+        }
+
+        const key = this.getReccuringExpenseKey(ctx, userID, recurringexpenseID);
+        const expenseBytes = await ctx.stub.getState(key);
+        if (!expenseBytes || expenseBytes.length === 0) {
+            throw new Error('Recurring expense not found');
+        }
+
+        const expense: RecurringExpense = JSON.parse(expenseBytes.toString());
+        return JSON.stringify(expense);
+    }
+
+    @Transaction(false)
+    @Returns('string')
+    public async listAllRecurringExpenses(ctx: Context): Promise<string> {
+        // Adapted to specific context.
+        // Hyperledger Fabric, 29/11/2021
+        // Website: https://hyperledger.github.io/fabric-chaincode-node/release-2.2/api/tutorial-using-iterators.html
+        const results: RecurringExpense[] = [];
+        const iterator = ctx.stub.getStateByPartialCompositeKey('RecurringExpense', []);
+
+        for await (const res of iterator) {
+            if (res.value) {
+                const expense: RecurringExpense = JSON.parse(res.value.toString());
+                results.push(expense);
+            }
+        }
+        return JSON.stringify({ recurringExpenses: results });
+    }
 }
