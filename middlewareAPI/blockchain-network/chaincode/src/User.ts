@@ -105,6 +105,9 @@ export class UserContract extends Contract {
             throw new Error('User ID is required')
         }
 
+        // Adapted to specific context.
+        // Hyperledger Fabric, 29/11/2021
+        // Website: https://hyperledger.github.io/fabric-chaincode-node/release-2.2/api/tutorial-using-iterators.html
         const iterator = ctx.stub.getStateByPartialCompositeKey('User', [])
         let foundUser: User | null = null
 
