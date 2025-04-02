@@ -1,5 +1,9 @@
 import { Request, Response, NextFunction } from "express"
+
+// Website: https://github.com/auth0/node-jsonwebtoken#readme
+// Date Accessed: 2/4/2025
 import jwt from "jsonwebtoken"
+
 import dotenv from "dotenv"
 dotenv.config()
 

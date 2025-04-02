@@ -1,6 +1,9 @@
 import Frequency from '../../enums/Frequency'
-import { addDays, addWeeks, addMonths, addYears } from 'date-fns'
 import toUTC from '../../utils/toUTC'
+
+// Website: https://date-fns.org
+// Date Accessed: 2/4/2025
+import { addDays, addWeeks, addMonths, addYears } from 'date-fns'
 
 export default abstract class RecurrenceRule {
     frequency: Frequency
