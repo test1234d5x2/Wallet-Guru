@@ -1,5 +1,15 @@
+/*
+ * Copyright IBM Corp. All Rights Reserved.
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+// Modified to fit the structure of the custom-made blockchain network.
+// Date Accessed: 2/4/2025
+// Website: https://github.com/hyperledger/fabric-samples/blob/main/asset-transfer-basic/application-gateway-typescript/src/app.ts
+
 import * as grpc from '@grpc/grpc-js'
-import { connect, Gateway, hash, Identity, Signer, signers, Network, Contract } from '@hyperledger/fabric-gateway'
+import { connect, Gateway, Identity, Signer, signers, Network, Contract } from '@hyperledger/fabric-gateway'
 import { promises as fs, readFileSync } from 'fs'
 import * as path from 'path'
 import * as crypto from 'crypto'
