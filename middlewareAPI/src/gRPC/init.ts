@@ -15,7 +15,6 @@ import * as path from 'path'
 import * as crypto from 'crypto'
 
 const mspId = envOrDefault('MSP_ID', 'PeerOrgMSP')
-const peerHostAlias = envOrDefault('PEER_HOST_ALIAS', '')
 
 const channelName = envOrDefault('CHANNEL_NAME', '')
 const chaincodeName = envOrDefault('CHAINCODE_NAME', '')
@@ -32,6 +31,7 @@ interface PeerConfig {
     tlsCertPath: string
     keyDirectoryPath: string
     certDirectoryPath: string
+    hostAlias: string
 }
 
 export default class Connection {
@@ -57,6 +57,7 @@ export default class Connection {
                 tlsCertPath: envOrDefault(`PEER${x}_TLS_CERTIFICATE_PATH`, ''),
                 keyDirectoryPath: envOrDefault(`PEER${x}_KEY_DIRECTORY_PATH`, ''),
                 certDirectoryPath: envOrDefault(`PEER${x}_CERTIFICATE_DIRECTORY_PATH`, ''),
+                hostAlias: envOrDefault(`PEER${x}_HOST_ALIAS`, '')
             })
         }
 
@@ -76,8 +77,11 @@ export default class Connection {
     private async tryConnectPeer(peer: PeerConfig, connectionTimeout: number): Promise<boolean> {
         const tlsRootCert = readFileSync(peer.tlsCertPath)
         const endpoint = peer.url.replace('grpcs://', '')
-        const client = new grpc.Client(endpoint, grpc.credentials.createSsl(tlsRootCert))
+        const client = new grpc.Client(endpoint, grpc.credentials.createSsl(tlsRootCert), {
+            'grpc.ssl_target_name_override': peer.hostAlias
+        })
 
+        console.log(peer.url)
         return await new Promise((resolve, reject) => {
             const timeoutId = setTimeout(() => {
                 client.close()
@@ -159,7 +163,6 @@ function promiseAny<T>(promises: Promise<T>[]): Promise<T> {
 }
 
 console.log('MSP ID:', mspId)
-console.log('Peer Host Alias:', peerHostAlias)
 console.log('Channel Name:', channelName)
 console.log('Chaincode Name:', chaincodeName)
 console.log('User Contract Name:', userContractName)
