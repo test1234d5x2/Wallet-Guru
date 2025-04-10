@@ -1,5 +1,8 @@
+caliper:
+  blockchain: fabric
+
 name: "myfabric-network"
-version: "1.0"
+version: "2"
 
 client:
   organization: PeerOrg
@@ -44,21 +47,18 @@ peers:
       ssl-target-name-override: "peer1-peerorg"
     tlsCACerts:
       path: "../../../fabric-ca/peerorg/peer1/tls-msp/tlscacerts/tls-0-0-0-0-7052.pem"
-
   peer2-peerorg:
     url: "grpcs://peer2-peerorg:8051"
     grpcOptions:
       ssl-target-name-override: "peer2-peerorg"
     tlsCACerts:
       path: "../../../fabric-ca/peerorg/peer2/tls-msp/tlscacerts/tls-0-0-0-0-7052.pem"
-
   peer3-peerorg:
     url: "grpcs://peer3-peerorg:9051"
     grpcOptions:
       ssl-target-name-override: "peer3-peerorg"
     tlsCACerts:
       path: "../../../fabric-ca/peerorg/peer3/tls-msp/tlscacerts/tls-0-0-0-0-7052.pem"
-
   peer4-peerorg:
     url: "grpcs://peer4-peerorg:10051"
     grpcOptions:
@@ -73,14 +73,12 @@ orderers:
       ssl-target-name-override: "orderer1-ordererorg"
     tlsCACerts:
       path: "../../../fabric-ca/ordererorg/orderer1/tls-msp/tlscacerts/tls-0-0-0-0-7052.pem"
-
   orderer2-ordererorg:
     url: "grpcs://orderer2-ordererorg:8050"
     grpcOptions:
       ssl-target-name-override: "orderer2-ordererorg"
     tlsCACerts:
       path: "../../../fabric-ca/ordererorg/orderer2/tls-msp/tlscacerts/tls-0-0-0-0-7052.pem"
-
   orderer3-ordererorg:
     url: "grpcs://orderer3-ordererorg:9050"
     grpcOptions:
