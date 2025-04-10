@@ -9,6 +9,7 @@ interface MonthSelectorProps {
 }
 
 
+// TODO April displays as 31 April - 29 April
 export default function MonthSelector(props: MonthSelectorProps) {
     return (
         <View style={styles.monthSelectorContainer} >

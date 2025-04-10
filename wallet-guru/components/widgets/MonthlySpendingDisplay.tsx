@@ -10,7 +10,7 @@ interface MonthlySpendingDisplayProps {
     month: Date;
 }
 
-
+// TODO April displays as 31 April - 29 April
 export default function MonthlySpendingDisplay(props: MonthlySpendingDisplayProps) {
     const startOfMonth = getStartOfMonth(props.month);
     const endOfMonth = getEndOfMonth(props.month);
