@@ -96,6 +96,18 @@ export default function ExpenseDetailsScreen() {
         ])
     }
 
+    const handleReceiptClick = () => {
+        if (!expense) {return}
+
+        if (!expense.receipt) {
+            Alert.alert("No Receipt Set", "No receipt was set for this expense.")
+        }
+
+        else {
+            setViewReceipt(true)
+        }
+    }
+
     return (
         <View style={styles.mainContainer}>
             <TopBar />
@@ -117,7 +129,7 @@ export default function ExpenseDetailsScreen() {
                         </View>
                     )}
 
-                    <TouchableOpacity onPress={() => setViewReceipt(true)}>
+                    <TouchableOpacity onPress={() => handleReceiptClick()}>
                         <Text style={styles.viewReceipt}>View Receipt</Text>
                     </TouchableOpacity>
                     <View style={styles.buttonContainer}>
