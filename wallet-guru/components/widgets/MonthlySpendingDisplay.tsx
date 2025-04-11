@@ -10,7 +10,6 @@ interface MonthlySpendingDisplayProps {
     month: Date;
 }
 
-// TODO April displays as 31 April - 29 April
 export default function MonthlySpendingDisplay(props: MonthlySpendingDisplayProps) {
     const startOfMonth = getStartOfMonth(props.month);
     const endOfMonth = getEndOfMonth(props.month);
@@ -18,7 +17,7 @@ export default function MonthlySpendingDisplay(props: MonthlySpendingDisplayProp
     return (
         <View style={styles.section}>
             <View style={styles.sectionHeader}>
-                <Text style={styles.sectionTitle}>{`${startOfMonth.getUTCDate()} ${getMonthName(startOfMonth)} ${startOfMonth.getUTCFullYear()}`} - {`${endOfMonth.getUTCDate()} ${getMonthName(endOfMonth)} ${endOfMonth.getUTCFullYear()}`}</Text>
+                <Text style={styles.sectionTitle}>{`${startOfMonth.getDate()} ${getMonthName(startOfMonth)} ${startOfMonth.getUTCFullYear()}`} - {`${endOfMonth.getDate()} ${getMonthName(endOfMonth)} ${endOfMonth.getUTCFullYear()}`}</Text>
             </View>
             <View style={styles.summaryContainer}>
                 <View>
