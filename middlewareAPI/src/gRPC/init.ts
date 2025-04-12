@@ -153,7 +153,7 @@ function promiseAny<T>(promises: Promise<T>[]): Promise<T> {
                 .then(resolve)
                 .catch(error => {
                     errors[index] = error
-                    pending--
+                    pending = pending - 1
                     if (pending === 0) {
                         reject(new Error('All promises were rejected'))
                     }
