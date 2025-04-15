@@ -44,3 +44,5 @@ app-example
 
 ./config-files/
 */fabric-ca
+
+/playground

@@ -39,8 +39,6 @@ export default class Connection {
     private gateway!: Gateway
     private network!: Network
 
-    private constructor() { }
-
     public static getInstance(): Connection {
         if (!Connection.instance) {
             Connection.instance = new Connection()
