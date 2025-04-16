@@ -3,6 +3,7 @@ import jwt from 'jsonwebtoken'
 import { Contract } from '@hyperledger/fabric-gateway'
 import dotenv from 'dotenv'
 import { TextDecoder } from 'util'
+import registerAndEnrollUser from '../utils/registerAndEnrollUser'
 
 dotenv.config()
 const utf8Decoder = new TextDecoder()
@@ -18,8 +19,16 @@ class UserService {
 
     public async addUser(username: string, password: string): Promise<boolean> {
         const user = new User(username, password)
+        const ADMIN_ID = process.env.ADMIN_ID
+
+        if (!ADMIN_ID) {
+            console.log("No admin ID set.")
+            return false
+        }
 
         try {
+            registerAndEnrollUser(username, ADMIN_ID)
+
             await this.userContract.submitTransaction(
                 'createUser',
                 user.getUserID(),

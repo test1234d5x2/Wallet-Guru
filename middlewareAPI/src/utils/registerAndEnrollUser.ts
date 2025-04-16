@@ -1,13 +1,12 @@
-const { Wallets } = require('fabric-network')
-const fs = require('fs')
-const dotenv = require('dotenv')
-const path = require("path")
-const FabricCAServices = require("fabric-ca-client")
+import { Wallets, X509Identity } from 'fabric-network'
+import fs from 'fs'
+import path from 'path'
+import dotenv from 'dotenv'
+import FabricCAServices from 'fabric-ca-client'
 
 dotenv.config()
 
-
-async function registerAndEnrolUser(userID, adminID) {
+export default async function registerAndEnrollUser(userID: string, adminID: string): Promise<boolean> {
     const CA_URL = process.env.CA_URL
     const CA_TLS_CERT_PATH = process.env.CA_TLS_CERT_PATH
     const ORG_MSP_ID = process.env.MSP_ID
@@ -24,13 +23,12 @@ async function registerAndEnrolUser(userID, adminID) {
 
     const wallet = await Wallets.newFileSystemWallet(path.resolve(WALLET_PATH))
 
-    const userExists = await wallet.get(userID)
+    const userExists = await wallet.get(userID);
     if (userExists) {
-        console.log(`User "${userID}" already exists in the wallet.`)
-        return
+        throw new Error(`User "${userID}" already exists in the wallet.`)
     }
 
-    const adminIdentity = await wallet.get(adminID)
+    const adminIdentity = await wallet.get(adminID);
     if (!adminIdentity) {
         throw new Error(`Admin identity "${adminID}" not found in the wallet.`)
     }
@@ -49,7 +47,7 @@ async function registerAndEnrolUser(userID, adminID) {
         enrollmentSecret: secret,
     })
 
-    const identity = {
+    const identity: X509Identity = {
         credentials: {
             certificate: enrolment.certificate,
             privateKey: enrolment.key.toBytes(),
@@ -59,7 +57,7 @@ async function registerAndEnrolUser(userID, adminID) {
     }
 
     await wallet.put(userID, identity)
-    console.log(`Successfully registered and enroled user "${userID}"`)
+    console.log(`Successfully registered and enrolled user "${userID}".`)
+    
+    return true
 }
-
-registerAndEnrolUser("sagfdhsfghdsagdfahsgf", "rca-peerorg-admin")
