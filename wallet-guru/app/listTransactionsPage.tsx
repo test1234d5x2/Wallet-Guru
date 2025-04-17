@@ -114,7 +114,7 @@ export default function ViewTransactionsList() {
         combinedTransactions.push(...filteredExpenses.map(expense => ({ type: 'expense', data: expense })));
     }
 
-    combinedTransactions.sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
+    combinedTransactions.sort((a, b) => b.data.date.getTime() - a.data.date.getTime())
 
     const transactionDisplayElements = combinedTransactions.map(item => (
         <React.Fragment key={uuid.v4() as string}>

@@ -6,6 +6,7 @@ export interface Income {
     id: string
     userID: string
     title: string
+    categoryID: string
     amount: number
     notes: string
     date: string
@@ -39,8 +40,8 @@ export class IncomeContract extends Contract {
             throw new Error('Income must be a valid JSON string')
         }
 
-        if (!incomeInput.id || !incomeInput.userID || !incomeInput.title || incomeInput.amount === undefined || !incomeInput.date) {
-            throw new Error('Missing required fields: id, userID, title, amount, notes, date')
+        if (!incomeInput.id || !incomeInput.userID || !incomeInput.title || !incomeInput.categoryID || incomeInput.amount === undefined || !incomeInput.date) {
+            throw new Error('Missing required fields: id, userID, title, categoryID, amount, notes, date')
         }
 
         const amountNum = Number(incomeInput.amount)
@@ -50,8 +51,9 @@ export class IncomeContract extends Contract {
 
         const newIncome: Income = {
             id: incomeInput.id,
-            title: incomeInput.title,
             userID: incomeInput.userID,
+            title: incomeInput.title,
+            categoryID: incomeInput.categoryID,
             amount: amountNum,
             notes: incomeInput.notes,
             date: incomeInput.date
@@ -81,8 +83,8 @@ export class IncomeContract extends Contract {
             throw new Error('Income must be a valid JSON string')
         }
 
-        if (!incomeInput.id || !incomeInput.userID || !incomeInput.title || incomeInput.amount === undefined || !incomeInput.date) {
-            throw new Error('Missing required fields: id, userID, title, amount, notes, date')
+        if (!incomeInput.id || !incomeInput.userID || !incomeInput.title || !incomeInput.categoryID || incomeInput.amount === undefined || !incomeInput.date) {
+            throw new Error('Missing required fields: id, userID, title, categoryID, amount, notes, date')
         }
 
         const key = this.getIncomeKey(ctx, incomeInput.userID, incomeInput.id)
@@ -98,6 +100,7 @@ export class IncomeContract extends Contract {
         }
 
         storedIncome.title = incomeInput.title
+        storedIncome.categoryID = incomeInput.categoryID
         storedIncome.amount = amountNum
         storedIncome.notes = incomeInput.notes
         storedIncome.date = incomeInput.date
@@ -135,7 +138,7 @@ export class IncomeContract extends Contract {
         // Website: https://hyperledger.github.io/fabric-chaincode-node/release-2.2/api/tutorial-using-iterators.html
         const results: Income[] = []
         const iterator = ctx.stub.getStateByPartialCompositeKey('Income', [userID])
-        
+
         for await (const res of iterator) {
             if (res.value) {
                 const income: Income = JSON.parse(res.value.toString())
