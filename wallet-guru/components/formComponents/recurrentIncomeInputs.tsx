@@ -5,12 +5,14 @@ import NumericInputField from './inputFields/numericInputField';
 import DateInputField from './inputFields/dateInputField';
 import ModalSelectionRecurrencePeriods from '../modalSelection/modalSelectionRecurrencePeriods';
 import Frequency from '@/enums/Frequency';
+import IncomeCategory from '@/models/core/IncomeCategory';
 
 
 interface RecurrentIncomeDetailsInputsProps {
     title: string,
     amount: string,
     notes: string,
+    category: IncomeCategory | null,
     frequency: Frequency,
     interval: string,
     startDate: Date | null,
@@ -18,10 +20,12 @@ interface RecurrentIncomeDetailsInputsProps {
     setTitle: (text: string) => void,
     setAmount: (text: string) => void,
     setNotes: (text: string) => void,
+    setCategory: (text: IncomeCategory) => void,
     setFrequency: (text: Frequency) => void,
     setFrequencyInterval: (text: string) => void,
     setStartDate: (text: Date) => void,
     setEndDate: (text: Date) => void,
+    categoriesList: Array<IncomeCategory>,
 }
 
 

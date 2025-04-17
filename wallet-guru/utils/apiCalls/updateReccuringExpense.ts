@@ -1,6 +1,6 @@
 import RecurrenceRule from "@/models/recurrenceModels/RecurrenceRule";
 
-export default async function updateRecurrentExpense(token: string, id: string, title: string, amount: number, date: Date, expenseCategoryID: string, notes: string, recurrenceRule: RecurrenceRule) {
+export default async function updateRecurrentExpense(token: string, id: string, title: string, amount: number, date: Date, expenseCategoryID: string, notes: string, recurrenceRule: RecurrenceRule): Promise<boolean> {
     const API_DOMAIN = process.env.EXPO_PUBLIC_BLOCKCHAIN_MIDDLEWARE_API_IP_ADDRESS;
     if (!API_DOMAIN) {
         throw new Error("Domain could not be found.");
@@ -28,4 +28,6 @@ export default async function updateRecurrentExpense(token: string, id: string, 
         const error = await response.json();
         throw new Error(error.message);
     };
+
+    return true
 }

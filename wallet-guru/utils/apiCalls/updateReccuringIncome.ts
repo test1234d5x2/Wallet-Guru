@@ -1,9 +1,9 @@
-import RecurrenceRule from "@/models/recurrenceModels/RecurrenceRule";
+import RecurrenceRule from "@/models/recurrenceModels/RecurrenceRule"
 
-export default async function updateRecurrentIncome(token: string, id: string, title: string, amount: number, date: Date, notes: string, recurrenceRule: RecurrenceRule) {
-    const API_DOMAIN = process.env.EXPO_PUBLIC_BLOCKCHAIN_MIDDLEWARE_API_IP_ADDRESS;
+export default async function updateRecurrentIncome(token: string, id: string, title: string, amount: number, date: Date, notes: string, categoryID: string, recurrenceRule: RecurrenceRule): Promise<boolean> {
+    const API_DOMAIN = process.env.EXPO_PUBLIC_BLOCKCHAIN_MIDDLEWARE_API_IP_ADDRESS
     if (!API_DOMAIN) {
-        throw new Error("Domain could not be found.");
+        throw new Error("Domain could not be found.")
     };
 
     const ADD_RECURRING_INCOME_URL = `http://${API_DOMAIN}/api/recurring-incomes/${id}`
@@ -19,12 +19,15 @@ export default async function updateRecurrentIncome(token: string, id: string, t
             amount,
             date,
             notes,
+            categoryID,
             recurrenceRule
         })
-    });
+    })
 
     if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.message);
+        const error = await response.json()
+        throw new Error(error.message)
     }
+
+    return true
 }

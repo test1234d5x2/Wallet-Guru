@@ -10,7 +10,7 @@ import { isValidDate, isTodayOrBefore } from '@/utils/validation/validateDate'
 import clearRouterHistory from '@/utils/clearRouterHistory'
 import getToken from '@/utils/tokenAccess/getToken'
 
-async function addIncome(token: string, title: string, amount: number, date: Date, notes: string) {
+async function addIncome(token: string, title: string, amount: number, date: Date, notes: string, categoryID: string) {
     const API_DOMAIN = process.env.EXPO_PUBLIC_BLOCKCHAIN_MIDDLEWARE_API_IP_ADDRESS
     if (!API_DOMAIN) {
         throw new Error("Domain could not be found")
@@ -28,7 +28,8 @@ async function addIncome(token: string, title: string, amount: number, date: Dat
             title,
             amount,
             date,
-            notes
+            notes,
+            categoryID
         })
     })
 

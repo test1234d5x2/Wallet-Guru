@@ -1,16 +1,16 @@
-import ExpenseCategory from '@/models/core/ExpenseCategory';
+import Category from '@/models/core/Category';
 import React, { useState } from 'react';
 import { View, Text, FlatList, TouchableOpacity, StyleSheet, Modal, Pressable, SafeAreaView, Alert } from 'react-native';
 
 
-interface ModalSelectionProps {
-    choices: Array<ExpenseCategory>
-    value: ExpenseCategory | null
-    setValue: (text: ExpenseCategory) => void
+interface ModalSelectionProps<T extends Category> {
+    choices: Array<T>
+    value: T | null
+    setValue: (text: T) => void
     required?: boolean
 }
 
-const ModalSelectionExpenseCategories = (props: ModalSelectionProps) => {
+const ModalSelectionExpenseCategories = (props: ModalSelectionProps<Category>) => {
 
     const [showDropdown, setShowDropdown] = useState<boolean>(false)
     let displayText = props.value?.name
@@ -117,4 +117,4 @@ const styles = StyleSheet.create({
     },
 })
 
-export default ModalSelectionExpenseCategories;
+export default ModalSelectionExpenseCategories

@@ -1,18 +1,23 @@
-import React from 'react';
-import { StyleSheet, ScrollView } from 'react-native';
-import StandardInputField from './inputFields/standardInputField';
-import NumericInputField from './inputFields/numericInputField';
-import DateInputField from './inputFields/dateInputField';
+import React from 'react'
+import { StyleSheet, ScrollView } from 'react-native'
+import StandardInputField from './inputFields/standardInputField'
+import NumericInputField from './inputFields/numericInputField'
+import DateInputField from './inputFields/dateInputField'
+import IncomeCategory from '@/models/core/IncomeCategory'
+import ModalSelectionExpenseCategories from '../modalSelection/modalSelectionExpenseCategories'
 
 
 interface IncomeDetailsInputsProps {
     title: string,
     amount: string,
     date: Date | null,
+    category: IncomeCategory | null,
     notes: string,
+    categoriesList: Array<IncomeCategory>,
     setTitle: (text: string) => void,
     setAmount: (text: string) => void,
     setDate: (text: Date) => void,
+    setCategory: (text: IncomeCategory) => void,
     setNotes: (text: string) => void,
 }
 
@@ -37,6 +42,8 @@ export default function IncomeDetailsInputs(props: IncomeDetailsInputsProps) {
 
             <DateInputField date={props.date} setDate={props.setDate} required />
 
+            <ModalSelectionExpenseCategories choices={props.categoriesList} value={props.category} setValue={props.setCategory} required />
+
             <StandardInputField
                 placeholder="Notes"
                 value={props.notes}
@@ -51,4 +58,4 @@ const styles = StyleSheet.create({
         backgroundColor: '#fff',
         rowGap: 20,
     },
-});
+})
