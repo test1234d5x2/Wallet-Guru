@@ -1,37 +1,39 @@
-import Transaction from "./Transaction";
-import uuid from 'react-native-uuid';
+import Transaction from "./Transaction"
+import uuid from 'react-native-uuid'
 
 class Income implements Transaction {
-    private id: string;
-    private userID: string;
-    title: string;
-    amount: number;
-    date: Date;
-    notes: string;
+    private id: string
+    private userID: string
+    title: string
+    amount: number
+    date: Date
+    notes: string
+    categoryID: string
 
-    constructor(userID: string, title: string, amount: number, date: Date, notes: string, id?: string) {
-        this.id = id || uuid.v4();
-        this.userID = userID;
-        this.title = title;
-        this.amount = amount;
-        this.date = date;
-        this.notes = notes;
+    constructor(userID: string, title: string, amount: number, date: Date, notes: string, categoryID: string, id?: string) {
+        this.id = id || uuid.v4()
+        this.userID = userID
+        this.title = title
+        this.amount = amount
+        this.date = date
+        this.notes = notes
+        this.categoryID = categoryID
     }
 
     getID(): string {
-        return this.id;
+        return this.id
     }
 
     getUserID(): string {
-        return this.userID;
+        return this.userID
     }
 
     getPageURL(): string {
-        return "/viewIncomeDetailsPage/" + this.id;
+        return "/viewIncomeDetailsPage/" + this.id
     }
 
     getEditURL(): string {
-        return "/editIncomePage/" + this.id;
+        return "/editIncomePage/" + this.id
     }
 
     public toJSON() {
@@ -42,8 +44,9 @@ class Income implements Transaction {
             amount: this.amount,
             date: this.date,
             notes: this.notes,
+            categoryID: this.categoryID
         }
     }
 }
 
-export default Income;
+export default Income

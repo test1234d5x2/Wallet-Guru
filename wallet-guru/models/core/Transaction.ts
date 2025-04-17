@@ -3,8 +3,9 @@ interface Transaction {
     date: Date
     amount: number
     notes: string
+    categoryID: string
     getPageURL(): string
     getEditURL(): string
 }
 
-export default Transaction;
+export default Transaction

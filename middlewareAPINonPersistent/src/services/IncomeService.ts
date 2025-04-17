@@ -8,20 +8,23 @@ class IncomeService {
         this.repository = new IncomeRepository()
     }
 
-    public addIncome(userID: string, title: string, amount: number, date: Date, notes: string): void {
-        const income = new Income(userID, title, amount, date, notes)
+    public addIncome(userID: string, title: string, amount: number, date: Date, notes: string, categoryID: string): void {
+        const income = new Income(userID, title, amount, date, notes, categoryID)
         this.repository.add(income)
     }
 
-    public updateIncome(id: string, title: string, amount: number, date: Date, notes: string): void {
+    public updateIncome(id: string, title: string, amount: number, date: Date, notes: string, categoryID: string): void {
         const income = this.repository.findById(id)
+        
         if (!income) {
             throw new Error(`Income does not exist`)
         }
+
         income.title = title
         income.amount = amount
         income.date = date
         income.notes = notes
+        income.categoryID = categoryID
     }
 
     public deleteIncome(id: string): void {

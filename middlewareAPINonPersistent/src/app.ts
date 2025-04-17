@@ -4,6 +4,7 @@ import dotenv from "dotenv"
 import expenseRoutes from "./routes/Expense"
 import userRoutes from "./routes/User"
 import expenseCategoryRoutes from "./routes/ExpenseCategory"
+import incomeCategoryRoutes from "./routes/IncomeCategory"
 import incomeRoutes from "./routes/Income"
 import goalRoutes from "./routes/Goal"
 import recurringExpenseRouter from "./routes/RecurringExpense"
@@ -30,6 +31,7 @@ app.use(express.json())
 
 app.use("/api/expenses", expenseRoutes)
 app.use("/api/users", userRoutes)
+app.use("/api/income-categories", incomeCategoryRoutes)
 app.use("/api/expense-categories", expenseCategoryRoutes)
 app.use("/api/incomes", incomeRoutes)
 app.use("/api/goals", goalRoutes)

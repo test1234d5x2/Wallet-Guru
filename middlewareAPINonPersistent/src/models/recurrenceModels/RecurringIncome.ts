@@ -5,8 +5,8 @@ import RecurringTransaction from "./RecurringTransaction"
 export default class RecurringIncome extends Income implements RecurringTransaction {
     recurrenceRule: RecurrenceRule
 
-    constructor(userID: string, title: string, amount: number, date: Date, notes: string, recurrenceRule: RecurrenceRule) {
-        super(userID, title, amount, date, notes)
+    constructor(userID: string, title: string, amount: number, date: Date, notes: string, categoryID: string, recurrenceRule: RecurrenceRule) {
+        super(userID, title, amount, date, notes, categoryID)
         this.recurrenceRule = recurrenceRule
     }
 

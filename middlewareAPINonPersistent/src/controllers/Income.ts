@@ -6,7 +6,7 @@ const registry = Registry.getInstance()
 const incomeService = registry.incomeService
 
 export const create: RequestHandler = (req, res) => {
-    const { title, amount, date, notes } = req.body
+    const { title, amount, date, notes, categoryID } = req.body
 
     const userID = getUserFromToken(req)
     if (!userID) {
@@ -14,18 +14,18 @@ export const create: RequestHandler = (req, res) => {
         return
     }
 
-    if (!title || amount === undefined || !date) {
-        res.status(400).json({ message: "Missing required fields: title, amount, date" })
+    if (!title || amount === undefined || !date || !categoryID) {
+        res.status(400).json({ message: "Missing required fields: title, amount, date, categoryID" })
         return
     }
 
-    incomeService.addIncome(userID, title, amount, new Date(date), notes)
+    incomeService.addIncome(userID, title, amount, new Date(date), notes, categoryID)
     res.status(201).json({ message: "Income created" })
 }
 
 export const update: RequestHandler = (req, res) => {
     const { id } = req.params
-    const { title, amount, date, notes } = req.body
+    const { title, amount, date, notes, categoryID } = req.body
 
     const userID = getUserFromToken(req)
     if (!userID) {
@@ -33,12 +33,12 @@ export const update: RequestHandler = (req, res) => {
         return
     }
 
-    if (!id || !title || amount === undefined || !date) {
-        res.status(400).json({ error: "Missing required fields: id, title, amount, date" })
+    if (!id || !title || amount === undefined || !date || !categoryID) {
+        res.status(400).json({ error: "Missing required fields: id, title, amount, date, categoryID" })
         return
     }
 
-    incomeService.updateIncome(id, title, amount, new Date(date), notes)
+    incomeService.updateIncome(id, title, amount, new Date(date), notes, categoryID)
     res.status(200).json({ message: "Income updated" })
 }
 

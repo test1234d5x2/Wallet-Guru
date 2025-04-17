@@ -6,6 +6,7 @@ import ExpenseCategoryService from "../services/ExpenseCategoryService"
 import AuthService from "../services/AuthService"
 import RecurringExpenseService from "../services/RecurringExpenseService"
 import RecurringIncomeService from "../services/RecurringIncomeService"
+import IncomeCategoryService from "../services/IncomeCategoryService"
 
 class Registry {
     private static instance: Registry
@@ -15,6 +16,7 @@ class Registry {
     public goalService: GoalService
     public userService: UserService
     public expenseCategoryService: ExpenseCategoryService
+    public incomeCategoryService: IncomeCategoryService
     public authService: AuthService
     public recurringExpenseService: RecurringExpenseService
     public recurringIncomeService: RecurringIncomeService
@@ -25,6 +27,7 @@ class Registry {
         this.incomeService = new IncomeService()
         this.goalService = new GoalService()
         this.expenseCategoryService = new ExpenseCategoryService()
+        this.incomeCategoryService = new IncomeCategoryService()
         this.authService = new AuthService(this.userService)
         this.recurringExpenseService = new RecurringExpenseService(this.expenseService)
         this.recurringIncomeService = new RecurringIncomeService(this.incomeService)

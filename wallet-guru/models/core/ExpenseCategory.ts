@@ -1,58 +1,35 @@
-import uuid from 'react-native-uuid';
-import BasicRecurrenceRule from '../recurrenceModels/BasicRecurrenceRule';
+import BasicRecurrenceRule from '../recurrenceModels/BasicRecurrenceRule'
+import Category from './Category'
 
-class ExpenseCategory {
-    private id: string;
-    private userID: string;
-    name: string;
-    monthlyBudget: number;
-    recurrenceRule: BasicRecurrenceRule;
-    colour: string
+export default class ExpenseCategory extends Category {
+    public monthlyBudget: number
+    public recurrenceRule: BasicRecurrenceRule
 
     constructor(userID: string, name: string, monthlyBudget: number, recurrenceRule: BasicRecurrenceRule, id?: string, colour?: string) {
-        this.id = id || uuid.v4();
-        this.userID = userID;
-        this.name = name;
-        this.monthlyBudget = monthlyBudget;
-        this.recurrenceRule = recurrenceRule;
-        this.colour = colour || "#FFFFFF";
+        super(userID, name, id, colour)
+        this.monthlyBudget = monthlyBudget
+        this.recurrenceRule = recurrenceRule
     }
 
-    getID(): string {
-        return this.id;
+    public calculateBudgetUsed(currentSpending: number): number {
+        return currentSpending / this.monthlyBudget
     }
 
-    getUserID(): string {
-        return this.userID;
+    public shouldResetBudget(): boolean {
+        return this.recurrenceRule.shouldTrigger()
     }
 
-    calculateBudgetUsed(currentSpending: number): number {
-        return currentSpending / this.monthlyBudget;
-    }
-
-    shouldResetBudget(): boolean {
-        if (this.recurrenceRule) {
-            return this.recurrenceRule.shouldTrigger();
-        }
-        return false;
-    }
-
-    updateBudgetCycle(): void {
-        if (this.recurrenceRule && this.recurrenceRule.shouldTrigger()) {
-            this.recurrenceRule.nextTriggerDate = this.recurrenceRule.computeNextTriggerDate();
+    public updateBudgetCycle(): void {
+        if (this.recurrenceRule.shouldTrigger()) {
+            this.recurrenceRule.nextTriggerDate = this.recurrenceRule.computeNextTriggerDate()
         }
     }
 
     public toJSON() {
         return {
-            id: this.id,
-            userID: this.userID,
-            name: this.name,
+            ...super.toJSON(),
             monthlyBudget: this.monthlyBudget,
             recurrenceRule: this.recurrenceRule,
-            colour: this.colour
-        };
+        }
     }
 }
-
-export default ExpenseCategory;

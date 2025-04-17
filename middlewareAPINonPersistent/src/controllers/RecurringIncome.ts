@@ -6,7 +6,7 @@ import getUserFromToken from '../utils/getUserFromToken'
 const registry = Registry.getInstance()
 
 export const create = (req: Request, res: Response): void => {
-    const { title, amount, date, notes, recurrenceRule } = req.body
+    const { title, amount, date, notes, categoryID, recurrenceRule } = req.body
 
     const userID = getUserFromToken(req)
     if (!userID) {
@@ -22,14 +22,7 @@ export const create = (req: Request, res: Response): void => {
         recurrenceRule.endDate ? new Date(recurrenceRule.endDate) : undefined
     )
 
-    registry.recurringIncomeService.addRecurringIncome(
-        userID,
-        title,
-        amount,
-        new Date(date),
-        notes,
-        rule
-    )
+    registry.recurringIncomeService.addRecurringIncome(userID, title, amount, new Date(date), notes, categoryID, rule)
 
     registry.recurringIncomeService.processDueRecurringIncomes()
     res.status(201).json({ message: 'Recurring Income created successfully' })
@@ -37,7 +30,7 @@ export const create = (req: Request, res: Response): void => {
 
 export const update = (req: Request, res: Response): void => {
     const { id } = req.params
-    const { title, amount, date, notes } = req.body
+    const { title, amount, date, notes, categoryID } = req.body
 
     const userID = getUserFromToken(req)
     if (!userID) {
@@ -45,13 +38,7 @@ export const update = (req: Request, res: Response): void => {
         return
     }
 
-    registry.recurringIncomeService.updateRecurringIncome(
-        id,
-        title,
-        amount,
-        new Date(date),
-        notes
-    )
+    registry.recurringIncomeService.updateRecurringIncome(id, title, amount, new Date(date), notes, categoryID)
 
     registry.recurringIncomeService.processDueRecurringIncomes()
     res.status(200).json({ message: 'Recurring Income updated successfully' })
