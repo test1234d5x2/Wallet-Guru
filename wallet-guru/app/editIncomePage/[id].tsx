@@ -11,6 +11,7 @@ import clearRouterHistory from '@/utils/clearRouterHistory'
 import getToken from '@/utils/tokenAccess/getToken'
 import getIncomeByID from '@/utils/apiCalls/getIncomeByID'
 import updateIncome from '@/utils/apiCalls/updateIncome'
+import IncomeCategory from '@/models/core/IncomeCategory'
 
 export default function EditIncome() {
     setPageTitle("Edit Income")
@@ -19,9 +20,11 @@ export default function EditIncome() {
     const router = useRouter()
     const [token, setToken] = useState<string>('')
     const [email, setEmail] = useState<string>('')
+    const [categories, setCategories] = useState<IncomeCategory[]>([])
     const [title, setTitle] = useState<string>('')
     const [amount, setAmount] = useState<string>('')
     const [date, setDate] = useState<Date>(new Date())
+    const [category, setCategory] = useState<IncomeCategory>()
     const [notes, setNotes] = useState<string>('')
     const [error, setError] = useState<string>('')
 
@@ -92,7 +95,7 @@ export default function EditIncome() {
 
     const handleEditIncome = () => {
         if (validateForm()) {
-            updateIncome(token, id as string, title, parseFloat(amount), date, notes).then((complete) => {
+            updateIncome(token, id as string, title, parseFloat(amount), date, notes, (category as IncomeCategory).getID()).then((complete) => {
                 if (complete) {
                     Alert.alert('Success', 'Income updated successfully!')
                     clearRouterHistory(router)
@@ -113,12 +116,15 @@ export default function EditIncome() {
                 <IncomeDetailsInputs
                     title={title}
                     amount={amount}
+                    category={category === undefined ? null: category}
                     date={date}
                     notes={notes}
                     setTitle={setTitle}
                     setAmount={setAmount}
                     setDate={setDate}
                     setNotes={setNotes}
+                    setCategory={setCategory}
+                    categoriesList={categories}
                 />
             </View>
 

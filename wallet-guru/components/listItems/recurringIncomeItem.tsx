@@ -6,11 +6,14 @@ import ListItemDeleteButton from './listItemDeleteButton';
 import clearRouterHistory from '@/utils/clearRouterHistory';
 import RecurringIncome from '@/models/recurrenceModels/RecurringIncome';
 import deleteRecurringIncome from '@/utils/apiCalls/deleteRecurringIncome';
+import { Pill } from './categoryDisplayPills';
 
 
 interface RecurringIncomeItemProps {
-    recurringIncome: RecurringIncome;
-    token: string;
+    recurringIncome: RecurringIncome
+    token: string
+    categoryName: string
+    categoryColour: string
 }
 
 export default function RecurringIncomeItem(props: RecurringIncomeItemProps) {
@@ -47,6 +50,7 @@ export default function RecurringIncomeItem(props: RecurringIncomeItemProps) {
             <View style={styles.transactionTextContainer}>
                 <View>
                     <Text style={styles.transactionName}>{props.recurringIncome.title}</Text>
+                    <Pill colour={props.categoryColour} text={props.categoryName} />
                 </View>
                 <Text style={[styles.transactionAmount, styles.incomeAmount]}>
                     +£{Math.abs(props.recurringIncome.amount).toFixed(2)}

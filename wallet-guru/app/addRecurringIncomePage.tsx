@@ -14,8 +14,10 @@ import isInteger from '@/utils/validation/validateInteger'
 import isValidFrequency from '@/utils/validation/isValidFrequency'
 import RecurrenceRule from '@/models/recurrenceModels/RecurrenceRule'
 import BasicRecurrenceRule from '@/models/recurrenceModels/BasicRecurrenceRule'
+import IncomeCategory from '@/models/core/IncomeCategory'
 
-async function addRecurrentIncome(token: string, title: string, amount: number, date: Date, notes: string, recurrenceRule: RecurrenceRule) {
+
+async function addRecurrentIncome(token: string, title: string, amount: number, date: Date, notes: string, categoryID: string, recurrenceRule: RecurrenceRule) {
     const API_DOMAIN = process.env.EXPO_PUBLIC_BLOCKCHAIN_MIDDLEWARE_API_IP_ADDRESS
     if (!API_DOMAIN) {
         throw new Error("Domain could not be found")
@@ -34,6 +36,7 @@ async function addRecurrentIncome(token: string, title: string, amount: number, 
             amount,
             date,
             notes,
+            categoryID,
             recurrenceRule
         })
     })
@@ -49,8 +52,10 @@ export default function AddRecurrentIncome() {
 
     const [token, setToken] = useState<string>("")
     const [email, setEmail] = useState<string>("")
+    const [categories, setCategories] = useState<IncomeCategory[]>([])
     const [title, setTitle] = useState<string>("")
     const [amount, setAmount] = useState<string>("")
+    const [category, setCategory] = useState<IncomeCategory | null>(null)
     const [frequency, setFrequency] = useState<Frequency>(Frequency.Daily)
     const [interval, setFrequencyInterval] = useState<string>("")
     const [startDate, setStartDate] = useState<Date | null>(null)
@@ -129,6 +134,7 @@ export default function AddRecurrentIncome() {
     const handleAddRecurrentIncome = () => {
         if (validateForm()) {
             setIsLoading(true)
+
             const recurrenceRule = new BasicRecurrenceRule(
                 frequency,
                 parseFloat(interval),
@@ -136,7 +142,8 @@ export default function AddRecurrentIncome() {
                 undefined,
                 endDate as Date
             )
-            addRecurrentIncome(token, title, parseFloat(amount), new Date(), notes, recurrenceRule)
+
+            addRecurrentIncome(token, title, parseFloat(amount), new Date(), notes, (category as IncomeCategory).getID(), recurrenceRule)
                 .then(() => {
                     Alert.alert('Success', 'Income added successfully!')
                     clearRouterHistory(router)
@@ -161,6 +168,7 @@ export default function AddRecurrentIncome() {
                     title={title}
                     amount={amount}
                     notes={notes}
+                    category={category}
                     frequency={frequency}
                     interval={interval}
                     startDate={startDate}
@@ -172,6 +180,8 @@ export default function AddRecurrentIncome() {
                     setFrequencyInterval={setFrequencyInterval}
                     setStartDate={setStartDate}
                     setEndDate={setEndDate}
+                    categoriesList={categories}
+                    setCategory={setCategory}
                 />
             </View>
 

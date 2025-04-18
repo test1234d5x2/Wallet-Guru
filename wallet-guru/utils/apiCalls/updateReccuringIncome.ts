@@ -6,9 +6,9 @@ export default async function updateRecurrentIncome(token: string, id: string, t
         throw new Error("Domain could not be found.")
     };
 
-    const ADD_RECURRING_INCOME_URL = `http://${API_DOMAIN}/api/recurring-incomes/${id}`
+    const UPDATE_RECURRING_INCOME_URL = `http://${API_DOMAIN}/api/recurring-incomes/${id}`
 
-    const response = await fetch(ADD_RECURRING_INCOME_URL, {
+    const response = await fetch(UPDATE_RECURRING_INCOME_URL, {
         method: "PUT",
         headers: {
             "Authorization": `Bearer ${token}`,

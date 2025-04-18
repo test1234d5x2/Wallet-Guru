@@ -9,6 +9,7 @@ import { useRouter } from 'expo-router'
 import { isValidDate, isTodayOrBefore } from '@/utils/validation/validateDate'
 import clearRouterHistory from '@/utils/clearRouterHistory'
 import getToken from '@/utils/tokenAccess/getToken'
+import IncomeCategory from '@/models/core/IncomeCategory'
 
 async function addIncome(token: string, title: string, amount: number, date: Date, notes: string, categoryID: string) {
     const API_DOMAIN = process.env.EXPO_PUBLIC_BLOCKCHAIN_MIDDLEWARE_API_IP_ADDRESS
@@ -44,8 +45,10 @@ export default function AddIncome() {
 
     const [token, setToken] = useState<string>("")
     const [email, setEmail] = useState<string>("")
+    const [categories, setCategories] = useState<IncomeCategory[]>([])
     const [title, setTitle] = useState<string>("")
     const [amount, setAmount] = useState<string>("")
+    const [category, setCategory] = useState<IncomeCategory | null>(null)
     const [date, setDate] = useState<Date | null>(null)
     const [notes, setNotes] = useState<string>("")
     const [error, setError] = useState<string>("")
@@ -102,7 +105,7 @@ export default function AddIncome() {
     const handleAddIncome = () => {
         if (validateForm()) {
             setIsLoading(true)
-            addIncome(token, title, parseFloat(amount), date as Date, notes)
+            addIncome(token, title, parseFloat(amount), date as Date, notes, (category as IncomeCategory).getID())
                 .then(() => {
                     Alert.alert('Success', 'Income added successfully!')
                     clearRouterHistory(router)
@@ -124,12 +127,15 @@ export default function AddIncome() {
                 <IncomeDetailsInputs
                     title={title}
                     amount={amount}
+                    category={category}
                     date={date}
                     notes={notes}
                     setTitle={setTitle}
                     setAmount={setAmount}
                     setDate={setDate}
                     setNotes={setNotes}
+                    categoriesList={categories}
+                    setCategory={setCategory}
                 />
             </View>
 

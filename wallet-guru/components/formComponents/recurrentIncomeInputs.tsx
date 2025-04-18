@@ -1,11 +1,12 @@
 import React from 'react';
-import { StyleSheet, ScrollView, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import StandardInputField from './inputFields/standardInputField';
 import NumericInputField from './inputFields/numericInputField';
 import DateInputField from './inputFields/dateInputField';
 import ModalSelectionRecurrencePeriods from '../modalSelection/modalSelectionRecurrencePeriods';
 import Frequency from '@/enums/Frequency';
 import IncomeCategory from '@/models/core/IncomeCategory';
+import { ModalSelectionIncomeCategories } from '../modalSelection/modalSelectionCategories';
 
 
 interface RecurrentIncomeDetailsInputsProps {
@@ -46,6 +47,8 @@ export default function RecurrentIncomeDetailsInputs(props: RecurrentIncomeDetai
                 setValue={props.setAmount}
                 required
             />
+
+            <ModalSelectionIncomeCategories choices={props.categoriesList} value={props.category} setValue={props.setCategory} required />
 
             <DateInputField date={props.startDate} setDate={props.setStartDate} placeholder={'Start Date'} required />
 

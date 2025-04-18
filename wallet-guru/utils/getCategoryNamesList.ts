@@ -1,5 +1,5 @@
-import ExpenseCategory from "@/models/core/ExpenseCategory";
+import Category from "@/models/core/Category";
 
-export default function getCategoryNamesList(categories: ExpenseCategory[]): string[] {
+export default function getCategoryNamesList(categories: Category[]): string[] {
     return categories.map((cat) => cat.name);
 }

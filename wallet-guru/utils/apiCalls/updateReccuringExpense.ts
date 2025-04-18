@@ -6,9 +6,9 @@ export default async function updateRecurrentExpense(token: string, id: string, 
         throw new Error("Domain could not be found.");
     };
 
-    const ADD_RECURRENT_EXPENSE_URL = `http://${API_DOMAIN}/api/recurring-expenses/${id}`;
+    const UPDATE_RECURRENT_EXPENSE_URL = `http://${API_DOMAIN}/api/recurring-expenses/${id}`;
 
-    const response = await fetch(ADD_RECURRENT_EXPENSE_URL, {
+    const response = await fetch(UPDATE_RECURRENT_EXPENSE_URL, {
         method: "PUT",
         headers: {
             "Authorization": `Bearer ${token}`,

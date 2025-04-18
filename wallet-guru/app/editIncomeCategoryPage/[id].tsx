@@ -65,7 +65,7 @@ export default function EditIncomeCategory() {
             return false
         }
         const duplicate = categories.find(
-            cat => cat.name.toLowerCase() === categoryName.toLowerCase() && cat.getId() !== id
+            cat => cat.name.toLowerCase() === categoryName.toLowerCase() && cat.getID() !== id
         )
         if (duplicate) {
             setError('This category already exists.')

@@ -9,6 +9,8 @@ import RecurringIncome from '@/models/recurrenceModels/RecurringIncome'
 import convertFrequencyToTextDisplay from '@/utils/convertFrequencyToTextDisplay'
 import deleteRecurringIncome from '@/utils/apiCalls/deleteRecurringIncome'
 import getRecurringIncomeByID from '@/utils/apiCalls/getRecurringIncomeByID'
+import IncomeCategory from '@/models/core/IncomeCategory'
+import getIncomeCategories from '@/utils/apiCalls/getIncomeCategories'
 
 export default function IncomeDetailsScreen() {
     const { id } = useLocalSearchParams()
@@ -16,6 +18,7 @@ export default function IncomeDetailsScreen() {
     const [token, setToken] = useState<string>("")
     const [email, setEmail] = useState<string>("")
     const [recurringIncome, setRecurringIncome] = useState<RecurringIncome>()
+    const [category, setCategory] = useState<IncomeCategory>()
     const [error, setError] = useState<string>("")
 
     setPageTitle(!recurringIncome ? "" : recurringIncome.title)
@@ -44,6 +47,23 @@ export default function IncomeDetailsScreen() {
         }
         if (token) getIncome()
     }, [token])
+
+    useEffect(() => {
+        async function getExpenseCategory() {
+            if (recurringIncome) {
+                getIncomeCategories(token).then((categories) => {
+                    setCategory(categories.find((cat) => cat.getID() === recurringIncome.categoryID))
+                }).catch((error: Error) => {
+                    Alert.alert("Error", "Could not load the category name")
+                    console.log(error.message)
+                    clearRouterHistory(router)
+                    router.replace("/listRecurringTransactionsPage")
+                })
+            }
+        }
+
+        if (token && recurringIncome) getExpenseCategory()
+    }, [token, recurringIncome])
 
     const handleEdit = () => {
         if (!recurringIncome) {
@@ -81,6 +101,7 @@ export default function IncomeDetailsScreen() {
             <StatusBar barStyle={"dark-content"} />
             {recurringIncome && (
                 <View style={styles.container}>
+                    <Text style={styles.detail}>Category: {category ? category.name : ""}</Text>
                     <Text style={styles.detail}>Amount: £{recurringIncome.amount.toFixed(2)}</Text>
                     <Text style={styles.detail}>Start Date: {recurringIncome.recurrenceRule.startDate.toDateString()}</Text>
                     <Text style={styles.detail}>Next Transaction Date: {recurringIncome.recurrenceRule.nextTriggerDate.toDateString()}</Text>

@@ -13,8 +13,8 @@ interface ExpenseItemProps {
     expense: Expense;
     token: string;
     categoryName: string;
-    categoryColor: string;
-    buttons: boolean;
+    categoryColour: string;
+    buttons: boolean
 }
 
 export default function ExpenseItem(props: ExpenseItemProps) {
@@ -50,7 +50,7 @@ export default function ExpenseItem(props: ExpenseItemProps) {
             <View style={styles.transactionTextContainer}>
                 <View style={{rowGap: 2}}>
                     <Text style={styles.transactionName}>{props.expense.title}</Text>
-                    <Pill colour={props.categoryColor} text={props.categoryName} />
+                    <Pill colour={props.categoryColour} text={props.categoryName} />
                     {!props.buttons && <Text style={styles.transactionCategory}>{`${props.expense.date.getDate()} ${getMonthName(props.expense.date, "short")} ${props.expense.date.getFullYear()}`}</Text>}
                 </View>
                 <Text style={[styles.transactionAmount, styles.expenseAmount]}>

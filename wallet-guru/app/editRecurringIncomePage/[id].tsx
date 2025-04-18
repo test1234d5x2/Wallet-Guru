@@ -15,6 +15,9 @@ import isValidFrequency from '@/utils/validation/isValidFrequency'
 import getRecurringIncomeByID from '@/utils/apiCalls/getRecurringIncomeByID'
 import updateRecurrentIncome from '@/utils/apiCalls/updateReccuringIncome'
 import BasicRecurrenceRule from '@/models/recurrenceModels/BasicRecurrenceRule'
+import IncomeCategory from '@/models/core/IncomeCategory'
+import getIncomeCategories from '@/utils/apiCalls/getIncomeCategories'
+import updateCategoriesTimeWindowEnd from '@/utils/analytics/batchProcessRecurrencesUpdates/updateCategoriesTimeWindowEnd'
 
 export default function EditRecurrentIncome() {
     setPageTitle("Edit Recurrent Income")
@@ -22,8 +25,10 @@ export default function EditRecurrentIncome() {
     const { id } = useLocalSearchParams()
     const [token, setToken] = useState<string>('')
     const [email, setEmail] = useState<string>('')
+    const [categories, setCategories] = useState<IncomeCategory[]>([])
     const [title, setTitle] = useState<string>('')
     const [amount, setAmount] = useState<string>('')
+    const [category, setCategory] = useState<IncomeCategory>()
     const [frequency, setFrequency] = useState<Frequency>(Frequency.Daily)
     const [interval, setFrequencyInterval] = useState<string>('')
     const [startDate, setStartDate] = useState<Date | null>(null)
@@ -45,6 +50,20 @@ export default function EditRecurrentIncome() {
     })
 
     useEffect(() => {
+        async function getCategories() {
+            const result = await getIncomeCategories(token)
+            if (result) {
+                setCategories(result)
+                //await updateCategoriesTimeWindowEnd(result, token)
+            } else {
+                console.log("Error with getting expense categories list.")
+            }
+        }
+
+        getCategories()
+    }, [token])
+
+    useEffect(() => {
         async function getIncome() {
             getRecurringIncomeByID(token, id as string).then((data) => {
                 setTitle(data.title)
@@ -54,6 +73,7 @@ export default function EditRecurrentIncome() {
                 setFrequencyInterval(data.recurrenceRule.interval.toString())
                 setStartDate(data.recurrenceRule.startDate)
                 setEndDate(data.recurrenceRule.endDate || null)
+                if (categories) setCategory(categories.find((cat) => cat.getID() === data.categoryID))
             }).catch((error: Error) => {
                 Alert.alert("Recurrent Income Not Found")
                 console.log(error.message)
@@ -125,7 +145,7 @@ export default function EditRecurrentIncome() {
     const handleEditRecurrentIncome = () => {
         if (validateForm()) {
             const recurrenceRule = new BasicRecurrenceRule(frequency, parseFloat(interval), startDate as Date, undefined, endDate as Date)
-            updateRecurrentIncome(token, id as string, title, parseFloat(amount), new Date(), notes, recurrenceRule).then((data) => {
+            updateRecurrentIncome(token, id as string, title, parseFloat(amount), new Date(), notes, (category as IncomeCategory).getID(), recurrenceRule).then((data) => {
                 Alert.alert('Success', 'Recurrent income added successfully!')
                 clearRouterHistory(router)
                 router.replace("/listRecurringTransactionsPage")
@@ -144,6 +164,7 @@ export default function EditRecurrentIncome() {
                 <RecurrentIncomeDetailsInputs
                     title={title}
                     amount={amount}
+                    category={category === undefined ? null : category}
                     notes={notes}
                     frequency={frequency}
                     interval={interval}
@@ -156,6 +177,8 @@ export default function EditRecurrentIncome() {
                     setFrequencyInterval={setFrequencyInterval}
                     setStartDate={setStartDate}
                     setEndDate={setEndDate}
+                    setCategory={setCategory}
+                    categoriesList={categories}
                 />
             </View>
 

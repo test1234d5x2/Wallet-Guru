@@ -8,7 +8,7 @@ import Transaction from '@/models/core/Transaction'
 import clearRouterHistory from '@/utils/clearRouterHistory'
 import ExpenseCategory from '@/models/core/ExpenseCategory'
 import DateInputField from '@/components/formComponents/inputFields/dateInputField'
-import ModalSelectionExpenseCategories from '@/components/modalSelection/modalSelectionExpenseCategories'
+import { ModalSelectionExpenseCategories } from '@/components/modalSelection/modalSelectionCategories'
 import ModalSelectionTransactionTypes from '@/components/modalSelection/modalSelectionTransactionTypes'
 import TransactionType from '@/enums/TransactionType'
 import filterExpensesByCategory from '@/utils/filterExpensesByCategory'
@@ -22,6 +22,7 @@ import RecurringExpenseItem from '@/components/listItems/recurringExpenseItem'
 import RecurringIncomeItem from '@/components/listItems/recurringIncomeItem'
 import filterTransactionsByTimeWindow from '@/utils/filterTransactionsByTimeWindow'
 import updateCategoriesTimeWindowEnd from '@/utils/analytics/batchProcessRecurrencesUpdates/updateCategoriesTimeWindowEnd'
+import IncomeCategory from '@/models/core/IncomeCategory'
 
 export default function ViewReccuringTransactionsList() {
     setPageTitle("Recurring Transactions")
@@ -33,6 +34,7 @@ export default function ViewReccuringTransactionsList() {
     const [filterStartDate, setFilterStartDate] = useState<Date | null>(null)
     const [filterEndDate, setFilterEndDate] = useState<Date | null>(null)
     const [categories, setCategories] = useState<ExpenseCategory[]>([])
+    const [incomeCategories, setIncomeCategories] = useState<IncomeCategory[]>([])
     const [recurringExpenses, setRecurringExpenses] = useState<RecurringExpense[]>([])
     const [recurringIncomes, setRecurringIncomes] = useState<RecurringIncome[]>([])
 
@@ -124,23 +126,36 @@ export default function ViewReccuringTransactionsList() {
 
     combinedTransactions.sort((a, b) => b.data.date.getTime() - a.data.date.getTime())
 
-    const transactionDisplayElements = combinedTransactions.map((item) => (
-        <React.Fragment key={uuid.v4() as string}>
-            <StatusBar barStyle={"dark-content"} />
-            <TouchableOpacity onPress={() => handleTransactionClick(item.data)}>
-                {item.type === 'recurringIncome' ? (
-                    <RecurringIncomeItem token={token} recurringIncome={item.data as RecurringIncome} />
-                ) : (
-                    <RecurringExpenseItem
-                        token={token}
-                        recurringExpense={item.data as RecurringExpense}
-                        categoryName={categories.find((cat) => cat.getID() === (item.data as RecurringExpense).categoryID)?.name || ""}
-                    />
-                )}
-            </TouchableOpacity>
-            <View style={styles.divider} />
-        </React.Fragment>
-    ))
+    const transactionDisplayElements = combinedTransactions.map((item) => {
+        let displayItem
+
+        if (item.type === "recurringExpense") {
+            displayItem = <RecurringExpenseItem
+                token={token}
+                recurringExpense={item.data as RecurringExpense}
+                categoryName={categories.find(cat => cat.getID() === item.data.categoryID)?.name || ''}
+                categoryColour={categories.find(cat => cat.getID() === item.data.categoryID)?.colour || ''}
+            />
+        }
+        else {
+            displayItem = <RecurringIncomeItem
+                token={token}
+                recurringIncome={item.data as RecurringIncome}
+                categoryName={incomeCategories.find(cat => cat.getID() === item.data.categoryID)?.name || ''}
+                categoryColour={incomeCategories.find(cat => cat.getID() === item.data.categoryID)?.colour || ''}
+            />
+        }
+
+        return (
+            <React.Fragment key={uuid.v4() as string}>
+                <StatusBar barStyle={"dark-content"} />
+                <TouchableOpacity onPress={() => handleTransactionClick(item.data)}>
+                    {displayItem}
+                </TouchableOpacity>
+                <View style={styles.divider} />
+            </React.Fragment>
+        )
+    })
 
     return (
         <View style={styles.container}>

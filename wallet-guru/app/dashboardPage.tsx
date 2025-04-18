@@ -20,12 +20,14 @@ import getStartOfMonth from '@/utils/getStartOfMonth'
 import getEndOfMonth from '@/utils/getEndOfMonth'
 import filterExpensesByCategory from '@/utils/filterExpensesByCategory'
 import MonthlySpendingDisplay from '@/components/widgets/MonthlySpendingDisplay'
+import IncomeCategory from '@/models/core/IncomeCategory'
 
 export default function Dashboard() {
     setPageTitle("Dashboard")
 
     const [token, setToken] = useState<string>('')
     const [categories, setCategories] = useState<ExpenseCategory[]>([])
+    const [incomeCategories, setIncomeCategories] = useState<IncomeCategory[]>([])
     const [expenses, setExpenses] = useState<Expense[]>([])
     const [incomes, setIncomes] = useState<Income[]>([])
     const [incomeTotal, setIncomeTotal] = useState<number>(0)
@@ -86,26 +88,38 @@ export default function Dashboard() {
 
     const combinedTransactions = [...expenses.map(expense => ({ type: 'expense', data: expense })), ...incomes.map(income => ({ type: 'income', data: income }))]
     combinedTransactions.sort((a, b) => b.data.date.getTime() - a.data.date.getTime())
-    const transactionItemsList = combinedTransactions.slice(0, 3).map(item => (
-        <React.Fragment key={uuid.v4() as string}>
-            {item.type === 'expense' ? (
-                <ExpenseItem
-                    token={token}
-                    expense={item.data as Expense}
-                    categoryName={
-                        categories.find(cat => cat.getID() === (item.data as Expense).categoryID)?.name || ""
-                    }
-                    categoryColor={
-                        categories.find(cat => cat.getID() === (item.data as Expense).categoryID)?.colour || ""
-                    }
-                    buttons
-                />
-            ) : (
-                <IncomeItem token={token} income={item.data as Income} />
-            )}
-            <View style={styles.dividerLine} />
-        </React.Fragment>
-    ))
+    const transactionItemsList = combinedTransactions.slice(0, 3).map(item => {
+        let displayItem
+
+        if (item.type === "expense") {
+            displayItem = <ExpenseItem
+                token={token}
+                expense={item.data as Expense}
+                categoryName={categories.find(cat => cat.getID() === (item.data as Expense).categoryID)?.name || ""}
+                categoryColour={categories.find(cat => cat.getID() === (item.data as Expense).categoryID)?.colour || ""}
+                buttons
+            />
+        }
+
+        else {
+            displayItem = <IncomeItem
+                token={token}
+                income={item.data as Income}
+                categoryName={incomeCategories.find(cat => cat.getID() === (item.data as Expense).categoryID)?.name || ""}
+                categoryColour={incomeCategories.find(cat => cat.getID() === (item.data as Expense).categoryID)?.colour || ""}
+                buttons
+            />
+        }
+
+        return (
+            <React.Fragment key={uuid.v4() as string}>
+                {displayItem}
+                <View style={styles.dividerLine} />
+            </React.Fragment>
+        )
+    }
+
+    )
 
     const expenseCategoryItemsList = []
     if (categories.length > 0) {

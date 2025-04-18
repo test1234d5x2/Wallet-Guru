@@ -4,7 +4,7 @@ import StandardInputField from './inputFields/standardInputField'
 import NumericInputField from './inputFields/numericInputField'
 import DateInputField from './inputFields/dateInputField'
 import IncomeCategory from '@/models/core/IncomeCategory'
-import ModalSelectionExpenseCategories from '../modalSelection/modalSelectionExpenseCategories'
+import { ModalSelectionIncomeCategories } from '../modalSelection/modalSelectionCategories'
 
 
 interface IncomeDetailsInputsProps {
@@ -42,7 +42,7 @@ export default function IncomeDetailsInputs(props: IncomeDetailsInputsProps) {
 
             <DateInputField date={props.date} setDate={props.setDate} required />
 
-            <ModalSelectionExpenseCategories choices={props.categoriesList} value={props.category} setValue={props.setCategory} required />
+            <ModalSelectionIncomeCategories choices={props.categoriesList} value={props.category} setValue={props.setCategory} required />
 
             <StandardInputField
                 placeholder="Notes"

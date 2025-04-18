@@ -8,6 +8,8 @@ import Income from '@/models/core/Income'
 import getToken from '@/utils/tokenAccess/getToken'
 import getIncomeByID from '@/utils/apiCalls/getIncomeByID'
 import deleteIncome from '@/utils/apiCalls/deleteIncome'
+import IncomeCategory from '@/models/core/IncomeCategory'
+import getIncomeCategories from '@/utils/apiCalls/getIncomeCategories'
 
 export default function IncomeDetailsScreen() {
     const { id } = useLocalSearchParams()
@@ -16,6 +18,7 @@ export default function IncomeDetailsScreen() {
     const [token, setToken] = useState<string>("")
     const [email, setEmail] = useState<string>("")
     const [income, setIncome] = useState<Income>()
+    const [category, setCategory] = useState<IncomeCategory>()
     const [error, setError] = useState<string>("")
 
     setPageTitle(!income ? "" : income.title)
@@ -46,6 +49,23 @@ export default function IncomeDetailsScreen() {
 
         if (token) getIncome()
     }, [token])
+
+    useEffect(() => {
+        async function getExpenseCategory() {
+            if (income) {
+                getIncomeCategories(token).then((categories) => {
+                    setCategory(categories.find((cat) => cat.getID() === income.categoryID))
+                }).catch((error: Error) => {
+                    Alert.alert("Error", "Could not load the category name.")
+                    console.log(error.message)
+                    clearRouterHistory(router)
+                    router.replace("/listTransactionsPage")
+                })
+            }
+        }
+
+        if (token && income) getExpenseCategory()
+    }, [token, income])
 
     const handleEdit = () => {
         if (!income) {
@@ -80,6 +100,7 @@ export default function IncomeDetailsScreen() {
             <StatusBar barStyle={"dark-content"} />
             <TopBar />
             {!income ? "" : <View style={styles.container}>
+                <Text style={styles.detail}>Category: {category ? category.name : ""}</Text>
                 <Text style={styles.detail}>Amount: £{income.amount.toFixed(2)}</Text>
                 <Text style={styles.detail}>Date: {income.date.toDateString()}</Text>
                 <View>

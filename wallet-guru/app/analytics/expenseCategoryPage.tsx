@@ -1,4 +1,4 @@
-import ModalSelectionExpenseCategories from "@/components/modalSelection/modalSelectionExpenseCategories"
+import ModalSelectionExpenseCategories from "@/components/modalSelection/modalSelectionCategories"
 import setPageTitle from "@/components/pageTitle/setPageTitle"
 import TopBar from "@/components/topBars/topBar"
 import MonthSelector from "@/components/widgets/MonthSelector"

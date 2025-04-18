@@ -6,10 +6,14 @@ import ListItemEditButton from './listItemEditButton';
 import ListItemDeleteButton from './listItemDeleteButton';
 import clearRouterHistory from '@/utils/clearRouterHistory';
 import deleteIncome from '@/utils/apiCalls/deleteIncome';
+import { Pill } from './categoryDisplayPills';
 
 interface IncomeItemProps {
     income: Income
     token: string
+    categoryName: string
+    categoryColour: string
+    buttons: boolean
 }
 
 export default function IncomeItem(props: IncomeItemProps) {
@@ -46,6 +50,7 @@ export default function IncomeItem(props: IncomeItemProps) {
             <View style={styles.transactionTextContainer}>
                 <View>
                     <Text style={styles.transactionName}>{props.income.title}</Text>
+                    <Pill colour={props.categoryColour} text={props.categoryName} />
                 </View>
                 <Text style={[styles.transactionAmount, styles.incomeAmount]}>
                     +£{Math.abs(props.income.amount).toFixed(2)}
