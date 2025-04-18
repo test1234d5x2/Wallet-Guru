@@ -14,8 +14,6 @@ export async function generateQIF(transactions: Transaction[], expenseCategories
     const lines: string[] = []
     lines.push(`!Type:${accountType}`)
 
-    console.log("Here")
-
     const formatDate = (dt: Date): string => {
         const mm = String(dt.getMonth() + 1).padStart(2, '0')
         const dd = String(dt.getDate()).padStart(2, '0')
@@ -40,7 +38,6 @@ export async function generateQIF(transactions: Transaction[], expenseCategories
         lines.push('^')
     }
 
-    console.log(lines)
     const content = lines.join('\n') + '\n'
     
     try {
@@ -62,12 +59,3 @@ export async function generateQIF(transactions: Transaction[], expenseCategories
         console.warn('Error requesting directory or writing file:', e)
     }
 }
-
-// Example usage:
-// const fileUri = await generateQIF(
-//   allTransactions,
-//   { [expenseCat1.getID()]: 'Groceries', [expenseCat2.getID()]: 'Rent' },
-//   { [incomeCat1.getID()]: 'Income:Salary' },
-//   'personal_expenses.qif'
-// )
-// console.log('QIF saved to', fileUri)
