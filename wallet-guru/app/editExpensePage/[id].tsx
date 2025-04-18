@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { View, Text, TouchableOpacity, StyleSheet, Alert, ScrollView, StatusBar } from 'react-native'
+import { View, Text, TouchableOpacity, StyleSheet, Alert, ScrollView, StatusBar, ActivityIndicator } from 'react-native'
 import ExpenseDetailsInputs from '@/components/formComponents/expenseDetailsInputs'
 import setPageTitle from '@/components/pageTitle/setPageTitle'
 import TopBar from '@/components/topBars/topBar'
@@ -23,10 +23,11 @@ export default function EditExpense() {
     const router = useRouter()
     const [token, setToken] = useState<string>('')
     const [email, setEmail] = useState<string>('')
+    const [waitingAutofill, setWaiting] = useState<boolean>(false)
     const [categories, setCategories] = useState<ExpenseCategory[]>([])
     const [title, setTitle] = useState<string>('')
     const [amount, setAmount] = useState<string>('')
-    const [date, setDate] = useState<Date>(new Date())
+    const [date, setDate] = useState<Date | null>(new Date())
     const [category, setCategory] = useState<ExpenseCategory>()
     const [notes, setNotes] = useState<string>('')
     const [receipt, setReceipt] = useState<string>('')
@@ -55,9 +56,7 @@ export default function EditExpense() {
             }
         }
 
-        if (token) {
-            getCategories()
-        }
+        if (token) getCategories()
     }, [token])
 
     useEffect(() => {
@@ -67,9 +66,7 @@ export default function EditExpense() {
                 setAmount(expense.amount.toString())
                 setDate(expense.date)
                 setNotes(expense.notes)
-                if (categories) {
-                    setCategory(categories.find((cat) => expense.categoryID === cat.getID()))
-                }
+                if (categories) setCategory(categories.find((cat) => expense.categoryID === cat.getID()))
             }).catch((error: Error) => {
                 Alert.alert("Expense Not Found")
                 console.log(error.message)
@@ -78,9 +75,7 @@ export default function EditExpense() {
             })
         }
 
-        if (token && categories) {
-            getExpense()
-        }
+        if (token && categories) getExpense()
     }, [token, categories])
 
     const validateForm = () => {
@@ -121,7 +116,7 @@ export default function EditExpense() {
     const handleEditExpense = () => {
         if (validateForm()) {
             if (!category) return
-            updateExpense(token, id as string, title, parseFloat(amount), date, notes, category.getID(), receipt).then((complete) => {
+            updateExpense(token, id as string, title, parseFloat(amount), date as Date, notes, category.getID(), receipt).then((complete) => {
                 if (!complete) return
                 Alert.alert('Success', 'Expense updated successfully!')
                 clearRouterHistory(router)
@@ -136,6 +131,8 @@ export default function EditExpense() {
         <ScrollView contentContainerStyle={styles.container}>
             <TopBar />
             <StatusBar barStyle={"dark-content"} />
+
+            {waitingAutofill ? <View style={styles.loadingIndicator}><ActivityIndicator color={"black"} /></View> : ""}
 
             <View style={styles.expenseForm}>
                 <ExpenseDetailsInputs
@@ -158,7 +155,7 @@ export default function EditExpense() {
             {error ? <View style={styles.centeredTextContainer}><Text style={styles.errorText}>{error}</Text></View> : null}
 
             <View style={styles.centeredTextContainer}>
-                <TouchableOpacity onPress={() => pickImage(setReceipt)}>
+                <TouchableOpacity onPress={() => pickImage(setReceipt, setDate, setAmount, setTitle, setWaiting)}>
                     <Text style={styles.scanText}>Upload Receipt</Text>
                 </TouchableOpacity>
             </View>
@@ -203,5 +200,17 @@ const styles = StyleSheet.create({
     errorText: {
         color: 'red',
         fontSize: 14
+    },
+    loadingIndicator: {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        zIndex: 2,
+        backgroundColor: 'white',
+        justifyContent: 'center',
+        alignItems: 'center',
+
     }
 })

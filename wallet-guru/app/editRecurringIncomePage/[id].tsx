@@ -54,7 +54,6 @@ export default function EditRecurrentIncome() {
             const result = await getIncomeCategories(token)
             if (result) {
                 setCategories(result)
-                //await updateCategoriesTimeWindowEnd(result, token)
             } else {
                 console.log("Error with getting expense categories list.")
             }

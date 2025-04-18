@@ -12,6 +12,7 @@ import getToken from '@/utils/tokenAccess/getToken'
 import getIncomeByID from '@/utils/apiCalls/getIncomeByID'
 import updateIncome from '@/utils/apiCalls/updateIncome'
 import IncomeCategory from '@/models/core/IncomeCategory'
+import getIncomeCategories from '@/utils/apiCalls/getIncomeCategories'
 
 export default function EditIncome() {
     setPageTitle("Edit Income")
@@ -41,12 +42,26 @@ export default function EditIncome() {
     })
 
     useEffect(() => {
+        async function getCategories() {
+            const result = await getIncomeCategories(token)
+            if (result) {
+                setCategories(result)
+            } else {
+                console.log("Error with getting income categories list")
+            }
+        }
+    
+        if (token) getCategories()
+    }, [token])
+
+    useEffect(() => {
         async function getIncome() {
             getIncomeByID(token, id as string).then((income) => {
                 setTitle(income.title)
                 setAmount(income.amount.toString())
                 setDate(income.date)
                 setNotes(income.notes)
+                if (categories) setCategory(categories.find((cat) => income.categoryID === cat.getID()))
             }).catch((error: Error) => {
                 Alert.alert("Income Not Found")
                 console.log(error.message)
@@ -55,8 +70,8 @@ export default function EditIncome() {
             })
         }
 
-        if (token) getIncome()
-    }, [token])
+        if (token && categories) getIncome()
+    }, [token, categories])
 
     const validateForm = () => {
         if (!title || !amount || !date) {
@@ -116,7 +131,7 @@ export default function EditIncome() {
                 <IncomeDetailsInputs
                     title={title}
                     amount={amount}
-                    category={category === undefined ? null: category}
+                    category={category === undefined ? null : category}
                     date={date}
                     notes={notes}
                     setTitle={setTitle}

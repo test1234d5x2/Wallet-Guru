@@ -1,136 +1,85 @@
-import Category from '@/models/core/Category';
-import ExpenseCategory from '@/models/core/ExpenseCategory';
-import IncomeCategory from '@/models/core/IncomeCategory';
-import React, { useState } from 'react';
-import { View, Text, FlatList, TouchableOpacity, StyleSheet, Modal, Pressable, SafeAreaView, Alert } from 'react-native';
-
+import React, { useState } from 'react'
+import { View, Text, FlatList, TouchableOpacity, StyleSheet, Modal, Pressable, SafeAreaView, Alert } from 'react-native'
+import Category from '@/models/core/Category'
+import ExpenseCategory from '@/models/core/ExpenseCategory'
+import IncomeCategory from '@/models/core/IncomeCategory'
 
 interface ModalSelectionProps<T extends Category> {
-    choices: Array<T>
+    choices: T[]
     value: T | null
-    setValue: (text: T) => void
+    setValue: (item: T) => void
     required?: boolean
 }
 
-export const ModalSelectionExpenseCategories = (props: ModalSelectionProps<ExpenseCategory>) => {
-
+export function ModalSelectionCategories<T extends Category>(props: ModalSelectionProps<T>, label: string) {
     const [showDropdown, setShowDropdown] = useState<boolean>(false)
-    let displayText = props.value?.name
+    const displayText = props.value?.name || ''
+
+    const handleOpen = () => {
+        if (props.choices.length > 0) {
+            setShowDropdown(true)
+        } else {
+            Alert.alert(`No ${label} Categories`,  `You have not created any ${label.toLowerCase()} categories to pick from.`
+            )
+        }
+    }
 
     return (
         <View style={{ rowGap: 5 }}>
-            <TouchableOpacity style={styles.input} onPress={() => {
-                if (props.choices.length > 0) {
-                    setShowDropdown(true)
-                }
-                else {
-                    Alert.alert("No Expense Categories", "You have not created any expense categories to pick from.")
-                }
-            }}>
-                <TouchableOpacity style={styles.dropdown} onPress={() => {
-                    if (props.choices.length > 0) {
-                        setShowDropdown(true)
-                    }
-                    else {
-                        Alert.alert("No Expense Categories", "You have not created any expense categories to pick from.")
-                    }
-                }}>
-                    <Text style={styles.dropdownText}>Category: {displayText == undefined ? "" : displayText}</Text>
-                </TouchableOpacity>
-
-                <Modal visible={showDropdown} transparent={true} onRequestClose={() => setShowDropdown(false)}>
-                    <SafeAreaView style={styles.modalOverlay}>
-                        <View style={styles.modalContainer}>
-                            <FlatList
-                                data={props.choices}
-                                keyExtractor={(item, index) => index.toString()}
-                                renderItem={({ item }) => (
-                                    <TouchableOpacity
-                                        style={styles.dropdownOption}
-                                        onPress={() => {
-                                            props.setValue(item);
-                                            setShowDropdown(false);
-                                        }}
-                                    >
-                                        <Text style={styles.optionText}>{item.name}</Text>
-                                    </TouchableOpacity>
-                                )}
-                            />
-                        </View>
-                        <Pressable
-                            style={styles.modalDismissArea}
-                            onPress={() => setShowDropdown(false)}
-                        />
-                    </SafeAreaView>
-                </Modal>
+            <TouchableOpacity style={styles.input} onPress={handleOpen}>
+                <View style={styles.dropdown}>
+                    <Text style={styles.dropdownText}>
+                        {label} Category: {displayText}
+                    </Text>
+                </View>
             </TouchableOpacity>
-            <Text style={styles.requiredText}>{props.required ? "Required" : "Optional"}</Text>
+
+            <Modal
+                visible={showDropdown}
+                transparent={true}
+                onRequestClose={() => setShowDropdown(false)}
+            >
+                <SafeAreaView style={styles.modalOverlay}>
+                    <View style={styles.modalContainer}>
+                        <FlatList
+                            data={props.choices}
+                            keyExtractor={(_, index) => index.toString()}
+                            renderItem={({ item }) => (
+                                <TouchableOpacity
+                                    style={styles.dropdownOption}
+                                    onPress={() => {
+                                        props.setValue(item)
+                                        setShowDropdown(false)
+                                    }}
+                                >
+                                    <Text style={styles.optionText}>{item.name}</Text>
+                                </TouchableOpacity>
+                            )}
+                        />
+                    </View>
+                    <Pressable
+                        style={styles.modalDismissArea}
+                        onPress={() => setShowDropdown(false)}
+                    />
+                </SafeAreaView>
+            </Modal>
+
+            <Text style={styles.requiredText}>
+                {props.required ? 'Required' : 'Optional'}
+            </Text>
         </View>
     )
 }
 
-
-
-
-
-export const ModalSelectionIncomeCategories = (props: ModalSelectionProps<IncomeCategory>) => {
-
-    const [showDropdown, setShowDropdown] = useState<boolean>(false)
-    let displayText = props.value?.name
-
-    return (
-        <View style={{ rowGap: 5 }}>
-            <TouchableOpacity style={styles.input} onPress={() => {
-                if (props.choices.length > 0) {
-                    setShowDropdown(true)
-                }
-                else {
-                    Alert.alert("No Income Categories", "You have not created any income categories to pick from.")
-                }
-            }}>
-                <TouchableOpacity style={styles.dropdown} onPress={() => {
-                    if (props.choices.length > 0) {
-                        setShowDropdown(true)
-                    }
-                    else {
-                        Alert.alert("No Income Categories", "You have not created any income categories to pick from.")
-                    }
-                }}>
-                    <Text style={styles.dropdownText}>Category: {displayText == undefined ? "" : displayText}</Text>
-                </TouchableOpacity>
-
-                <Modal visible={showDropdown} transparent={true} onRequestClose={() => setShowDropdown(false)}>
-                    <SafeAreaView style={styles.modalOverlay}>
-                        <View style={styles.modalContainer}>
-                            <FlatList
-                                data={props.choices}
-                                keyExtractor={(item, index) => index.toString()}
-                                renderItem={({ item }) => (
-                                    <TouchableOpacity
-                                        style={styles.dropdownOption}
-                                        onPress={() => {
-                                            props.setValue(item);
-                                            setShowDropdown(false);
-                                        }}
-                                    >
-                                        <Text style={styles.optionText}>{item.name}</Text>
-                                    </TouchableOpacity>
-                                )}
-                            />
-                        </View>
-                        <Pressable
-                            style={styles.modalDismissArea}
-                            onPress={() => setShowDropdown(false)}
-                        />
-                    </SafeAreaView>
-                </Modal>
-            </TouchableOpacity>
-            <Text style={styles.requiredText}>{props.required ? "Required" : "Optional"}</Text>
-        </View>
-    )
+export function ModalSelectionExpenseCategories(props: ModalSelectionProps<ExpenseCategory>) {
+    let display = ModalSelectionCategories<ExpenseCategory>(props, "Expense")
+    return display
 }
 
-
+export function ModalSelectionIncomeCategories(props: ModalSelectionProps<IncomeCategory>) {
+    let display = ModalSelectionCategories<IncomeCategory>(props, "Income")
+    return display
+}
 
 const styles = StyleSheet.create({
     input: {
@@ -140,44 +89,44 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderRadius: 10,
         paddingLeft: 15,
-        fontSize: 16,
+        fontSize: 16
     },
     requiredText: {
         paddingLeft: 15,
-        color: "rgba(0,0,0,0.55)",
-        fontSize: 12,
+        color: 'rgba(0,0,0,0.55)',
+        fontSize: 12
     },
     dropdown: {
-        backgroundColor: '#fff',
+        backgroundColor: '#fff'
     },
     dropdownText: {
-        fontSize: 16,
+        fontSize: 16
     },
     modalOverlay: {
         flex: 1,
         alignItems: 'center',
-        justifyContent: "center",
-        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+        justifyContent: 'center',
+        backgroundColor: 'rgba(0, 0, 0, 0.5)'
     },
     modalContainer: {
         width: '90%',
         backgroundColor: '#fff',
         elevation: 5,
-        zIndex: 1000,
+        zIndex: 1000
     },
     modalDismissArea: {
-        position: "absolute",
+        position: 'absolute',
         top: 0,
         right: 0,
         left: 0,
-        bottom: 0,
+        bottom: 0
     },
     dropdownOption: {
         padding: 15,
         borderBottomWidth: 1,
-        borderColor: '#ccc',
+        borderColor: '#ccc'
     },
     optionText: {
-        fontSize: 16,
-    },
+        fontSize: 16
+    }
 })
