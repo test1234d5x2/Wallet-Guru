@@ -1,4 +1,4 @@
-import uuid from 'react-native-uuid';
+import { v4 } from 'uuid'
 
 export default abstract class Category {
     protected id: string;
@@ -7,10 +7,10 @@ export default abstract class Category {
     public colour: string;
 
     constructor(userID: string, name: string, id?: string, colour?: string) {
-        this.id = id || uuid.v4();
-        this.userID = userID;
-        this.name = name;
-        this.colour = colour || '#FFFFFF';
+        this.id = id || v4()
+        this.userID = userID
+        this.name = name
+        this.colour = colour || '#FFFFFF'
     }
 
     public getID(): string {

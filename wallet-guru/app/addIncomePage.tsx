@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { View, Text, TouchableOpacity, StyleSheet, Alert, ScrollView, StatusBar, ActivityIndicator } from 'react-native'
 import setPageTitle from '@/components/pageTitle/setPageTitle'
 import TopBar from '@/components/topBars/topBar'
@@ -10,6 +10,7 @@ import { isValidDate, isTodayOrBefore } from '@/utils/validation/validateDate'
 import clearRouterHistory from '@/utils/clearRouterHistory'
 import getToken from '@/utils/tokenAccess/getToken'
 import IncomeCategory from '@/models/core/IncomeCategory'
+import getIncomeCategories from '@/utils/apiCalls/getIncomeCategories'
 
 async function addIncome(token: string, title: string, amount: number, date: Date, notes: string, categoryID: string) {
     const API_DOMAIN = process.env.EXPO_PUBLIC_BLOCKCHAIN_MIDDLEWARE_API_IP_ADDRESS
@@ -66,6 +67,19 @@ export default function AddIncome() {
         setToken(data.token)
         setEmail(data.email)
     })
+
+    useEffect(() => {
+        async function getCategories() {
+            const result = await getIncomeCategories(token)
+            if (result) {
+                setCategories(result)
+            } else {
+                console.log("Error with getting expense categories list")
+            }
+        }
+
+        getCategories()
+    }, [token])
 
     const validateForm = () => {
         if (!title || !amount || !date) {

@@ -21,6 +21,7 @@ import getEndOfMonth from '@/utils/getEndOfMonth'
 import filterExpensesByCategory from '@/utils/filterExpensesByCategory'
 import MonthlySpendingDisplay from '@/components/widgets/MonthlySpendingDisplay'
 import IncomeCategory from '@/models/core/IncomeCategory'
+import getIncomeCategories from '@/utils/apiCalls/getIncomeCategories'
 
 export default function Dashboard() {
     setPageTitle("Dashboard")
@@ -85,6 +86,20 @@ export default function Dashboard() {
 
         getCategories()
     }, [token, expenses])
+
+    useEffect(() => {
+        async function getCategories() {
+            const result = await getIncomeCategories(token)
+            if (result) {
+                setIncomeCategories(result)
+            } else {
+                console.log("Error with getting expense categories list")
+            }
+        }
+
+        getCategories()
+    }, [token, incomes])
+
 
     const combinedTransactions = [...expenses.map(expense => ({ type: 'expense', data: expense })), ...incomes.map(income => ({ type: 'income', data: income }))]
     combinedTransactions.sort((a, b) => b.data.date.getTime() - a.data.date.getTime())

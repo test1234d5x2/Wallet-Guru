@@ -29,9 +29,9 @@ export default function MainMenu() {
             groupTitle: "Categories",
             items: [
                 { title: "Create An Expense Category", link: "/addExpenseCategoryPage" },
-                { title: "Create An Expense Category", link: "/addIncomeCategoryPage" },
+                { title: "Create An Income Category", link: "/addIncomeCategoryPage" },
                 { title: "Expense Category Overview", link: "/expenseCategoriesOverviewPage" },
-                { title: "Expense Category Overview", link: "/incomeCategoriesOverviewPage" },
+                { title: "Income Category Overview", link: "/incomeCategoriesOverviewPage" },
             ],
         },
         {

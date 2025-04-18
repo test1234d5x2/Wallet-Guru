@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { View, Text, TouchableOpacity, StyleSheet, Alert, ScrollView, StatusBar, ActivityIndicator } from 'react-native'
 import setPageTitle from '@/components/pageTitle/setPageTitle'
 import TopBar from '@/components/topBars/topBar'
@@ -15,6 +15,7 @@ import isValidFrequency from '@/utils/validation/isValidFrequency'
 import RecurrenceRule from '@/models/recurrenceModels/RecurrenceRule'
 import BasicRecurrenceRule from '@/models/recurrenceModels/BasicRecurrenceRule'
 import IncomeCategory from '@/models/core/IncomeCategory'
+import getIncomeCategories from '@/utils/apiCalls/getIncomeCategories'
 
 
 async function addRecurrentIncome(token: string, title: string, amount: number, date: Date, notes: string, categoryID: string, recurrenceRule: RecurrenceRule) {
@@ -76,6 +77,20 @@ export default function AddRecurrentIncome() {
         setToken(data.token)
         setEmail(data.email)
     })
+
+    useEffect(() => {
+        async function getCategories() {
+            const result = await getIncomeCategories(token)
+            if (result) {
+                setCategories(result)
+            } else {
+                console.log("Error with getting expense categories list")
+            }
+        }
+
+        getCategories()
+    }, [token])
+
 
     const validateForm = (): boolean => {
         if (!title || !amount || !startDate || !frequency || !interval) {
@@ -208,7 +223,6 @@ const styles = StyleSheet.create({
         rowGap: 20,
         padding: 20,
         backgroundColor: '#fff',
-        flex: 1,
     },
     incomeForm: {
         marginBottom: 40,

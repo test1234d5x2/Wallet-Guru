@@ -23,6 +23,7 @@ import getToken from '@/utils/tokenAccess/getToken'
 import filterTransactionsByTimeWindow from '@/utils/filterTransactionsByTimeWindow'
 import updateCategoriesTimeWindowEnd from '@/utils/analytics/batchProcessRecurrencesUpdates/updateCategoriesTimeWindowEnd'
 import IncomeCategory from '@/models/core/IncomeCategory'
+import getIncomeCategories from '@/utils/apiCalls/getIncomeCategories'
 
 export default function ViewTransactionsList() {
     setPageTitle('Transactions')
@@ -66,6 +67,20 @@ export default function ViewTransactionsList() {
 
         getCategories()
     }, [token])
+
+    useEffect(() => {
+        async function getCategories() {
+            const result = await getIncomeCategories(token)
+            if (result) {
+                setIncomeCategories(result)
+            } else {
+                console.log("Error with getting expense categories list")
+            }
+        }
+
+        getCategories()
+    }, [token])
+
 
     useEffect(() => {
         async function getExpenseList() {
@@ -130,7 +145,7 @@ export default function ViewTransactionsList() {
         let displayItem
 
         if (item.type === "income") {
-            displayItem = <IncomeItem 
+            displayItem = <IncomeItem
                 token={token}
                 income={item.data as Income}
                 categoryColour={incomeCategories.find(cat => cat.getID() === (item.data as Income).categoryID)?.colour || ''}

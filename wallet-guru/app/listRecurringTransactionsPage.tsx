@@ -23,6 +23,7 @@ import RecurringIncomeItem from '@/components/listItems/recurringIncomeItem'
 import filterTransactionsByTimeWindow from '@/utils/filterTransactionsByTimeWindow'
 import updateCategoriesTimeWindowEnd from '@/utils/analytics/batchProcessRecurrencesUpdates/updateCategoriesTimeWindowEnd'
 import IncomeCategory from '@/models/core/IncomeCategory'
+import getIncomeCategories from '@/utils/apiCalls/getIncomeCategories'
 
 export default function ViewReccuringTransactionsList() {
     setPageTitle("Recurring Transactions")
@@ -62,6 +63,20 @@ export default function ViewReccuringTransactionsList() {
 
         getCategories()
     }, [token])
+
+    useEffect(() => {
+        async function getCategories() {
+            const result = await getIncomeCategories(token)
+            if (result) {
+                setIncomeCategories(result)
+            } else {
+                console.log("Error with getting expense categories list")
+            }
+        }
+
+        getCategories()
+    }, [token])
+
 
     useEffect(() => {
         async function getExpenseList() {
