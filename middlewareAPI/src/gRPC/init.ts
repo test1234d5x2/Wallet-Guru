@@ -20,6 +20,7 @@ const channelName = envOrDefault('CHANNEL_NAME', '')
 const chaincodeName = envOrDefault('CHAINCODE_NAME', '')
 const userContractName = envOrDefault('USER_CONTRACT_NAME', '')
 const expenseCategoryContractName = envOrDefault('EXPENSE_CATEGORY_CONTRACT_NAME', '')
+const incomeCategoryContractName = envOrDefault('INCOME_CATEGORY_CONTRACT_NAME', '')
 const expenseContractName = envOrDefault('EXPENSE_CONTRACT_NAME', '')
 const incomeContractName = envOrDefault('INCOME_CONTRACT_NAME', '')
 const goalConractName = envOrDefault('GOAL_CONTRACT_NAME', '')
@@ -131,6 +132,7 @@ export default class Connection {
 
     public getUserContract(): Contract { return this.network.getContract(chaincodeName, userContractName) }
     public getExpenseCategoryContract(): Contract { return this.network.getContract(chaincodeName, expenseCategoryContractName) }
+    public getIncomeCategoryContract(): Contract { return this.network.getContract(chaincodeName, incomeCategoryContractName) }
     public getExpenseContract(): Contract { return this.network.getContract(chaincodeName, expenseContractName) }
     public getIncomeContract(): Contract { return this.network.getContract(chaincodeName, incomeContractName) }
     public getGoalContract(): Contract { return this.network.getContract(chaincodeName, goalConractName) }
@@ -165,6 +167,7 @@ console.log('Channel Name:', channelName)
 console.log('Chaincode Name:', chaincodeName)
 console.log('User Contract Name:', userContractName)
 console.log('Expense Category Contract Name:', expenseCategoryContractName)
+console.log('Income Category Contract Name:', incomeCategoryContractName)
 console.log('Expense Contract Name:', expenseContractName)
 console.log('Income Contract Name:', incomeContractName)
 console.log('Goal Contract Name:', goalConractName)

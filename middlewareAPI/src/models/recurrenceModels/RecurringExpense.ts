@@ -1,6 +1,6 @@
-import Expense from '../core/Expense'
-import RecurrenceRule from './RecurrenceRule'
-import RecurringTransaction from './RecurringTransaction'
+import Expense from "../core/Expense"
+import RecurrenceRule from "./RecurrenceRule"
+import RecurringTransaction from "./RecurringTransaction"
 
 export default class RecurringExpense extends Expense implements RecurringTransaction {
     recurrenceRule: RecurrenceRule
@@ -11,15 +11,15 @@ export default class RecurringExpense extends Expense implements RecurringTransa
     }
 
     getPageURL(): string {
-        return '/viewRecurringExpenseDetailsPage/' + this.getID()
+        return "/viewRecurringExpenseDetailsPage/" + this.getID()
     }
 
     getEditURL(): string {
-        return '/editRecurringExpensePage/' + this.getID()
+        return "/editRecurringExpensePage/" + this.getID()
     }
 
     public toJSON() {
-        const partialResult = super.toJSON()
+        let partialResult = super.toJSON()
         return {
             ...partialResult,
             recurrenceRule: this.recurrenceRule,

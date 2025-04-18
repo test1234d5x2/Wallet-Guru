@@ -1,29 +1,14 @@
-import { v4 } from 'uuid'
 import BasicRecurrenceRule from '../recurrenceModels/BasicRecurrenceRule'
+import Category from './Category'
 
-class ExpenseCategory {
-    private id: string
-    private userID: string
-    name: string
-    monthlyBudget: number
-    recurrenceRule: BasicRecurrenceRule
-    colour: string
+class ExpenseCategory extends Category {
+    public monthlyBudget: number
+    public recurrenceRule: BasicRecurrenceRule
 
     constructor(userID: string, name: string, monthlyBudget: number, recurrenceRule: BasicRecurrenceRule, id?: string, colour?: string) {
-        this.id = id || v4()
-        this.userID = userID
-        this.name = name
+        super(userID, name, "", colour)
         this.monthlyBudget = monthlyBudget
         this.recurrenceRule = recurrenceRule
-        this.colour = colour || '#FFFFFF'
-    }
-
-    getID(): string {
-        return this.id
-    }
-
-    getUserID(): string {
-        return this.userID
     }
 
     calculateBudgetUsed(currentSpending: number): number {
@@ -34,10 +19,11 @@ class ExpenseCategory {
         if (this.recurrenceRule) {
             return this.recurrenceRule.shouldTrigger()
         }
+
         return false
     }
 
-    updateBudgetCycle() {
+    updateBudgetCycle(): void {
         if (this.recurrenceRule && this.recurrenceRule.shouldTrigger()) {
             this.recurrenceRule.nextTriggerDate = this.recurrenceRule.computeNextTriggerDate()
         }

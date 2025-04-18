@@ -6,6 +6,7 @@ import ExpenseCategoryService from '../services/ExpenseCategoryService'
 import RecurringExpenseService from '../services/RecurringExpenseService'
 import RecurringIncomeService from '../services/RecurringIncomeService'
 import Connection from '../gRPC/init'
+import IncomeCategoryService from '../services/IncomeCategoryService'
 
 class Registry {
     private static instance: Registry
@@ -17,6 +18,7 @@ class Registry {
     public goalService!: GoalService
     public userService!: UserService
     public expenseCategoryService!: ExpenseCategoryService
+    public incomeCategoryService!: IncomeCategoryService
     public recurringExpenseService!: RecurringExpenseService
     public recurringIncomeService!: RecurringIncomeService
 
@@ -41,6 +43,7 @@ class Registry {
         const userContract = this.connection.getUserContract()
         const expenseContract = this.connection.getExpenseContract()
         const expenseCategoryContract = this.connection.getExpenseCategoryContract()
+        const incomeCategoryContract = this.connection.getIncomeCategoryContract()
         const incomeContract = this.connection.getIncomeContract()
         const goalContract = this.connection.getGoalContract()
         const recurringIncomeContract = this.connection.getRecurringIncomeContract()
@@ -51,6 +54,7 @@ class Registry {
         this.incomeService = new IncomeService(incomeContract)
         this.goalService = new GoalService(goalContract)
         this.expenseCategoryService = new ExpenseCategoryService(expenseCategoryContract)
+        this.incomeCategoryService = new IncomeCategoryService(incomeCategoryContract)
         this.recurringExpenseService = new RecurringExpenseService(this.expenseService, recurringExpenseContract)
         this.recurringIncomeService = new RecurringIncomeService(this.incomeService, recurringIncomeContract)
     }

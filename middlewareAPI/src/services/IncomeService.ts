@@ -11,8 +11,8 @@ class IncomeService {
         this.incomeContract = c
     }
 
-    public async addIncome(userID: string, title: string, amount: number, date: Date, notes: string): Promise<boolean> {
-        const income = new Income(userID, title, amount, date, notes)
+    public async addIncome(userID: string, title: string, amount: number, date: Date, notes: string, categoryID: string): Promise<boolean> {
+        const income = new Income(userID, title, amount, date, notes, categoryID)
 
         try {
             await this.incomeContract.submitTransaction(
@@ -28,7 +28,7 @@ class IncomeService {
         return false
     }
 
-    public async updateIncome(id: string, userID: string, title: string, amount: number, date: Date, notes: string): Promise<boolean> {
+    public async updateIncome(id: string, userID: string, title: string, amount: number, date: Date, notes: string, categoryID: string): Promise<boolean> {
         try {
             const income = await this.findByID(id, userID)
             if (!income) {
@@ -39,6 +39,7 @@ class IncomeService {
             income.amount = amount
             income.date = date
             income.notes = notes
+            income.categoryID = categoryID
 
             await this.incomeContract.submitTransaction(
                 'updateIncome',
@@ -78,7 +79,7 @@ class IncomeService {
 
             const resultJson = utf8Decoder.decode(resultBytes)
             const result = JSON.parse(resultJson)
-            const incomes: Income[] = result.incomes.map((i: any) => new Income(i.userID, i.title, i.amount, new Date(i.date), i.notes, i.id))
+            const incomes: Income[] = result.incomes.map((i: any) => new Income(i.userID, i.title, i.amount, new Date(i.date), i.notes, i.categoryID, i.id))
             return incomes
         } catch (err) {
             console.log(err)

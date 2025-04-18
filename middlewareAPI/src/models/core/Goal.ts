@@ -34,7 +34,7 @@ export default class Goal {
         return new Date() >= this.targetDate
     }
 
-    updateCurrent(figure: number) {
+    updateCurrent(figure: number): void {
         this.current += figure
     }
 

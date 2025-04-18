@@ -4,7 +4,7 @@ import BasicRecurrenceRule from '../models/recurrenceModels/BasicRecurrenceRule'
 import getUserFromToken from '../utils/getUserFromToken'
 
 export const create = async (req: Request, res: Response) => {
-    const { title, amount, date, notes, recurrenceRule } = req.body
+    const { title, amount, date, notes, categoryID, recurrenceRule } = req.body
 
     const userID = getUserFromToken(req)
     if (!userID) {
@@ -12,7 +12,7 @@ export const create = async (req: Request, res: Response) => {
         return
     }
 
-    if (!title || amount === undefined || !date || !recurrenceRule) {
+    if (!title || amount === undefined || !date || !recurrenceRule || !categoryID) {
         res.status(400).json({ message: "Missing required fields: title, amount, date, recurrenceRule" })
         return
     }
@@ -28,7 +28,7 @@ export const create = async (req: Request, res: Response) => {
     const registry = await Registry.getInstance()
     const recurringIncomeService = registry.recurringIncomeService
 
-    const added = await recurringIncomeService.addRecurringIncome(userID, title, amount, new Date(date), notes, rule)
+    const added = await recurringIncomeService.addRecurringIncome(userID, title, amount, new Date(date), notes, categoryID, rule)
     if (!added) {
         res.status(404).json({ message: "Failed to create recurring income." })
         return
@@ -39,7 +39,7 @@ export const create = async (req: Request, res: Response) => {
 
 export const update = async (req: Request, res: Response) => {
     const { id } = req.params
-    const { title, amount, date, notes, recurrenceRule } = req.body
+    const { title, amount, date, notes, categoryID, recurrenceRule } = req.body
 
     const userID = getUserFromToken(req)
     if (!userID) {
@@ -47,7 +47,7 @@ export const update = async (req: Request, res: Response) => {
         return
     }
 
-    if (!title || amount === undefined || !date || !recurrenceRule) {
+    if (!title || amount === undefined || !date || !recurrenceRule || !categoryID) {
         res.status(400).json({ message: "Missing required fields: title, amount, date, recurrenceRule" })
         return
     }
@@ -63,7 +63,7 @@ export const update = async (req: Request, res: Response) => {
     const registry = await Registry.getInstance()
     const recurringIncomeService = registry.recurringIncomeService
 
-    const updated = await recurringIncomeService.updateRecurringIncome(id, userID, title, amount, new Date(date), notes, rule)
+    const updated = await recurringIncomeService.updateRecurringIncome(id, userID, title, amount, new Date(date), notes, categoryID, rule)
     if (!updated) {
         res.status(404).json({ message: 'Failed to update recurring income.' })
         return

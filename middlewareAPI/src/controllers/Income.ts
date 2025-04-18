@@ -3,7 +3,7 @@ import Registry from "../registry/Registry"
 import getUserFromToken from "../utils/getUserFromToken"
 
 export const create: RequestHandler = async (req, res) => {
-    const { title, amount, date, notes } = req.body
+    const { title, amount, date, notes, categoryID } = req.body
 
     const userID = getUserFromToken(req)
     if (!userID) {
@@ -11,7 +11,7 @@ export const create: RequestHandler = async (req, res) => {
         return
     }
 
-    if (!title || amount === undefined || !date) {
+    if (!title || amount === undefined || !date || !categoryID) {
         res.status(400).json({ message: "Missing required fields: title, amount, date" })
         return
     }
@@ -19,7 +19,7 @@ export const create: RequestHandler = async (req, res) => {
     const registry = await Registry.getInstance()
     const incomeService = registry.incomeService
 
-    const added = await incomeService.addIncome(userID, title, amount, new Date(date), notes)
+    const added = await incomeService.addIncome(userID, title, amount, new Date(date), notes, categoryID)
     if (added) {
         res.status(201).json({ message: "Income created" })
     } else {
@@ -29,7 +29,7 @@ export const create: RequestHandler = async (req, res) => {
 
 export const update: RequestHandler = async (req, res) => {
     const { id } = req.params
-    const { title, amount, date, notes } = req.body
+    const { title, amount, date, notes, categoryID } = req.body
 
     const userID = getUserFromToken(req)
     if (!userID) {
@@ -37,7 +37,7 @@ export const update: RequestHandler = async (req, res) => {
         return
     }
 
-    if (!id || !title || amount === undefined || !date) {
+    if (!id || !title || amount === undefined || !date || !categoryID) {
         res.status(400).json({ error: "Missing required fields: id, title, amount, date" })
         return
     }
@@ -45,7 +45,7 @@ export const update: RequestHandler = async (req, res) => {
     const registry = await Registry.getInstance()
     const incomeService = registry.incomeService
 
-    const updated = await incomeService.updateIncome(id, userID, title, amount, new Date(date), notes)
+    const updated = await incomeService.updateIncome(id, userID, title, amount, new Date(date), notes, categoryID)
     if (updated) {
         res.status(200).json({ message: "Income updated" })
     } else {

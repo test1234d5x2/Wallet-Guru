@@ -31,11 +31,11 @@ class Expense implements Transaction {
     }
 
     getPageURL(): string {
-        return '/viewExpenseDetailsPage/' + this.id
+        return "/viewExpenseDetailsPage/" + this.id
     }
 
     getEditURL(): string {
-        return '/editExpensePage/' + this.id
+        return "/editExpensePage/" + this.id
     }
 
     public toJSON() {

@@ -16,8 +16,8 @@ class RecurringIncomeService {
         this.contract = recurringIncomeContract
     }
 
-    public async addRecurringIncome(userID: string, title: string, amount: number, date: Date, notes: string, recurrenceRule: RecurrenceRule): Promise<boolean> {
-        const recurringIncome = new RecurringIncome(userID, title, amount, date, notes, recurrenceRule)
+    public async addRecurringIncome(userID: string, title: string, amount: number, date: Date, notes: string, categoryID: string, recurrenceRule: RecurrenceRule): Promise<boolean> {
+        const recurringIncome = new RecurringIncome(userID, title, amount, date, notes, categoryID, recurrenceRule)
 
         try {
             await this.contract.submitTransaction(
@@ -33,7 +33,7 @@ class RecurringIncomeService {
         return false
     }
 
-    public async updateRecurringIncome(id: string, userID: string, title: string, amount: number, date: Date, notes: string, recurrenceRule: RecurrenceRule): Promise<boolean> {
+    public async updateRecurringIncome(id: string, userID: string, title: string, amount: number, date: Date, notes: string, categoryID: string, recurrenceRule: RecurrenceRule): Promise<boolean> {
         try {
             const recurringIncome = await this.findByID(id, userID)
             if (!recurringIncome) {
@@ -45,6 +45,7 @@ class RecurringIncomeService {
             recurringIncome.date = date
             recurringIncome.notes = notes
             recurringIncome.recurrenceRule = recurrenceRule
+            recurringIncome.categoryID = categoryID
 
             await this.contract.submitTransaction(
                 'updateRecurringIncome',
@@ -86,7 +87,7 @@ class RecurringIncomeService {
             const result = JSON.parse(resultJson)
             const recurringIncomes = result.recurringIncomes.map((i: any) => {
                 const recurrenceRule = new BasicRecurrenceRule(i.recurrenceRule.frequency, i.recurrenceRule.interval, new Date(i.recurrenceRule.startDate), new Date(i.recurrenceRule.nextTriggerDate), i.recurrenceRule.endDate ? new Date(i.recurrenceRule.endDate) : undefined)
-                return new RecurringIncome(i.userID, i.title, i.amount, new Date(i.date), i.notes, recurrenceRule, i.id)
+                return new RecurringIncome(i.userID, i.title, i.amount, new Date(i.date), i.notes, i.categoryID, recurrenceRule, i.id)
             })
             return recurringIncomes
         } catch (err: any) {
@@ -107,7 +108,7 @@ class RecurringIncomeService {
             const resultJson = utf8Decoder.decode(resultBytes)
             const data = JSON.parse(resultJson)
             const recurrenceRule = new BasicRecurrenceRule(data.recurrenceRule.frequency, data.recurrenceRule.interval, new Date(data.recurrenceRule.startDate), new Date(data.recurrenceRule.nextTriggerDate), data.recurrenceRule.endDate ? new Date(data.recurrenceRule.endDate) : undefined)
-            return new RecurringIncome(data.userID, data.title, data.amount, new Date(data.date), data.notes, recurrenceRule, data.id)
+            return new RecurringIncome(data.userID, data.title, data.amount, new Date(data.date), data.notes, data.categoryID, recurrenceRule, data.id)
         } catch (err) {
             console.log(err)
         }
@@ -125,18 +126,18 @@ class RecurringIncomeService {
             const result = JSON.parse(resultJson)
             const recurringIncomes = result.recurringIncomes.map((i: any) => {
                 const recurrenceRule = new BasicRecurrenceRule(i.recurrenceRule.frequency, i.recurrenceRule.interval, new Date(i.recurrenceRule.startDate), new Date(i.recurrenceRule.nextTriggerDate), i.recurrenceRule.endDate ? new Date(i.recurrenceRule.endDate) : undefined)
-                return new RecurringIncome(i.userID, i.title, i.amount, new Date(i.date), i.notes, recurrenceRule, i.id)
+                return new RecurringIncome(i.userID, i.title, i.amount, new Date(i.date), i.notes, i.categoryID, recurrenceRule, i.id)
             })
 
             for (const recIncome of recurringIncomes) {
                 if (recIncome.recurrenceRule.shouldTrigger()) {
-                    await this.incomeService.addIncome(recIncome.getUserID(), recIncome.title, recIncome.amount, new Date(), recIncome.notes)
+                    await this.incomeService.addIncome(recIncome.getUserID(), recIncome.title, recIncome.amount, new Date(), recIncome.notes, recIncome.categoryID)
                     recIncome.recurrenceRule.computeNextTriggerDate()
 
                     if (recIncome.recurrenceRule.shouldEnd()) {
                         await this.deleteRecurringIncome(recIncome.getID(), recIncome.getUserID())
                     } else {
-                        await this.updateRecurringIncome(recIncome.getID(), recIncome.getUserID(), recIncome.title, recIncome.amount, recIncome.date, recIncome.notes, recIncome.recurrenceRule)
+                        await this.updateRecurringIncome(recIncome.getID(), recIncome.getUserID(), recIncome.title, recIncome.amount, recIncome.date, recIncome.notes, recIncome.categoryID, recIncome.recurrenceRule)
                     }
                 }
             }

@@ -1,5 +1,5 @@
-import { v4 } from 'uuid'
-import UserStatus from '../../enums/UserStatus'
+import { v4 } from "uuid"
+import UserStatus from "../../enums/UserStatus"
 
 class User {
     private id: string
@@ -20,7 +20,7 @@ class User {
     public getEmail(): string { return this.username }
     public getPassword(): string { return this.password }
     public getDateJoined(): Date { return this.dateJoined }
-    public setUserStatus(newStatus: UserStatus) { this.status = newStatus }
+    public setUserStatus(newStatus: UserStatus): void { this.status = newStatus }
     public getUserStatus(): UserStatus { return this.status }
 }
 
