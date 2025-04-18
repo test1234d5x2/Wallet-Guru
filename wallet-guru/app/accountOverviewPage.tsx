@@ -67,8 +67,8 @@ export default function AccountOverview() {
         ])
     }
 
-    const handleExportOFX = async () => {
-        // TODO: WRITE YOUR OWN OFX GENERATOR.
+    const handleExportCSV = async () => {
+        // TODO: WRITE YOUR OWN CSV GENERATOR.
         const transactions = await getTransactions()
         const categories = await getExpenseCategories(token)
     }
@@ -96,8 +96,8 @@ export default function AccountOverview() {
             </TouchableOpacity>
 
             <View style={styles.exportContainer}>
-                <TouchableOpacity style={styles.buttonExport} onPress={handleExportOFX}>
-                    <Text style={styles.buttonText}>Export OFX</Text>
+                <TouchableOpacity style={styles.buttonExport} onPress={handleExportCSV}>
+                    <Text style={styles.buttonText}>Export CSV</Text>
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.buttonExport} onPress={handleExportQIF}>
                     <Text style={styles.buttonText}>Export QIF</Text>
