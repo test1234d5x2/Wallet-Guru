@@ -6,7 +6,7 @@ class ExpenseCategory extends Category {
     public recurrenceRule: BasicRecurrenceRule
 
     constructor(userID: string, name: string, monthlyBudget: number, recurrenceRule: BasicRecurrenceRule, id?: string, colour?: string) {
-        super(userID, name, "", colour)
+        super(userID, name, id, colour)
         this.monthlyBudget = monthlyBudget
         this.recurrenceRule = recurrenceRule
     }

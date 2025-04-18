@@ -10,8 +10,8 @@ import deleteUser from "@/utils/apiCalls/deleteUser"
 import getExpenses from "@/utils/apiCalls/getExpenses"
 import getIncomes from "@/utils/apiCalls/getIncomes"
 import getExpenseCategories from "@/utils/apiCalls/getExpenseCategories"
-import * as FileSystem from 'expo-file-system'
-import * as Sharing from 'expo-sharing'
+import getIncomeCategories from "@/utils/apiCalls/getIncomeCategories"
+import { generateQIF } from "@/utils/generateQIF"
 
 
 export default function AccountOverview() {
@@ -74,29 +74,10 @@ export default function AccountOverview() {
     }
 
     const handleExportQIF = async () => {
-        // TODO: NEEDS INCOME TO HAVE A CATEGORY.
-        // TODO: WRITE YOUR OWN QIF GENERATOR.
         const transactions = await getTransactions()
-        const categories = await getExpenseCategories(token)
-
-        try {
-            const txns = transactions.map(tx => ({
-                ...tx,
-                date: tx.date instanceof Date
-                    ? tx.date.toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' })
-                    : tx.date
-            }))
-            let qifText = ''
-            writeQif(txns, {
-                type: 'Bank',
-                output: (chunk: string) => { qifText += chunk }
-            })
-            const filepath = FileSystem.documentDirectory + 'transactions.qif'
-            await FileSystem.writeAsStringAsync(filepath, qifText, { encoding: FileSystem.EncodingType.UTF8 })
-            await Sharing.shareAsync(filepath, { mimeType: 'application/qif', dialogTitle: 'Share QIF' })
-        } catch (error: any) {
-            Alert.alert('Export Error', `Failed to export QIF: ${error.message}`)
-        }
+        const expenseCategories = await getExpenseCategories(token)
+        const incomeCategories = await getIncomeCategories(token)
+        await generateQIF(transactions, expenseCategories, incomeCategories, "A file.qif")
     }
 
     return (
