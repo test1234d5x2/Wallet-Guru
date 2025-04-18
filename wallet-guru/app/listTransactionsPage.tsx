@@ -116,7 +116,7 @@ export default function ViewTransactionsList() {
     const tomorrow = new Date()
     tomorrow.setDate(tomorrow.getDate() + 1)
 
-    const combinedTransactions: { type: string; data: Transaction | Expense | Income }[] = []
+    const combinedTransactions: { type: string data: Transaction | Expense | Income }[] = []
 
     if (selectedType !== TransactionType.EXPENSE) {
         const filteredIncomes = filterTransactionsByTimeWindow(

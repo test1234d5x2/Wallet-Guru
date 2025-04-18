@@ -1,6 +1,6 @@
 import React, { useState } from "react"
-import DateTimePicker from '@react-native-community/datetimepicker';
-import { Text, View, StyleSheet } from "react-native";
+import DateTimePicker from '@react-native-community/datetimepicker'
+import { Text, View, StyleSheet } from "react-native"
 
 interface DateInputFieldProps {
     date: Date | null

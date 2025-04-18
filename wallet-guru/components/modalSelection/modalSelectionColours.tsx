@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { View, Text, FlatList, TouchableOpacity, StyleSheet, Modal, Pressable, SafeAreaView } from 'react-native';
+import React, { useState } from 'react'
+import { View, Text, FlatList, TouchableOpacity, StyleSheet, Modal, Pressable, SafeAreaView } from 'react-native'
 
 
 interface ModalSelectionProps {
@@ -34,8 +34,8 @@ const ModalSelectionColours = (props: ModalSelectionProps) => {
                                     <TouchableOpacity
                                         style={styles.dropdownOption}
                                         onPress={() => {
-                                            props.setValue(item);
-                                            setShowDropdown(false);
+                                            props.setValue(item)
+                                            setShowDropdown(false)
                                         }}
                                     >
                                         <View style={[styles.circle, { backgroundColor: item }]} />
@@ -122,4 +122,4 @@ const styles = StyleSheet.create({
     },
 })
 
-export default ModalSelectionColours;
+export default ModalSelectionColours

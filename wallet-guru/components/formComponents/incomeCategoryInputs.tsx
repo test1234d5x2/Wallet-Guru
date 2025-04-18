@@ -1,7 +1,7 @@
-import React from 'react';
-import { View, StyleSheet } from 'react-native';
-import StandardInputField from './inputFields/standardInputField';
-import ModalSelectionColours from '../modalSelection/modalSelectionColours';
+import React from 'react'
+import { View, StyleSheet } from 'react-native'
+import StandardInputField from './inputFields/standardInputField'
+import ModalSelectionColours from '../modalSelection/modalSelectionColours'
 
 
 interface IncomeCategoryInputs {
@@ -27,8 +27,8 @@ export default function IncomeCategoryInputs(props: IncomeCategoryInputs) {
             <ModalSelectionColours choices={props.colourChoices} value={props.colour} setValue={props.setColour} />
 
         </View>
-    );
-};
+    )
+}
 
 const styles = StyleSheet.create({
     container: {
@@ -36,4 +36,4 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         rowGap: 20,
     },
-});
+})

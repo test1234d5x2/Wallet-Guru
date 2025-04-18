@@ -1,6 +1,6 @@
-import React from 'react';
-import { View, StyleSheet } from 'react-native';
-import PasswordInputField from './inputFields/passwordInputField';
+import React from 'react'
+import { View, StyleSheet } from 'react-native'
+import PasswordInputField from './inputFields/passwordInputField'
 
 interface ChangePasswordInputsProps {
     oldPassword: string,
@@ -38,8 +38,8 @@ export default function ChangePasswordInputs(props: ChangePasswordInputsProps) {
             />
 
         </View>
-    );
-};
+    )
+}
 
 const styles = StyleSheet.create({
     container: {

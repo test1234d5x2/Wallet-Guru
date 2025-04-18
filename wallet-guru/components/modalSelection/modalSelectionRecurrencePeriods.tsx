@@ -1,6 +1,6 @@
-import RecurrencePeriod from '@/enums/Frequency';
-import React, { useState } from 'react';
-import { View, Text, FlatList, TouchableOpacity, StyleSheet, Modal, Pressable, SafeAreaView } from 'react-native';
+import RecurrencePeriod from '@/enums/Frequency'
+import React, { useState } from 'react'
+import { View, Text, FlatList, TouchableOpacity, StyleSheet, Modal, Pressable, SafeAreaView } from 'react-native'
 
 
 interface ModalSelectionProps {
@@ -32,8 +32,8 @@ const ModalSelectionRecurrencePeriods = (props: ModalSelectionProps) => {
                                     <TouchableOpacity
                                         style={styles.dropdownOption}
                                         onPress={() => {
-                                            props.setValue(item);
-                                            setShowDropdown(false);
+                                            props.setValue(item)
+                                            setShowDropdown(false)
                                         }}
                                     >
                                         <Text style={styles.optionText}>{item}</Text>
@@ -103,4 +103,4 @@ const styles = StyleSheet.create({
     },
 })
 
-export default ModalSelectionRecurrencePeriods;
+export default ModalSelectionRecurrencePeriods

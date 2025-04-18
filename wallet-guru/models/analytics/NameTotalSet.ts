@@ -1,6 +1,6 @@
 interface NameTotalSet {
-    name: string;
-    total: number;
+    name: string
+    total: number
 }
 
-export default NameTotalSet;
+export default NameTotalSet

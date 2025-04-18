@@ -1,16 +1,16 @@
-import React, { useState } from 'react';
-import { View, Text, FlatList, TouchableOpacity, StyleSheet, Modal, Pressable, SafeAreaView, Alert, } from 'react-native';
+import React, { useState } from 'react'
+import { View, Text, FlatList, TouchableOpacity, StyleSheet, Modal, Pressable, SafeAreaView, Alert, } from 'react-native'
 import TransactionType
- from '@/enums/TransactionType';
+ from '@/enums/TransactionType'
 
 interface ModalSelectionProps {
-    choices: Array<TransactionType>;
-    value: TransactionType | null;
-    setValue: (type: TransactionType) => void;
+    choices: Array<TransactionType>
+    value: TransactionType | null
+    setValue: (type: TransactionType) => void
 }
 
 const ModalSelectionTransactionTypes = (props: ModalSelectionProps) => {
-    const [showDropdown, setShowDropdown] = useState<boolean>(false);
+    const [showDropdown, setShowDropdown] = useState<boolean>(false)
 
     return (
         <View>
@@ -18,9 +18,9 @@ const ModalSelectionTransactionTypes = (props: ModalSelectionProps) => {
                 style={styles.input}
                 onPress={() => {
                     if (props.choices.length > 0) {
-                        setShowDropdown(true);
+                        setShowDropdown(true)
                     } else {
-                        Alert.alert('No Transaction Types', 'There are no transaction types to pick from.');
+                        Alert.alert('No Transaction Types', 'There are no transaction types to pick from.')
                     }
                 }}
             >
@@ -37,8 +37,8 @@ const ModalSelectionTransactionTypes = (props: ModalSelectionProps) => {
                                 <TouchableOpacity
                                     style={styles.dropdownOption}
                                     onPress={() => {
-                                        props.setValue(item);
-                                        setShowDropdown(false);
+                                        props.setValue(item)
+                                        setShowDropdown(false)
                                     }}
                                 >
                                     <Text style={styles.optionText}>{item}</Text>
@@ -53,8 +53,8 @@ const ModalSelectionTransactionTypes = (props: ModalSelectionProps) => {
                 </SafeAreaView>
             </Modal>
         </View>
-    );
-};
+    )
+}
 
 const styles = StyleSheet.create({
     input: {
@@ -98,6 +98,6 @@ const styles = StyleSheet.create({
     optionText: {
         fontSize: 16,
     },
-});
+})
 
-export default ModalSelectionTransactionTypes;
+export default ModalSelectionTransactionTypes

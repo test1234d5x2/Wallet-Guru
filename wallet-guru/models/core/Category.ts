@@ -1,24 +1,24 @@
-import uuid from 'react-native-uuid';
+import uuid from 'react-native-uuid'
 
 export default abstract class Category {
-    protected id: string;
-    protected userID: string;
-    public name: string;
-    public colour: string;
+    protected id: string
+    protected userID: string
+    public name: string
+    public colour: string
 
     constructor(userID: string, name: string, id?: string, colour?: string) {
-        this.id = id || uuid.v4();
-        this.userID = userID;
-        this.name = name;
-        this.colour = colour || '#FFFFFF';
+        this.id = id || uuid.v4()
+        this.userID = userID
+        this.name = name
+        this.colour = colour || '#FFFFFF'
     }
 
     public getID(): string {
-        return this.id;
+        return this.id
     }
 
     public getUserID(): string {
-        return this.userID;
+        return this.userID
     }
 
     public toJSON() {
@@ -27,6 +27,6 @@ export default abstract class Category {
             userID: this.userID,
             name: this.name,
             colour: this.colour,
-        };
+        }
     }
 }

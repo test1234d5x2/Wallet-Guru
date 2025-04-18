@@ -1,7 +1,7 @@
-import { View, StyleSheet, TouchableOpacity } from "react-native";
-import React from "react";
-import { Ionicons } from "@expo/vector-icons";
-import { Link } from "expo-router";
+import { View, StyleSheet, TouchableOpacity } from "react-native"
+import React from "react"
+import { Ionicons } from "@expo/vector-icons"
+import { Link } from "expo-router"
 
 const styles = StyleSheet.create({
     container: {
@@ -18,7 +18,7 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         color: 'black',
     },
-});
+})
 
 
 

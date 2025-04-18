@@ -1,7 +1,7 @@
-import React from 'react';
-import { View, StyleSheet } from 'react-native';
-import EmailInputField from './inputFields/emailInputField';
-import PasswordInputField from './inputFields/passwordInputField';
+import React from 'react'
+import { View, StyleSheet } from 'react-native'
+import EmailInputField from './inputFields/emailInputField'
+import PasswordInputField from './inputFields/passwordInputField'
 
 interface AuthenticationInputsProps {
     email: string,
@@ -28,8 +28,8 @@ export default function AuthenticationInputs(props: AuthenticationInputsProps) {
             />
 
         </View>
-    );
-};
+    )
+}
 
 const styles = StyleSheet.create({
     container: {

@@ -1,8 +1,8 @@
-import React from 'react';
-import { StyleSheet, ScrollView } from 'react-native';
-import StandardInputField from './inputFields/standardInputField';
-import NumericInputField from './inputFields/numericInputField';
-import DateInputField from './inputFields/dateInputField';
+import React from 'react'
+import { StyleSheet, ScrollView } from 'react-native'
+import StandardInputField from './inputFields/standardInputField'
+import NumericInputField from './inputFields/numericInputField'
+import DateInputField from './inputFields/dateInputField'
 
 
 interface GoalDetailsInputsProps {

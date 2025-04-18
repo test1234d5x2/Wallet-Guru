@@ -50,8 +50,8 @@ export default function IncomeDetailsInputs(props: IncomeDetailsInputsProps) {
                 setValue={props.setNotes}
             />
         </ScrollView>
-    );
-};
+    )
+}
 
 const styles = StyleSheet.create({
     container: {

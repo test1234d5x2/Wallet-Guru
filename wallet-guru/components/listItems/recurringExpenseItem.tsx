@@ -1,28 +1,28 @@
-import React from 'react';
-import { View, Text, StyleSheet, Alert } from 'react-native';
-import { useRouter } from 'expo-router';
-import ListItemEditButton from './listItemEditButton';
-import ListItemDeleteButton from './listItemDeleteButton';
-import clearRouterHistory from '@/utils/clearRouterHistory';
-import RecurringExpense from '@/models/recurrenceModels/RecurringExpense';
-import deleteRecurringExpense from '@/utils/apiCalls/deleteRecurringExpense';
-import { Pill } from './categoryDisplayPills';
+import React from 'react'
+import { View, Text, StyleSheet, Alert } from 'react-native'
+import { useRouter } from 'expo-router'
+import ListItemEditButton from './listItemEditButton'
+import ListItemDeleteButton from './listItemDeleteButton'
+import clearRouterHistory from '@/utils/clearRouterHistory'
+import RecurringExpense from '@/models/recurrenceModels/RecurringExpense'
+import deleteRecurringExpense from '@/utils/apiCalls/deleteRecurringExpense'
+import { Pill } from './categoryDisplayPills'
 
 
 interface RecurringExpenseItemProps {
-    recurringExpense: RecurringExpense;
-    token: string;
-    categoryName: string;
+    recurringExpense: RecurringExpense
+    token: string
+    categoryName: string
     categoryColour: string
 }
 
 export default function RecurringExpenseItem(props: RecurringExpenseItemProps) {
 
-    const router = useRouter();
+    const router = useRouter()
 
     const handleEdit = (id: string) => {
-        router.navigate(props.recurringExpense.getEditURL());
-        return;
+        router.navigate(props.recurringExpense.getEditURL())
+        return
     }
 
     const handleDeleteTransaction = (id: string) => {
@@ -32,13 +32,13 @@ export default function RecurringExpenseItem(props: RecurringExpenseItemProps) {
                 text: 'Delete', style: 'destructive', onPress: () => {
                     deleteRecurringExpense(props.token, id).then((complete) => {
                         if (complete) {
-                            Alert.alert('Success', 'Recurring expense deleted successfully!');
-                            clearRouterHistory(router);
-                            router.replace("/listRecurringTransactionsPage");
+                            Alert.alert('Success', 'Recurring expense deleted successfully!')
+                            clearRouterHistory(router)
+                            router.replace("/listRecurringTransactionsPage")
                         }
                     }).catch((err: Error) => {
-                        Alert.alert("Failed", "Failed to delete recurring expense.");
-                        console.log(err.message);
+                        Alert.alert("Failed", "Failed to delete recurring expense.")
+                        console.log(err.message)
                     })
                 }
             },

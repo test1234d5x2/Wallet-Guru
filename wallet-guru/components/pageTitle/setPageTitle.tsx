@@ -1,9 +1,9 @@
-import { useLayoutEffect } from 'react';
-import { useNavigation } from '@react-navigation/native';
+import { useLayoutEffect } from 'react'
+import { useNavigation } from '@react-navigation/native'
 
 export default function setPageTitle(title: string) {
-  const nav = useNavigation();
-  const parent = nav.getParent();
+  const nav = useNavigation()
+  const parent = nav.getParent()
 
   if (parent) {
     useLayoutEffect(() => {

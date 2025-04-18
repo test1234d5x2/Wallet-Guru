@@ -1,28 +1,28 @@
-import React from 'react';
-import { View, Text, StyleSheet, Alert } from 'react-native';
-import Expense from '@/models/core/Expense';
-import { useRouter } from 'expo-router';
-import ListItemEditButton from './listItemEditButton';
-import ListItemDeleteButton from './listItemDeleteButton';
-import clearRouterHistory from '@/utils/clearRouterHistory';
-import deleteExpense from '@/utils/apiCalls/deleteExpense';
-import getMonthName from '@/utils/getMonthName';
-import { Pill } from './categoryDisplayPills';
+import React from 'react'
+import { View, Text, StyleSheet, Alert } from 'react-native'
+import Expense from '@/models/core/Expense'
+import { useRouter } from 'expo-router'
+import ListItemEditButton from './listItemEditButton'
+import ListItemDeleteButton from './listItemDeleteButton'
+import clearRouterHistory from '@/utils/clearRouterHistory'
+import deleteExpense from '@/utils/apiCalls/deleteExpense'
+import getMonthName from '@/utils/getMonthName'
+import { Pill } from './categoryDisplayPills'
 
 interface ExpenseItemProps {
-    expense: Expense;
-    token: string;
-    categoryName: string;
-    categoryColour: string;
+    expense: Expense
+    token: string
+    categoryName: string
+    categoryColour: string
     buttons: boolean
 }
 
 export default function ExpenseItem(props: ExpenseItemProps) {
-    const router = useRouter();
+    const router = useRouter()
 
     const handleEdit = (id: string) => {
-        router.navigate(props.expense.getEditURL());
-        return;
+        router.navigate(props.expense.getEditURL())
+        return
     }
 
     const handleDeleteTransaction = (id: string) => {
@@ -32,13 +32,13 @@ export default function ExpenseItem(props: ExpenseItemProps) {
                 text: 'Delete', style: 'destructive', onPress: () => {
                     deleteExpense(props.token, id).then((complete) => {
                         if (complete) {
-                            Alert.alert('Success', 'Expense deleted successfully!');
-                            clearRouterHistory(router);
-                            router.replace("/listTransactionsPage");
+                            Alert.alert('Success', 'Expense deleted successfully!')
+                            clearRouterHistory(router)
+                            router.replace("/listTransactionsPage")
                         }
                     }).catch((err: Error) => {
-                        Alert.alert("Failed", "Failed to delete expense.");
-                        console.log(err.message);
+                        Alert.alert("Failed", "Failed to delete expense.")
+                        console.log(err.message)
                     })
                 }
             },

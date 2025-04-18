@@ -1,4 +1,4 @@
 export default interface TokenEmailCombo {
-    token: string;
-    email: string;
+    token: string
+    email: string
 }

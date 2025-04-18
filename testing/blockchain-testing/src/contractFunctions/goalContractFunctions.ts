@@ -1,9 +1,9 @@
-import { Contract } from "@hyperledger/fabric-gateway";
-import Goal from "../models/core/Goal";
-import { TextDecoder } from 'util';
+import { Contract } from "@hyperledger/fabric-gateway"
+import Goal from "../models/core/Goal"
+import { TextDecoder } from 'util'
 
 
-const utf8Decoder = new TextDecoder();
+const utf8Decoder = new TextDecoder()
 
 
 export async function createGoal(contract: Contract, i: Goal): Promise<void> {
@@ -54,7 +54,7 @@ export async function deleteGoal(contract: Contract, userID: string, goalID: str
 
 
 export async function listGoalsByUser(contract: Contract, userID: string): Promise<Goal[]> {
-    console.log('\n--> Evaluate Transaction: List Goal By User,');
+    console.log('\n--> Evaluate Transaction: List Goal By User,')
 
     try {
         const resultBytes = await contract.evaluateTransaction(
@@ -62,15 +62,15 @@ export async function listGoalsByUser(contract: Contract, userID: string): Promi
             userID,
         )
 
-        const resultJson = utf8Decoder.decode(resultBytes);
-        const result = JSON.parse(resultJson);
-        const goals: Goal[] = result.goals.map((goal: any) => new Goal(goal.title, goal.userID, goal.description, goal.target, new Date(goal.targetDate), goal.status, goal.id, goal.current));
+        const resultJson = utf8Decoder.decode(resultBytes)
+        const result = JSON.parse(resultJson)
+        const goals: Goal[] = result.goals.map((goal: any) => new Goal(goal.title, goal.userID, goal.description, goal.target, new Date(goal.targetDate), goal.status, goal.id, goal.current))
         return goals
     } catch (err) {
         console.log(err)
     }
 
-    return [];
+    return []
 }
 
 
@@ -82,12 +82,12 @@ export async function getGoalByID(contract: Contract, userID: string, id: string
             id,
         )
 
-        const resultJson = utf8Decoder.decode(resultBytes);
-        const data = JSON.parse(resultJson);
-        return new Goal(data.title, data.userID, data.description, data.target, new Date(data.targetDate), data.status, data.id, data.current);
+        const resultJson = utf8Decoder.decode(resultBytes)
+        const data = JSON.parse(resultJson)
+        return new Goal(data.title, data.userID, data.description, data.target, new Date(data.targetDate), data.status, data.id, data.current)
     } catch (err) {
         console.log(err)
     }
 
-    return undefined;
+    return undefined
 }

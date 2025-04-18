@@ -1,5 +1,5 @@
-import { View, Text, StyleSheet, ScrollView } from "react-native";
-import MenuItem from "./menuItem";
+import { View, Text, StyleSheet, ScrollView } from "react-native"
+import MenuItem from "./menuItem"
 
 export default function MainMenu() {
     const groupedMenuItems = [
@@ -49,7 +49,7 @@ export default function MainMenu() {
                 { title: "Expense Categories Analytics", link: "/analytics/expenseCategoryPage" },
             ],
         },
-    ];
+    ]
 
     return (
         <ScrollView style={styles.container}>
@@ -64,7 +64,7 @@ export default function MainMenu() {
                 </View>
             ))}
         </ScrollView>
-    );
+    )
 }
 
 const styles = StyleSheet.create({
@@ -84,4 +84,4 @@ const styles = StyleSheet.create({
     itemsContainer: {
         rowGap: 12,
     },
-});
+})

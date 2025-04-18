@@ -1,4 +1,4 @@
-import Frequency from "@/enums/Frequency";
+import Frequency from "@/enums/Frequency"
 
 export default function convertFrequencyToTextDisplay(chosenFrequency: Frequency): string {
     const frequencyMapping: Record<Frequency, string> = {
@@ -6,7 +6,7 @@ export default function convertFrequencyToTextDisplay(chosenFrequency: Frequency
         [Frequency.Weekly]: "Week",
         [Frequency.Monthly]: "Month",
         [Frequency.Yearly]: "Year",
-    };
+    }
 
-    return frequencyMapping[chosenFrequency] || "";
+    return frequencyMapping[chosenFrequency] || ""
 }

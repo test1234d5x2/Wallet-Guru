@@ -1,7 +1,7 @@
-import * as SecureStore from "expo-secure-store";
+import * as SecureStore from "expo-secure-store"
 
 
 export default async function getEail(): Promise<string | null> {
-    const email = await SecureStore.getItemAsync("email");
-    return email;
+    const email = await SecureStore.getItemAsync("email")
+    return email
 }

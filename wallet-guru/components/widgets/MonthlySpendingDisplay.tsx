@@ -1,18 +1,18 @@
-import getEndOfMonth from "@/utils/getEndOfMonth";
-import getMonthName from "@/utils/getMonthName";
-import getStartOfMonth from "@/utils/getStartOfMonth";
-import { View, Text, StyleSheet } from "react-native";
+import getEndOfMonth from "@/utils/getEndOfMonth"
+import getMonthName from "@/utils/getMonthName"
+import getStartOfMonth from "@/utils/getStartOfMonth"
+import { View, Text, StyleSheet } from "react-native"
 
 
 interface MonthlySpendingDisplayProps {
-    income: number;
-    expenses: number;
-    month: Date;
+    income: number
+    expenses: number
+    month: Date
 }
 
 export default function MonthlySpendingDisplay(props: MonthlySpendingDisplayProps) {
-    const startOfMonth = getStartOfMonth(props.month);
-    const endOfMonth = getEndOfMonth(props.month);
+    const startOfMonth = getStartOfMonth(props.month)
+    const endOfMonth = getEndOfMonth(props.month)
 
     return (
         <View style={styles.section}>
@@ -65,4 +65,4 @@ const styles = StyleSheet.create({
         backgroundColor: "#ccc",
         height: "100%",
     },
-});
+})

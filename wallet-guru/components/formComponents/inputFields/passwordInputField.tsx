@@ -1,11 +1,11 @@
-import React from 'react';
-import { TextInput, StyleSheet, View, Text } from 'react-native';
+import React from 'react'
+import { TextInput, StyleSheet, View, Text } from 'react-native'
 
 
 interface PasswordFieldProps {
-    password: string;
-    setPassword: (text: string) => void;
-    placeholder?: string;
+    password: string
+    setPassword: (text: string) => void
+    placeholder?: string
     required?: boolean
 }
 

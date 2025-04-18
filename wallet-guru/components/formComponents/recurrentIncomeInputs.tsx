@@ -1,12 +1,12 @@
-import React from 'react';
-import { StyleSheet, View } from 'react-native';
-import StandardInputField from './inputFields/standardInputField';
-import NumericInputField from './inputFields/numericInputField';
-import DateInputField from './inputFields/dateInputField';
-import ModalSelectionRecurrencePeriods from '../modalSelection/modalSelectionRecurrencePeriods';
-import Frequency from '@/enums/Frequency';
-import IncomeCategory from '@/models/core/IncomeCategory';
-import { ModalSelectionIncomeCategories } from '../modalSelection/modalSelectionCategories';
+import React from 'react'
+import { StyleSheet, View } from 'react-native'
+import StandardInputField from './inputFields/standardInputField'
+import NumericInputField from './inputFields/numericInputField'
+import DateInputField from './inputFields/dateInputField'
+import ModalSelectionRecurrencePeriods from '../modalSelection/modalSelectionRecurrencePeriods'
+import Frequency from '@/enums/Frequency'
+import IncomeCategory from '@/models/core/IncomeCategory'
+import { ModalSelectionIncomeCategories } from '../modalSelection/modalSelectionCategories'
 
 
 interface RecurrentIncomeDetailsInputsProps {
@@ -64,12 +64,12 @@ export default function RecurrentIncomeDetailsInputs(props: RecurrentIncomeDetai
                 setValue={props.setNotes}
             />
         </View>
-    );
-};
+    )
+}
 
 const styles = StyleSheet.create({
     container: {
         backgroundColor: '#fff',
         rowGap: 20,
     },
-});
+})

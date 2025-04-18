@@ -1,12 +1,12 @@
-import React from 'react';
-import { View, StyleSheet, ScrollView } from 'react-native';
-import StandardInputField from './inputFields/standardInputField';
-import NumericInputField from './inputFields/numericInputField';
-import DateInputField from './inputFields/dateInputField';
-import ExpenseCategory from '@/models/core/ExpenseCategory';
-import { ModalSelectionExpenseCategories } from '../modalSelection/modalSelectionCategories';
-import ModalSelectionRecurrencePeriods from '../modalSelection/modalSelectionRecurrencePeriods';
-import Frequency from '@/enums/Frequency';
+import React from 'react'
+import { View, StyleSheet, ScrollView } from 'react-native'
+import StandardInputField from './inputFields/standardInputField'
+import NumericInputField from './inputFields/numericInputField'
+import DateInputField from './inputFields/dateInputField'
+import ExpenseCategory from '@/models/core/ExpenseCategory'
+import { ModalSelectionExpenseCategories } from '../modalSelection/modalSelectionCategories'
+import ModalSelectionRecurrencePeriods from '../modalSelection/modalSelectionRecurrencePeriods'
+import Frequency from '@/enums/Frequency'
 
 
 interface RecurrentExpenseDetailsInputsProps {

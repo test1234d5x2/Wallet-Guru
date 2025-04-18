@@ -1,11 +1,11 @@
-import React from 'react';
-import { View, StyleSheet } from 'react-native';
-import StandardInputField from './inputFields/standardInputField';
-import NumericInputField from './inputFields/numericInputField';
-import Frequency from '@/enums/Frequency';
-import ModalSelectionRecurrencePeriods from '../modalSelection/modalSelectionRecurrencePeriods';
-import DateInputField from './inputFields/dateInputField';
-import ModalSelectionColours from '../modalSelection/modalSelectionColours';
+import React from 'react'
+import { View, StyleSheet } from 'react-native'
+import StandardInputField from './inputFields/standardInputField'
+import NumericInputField from './inputFields/numericInputField'
+import Frequency from '@/enums/Frequency'
+import ModalSelectionRecurrencePeriods from '../modalSelection/modalSelectionRecurrencePeriods'
+import DateInputField from './inputFields/dateInputField'
+import ModalSelectionColours from '../modalSelection/modalSelectionColours'
 
 
 interface ExpenseCategoryInputs {
@@ -52,8 +52,8 @@ export default function ExpenseCategoryInputs(props: ExpenseCategoryInputs) {
             <ModalSelectionColours choices={props.colourChoices} value={props.colour} setValue={props.setColour} />
 
         </View>
-    );
-};
+    )
+}
 
 const styles = StyleSheet.create({
     container: {
@@ -61,4 +61,4 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         rowGap: 20,
     },
-});
+})

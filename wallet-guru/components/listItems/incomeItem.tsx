@@ -1,12 +1,12 @@
-import React from 'react';
-import { View, Text, StyleSheet, Alert } from 'react-native';
-import Income from '@/models/core/Income';
-import { useRouter } from 'expo-router';
-import ListItemEditButton from './listItemEditButton';
-import ListItemDeleteButton from './listItemDeleteButton';
-import clearRouterHistory from '@/utils/clearRouterHistory';
-import deleteIncome from '@/utils/apiCalls/deleteIncome';
-import { Pill } from './categoryDisplayPills';
+import React from 'react'
+import { View, Text, StyleSheet, Alert } from 'react-native'
+import Income from '@/models/core/Income'
+import { useRouter } from 'expo-router'
+import ListItemEditButton from './listItemEditButton'
+import ListItemDeleteButton from './listItemDeleteButton'
+import clearRouterHistory from '@/utils/clearRouterHistory'
+import deleteIncome from '@/utils/apiCalls/deleteIncome'
+import { Pill } from './categoryDisplayPills'
 
 interface IncomeItemProps {
     income: Income
@@ -18,11 +18,11 @@ interface IncomeItemProps {
 
 export default function IncomeItem(props: IncomeItemProps) {
 
-    const router = useRouter();
+    const router = useRouter()
 
     const handleEdit = (id: string) => {
-        router.navigate(props.income.getEditURL());
-        return;
+        router.navigate(props.income.getEditURL())
+        return
     }
 
     const handleDeleteTransaction = (id: string) => {
@@ -32,13 +32,13 @@ export default function IncomeItem(props: IncomeItemProps) {
                 text: 'Delete', style: 'destructive', onPress: () => {
                     deleteIncome(props.token, id).then((complete) => {
                         if (complete) {
-                            Alert.alert('Success', 'Income deleted successfully!');
-                            clearRouterHistory(router);
-                            router.replace("/listTransactionsPage");
+                            Alert.alert('Success', 'Income deleted successfully!')
+                            clearRouterHistory(router)
+                            router.replace("/listTransactionsPage")
                         }
                     }).catch((err: Error) => {
-                        Alert.alert("Failed", "Failed to delete income.");
-                        console.log(err.message);
+                        Alert.alert("Failed", "Failed to delete income.")
+                        console.log(err.message)
                     })
                 }
             },

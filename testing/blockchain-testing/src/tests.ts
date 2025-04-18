@@ -91,7 +91,7 @@ async function testSuite(): Promise<void> {
         commitStatusOptions: () => {
             return { deadline: Date.now() + 60000 }
         },
-    });
+    })
 
     try {
         const network = gateway.getNetwork(channelName)
@@ -165,7 +165,7 @@ async function testSuite(): Promise<void> {
         const newPasswordValue = "AnActualPassword"
         user.setPassword(newPasswordValue)
         await changePassword(userContract, user.getEmail(), "AnActualPassword")
-        retrievedUser = await findByID(userContract, userID);
+        retrievedUser = await findByID(userContract, userID)
         if (!retrievedUser) {
             console.log("************* findByID Failed *************")
             await bringDown(userContract, expenseContract, expenseCategoryContract, incomeContract, goalContract, recurringIncomeContract, recurringExpenseContract)
@@ -353,7 +353,7 @@ async function testSuite(): Promise<void> {
             console.log()
         }
 
-        income.amount = 100;
+        income.amount = 100
         await updateIncome(incomeContract, income)
         retrievedIncome = await getIncomeByID(incomeContract, userID, income.getID())
         if (!retrievedIncome) {
@@ -371,7 +371,7 @@ async function testSuite(): Promise<void> {
                 console.log("Result: Pass")
             }
             else console.log("Result: Fail")
-            numberOfTests++;
+            numberOfTests++
             console.log()
         }
 
@@ -379,7 +379,7 @@ async function testSuite(): Promise<void> {
         let incomesList = await listIncomesByUser(incomeContract, userID)
         if (incomesList.length === 0) {
             console.log("************* listIncomesByUser Failed *************")
-            await bringDown(userContract, expenseContract, expenseCategoryContract, incomeContract, goalContract, recurringIncomeContract, recurringExpenseContract);
+            await bringDown(userContract, expenseContract, expenseCategoryContract, incomeContract, goalContract, recurringIncomeContract, recurringExpenseContract)
             numberOfTests++
             displayResults(numberOfTests, passedCount)
             return
@@ -449,7 +449,7 @@ async function testSuite(): Promise<void> {
         let goalsList = await listGoalsByUser(goalContract, userID)
         if (goalsList.length === 0) {
             console.log("************* listGoalsByUser Failed *************")
-            await bringDown(userContract, expenseContract, expenseCategoryContract, incomeContract, goalContract, recurringIncomeContract, recurringExpenseContract);
+            await bringDown(userContract, expenseContract, expenseCategoryContract, incomeContract, goalContract, recurringIncomeContract, recurringExpenseContract)
             numberOfTests++
             displayResults(numberOfTests, passedCount)
             return
@@ -462,7 +462,7 @@ async function testSuite(): Promise<void> {
                 console.log("Result: Pass")
             }
             else console.log("Result: Fail")
-            numberOfTests++;
+            numberOfTests++
             console.log()
         }
 
@@ -515,7 +515,7 @@ async function testSuite(): Promise<void> {
             console.log()
         }
 
-        let recurringExpenseList = await listRecurringExpensesByUser(recurringExpenseContract, userID);
+        let recurringExpenseList = await listRecurringExpensesByUser(recurringExpenseContract, userID)
         if (recurringExpenseList.length === 0) {
             console.log("************* listRecurringExpensesByUser Failed *************")
             await bringDown(userContract, expenseContract, expenseCategoryContract, incomeContract, goalContract, recurringIncomeContract, recurringExpenseContract)
@@ -539,7 +539,7 @@ async function testSuite(): Promise<void> {
 
 
 
-        await createRecurringIncome(recurringIncomeContract, recurringIncome);
+        await createRecurringIncome(recurringIncomeContract, recurringIncome)
         let retrievedRecurringIncome = await getRecurringIncomeByID(recurringIncomeContract, userID, recurringIncome.getID())
         if (!retrievedRecurringIncome) {
             console.log("************* getRecurringIncomeByID Failed *************")
@@ -677,7 +677,7 @@ async function testSuite(): Promise<void> {
         numberOfTests++
         console.log()
 
-        const userDeletedValue = await deleteUser(userContract, user.getEmail());
+        const userDeletedValue = await deleteUser(userContract, user.getEmail())
         console.log()
         console.log("Testing User Deleted:")
         if (userDeletedValue) {
@@ -700,7 +700,7 @@ async function testSuite(): Promise<void> {
 testSuite().catch((error: unknown) => {
     console.error('******** FAILED to run the application:', error)
     process.exitCode = 1
-});
+})
 
 async function newGrpcConnection(): Promise<grpc.Client> {
     const tlsRootCert = await fs.readFile(tlsCertPath)

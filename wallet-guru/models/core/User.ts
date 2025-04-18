@@ -1,5 +1,5 @@
-import UserStatus from '@/enums/UserStatus';
-import uuid from 'react-native-uuid';
+import UserStatus from '@/enums/UserStatus'
+import uuid from 'react-native-uuid'
 
 class User {
     private id: string
@@ -22,12 +22,12 @@ class User {
 
     public getPassword(): string { return this.password }
 
-    public getDateJoined(): Date { return this.dateJoined; }
+    public getDateJoined(): Date { return this.dateJoined }
 
-    public setUserStatus(newStatus: UserStatus): void { this.status = newStatus; }
+    public setUserStatus(newStatus: UserStatus): void { this.status = newStatus }
 
-    public getUserStatus(): UserStatus { return this.status; }
+    public getUserStatus(): UserStatus { return this.status }
 
 }
 
-export default User;
+export default User

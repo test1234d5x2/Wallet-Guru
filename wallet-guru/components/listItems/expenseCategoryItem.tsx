@@ -1,27 +1,27 @@
-import React from 'react';
-import { View, Text, StyleSheet, Alert } from 'react-native';
-import * as Progress from 'react-native-progress';
-import ExpenseCategory from '@/models/core/ExpenseCategory';
-import { useRouter } from 'expo-router';
-import ListItemDeleteButton from './listItemDeleteButton';
-import ListItemEditButton from './listItemEditButton';
-import clearRouterHistory from '@/utils/clearRouterHistory';
-import deleteExpenseCategory from '@/utils/apiCalls/deleteExpenseCategory';
-import convertFrequencyToTextDisplay from '@/utils/convertFrequencyToTextDisplay';
-import { StrongPill } from './categoryDisplayPills';
+import React from 'react'
+import { View, Text, StyleSheet, Alert } from 'react-native'
+import * as Progress from 'react-native-progress'
+import ExpenseCategory from '@/models/core/ExpenseCategory'
+import { useRouter } from 'expo-router'
+import ListItemDeleteButton from './listItemDeleteButton'
+import ListItemEditButton from './listItemEditButton'
+import clearRouterHistory from '@/utils/clearRouterHistory'
+import deleteExpenseCategory from '@/utils/apiCalls/deleteExpenseCategory'
+import convertFrequencyToTextDisplay from '@/utils/convertFrequencyToTextDisplay'
+import { StrongPill } from './categoryDisplayPills'
 
 interface ExpenseCategoryProps {
-    category: ExpenseCategory;
+    category: ExpenseCategory
     currentSpending: number
     token: string
 }
 
 export default function ExpenseCategoryItem(props: ExpenseCategoryProps) {
-    const router = useRouter();
+    const router = useRouter()
 
     const handleEdit = (id: string) => {
-        router.navigate(`/editExpenseCategoryPage/${props.category.getID()}`);
-    };
+        router.navigate(`/editExpenseCategoryPage/${props.category.getID()}`)
+    }
 
     const handleDelete = (id: string) => {
         Alert.alert('Delete Expense Category', 'Are you sure you want to delete this expense category?', [
@@ -32,18 +32,18 @@ export default function ExpenseCategoryItem(props: ExpenseCategoryProps) {
                 onPress: () => {
                     deleteExpenseCategory(props.token, id).then((complete) => {
                         if (complete) {
-                            Alert.alert('Success', 'Expense category deleted successfully!');
-                            clearRouterHistory(router);
-                            router.replace("/expenseCategoriesOverviewPage");
+                            Alert.alert('Success', 'Expense category deleted successfully!')
+                            clearRouterHistory(router)
+                            router.replace("/expenseCategoriesOverviewPage")
                         }
                     }).catch((err: Error) => {
-                        Alert.alert("Failed", "Failed to delete expense category.");
-                        console.log(err.message);
+                        Alert.alert("Failed", "Failed to delete expense category.")
+                        console.log(err.message)
                     })
                 },
             },
-        ]);
-    };
+        ])
+    }
 
     return (
         <View style={styles.categoryContainer}>
@@ -64,7 +64,7 @@ export default function ExpenseCategoryItem(props: ExpenseCategoryProps) {
                 <ListItemDeleteButton id={props.category.getID()} handleDelete={handleDelete} />
             </View>
         </View>
-    );
+    )
 }
 
 const styles = StyleSheet.create({
@@ -82,4 +82,4 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
     },
-});
+})

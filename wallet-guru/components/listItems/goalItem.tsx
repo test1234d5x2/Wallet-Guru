@@ -1,11 +1,11 @@
-import Goal from "@/models/core/Goal";
-import { View, Text, StyleSheet, Alert } from 'react-native';
-import * as Progress from 'react-native-progress';
-import { useRouter } from "expo-router";
-import ListItemEditButton from "./listItemEditButton";
-import ListItemDeleteButton from "./listItemDeleteButton";
-import clearRouterHistory from "@/utils/clearRouterHistory";
-import deleteGoal from "@/utils/apiCalls/deleteGoal";
+import Goal from "@/models/core/Goal"
+import { View, Text, StyleSheet, Alert } from 'react-native'
+import * as Progress from 'react-native-progress'
+import { useRouter } from "expo-router"
+import ListItemEditButton from "./listItemEditButton"
+import ListItemDeleteButton from "./listItemDeleteButton"
+import clearRouterHistory from "@/utils/clearRouterHistory"
+import deleteGoal from "@/utils/apiCalls/deleteGoal"
 
 
 interface GoalItemProps {
@@ -16,11 +16,11 @@ interface GoalItemProps {
 
 export default function GoalItem(props: GoalItemProps) {
 
-    const router = useRouter();
+    const router = useRouter()
 
     const handleUpdate = (id: string) => {
-        router.navigate(`/updateGoalPage/${props.goal.getID()}`);
-        return;
+        router.navigate(`/updateGoalPage/${props.goal.getID()}`)
+        return
     }
 
     const handleDelete = (id: string) => {
@@ -30,13 +30,13 @@ export default function GoalItem(props: GoalItemProps) {
                 text: 'Delete', style: 'destructive', onPress: () => {
                     deleteGoal(props.token, id).then((complete) => {
                         if (complete) {
-                            Alert.alert('Success', 'Goal deleted successfully!');
-                            clearRouterHistory(router);
-                            router.replace("/allGoalsPage");
+                            Alert.alert('Success', 'Goal deleted successfully!')
+                            clearRouterHistory(router)
+                            router.replace("/allGoalsPage")
                         }
                     }).catch((err: Error) => {
-                        Alert.alert("Failed", "Failed to delete goal.");
-                        console.log(err.message);
+                        Alert.alert("Failed", "Failed to delete goal.")
+                        console.log(err.message)
                     })
                 }
             },

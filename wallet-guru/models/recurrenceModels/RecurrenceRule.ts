@@ -1,19 +1,19 @@
-import Frequency from "@/enums/Frequency";
-import { addDays, addWeeks, addMonths, addYears } from "date-fns";
+import Frequency from "@/enums/Frequency"
+import { addDays, addWeeks, addMonths, addYears } from "date-fns"
 
 export default abstract class RecurrenceRule {
-    frequency: Frequency;
-    interval: number;
-    startDate: Date;
-    nextTriggerDate: Date;
-    endDate?: Date;
+    frequency: Frequency
+    interval: number
+    startDate: Date
+    nextTriggerDate: Date
+    endDate?: Date
 
     constructor(frequency: Frequency, interval: number, startDate: Date, nextTriggerDate?: Date, endDate?: Date) {
-        this.frequency = frequency;
-        this.interval = interval;
-        this.startDate = startDate;
-        this.nextTriggerDate = nextTriggerDate || startDate;
-        this.endDate = endDate;
+        this.frequency = frequency
+        this.interval = interval
+        this.startDate = startDate
+        this.nextTriggerDate = nextTriggerDate || startDate
+        this.endDate = endDate
 
         this.nextTriggerDate = new Date(Date.UTC(
             this.nextTriggerDate.getUTCFullYear(),
@@ -24,16 +24,16 @@ export default abstract class RecurrenceRule {
 
     public shouldEnd(): boolean {
         if (this.endDate) {
-            return this.nextTriggerDate > this.endDate;
+            return this.nextTriggerDate > this.endDate
         }
 
-        return false;
+        return false
     }
 
 
     public shouldTrigger(): boolean {
-        const now = new Date();
-        return now >= this.nextTriggerDate;
+        const now = new Date()
+        return now >= this.nextTriggerDate
     }
 
     public computeNextTriggerDate(): Date {
@@ -43,22 +43,22 @@ export default abstract class RecurrenceRule {
             switch (this.frequency) {
                 case Frequency.Daily:
                     this.nextTriggerDate = addDays(this.nextTriggerDate, this.interval)
-                    break;
+                    break
                 case Frequency.Weekly:
                     this.nextTriggerDate = addWeeks(this.nextTriggerDate, this.interval)
-                    break;
+                    break
                 case Frequency.Monthly:
                     this.nextTriggerDate = addMonths(this.nextTriggerDate, this.interval)
-                    break;
+                    break
                 case Frequency.Yearly:
                     this.nextTriggerDate = addYears(this.nextTriggerDate, this.interval)
-                    break;
+                    break
                 default:
-                    throw new Error("Unsupported frequency");
+                    throw new Error("Unsupported frequency")
             }
         }
 
-        return this.nextTriggerDate;
+        return this.nextTriggerDate
     }
 
     public toJSON() {

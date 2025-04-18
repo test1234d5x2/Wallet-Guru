@@ -14,11 +14,11 @@ interface IncomeCategoryProps {
 }
 
 export default function IncomeCategoryItem(props: IncomeCategoryProps) {
-    const router = useRouter();
+    const router = useRouter()
 
     const handleEdit = (id: string) => {
-        router.navigate(`/editIncomeCategoryPage/${props.category.getID()}`);
-    };
+        router.navigate(`/editIncomeCategoryPage/${props.category.getID()}`)
+    }
 
     const handleDelete = (id: string) => {
         Alert.alert('Delete Income Category', 'Are you sure you want to delete this Income category?', [
@@ -29,18 +29,18 @@ export default function IncomeCategoryItem(props: IncomeCategoryProps) {
                 onPress: () => {
                     deleteIncomeCategory(props.token, id).then((complete) => {
                         if (complete) {
-                            Alert.alert('Success', 'Income category deleted successfully!');
-                            clearRouterHistory(router);
-                            router.replace("/incomeCategoriesOverviewPage");
+                            Alert.alert('Success', 'Income category deleted successfully!')
+                            clearRouterHistory(router)
+                            router.replace("/incomeCategoriesOverviewPage")
                         }
                     }).catch((err: Error) => {
-                        Alert.alert("Failed", "Failed to delete Income category.");
-                        console.log(err.message);
+                        Alert.alert("Failed", "Failed to delete Income category.")
+                        console.log(err.message)
                     })
                 },
             },
-        ]);
-    };
+        ])
+    }
 
     return (
         <View style={styles.categoryContainer}>
@@ -51,7 +51,7 @@ export default function IncomeCategoryItem(props: IncomeCategoryProps) {
                 <ListItemDeleteButton id={props.category.getID()} handleDelete={handleDelete} />
             </View>
         </View>
-    );
+    )
 }
 
 const styles = StyleSheet.create({
@@ -69,4 +69,4 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
     },
-});
+})

@@ -1,15 +1,14 @@
-import getMonthName from "@/utils/getMonthName";
-import { Ionicons } from "@expo/vector-icons";
-import { View, Text, StyleSheet } from "react-native";
+import getMonthName from "@/utils/getMonthName"
+import { Ionicons } from "@expo/vector-icons"
+import { View, Text, StyleSheet } from "react-native"
 
 
 interface MonthSelectorProps {
-    month: Date;
-    setMonth: (d: Date) => void;
+    month: Date
+    setMonth: (d: Date) => void
 }
 
 
-// TODO April displays as 31 April - 29 April
 export default function MonthSelector(props: MonthSelectorProps) {
     return (
         <View style={styles.monthSelectorContainer} >

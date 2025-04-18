@@ -1,12 +1,12 @@
-import React from 'react';
-import { View, Text, StyleSheet, Alert } from 'react-native';
-import { useRouter } from 'expo-router';
-import ListItemEditButton from './listItemEditButton';
-import ListItemDeleteButton from './listItemDeleteButton';
-import clearRouterHistory from '@/utils/clearRouterHistory';
-import RecurringIncome from '@/models/recurrenceModels/RecurringIncome';
-import deleteRecurringIncome from '@/utils/apiCalls/deleteRecurringIncome';
-import { Pill } from './categoryDisplayPills';
+import React from 'react'
+import { View, Text, StyleSheet, Alert } from 'react-native'
+import { useRouter } from 'expo-router'
+import ListItemEditButton from './listItemEditButton'
+import ListItemDeleteButton from './listItemDeleteButton'
+import clearRouterHistory from '@/utils/clearRouterHistory'
+import RecurringIncome from '@/models/recurrenceModels/RecurringIncome'
+import deleteRecurringIncome from '@/utils/apiCalls/deleteRecurringIncome'
+import { Pill } from './categoryDisplayPills'
 
 
 interface RecurringIncomeItemProps {
@@ -18,11 +18,11 @@ interface RecurringIncomeItemProps {
 
 export default function RecurringIncomeItem(props: RecurringIncomeItemProps) {
 
-    const router = useRouter();
+    const router = useRouter()
 
     const handleEdit = (id: string) => {
-        router.navigate(props.recurringIncome.getEditURL());
-        return;
+        router.navigate(props.recurringIncome.getEditURL())
+        return
     }
 
     const handleDeleteTransaction = (id: string) => {
@@ -32,13 +32,13 @@ export default function RecurringIncomeItem(props: RecurringIncomeItemProps) {
                 text: 'Delete', style: 'destructive', onPress: () => {
                     deleteRecurringIncome(props.token, id).then((complete) => {
                         if (complete) {
-                            Alert.alert('Success', 'Recurring income deleted successfully!');
-                            clearRouterHistory(router);
-                            router.replace("/listRecurringTransactionsPage");
+                            Alert.alert('Success', 'Recurring income deleted successfully!')
+                            clearRouterHistory(router)
+                            router.replace("/listRecurringTransactionsPage")
                         }
                     }).catch((err: Error) => {
-                        Alert.alert("Failed", "Failed to delete recurring income.");
-                        console.log(err.message);
+                        Alert.alert("Failed", "Failed to delete recurring income.")
+                        console.log(err.message)
                     })
                 }
             },

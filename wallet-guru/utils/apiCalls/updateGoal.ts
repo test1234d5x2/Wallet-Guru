@@ -1,8 +1,8 @@
 export default async function updateGoal(token: string, id: string, current: number): Promise<boolean> {
-    const API_DOMAIN = process.env.EXPO_PUBLIC_BLOCKCHAIN_MIDDLEWARE_API_IP_ADDRESS;
+    const API_DOMAIN = process.env.EXPO_PUBLIC_BLOCKCHAIN_MIDDLEWARE_API_IP_ADDRESS
     if (!API_DOMAIN) {
-        throw new Error("Domain could not be found.");
-    };
+        throw new Error("Domain could not be found.")
+    }
 
     const UPDATE_GOAL_PROGRESS_URL = `http://${API_DOMAIN}/api/goals/${id}/progress`
 
@@ -15,12 +15,12 @@ export default async function updateGoal(token: string, id: string, current: num
         body: JSON.stringify({
             current
         })
-    });
+    })
 
     if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error);
+        const error = await response.json()
+        throw new Error(error.error)
     }
 
-    return true;
+    return true
 }

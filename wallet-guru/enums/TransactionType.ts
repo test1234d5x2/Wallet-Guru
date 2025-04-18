@@ -3,4 +3,4 @@ enum TransactionType {
     INCOME = "Income",
 }
 
-export default TransactionType;
+export default TransactionType

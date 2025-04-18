@@ -1,14 +1,14 @@
-import ExpenseCategory from "@/models/core/ExpenseCategory";
-import BasicRecurrenceRule from "@/models/recurrenceModels/BasicRecurrenceRule";
-import RecurrenceRule from "@/models/recurrenceModels/RecurrenceRule";
+import ExpenseCategory from "@/models/core/ExpenseCategory"
+import BasicRecurrenceRule from "@/models/recurrenceModels/BasicRecurrenceRule"
+import RecurrenceRule from "@/models/recurrenceModels/RecurrenceRule"
 
 export default async function getExpenseCategoryByID(token: string, id: string): Promise<ExpenseCategory> {
-    const API_DOMAIN = process.env.EXPO_PUBLIC_BLOCKCHAIN_MIDDLEWARE_API_IP_ADDRESS;
+    const API_DOMAIN = process.env.EXPO_PUBLIC_BLOCKCHAIN_MIDDLEWARE_API_IP_ADDRESS
     if (!API_DOMAIN) {
-        throw new Error("Domain could not be found.");
-    };
+        throw new Error("Domain could not be found.")
+    }
 
-    const GET_EXPENSE_CATEGORY_URL = `http://${API_DOMAIN}/api/expense-categories/${id}`;
+    const GET_EXPENSE_CATEGORY_URL = `http://${API_DOMAIN}/api/expense-categories/${id}`
 
     const response = await fetch(GET_EXPENSE_CATEGORY_URL, {
         method: "GET",
@@ -16,14 +16,14 @@ export default async function getExpenseCategoryByID(token: string, id: string):
             "Authorization": `Bearer ${token}`,
             "Content-Type": "application/json",
         },
-    });
+    })
 
     if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error);
-    };
+        const error = await response.json()
+        throw new Error(error.error)
+    }
 
-    const data: any = await response.json();
+    const data: any = await response.json()
     const recurrenceRule = new BasicRecurrenceRule(
         data.recurrenceRule.frequency,
         data.recurrenceRule.interval,
@@ -31,5 +31,5 @@ export default async function getExpenseCategoryByID(token: string, id: string):
         data.recurrenceRule.nextTriggerDate ? new Date(data.recurrenceRule.nextTriggerDate) : undefined,
         data.recurrenceRule.endDate ? new Date(data.recurrenceRule.endDate) : undefined
     )
-    return new ExpenseCategory(data.userID, data.name, data.monthlyBudget, recurrenceRule, data.id, data.colour);
+    return new ExpenseCategory(data.userID, data.name, data.monthlyBudget, recurrenceRule, data.id, data.colour)
 }

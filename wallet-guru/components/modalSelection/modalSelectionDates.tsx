@@ -1,6 +1,6 @@
-import getMonthName from '@/utils/getMonthName';
-import React, { useState } from 'react';
-import { View, Text, FlatList, TouchableOpacity, StyleSheet, Modal, Pressable, SafeAreaView, Alert } from 'react-native';
+import getMonthName from '@/utils/getMonthName'
+import React, { useState } from 'react'
+import { View, Text, FlatList, TouchableOpacity, StyleSheet, Modal, Pressable, SafeAreaView, Alert } from 'react-native'
 
 
 interface ModalSelectionProps {
@@ -44,8 +44,8 @@ const ModalSelectionDates = (props: ModalSelectionProps) => {
                                     <TouchableOpacity
                                         style={styles.dropdownOption}
                                         onPress={() => {
-                                            props.setValue(item);
-                                            setShowDropdown(false);
+                                            props.setValue(item)
+                                            setShowDropdown(false)
                                         }}
                                     >
                                         <Text style={styles.optionText}>{getMonthName(item)} {item.getFullYear()}</Text>
@@ -113,4 +113,4 @@ const styles = StyleSheet.create({
     },
 })
 
-export default ModalSelectionDates;
+export default ModalSelectionDates

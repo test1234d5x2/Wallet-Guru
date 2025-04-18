@@ -1,11 +1,11 @@
-import { Ionicons } from '@expo/vector-icons';
-import React from 'react';
-import { Modal, View, Image, TouchableOpacity, Text, ScrollView, StyleSheet } from 'react-native';
+import { Ionicons } from '@expo/vector-icons'
+import React from 'react'
+import { Modal, View, Image, TouchableOpacity, Text, ScrollView, StyleSheet } from 'react-native'
 
 interface Props {
-    uri: string;
-    visible: boolean;
-    setViewReceipt: (b: boolean) => void;
+    uri: string
+    visible: boolean
+    setViewReceipt: (b: boolean) => void
 }
 
 export default function ViewReceiptModal({ uri, visible, setViewReceipt }: Props) {
@@ -26,7 +26,7 @@ export default function ViewReceiptModal({ uri, visible, setViewReceipt }: Props
                 </ScrollView>
             </View>
         </Modal>
-    );
+    )
 }
 
 const styles = StyleSheet.create({
@@ -59,4 +59,4 @@ const styles = StyleSheet.create({
         fontSize: 24,
         fontWeight: 'bold',
     },
-});
+})

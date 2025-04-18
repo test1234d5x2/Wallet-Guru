@@ -19,7 +19,7 @@ export default function getColourSelection(): string[] {
         '#FF69B4',
         '#FFB6C1',
         '#D3D3D3',
-    ];
+    ]
 
-    return colours;
+    return colours
 }
