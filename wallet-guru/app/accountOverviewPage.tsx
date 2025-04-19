@@ -12,6 +12,7 @@ import getIncomes from "@/utils/apiCalls/getIncomes"
 import getExpenseCategories from "@/utils/apiCalls/getExpenseCategories"
 import getIncomeCategories from "@/utils/apiCalls/getIncomeCategories"
 import { generateQIF } from "@/utils/generateQIF"
+import { generateCSV } from "@/utils/generateCSV"
 
 
 export default function AccountOverview() {
@@ -70,7 +71,9 @@ export default function AccountOverview() {
     const handleExportCSV = async () => {
         // TODO: WRITE YOUR OWN CSV GENERATOR.
         const transactions = await getTransactions()
-        const categories = await getExpenseCategories(token)
+        const expenseCategories = await getExpenseCategories(token)
+        const incomeCategories = await getIncomeCategories(token)
+        await generateCSV(transactions, expenseCategories, incomeCategories, "file.csv")
     }
 
     const handleExportQIF = async () => {

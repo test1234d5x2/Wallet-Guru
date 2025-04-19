@@ -1,17 +1,16 @@
+import Expense from '@/models/core/Expense'
+import ExpenseCategory from '@/models/core/ExpenseCategory'
+import IncomeCategory from '@/models/core/IncomeCategory'
 import Transaction from '@/models/core/Transaction'
 import * as FileSystem from 'expo-file-system'
-import * as Sharing from 'expo-sharing'
 
 
-/**
- * Generate a CSV file from transactions, save it, and prompt the share sheet
- *
- * @param transactions - Array of Transaction items
- * @param categoryMap - Map of categoryID to human-readable category name
- * @param filename - Output filename (e.g. 'export.csv')
- * @returns URI where the CSV was saved
- */
-export async function generateCSV(transactions: Transaction[],categoryMap: Record<string, string>,filename: string): Promise<string> {
+function isExpense(tx: Transaction): tx is Expense {
+    return 'receipt' in tx
+}
+
+
+export async function generateCSV(transactions: Transaction[], expenseCategoriesList: ExpenseCategory[], incomeCategoriesList: IncomeCategory[], filename: string) {
     const formatDate = (dt: Date): string => {
         const mm = String(dt.getMonth() + 1).padStart(2, '0')
         const dd = String(dt.getDate()).padStart(2, '0')
@@ -23,10 +22,19 @@ export async function generateCSV(transactions: Transaction[],categoryMap: Recor
     const escape = (value: string): string => `"${value.replace(/"/g, '""')}"`
 
     const rows = transactions.map(tx => {
+        let categoryName
+
+        if (isExpense(tx)) {
+            categoryName = expenseCategoriesList.find(cat => cat.getID() === tx.categoryID)?.name || ''
+        }
+        else {
+            categoryName = incomeCategoriesList.find(cat => cat.getID() === tx.categoryID)?.name || ''
+        }
+
         const row = [
             formatDate(tx.date),
             tx.title,
-            categoryMap[tx.categoryID] ?? '',
+            categoryName,
             tx.notes,
             tx.amount.toString()
         ].map(escape)
@@ -34,13 +42,22 @@ export async function generateCSV(transactions: Transaction[],categoryMap: Recor
     })
 
     const csvContent = [header.map(escape).join(','), ...rows].join('\n') + '\n'
-
-    const fileUri = FileSystem.documentDirectory + filename
-    await FileSystem.writeAsStringAsync(
-        fileUri,
-        csvContent,
-        { encoding: FileSystem.EncodingType.UTF8 }
-    )
-
-    return fileUri
+    try {
+        const perm = await FileSystem.StorageAccessFramework.requestDirectoryPermissionsAsync()
+        if (perm.granted && perm.directoryUri) {
+            const uri = await FileSystem.StorageAccessFramework.createFileAsync(
+                perm.directoryUri,
+                filename,
+                'application/x-qif'
+            )
+            await FileSystem.StorageAccessFramework.writeAsStringAsync(
+                uri,
+                csvContent,
+                { encoding: FileSystem.EncodingType.UTF8 }
+            )
+            return uri
+        }
+    } catch (e) {
+        console.warn('Error requesting directory or writing file:', e)
+    }
 }
