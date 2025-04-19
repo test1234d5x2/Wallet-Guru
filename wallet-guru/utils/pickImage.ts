@@ -59,9 +59,10 @@ const pickImage = async (setReceipt: (r: string) => void, setDate: (text: Date |
             const data = response.response.text()
             const cleanedData = data.replace("json", "").replaceAll("```", "")
             const jsonData = JSON.parse(cleanedData)
+            console.log(jsonData)
             setTitle(jsonData.vendor)
             setAmount(jsonData.total)
-            setDate(new Date(jsonData.date))
+            setDate(jsonData.date ? new Date(jsonData.date): null)
             setWaiting(false)
         } catch (error) {
             console.error('Error reading file:', error)
