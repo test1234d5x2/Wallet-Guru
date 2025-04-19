@@ -5,7 +5,7 @@ import * as FileSystem from 'expo-file-system';
 
 const GEMINI_API_KEY = process.env.EXPO_PUBLIC_GEMINI_API_KEY
 
-const pickImage = async (setReceipt: (r: string) => void, setDate: (text: Date|null) => void, setAmount: (text: string) => void, setTitle: (text: string) => void, setWaiting: (text: boolean) => void) => {
+const pickImage = async (setReceipt: (r: string) => void, setDate: (text: Date | null) => void, setAmount: (text: string) => void, setTitle: (text: string) => void, setWaiting: (text: boolean) => void) => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync()
     if (status !== 'granted') {
         Alert.alert('Permission Required', 'Gallery permission is needed to select an image.')
@@ -38,15 +38,29 @@ const pickImage = async (setReceipt: (r: string) => void, setDate: (text: Date|n
                     },
                 },
                 {
-                    text: 'Extract the date, amount, and name of place from this receipt. Respond in JSON format. Do not add anything else to the response. If the data is not available, leave it empty. Return dates in ISO format',
+                    text: `
+                        Extract from this receipt text these three fields:
+                        date - the transaction date, in ISO 8601 format (YYYY-MM-DD).
+                        vendor - the merchant's name.
+                        total - the Total Due amount (the final amount paid), as a number (no currency symbols). This is the grand total.
+                        Respond with exactly one JSON object matching this schema and nothing else:
+
+                        {
+                            "date": "YYYY-MM-DD",
+                            "vendor": "string",
+                            "total": "string"
+                        }
+
+                        If any field is not present, set it to null
+                    `,
                 },
             ])
 
             const data = response.response.text()
             const cleanedData = data.replace("json", "").replaceAll("```", "")
             const jsonData = JSON.parse(cleanedData)
-            setTitle(jsonData.place)
-            setAmount(jsonData.amount)
+            setTitle(jsonData.vendor)
+            setAmount(jsonData.total)
             setDate(new Date(jsonData.date))
             setWaiting(false)
         } catch (error) {

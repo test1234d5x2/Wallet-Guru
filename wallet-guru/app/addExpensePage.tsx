@@ -78,7 +78,7 @@ export default function AddExpense() {
             const result = await getExpenseCategories(token)
             if (result) {
                 setCategories(result)
-                //await updateCategoriesTimeWindowEnd(result, token)
+                await updateCategoriesTimeWindowEnd(result, token)
             } else {
                 console.log("Error with getting expense categories list")
             }
