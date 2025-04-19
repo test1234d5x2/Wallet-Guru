@@ -106,7 +106,6 @@ export const listByUser: RequestHandler = async (req, res) => {
     const expenseCategoryService = registry.expenseCategoryService
 
     const categories = await expenseCategoryService.getAllCategoriesByUser(userID)
-    console.log(categories)
     res.status(200).json({ categories })
 }
 
