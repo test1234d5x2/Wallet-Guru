@@ -13,7 +13,7 @@ import getToken from '@/utils/tokenAccess/getToken'
 import updateExpense from '@/utils/apiCalls/updateExpense'
 import getExpenseByID from '@/utils/apiCalls/getExpensesByID'
 import getExpenseCategories from '@/utils/apiCalls/getExpenseCategories'
-import pickImage from '@/utils/pickImage'
+import pickImage from '@/utils/receiptAutofill'
 import updateCategoriesTimeWindowEnd from '@/utils/analytics/batchProcessRecurrencesUpdates/updateCategoriesTimeWindowEnd'
 
 export default function EditExpense() {
