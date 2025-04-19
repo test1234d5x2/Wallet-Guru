@@ -1,4 +1,4 @@
-# INCOMPLETE - PLEASE FIX
+# QUICK SPIN UP OF A READMED
 
 ## Why is there no single executable file?
 The project had to be broken down into several smaller microservices that connect with each other to create the full application. Because of this, each microservice requires installing the correct packages before running.
@@ -18,7 +18,7 @@ Another main reason for why there is no single executable file is because the en
 ## Prerequisites:
 - It is required for you to be connected to WiFi (no hotspots, must be WiFi).
 - It is required to know your private WiFi IP Address.
-- 
+- Maybe more.
 
 
 ### Getting An Android Emulator
@@ -37,7 +37,15 @@ Inside the folder <code>wallet_guru</code>:
 
 Inside the folder <code>middlewareAPI</code>:
 - The environment variable <code>IP</code> has been marked with "*****". Change it to yur IP address.
-- Then there are 4 sets of environment variables, one for each peer. 
+- Then there are 4 sets of environment variables, one for each peer.
+- For each peer, there are 3 environment variables that need changing.
+  - <code>PEER[x]_KEY_DIRECTORY_PATH</code>: This is the private key directory for the specific peer. Relative to the <code>fabric-ca</code> directory, it's path is <code>fabric-ca/peerorg/peer[x]/msp/keystore</code>. Find the directory and copy the absolute path to it. x is the number of the peer between 1 and 4.
+  - <code>PEER[x]_CERTIFICATE_DIRECTORY_PATH</code>: This is the signed certificate for the specific peer. Relative to the <code>fabric-ca</code> directory, it's path is <code>fabric-ca/peerorg/peer[x]/msp/signcerts</code>. Find the directory and copy the absolute path to it. x is the number of the peer between 1 and 4.
+  - <code>PEER[x]_TLS_CERTIFICATE_PATH</code>: This is the TLS certificate for the specific peer. Relative to the <code>fabric-ca</code> directory, it's path is <code>fabric-ca/peerorg/peer[x]/tls-msp/tlscacerts/tls-0-0-0-0-7052.pem</code>. Find the file and copy the absolute path to the environment variable. x is the number of the peer between 1 and 4.
+- Below the environment variables for the 4 peers, there are more variables that need altering. These are specifically for the user to be registered and enrolled to the Certificate Authority.
+  - <code>CA_TLS_CERT_PATH</code>: Relative to the <code>fabric-ca</code> directory, it's path is <code>fabric-ca/peerorg/ca/crypto/ca-cert.pem</code>. Find the file and copy the absolute path to the environment variable.
+  - <code>ADMIN_SIGNCERT</code>: Relative to the <code>fabric-ca</code> directory, it's path is <code>fabric-ca/peerorg/admin/msp/signcerts/cert.pem</code>. Find the file and copy the absolute path to the environment variable.
+  - <code>ADMIN_KEYPATH</code>: Relative to the <code>fabric-ca</code> directory, it's path is <code>fabric-ca/peerorg/admin/msp/keystore/[NAME OF KEY OMITTED]</code>. Find the file and copy the absolute path to the environment variable.
 
 ### Downloading Expo Go To Run The Mobile App
 - Navigate to the <code>wallet_guru</code> folder via a terminal. For Windows, use PowerShell.
@@ -46,6 +54,7 @@ Inside the folder <code>middlewareAPI</code>:
 - When the initialisation process done by Expo is complete, press "a".
 - The terminal window will then give you a choice of install Expo Go on the Android Emulator, proceed with it.
 - Expo Go should open automatically once downloaded and complete.
+- If the app does not open, press "a" again in the terminal window and it should open.
 
 
 ### Running The Blockchain
@@ -79,3 +88,11 @@ Inside the folder <code>middlewareAPI</code>:
 - Run the command <code>peer lifecycle chaincdoe commit -o orderer1-ordererorg:7050 --channelID expensechannel --name basic --version 1.0 --sequence 1 --tls --cafile /path/to/orderer/ca/file --peerAddresses peer1-peerorg:7051 --tlsRootCertFiles /path/to/peer1/ca/file</code>
 - Now the chaincode should have installed. To check this is true, go to the Docker window and you should see 4 extra containers that started with "dev-peer...". A further method to check is to run the command <code>peer lifecycle chaincode queryinstalled -C expensechannel -n basic</code>.
 - The blockchain is now running!
+
+
+
+### Running the API connecting the frontend to the blockchain
+- Navigate to the <code>middlewareAPI</code> folder using a separate terminal window.
+- Run the command <code>npm install</code>
+- Run the command <code>npm run dev</code>
+- This part is now complete.
