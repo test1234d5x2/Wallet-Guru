@@ -20,7 +20,6 @@ export const create: RequestHandler = async (req, res) => {
     const expenseCategoryService = registry.expenseCategoryService
     const expenseService = registry.expenseService
 
-    console.log(expenseCategoryID)
     const expenseCategory = await expenseCategoryService.findByID(expenseCategoryID, userID)
     if (!expenseCategory) {
         res.status(404).json({ message: "The expense category could not be found." })
@@ -38,8 +37,6 @@ export const create: RequestHandler = async (req, res) => {
 export const update: RequestHandler = async (req, res) => {
     const { id } = req.params
     const { title, amount, date, notes, expenseCategoryID, receipt } = req.body
-
-    console.log(expenseCategoryID)
 
     const userID = getUserFromToken(req)
     if (!userID) {
