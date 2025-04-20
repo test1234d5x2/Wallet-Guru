@@ -20,6 +20,12 @@ export default abstract class RecurrenceRule {
         this.endDate = endDate
 
         this.nextTriggerDate = toUTC(this.nextTriggerDate)
+
+        this.nextTriggerDate = new Date(Date.UTC(
+            this.nextTriggerDate.getUTCFullYear(),
+            this.nextTriggerDate.getUTCMonth(),
+            this.nextTriggerDate.getUTCDate(),
+        ))
     }
 
     public shouldEnd(): boolean {

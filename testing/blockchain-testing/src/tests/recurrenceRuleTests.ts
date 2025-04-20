@@ -1,4 +1,5 @@
 import RecurrenceRule from "../models/recurrenceModels/RecurrenceRule"
+import toUTC from "./toUTC"
 
 export default function testRecurrenceRuleDetails(data: RecurrenceRule, expected: RecurrenceRule): boolean {
     let result = true
@@ -15,25 +16,26 @@ export default function testRecurrenceRuleDetails(data: RecurrenceRule, expected
         result = false
     }
 
-    console.log(`Recurrence Rule Start Date : ${data.startDate.toISOString()} === ${expected.startDate.toISOString()}`)
+    console.log(`Recurrence Rule Start Date : ${toUTC(data.startDate).toUTCString()} === ${toUTC(expected.startDate).toUTCString()}`)
 
-    if (data.startDate.getTime() !== expected.startDate.getTime()) {
+    if (toUTC(data.startDate).toUTCString() !== toUTC(expected.startDate).toUTCString()) {
         result = false
     }
 
-    console.log(`Recurrence Rule Next Trigger Date: ${data.nextTriggerDate.toISOString()} === ${expected.nextTriggerDate.toISOString()}`)
+    console.log(`Recurrence Rule Next Trigger Date: ${toUTC(data.nextTriggerDate).toUTCString()} === ${toUTC(expected.nextTriggerDate).toUTCString()}`)
 
-    if (data.nextTriggerDate.getTime() !== expected.nextTriggerDate.getTime()) {
+    if (toUTC(data.nextTriggerDate).toUTCString() !== toUTC(expected.nextTriggerDate).toUTCString()) {
         result = false
     }
 
     if (!expected.endDate) {
         if (data.endDate) result = false
-    } else {
+    }
+    else {
         if (!data.endDate) {} 
         else {
-            console.log(`Recurrence Rule End Date: ${data.endDate.toISOString()} === ${expected.endDate.toISOString()}`)
-            if (data.endDate.getTime() !== expected.endDate.getTime()) {
+            console.log(`Recurrence Rule End Date: ${toUTC(data.endDate).toUTCString()} === ${toUTC(expected.endDate).toUTCString()}`)
+            if (toUTC(data.endDate).toUTCString() !== toUTC(expected.endDate).toUTCString()) {
                 result = false
             }
         }

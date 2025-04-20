@@ -32,6 +32,7 @@ import { testRecurringIncomeDetails } from './tests/recurringIncomeTests'
 import IncomeCategory from './models/core/IncomeCategory'
 import { createIncomeCategory, deleteIncomeCategory, getIncomeCategoryByID, listIncomeCategoriesByUser, updateIncomeCategory } from './contractFunctions/incomeCategoryContractFunctions'
 import { testIncomeCategoryDetails } from './tests/incomeCategoryTests'
+import toUTC from './tests/toUTC'
 
 
 dotenv.config()
@@ -55,17 +56,17 @@ const peerEndpoint = envOrDefault('PEER_ENDPOINT', '')
 const peerHostAlias = envOrDefault('PEER_HOST_ALIAS', '')
 
 
-const userDate = new Date(Date.UTC(2020, 1, 1))
+const userDate = toUTC(new Date(Date.UTC(2020, 1, 1)))
 const userID = crypto.randomUUID().toString()
 const user = new User(userID, "t", userID, userDate, UserStatus.PENDING)
-const brr = new BasicRecurrenceRule(Frequency.Daily, 1, new Date(), new Date())
+const brr = new BasicRecurrenceRule(Frequency.Daily, 1, toUTC(new Date()), toUTC(new Date()))
 const expenseCategory = new ExpenseCategory(userID, 'Bills', 500, brr, undefined, "#FF0000")
 const incomeCategory = new IncomeCategory(userID, "Work", undefined, "#FF0000")
-const expense = new Expense(userID, "title", 50, new Date(), "", expenseCategory.getID())
-const income = new Income(userID, "title", 500, new Date(), "", incomeCategory.getID())
-const goal = new Goal("title", userID, "sajhvdjahsvd", 1000, new Date(), GoalStatus.Active)
-const recurringExpense = new RecurringExpense(userID, "title", 50, new Date(), "", expenseCategory.getID(), brr)
-const recurringIncome = new RecurringIncome(userID, "title", 50, new Date(), "", incomeCategory.getID(), brr)
+const expense = new Expense(userID, "title", 50, toUTC(new Date()), "", expenseCategory.getID())
+const income = new Income(userID, "title", 500, toUTC(new Date()), "", incomeCategory.getID())
+const goal = new Goal("title", userID, "sajhvdjahsvd", 1000, toUTC(new Date()), GoalStatus.Active)
+const recurringExpense = new RecurringExpense(userID, "title", 50, toUTC(new Date()), "", expenseCategory.getID(), brr)
+const recurringIncome = new RecurringIncome(userID, "title", 50, toUTC(new Date()), "", incomeCategory.getID(), brr)
 
 
 
@@ -286,7 +287,7 @@ async function testSuite(): Promise<void> {
             console.log()
         }
 
-        expenseCategory.name = "240sgdvaghsd"
+        incomeCategory.name = "240sgdvaghsd"
         await updateIncomeCategory(incomeCategoryContract, incomeCategory)
         retrievedIncomeCategory = await getIncomeCategoryByID(incomeCategoryContract, user.getUserID(), incomeCategory.getID())
         if (!retrievedIncomeCategory) {
