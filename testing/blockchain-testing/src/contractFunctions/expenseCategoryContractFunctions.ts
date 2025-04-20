@@ -44,7 +44,7 @@ export async function listExpenseCategoriesByUser(contract: Contract, userID: st
                 category.recurrenceRule.nextTriggerDate ? new Date(category.recurrenceRule.nextTriggerDate) : undefined,
                 category.recurrenceRule.endDate ? new Date(category.recurrenceRule.endDate) : undefined
             )
-            return new ExpenseCategory(category.userID, category.name, category.monthlyBudget, recurrenceRule, category.id)
+            return new ExpenseCategory(category.userID, category.name, category.monthlyBudget, recurrenceRule, category.id, category.colour)
         })
         return categories
     } catch (err) {
@@ -71,7 +71,7 @@ export async function getExpenseCategoryByID(contract: Contract, userID: string,
             result.recurrenceRule.nextTriggerDate ? new Date(result.recurrenceRule.nextTriggerDate) : undefined,
             result.recurrenceRule.endDate ? new Date(result.recurrenceRule.endDate) : undefined
         )
-        const data: ExpenseCategory = new ExpenseCategory(result.userID, result.name, result.monthlyBudget, recurrenceRule, result.id)
+        const data: ExpenseCategory = new ExpenseCategory(result.userID, result.name, result.monthlyBudget, recurrenceRule, result.id, result.colour)
         return data
     } catch (err) {
         console.log(err)

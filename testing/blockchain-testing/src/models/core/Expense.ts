@@ -47,7 +47,7 @@ class Expense implements Transaction {
             date: this.date,
             notes: this.notes,
             categoryID: this.categoryID,
-            receipt: this.receipt
+            receipt: this.receipt,
         }
     }
 }

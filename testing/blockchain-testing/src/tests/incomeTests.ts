@@ -39,5 +39,11 @@ export function testIncomeDetails(data: Income, expected: Income): boolean {
         result = false
     }
 
+    console.log(`Category ID: ${data.categoryID} === ${expected.categoryID}`)
+
+    if (data.categoryID !== expected.categoryID) {
+        result = false
+    }
+
     return result
 }

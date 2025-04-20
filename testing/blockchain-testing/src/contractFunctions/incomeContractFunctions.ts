@@ -55,7 +55,7 @@ export async function listIncomesByUser(contract: Contract, userID: string): Pro
 
         const resultJson = utf8Decoder.decode(resultBytes)
         const result = JSON.parse(resultJson)
-        const incomes: Income[] = result.incomes.map((i: any) => new Income(i.userID, i.title, i.amount, new Date(i.date), i.notes, i.id))
+        const incomes: Income[] = result.incomes.map((i: any) => new Income(i.userID, i.title, i.amount, new Date(i.date), i.notes, i.categoryID, i.id))
         return incomes
     } catch (err) {
         console.log(err)
@@ -74,7 +74,7 @@ export async function getIncomeByID(contract: Contract, userID: string, id: stri
 
         const resultJson = utf8Decoder.decode(resultBytes)
         const data = JSON.parse(resultJson)
-        return new Income(data.userID, data.title, data.amount, new Date(data.date), data.notes, data.id)
+        return new Income(data.userID, data.title, data.amount, new Date(data.date), data.notes, data.categoryID, data.id)
     } catch (err) {
         console.log(err)
     }

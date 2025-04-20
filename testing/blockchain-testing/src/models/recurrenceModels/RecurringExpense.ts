@@ -6,7 +6,7 @@ export default class RecurringExpense extends Expense implements RecurringTransa
     recurrenceRule: RecurrenceRule
 
     constructor(userID: string, title: string, amount: number, date: Date, notes: string, categoryID: string, recurrenceRule: RecurrenceRule, id?: string) {
-        super(userID, title, amount, date, notes, categoryID, "", id)
+        super(userID, title, amount, date, notes, categoryID, '', id)
         this.recurrenceRule = recurrenceRule
     }
 
@@ -22,7 +22,7 @@ export default class RecurringExpense extends Expense implements RecurringTransa
         let partialResult = super.toJSON()
         return {
             ...partialResult,
-            recurrenceRule: this.recurrenceRule
+            recurrenceRule: this.recurrenceRule,
         }
     }
 }

@@ -51,7 +51,7 @@ export default class Goal {
             target: this.target,
             targetDate: this.targetDate,
             current: this.current,
-            status: this.status
+            status: this.status,
         }
     }
 }

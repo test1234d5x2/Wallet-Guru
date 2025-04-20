@@ -1,7 +1,6 @@
-import ExpenseCategory from "../models/core/ExpenseCategory"
-import testRecurrenceRuleDetails from "./recurrenceRuleTests"
+import IncomeCategory from "../models/core/IncomeCategory"
 
-export function testExpenseCategoryDetails(data: ExpenseCategory, expected: ExpenseCategory): boolean {
+export function testIncomeCategoryDetails(data: IncomeCategory, expected: IncomeCategory): boolean {
     let result = true
 
     console.log(`ID: ${data.getID()} === ${expected.getID()}`)
@@ -22,20 +21,11 @@ export function testExpenseCategoryDetails(data: ExpenseCategory, expected: Expe
         result = false
     }
 
-    console.log(`Monthly Budget: ${data.monthlyBudget} === ${expected.monthlyBudget}`)
-
-    if (data.monthlyBudget !== expected.monthlyBudget) {
-        result = false
-    }
-
     console.log(`Colour: ${data.colour} === ${expected.colour}`)
 
     if (data.colour !== expected.colour) {
         result = false
     }
 
-    console.log("Recurrence Rule Tests:")
-    let recurrenceRuleResult = testRecurrenceRuleDetails(data.recurrenceRule, expected.recurrenceRule)
-
-    return result && recurrenceRuleResult
+    return result
 }

@@ -40,6 +40,12 @@ export function testRecurringIncomeDetails(data: RecurringIncome, expected: Recu
         result = false
     }
 
+    console.log(`Category ID: ${data.categoryID} === ${expected.categoryID}`)
+
+    if (data.categoryID !== expected.categoryID) {
+        result = false
+    }
+
     console.log("Recurrence Rule Tests:")
     let recurrenceResult = testRecurrenceRuleDetails(data.recurrenceRule, expected.recurrenceRule)
 
