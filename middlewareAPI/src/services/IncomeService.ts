@@ -98,7 +98,7 @@ class IncomeService {
 
             const resultJson = utf8Decoder.decode(resultBytes)
             const data = JSON.parse(resultJson)
-            return new Income(data.userID, data.title, data.amount, new Date(data.date), data.notes, data.id)
+            return new Income(data.userID, data.title, data.amount, new Date(data.date), data.notes, data.categoryID, data.id)
         } catch (err) {
             console.log(err)
         }

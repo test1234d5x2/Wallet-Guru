@@ -12,6 +12,7 @@ class Income implements Transaction {
 
     constructor(userID: string, title: string, amount: number, date: Date, notes: string, categoryID: string, id?: string) {
         this.id = id || v4()
+        console.log(`Init: ${this.id} Correct: ${id}`)
         this.userID = userID
         this.title = title
         this.amount = amount
