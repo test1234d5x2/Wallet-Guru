@@ -37,6 +37,7 @@ Inside the folder <code>wallet_guru</code>:
 
 Inside the folder <code>middlewareAPI</code>:
 - The environment variable <code>IP</code> has been marked with "*****". Change it to yur IP address.
+- CAN POTENTIALLY REMOVE ALL OF THE BELOW STEPS.
 - Then there are 4 sets of environment variables, one for each peer.
 - For each peer, there are 3 environment variables that need changing.
   - <code>PEER[x]_KEY_DIRECTORY_PATH</code>: This is the private key directory for the specific peer. Relative to the <code>fabric-ca</code> directory, it's path is <code>fabric-ca/peerorg/peer[x]/msp/keystore</code>. Find the directory and copy the absolute path to it. x is the number of the peer between 1 and 4.
