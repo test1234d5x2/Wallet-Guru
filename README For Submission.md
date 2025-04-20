@@ -21,6 +21,12 @@ Another main reason for why there is no single executable file is because the en
 - Maybe more.
 
 
+### Downloading Hyperledger Fabric & It's Prerequisites:
+- Follow the steps in the link here: https://hyperledger-fabric.readthedocs.io/en/release-2.5/prereqs.html
+- Then follow the steps in the link here: https://hyperledger-fabric.readthedocs.io/en/release-2.5/install.html
+- When running the install script, make sure to use "docker samples binary" as the arguments.
+- This will take a few minutes.
+
 ### Getting An Android Emulator
 - Install Android Studio.
 - Follow the on-screen instructions with default installation settings until you see the welcome page.
@@ -36,7 +42,7 @@ Inside the folder <code>wallet_guru</code>:
 - The environment variable <code>EXPO_PUBLIC_BLOCKCHAIN_MIDDLEWARE_API_IP_ADDRESS</code> has 2 parts to it, an IP address and a port number. Leave the port number, change the IP address to your own IP address. The space to change has been marked with "*****".
 
 Inside the folder <code>middlewareAPI</code>:
-- The environment variable <code>IP</code> has been marked with "*****". Change it to yur IP address.
+- The environment variable <code>IP</code> has been marked with "*****". Change it to your IP address.
 
 ### Downloading Expo Go To Run The Mobile App
 - Navigate to the <code>wallet_guru</code> folder via a terminal. For Windows, use PowerShell.
@@ -58,8 +64,8 @@ Inside the folder <code>middlewareAPI</code>:
 - Run the command <code>docker-compose up -d</code>. This command runs the peers, orderers and a dedicated bash terminal.
 - If this is the first time you run the command, it may take a few minutes for the images to be pulled.
 - Run the command <code>docker exec -it cli-peer1 bash</code>. This command will let you access the dedicated bash terminal.
-- Run the command <code>export CORE_PEER_MSPCONFIGPATH</code>.
-- Run the command <code>peer channel create -c expensechannnel -f path/to/ordererorg/channel.tx -o orderer1-ordererorg:7050 --tls --cafile /path/to/ordererorg/cafile</code>
+- Run the command <code>export CORE_PEER_MSPCONFIGPATH=/var/hyperledger/peerorg/admin/msp/</code>.
+- Run the command <code>peer channel create -c expensechannnel -f path/to/ordererorg/channel.tx -o orderer1-ordererorg:7050 --tls --cafile /var/hyperledger/ordererorg/orderer1/tls-msp/tlscacerts/tls-0-0-0-0-7052.pem</code>
 - Run the command <code>peer channel join -b expensechannel.block</code>
 - Run the command <code>export CORE_PEER_ADDRESS=peer2-peerorg:8051</code>
 - Run the command <code>peer channel join -b expensechannel.block</code>
@@ -75,8 +81,8 @@ Inside the folder <code>middlewareAPI</code>:
 - Run the command <code>export CORE_PEER_ADDRESS=peer1-peerorg:7051</code>
 - Run the command <code>peer lifecycle chaincode install /etc/hyperledger/chaincode/basic.tar.gz</code>
 - Now, right above where the cursor is in the terminal window, there is a package ID that the previous command just returned. A screenshot has been provided below as an example. If this is not put into the next command correctly, the terminal command will still work fine but the chaincode will not install.
-- Run the command <code>peer lifecycle chaincode approveformyorg -o orderer1-ordererorg:7050 --channelID expensechannel --package-id YOUR_PACKAGE_ID --name basic --version 1.0 --sequence 1 --tls --cafile path/to/orderer/ca/file</code>
-- Run the command <code>peer lifecycle chaincode commit -o orderer1-ordererorg:7050 --channelID expensechannel --name basic --version 1.0 --sequence 1 --tls --cafile /path/to/orderer/ca/file --peerAddresses peer1-peerorg:7051 --tlsRootCertFiles /path/to/peer1/ca/file</code>
+- Run the command <code>peer lifecycle chaincode approveformyorg -o orderer1-ordererorg:7050 --channelID expensechannel --package-id YOUR_PACKAGE_ID --name basic --version 1.0 --sequence 1 --tls --cafile /var/hyperledger/ordererorg/orderer1/tls-msp/tlscacerts/tls-0-0-0-0-7052.pem</code>. <strong>IMPORTANT: Replace "YOUR_PACKAGE_ID" with the ID from the previous command output.</strong>
+- Run the command <code>peer lifecycle chaincode commit -o orderer1-ordererorg:7050 --channelID expensechannel --name basic --version 1.0 --sequence 1 --tls --cafile /var/hyperledger/ordererorg/orderer1/tls-msp/tlscacerts/tls-0-0-0-0-7052.pem --peerAddresses peer1-peerorg:7051 --tlsRootCertFiles /var/hyperledger/peerorg/peer1/tls-msp/tlscacerts/tls-0-0-0-0-7052.pem</code>
 - Now the chaincode should have installed. To check this is true, go to the Docker window and you should see 4 extra containers that started with "dev-peer...". A further method to check is to run the command <code>peer lifecycle chaincode queryinstalled -C expensechannel -n basic</code>.
 - The blockchain is now running!
 
