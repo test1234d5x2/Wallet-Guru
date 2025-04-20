@@ -51,7 +51,7 @@ export default function IncomeDetailsScreen() {
     }, [token])
 
     useEffect(() => {
-        async function getExpenseCategory() {
+        async function getIncomeCategory() {
             if (income) {
                 getIncomeCategories(token).then((categories) => {
                     setCategory(categories.find((cat) => cat.getID() === income.categoryID))
@@ -64,7 +64,7 @@ export default function IncomeDetailsScreen() {
             }
         }
 
-        if (token && income) getExpenseCategory()
+        if (token && income) getIncomeCategory()
     }, [token, income])
 
     const handleEdit = () => {

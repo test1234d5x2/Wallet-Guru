@@ -69,12 +69,7 @@ class IncomeCategoryService {
             const resultJson = utf8Decoder.decode(resultBytes)
             const result = JSON.parse(resultJson)
             const categories: IncomeCategory[] = result.categories.map((category: any) =>
-                new IncomeCategory(
-                    category.userID,
-                    category.name,
-                    category.id,
-                    category.colour
-                )
+                new IncomeCategory(category.userID, category.name, category.id, category.colour)
             )
             return categories
         } catch (err) {
@@ -92,12 +87,7 @@ class IncomeCategoryService {
             )
             const resultJson = utf8Decoder.decode(resultBytes)
             const data = JSON.parse(resultJson)
-            return new IncomeCategory(
-                data.userID,
-                data.name,
-                data.id,
-                data.colour
-            )
+            return new IncomeCategory(data.userID, data.name, data.id, data.colour)
         } catch (err) {
             console.log(err)
         }

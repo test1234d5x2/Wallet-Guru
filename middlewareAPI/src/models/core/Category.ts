@@ -14,11 +14,11 @@ export default abstract class Category {
     }
 
     public getID(): string {
-        return this.id;
+        return this.id
     }
 
     public getUserID(): string {
-        return this.userID;
+        return this.userID
     }
 
     public toJSON() {

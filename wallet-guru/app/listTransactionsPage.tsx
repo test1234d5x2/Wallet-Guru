@@ -74,7 +74,7 @@ export default function ViewTransactionsList() {
             if (result) {
                 setIncomeCategories(result)
             } else {
-                console.log("Error with getting expense categories list")
+                console.log("Error with getting income categories list")
             }
         }
 
