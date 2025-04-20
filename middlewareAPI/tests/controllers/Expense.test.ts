@@ -17,6 +17,7 @@ const expenseCategoryData = {
         interval: 1,
         startDate: new Date().toISOString(),
     },
+    colour: "#FF0000"
 };
 
 

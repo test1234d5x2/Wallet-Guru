@@ -8,6 +8,11 @@ const testUser = {
     password: "TestIncomePassword123!"
 };
 
+const incomeCategoryData = {
+    name: "Income Category For Income Test",
+    colour: "#FF0000"
+};
+
 const incomeData = {
     title: "Test Income",
     amount: 500,
@@ -17,6 +22,7 @@ const incomeData = {
 
 let token: string;
 let incomeID: string;
+let incomeCategoryID: string;
 
 describe("Income API Tests", function () {
     this.timeout(30000);
@@ -32,13 +38,30 @@ describe("Income API Tests", function () {
             .expect(200);
         expect(loginRes.body).to.have.property("token");
         token = loginRes.body.token;
+
+        const categoryRes = await request(app)
+            .post("/api/income-categories")
+            .set("Authorization", `Bearer ${token}`)
+            .send(incomeCategoryData)
+            .expect(201);
+
+        const listRes = await request(app)
+            .get("/api/income-categories")
+            .set("Authorization", `Bearer ${token}`)
+            .expect(200);
+        expect(listRes.body).to.have.property("categories");
+        const categories = listRes.body.categories;
+        const category = categories.find((cat: any) => cat.name === incomeCategoryData.name);
+        incomeCategoryID = category.id;
+        expect(incomeCategoryID).to.be.a("string");
     });
 
     describe("POST /api/incomes", () => {
         it("should fail to create an income without authentication", async () => {
+            const data = {...incomeData, categoryID: incomeCategoryID}
             await request(app)
                 .post("/api/incomes")
-                .send(incomeData)
+                .send(data)
                 .expect(401);
         });
 
@@ -50,10 +73,11 @@ describe("Income API Tests", function () {
         });
 
         it("should create a new income transaction", async () => {
+            const data = {...incomeData, categoryID: incomeCategoryID}
             const res = await request(app)
                 .post("/api/incomes")
                 .set("Authorization", `Bearer ${token}`)
-                .send(incomeData)
+                .send(data)
                 .expect(201);
         });
     });
@@ -109,6 +133,7 @@ describe("Income API Tests", function () {
                 amount: 750,
                 date: new Date().toISOString(),
                 notes: "Updated income note",
+                categoryID: incomeCategoryID
             };
 
             await request(app)
@@ -130,6 +155,7 @@ describe("Income API Tests", function () {
                 amount: 750,
                 date: new Date().toISOString(),
                 notes: "Updated income note",
+                categoryID: incomeCategoryID
             };
 
             const res = await request(app)
@@ -145,6 +171,7 @@ describe("Income API Tests", function () {
                 amount: 750,
                 date: new Date().toISOString(),
                 notes: "Updated income note",
+                categoryID: incomeCategoryID
             };
 
             await request(app)

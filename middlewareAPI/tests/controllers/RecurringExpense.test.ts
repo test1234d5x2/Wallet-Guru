@@ -16,7 +16,8 @@ const expenseCategoryData = {
         frequency: "Monthly",
         interval: 1,
         startDate: new Date().toISOString()
-    }
+    },
+    colour: "#FF0000"
 };
 
 

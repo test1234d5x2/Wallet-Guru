@@ -19,6 +19,7 @@ const expenseCategoryData = {
     name: "Test Category",
     monthlyBudget: 1000,
     recurrenceRule: recurrenceRuleData,
+    colour: "#FF0000"
 };
 
 let token: string;
@@ -122,6 +123,7 @@ describe("Expense Category API Tests", function () {
                 interval: 2,
                 startDate: new Date().toISOString(),
             },
+            colour: "#FF5500"
         };
 
         it("should fail without authentication", async () => {

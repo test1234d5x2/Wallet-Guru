@@ -8,6 +8,10 @@ const testUser = {
     password: "TestRecurringIncomePassword123!"
 };
 
+const incomeCategoryData = {
+    name: "Income Category For Income Test",
+    colour: "#FF0000"
+};
 
 const recurringIncomeData = {
     title: "Monthly Salary",
@@ -25,6 +29,7 @@ const recurringIncomeData = {
 
 let token: string;
 let recurringIncomeID: string;
+let incomeCategoryID: string;
 
 describe("Recurring Income API Tests", function () {
     this.timeout(30000);
@@ -40,13 +45,30 @@ describe("Recurring Income API Tests", function () {
             .expect(200);
         expect(loginRes.body).to.have.property("token");
         token = loginRes.body.token;
+
+        const categoryRes = await request(app)
+            .post("/api/income-categories")
+            .set("Authorization", `Bearer ${token}`)
+            .send(incomeCategoryData)
+            .expect(201);
+
+        const listRes = await request(app)
+            .get("/api/income-categories")
+            .set("Authorization", `Bearer ${token}`)
+            .expect(200);
+        expect(listRes.body).to.have.property("categories");
+        const categories = listRes.body.categories;
+        const category = categories.find((cat: any) => cat.name === incomeCategoryData.name);
+        incomeCategoryID = category.id;
+        expect(incomeCategoryID).to.be.a("string");
     });
 
     describe("POST /api/recurring-incomes", () => {
         it("should fail to create a recurring income without authentication", async () => {
+            const data = {...recurringIncomeData, categoryID: incomeCategoryID}
             await request(app)
                 .post("/api/recurring-incomes")
-                .send(recurringIncomeData)
+                .send(data)
                 .expect(401);
         });
 
@@ -58,10 +80,11 @@ describe("Recurring Income API Tests", function () {
         });
 
         it("should create a new recurring income transaction", async () => {
+            const data = {...recurringIncomeData, categoryID: incomeCategoryID}
             const res = await request(app)
                 .post("/api/recurring-incomes")
                 .set("Authorization", `Bearer ${token}`)
-                .send(recurringIncomeData)
+                .send(data)
                 .expect(201);
         });
     });
@@ -90,6 +113,7 @@ describe("Recurring Income API Tests", function () {
                     nextTriggerDate: new Date(Date.now() + 10 * 24 * 60 * 60 * 1000).toISOString(),
                     endDate: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString(),
                 },
+                categoryID: incomeCategoryID
             };
 
             await request(app)
@@ -118,6 +142,7 @@ describe("Recurring Income API Tests", function () {
                     nextTriggerDate: new Date(Date.now() + 10 * 24 * 60 * 60 * 1000).toISOString(),
                     endDate: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString(),
                 },
+                categoryID: incomeCategoryID
             };
 
             const res = await request(app)
@@ -140,6 +165,7 @@ describe("Recurring Income API Tests", function () {
                     nextTriggerDate: new Date(Date.now() + 10 * 24 * 60 * 60 * 1000).toISOString(),
                     endDate: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString(),
                 },
+                categoryID: incomeCategoryID
             };
 
             await request(app)
@@ -170,6 +196,7 @@ describe("Recurring Income API Tests", function () {
                     nextTriggerDate: new Date(Date.now() + 10 * 24 * 60 * 60 * 1000).toISOString(),
                     endDate: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString(),
                 },
+                categoryID: incomeCategoryID
             };
 
             const res = await request(app)
