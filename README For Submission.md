@@ -15,17 +15,21 @@ Another main reason for why there is no single executable file is because the en
 ## Steps To Get The Project Fully Running
 
 
-## Prerequisites:
+### Prerequisites:
 - It is required for you to be connected to WiFi (no hotspots, must be WiFi).
 - It is required to know your private WiFi IP Address.
-- Maybe more.
+- 
 
 
 ### Downloading Hyperledger Fabric & It's Prerequisites:
-- Follow the steps in the link here: https://hyperledger-fabric.readthedocs.io/en/release-2.5/prereqs.html
-- Then follow the steps in the link here: https://hyperledger-fabric.readthedocs.io/en/release-2.5/install.html
-- When running the install script, make sure to use "docker samples binary" as the arguments.
-- This will take a few minutes.
+- Install docker desktop (which also installs docker-compose). Follow the instructions regarding the installation of those. The default installation settings should be fine.
+- <strong>On Windows, IT IS IMPERATIVE TO LEAVE THE DOCKER WINDOW OPEN DUE TO A KNOWN BUG.</strong>
+- If you accidentally close the Docker window, please open PowerShell, run the commands <code>docker desktop stop</code> then <code>docker desktop start</code>.
+- In a bash terminal, run the command <code>curl -sSLO https://raw.githubusercontent.com/hyperledger/fabric/main/scripts/install-fabric.sh && chmod +x install-fabric.sh
+</code>
+- If cURL is not available, you can click on the link which will give yu a file to download.
+- In the same terminal, run the command <code>./install-fabric.sh docker samples binary</code>
+- This will take a few minutes as the images are pulled into docker.
 
 ### Getting An Android Emulator
 - Install Android Studio.
@@ -55,9 +59,6 @@ Inside the folder <code>middlewareAPI</code>:
 
 
 ### Running The Blockchain
-- Install docker and docker-compose.
-- Follow the instructions regarding the installation of those. The default installation settings should be fine.
-- On Windows, IT IS IMPERATIVE TO LEAVE THE DOCKER WINDOW OPEN DUE TO A KNOWN BUG.
 - On a separate terminal window, navigate to <code>middlewareAPI</code> --> <code>blockchain-network</code> --> <code>config-files</code>
 - Run the command <code>docker-compose -f docker-compose-fabric-ca.yaml up -d</code>. This command starts up the Certificate Authorities.
 - If this is the first time you run the command, it may take a few minutes for the images to be pulled.
@@ -65,7 +66,7 @@ Inside the folder <code>middlewareAPI</code>:
 - If this is the first time you run the command, it may take a few minutes for the images to be pulled.
 - Run the command <code>docker exec -it cli-peer1 bash</code>. This command will let you access the dedicated bash terminal.
 - Run the command <code>export CORE_PEER_MSPCONFIGPATH=/var/hyperledger/peerorg/admin/msp/</code>.
-- Run the command <code>peer channel create -c expensechannnel -f path/to/ordererorg/channel.tx -o orderer1-ordererorg:7050 --tls --cafile /var/hyperledger/ordererorg/orderer1/tls-msp/tlscacerts/tls-0-0-0-0-7052.pem</code>
+- Run the command <code>peer channel create -c expensechannel -f /var/hyperledger/ordererorg/orderer1/channel.tx -o orderer1-ordererorg:7050 --tls --cafile /var/hyperledger/ordererorg/orderer1/tls-msp/tlscacerts/tls-0-0-0-0-7052.pem</code>
 - Run the command <code>peer channel join -b expensechannel.block</code>
 - Run the command <code>export CORE_PEER_ADDRESS=peer2-peerorg:8051</code>
 - Run the command <code>peer channel join -b expensechannel.block</code>
@@ -81,9 +82,9 @@ Inside the folder <code>middlewareAPI</code>:
 - Run the command <code>export CORE_PEER_ADDRESS=peer1-peerorg:7051</code>
 - Run the command <code>peer lifecycle chaincode install /etc/hyperledger/chaincode/basic.tar.gz</code>
 - Now, right above where the cursor is in the terminal window, there is a package ID that the previous command just returned. A screenshot has been provided below as an example. If this is not put into the next command correctly, the terminal command will still work fine but the chaincode will not install.
-- Run the command <code>peer lifecycle chaincode approveformyorg -o orderer1-ordererorg:7050 --channelID expensechannel --package-id YOUR_PACKAGE_ID --name basic --version 1.0 --sequence 1 --tls --cafile /var/hyperledger/ordererorg/orderer1/tls-msp/tlscacerts/tls-0-0-0-0-7052.pem</code>. <strong>IMPORTANT: Replace "YOUR_PACKAGE_ID" with the ID from the previous command output.</strong>
+- Run the command <code>peer lifecycle chaincode approveformyorg -o orderer1-ordererorg:7050 --channelID expensechannel --package-id YOUR_PACKAGE_ID --name basic --version 1.0 --sequence 1 --tls --cafile /var/hyperledger/ordererorg/orderer1/tls-msp/tlscacerts/tls-0-0-0-0-7052.pem</code>  <strong>IMPORTANT: Replace "YOUR_PACKAGE_ID" with the ID from the previous command output.</strong>
 - Run the command <code>peer lifecycle chaincode commit -o orderer1-ordererorg:7050 --channelID expensechannel --name basic --version 1.0 --sequence 1 --tls --cafile /var/hyperledger/ordererorg/orderer1/tls-msp/tlscacerts/tls-0-0-0-0-7052.pem --peerAddresses peer1-peerorg:7051 --tlsRootCertFiles /var/hyperledger/peerorg/peer1/tls-msp/tlscacerts/tls-0-0-0-0-7052.pem</code>
-- Now the chaincode should have installed. To check this is true, go to the Docker window and you should see 4 extra containers that started with "dev-peer...". A further method to check is to run the command <code>peer lifecycle chaincode queryinstalled -C expensechannel -n basic</code>.
+- Now the chaincode should have installed. To check this is true, go to the Docker window and you should see 4 extra containers that started with "dev-peer...". A further method to check is to run the command <code>peer lifecycle chaincode querycommitted -C expensechannel -n basic</code>.
 - The blockchain is now running!
 
 
