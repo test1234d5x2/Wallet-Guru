@@ -37,16 +37,6 @@ Inside the folder <code>wallet_guru</code>:
 
 Inside the folder <code>middlewareAPI</code>:
 - The environment variable <code>IP</code> has been marked with "*****". Change it to yur IP address.
-- CAN POTENTIALLY REMOVE ALL OF THE BELOW STEPS.
-- Then there are 4 sets of environment variables, one for each peer.
-- For each peer, there are 3 environment variables that need changing.
-  - <code>PEER[x]_KEY_DIRECTORY_PATH</code>: This is the private key directory for the specific peer. Relative to the <code>fabric-ca</code> directory, it's path is <code>fabric-ca/peerorg/peer[x]/msp/keystore</code>. Find the directory and copy the absolute path to it. x is the number of the peer between 1 and 4.
-  - <code>PEER[x]_CERTIFICATE_DIRECTORY_PATH</code>: This is the signed certificate for the specific peer. Relative to the <code>fabric-ca</code> directory, it's path is <code>fabric-ca/peerorg/peer[x]/msp/signcerts</code>. Find the directory and copy the absolute path to it. x is the number of the peer between 1 and 4.
-  - <code>PEER[x]_TLS_CERTIFICATE_PATH</code>: This is the TLS certificate for the specific peer. Relative to the <code>fabric-ca</code> directory, it's path is <code>fabric-ca/peerorg/peer[x]/tls-msp/tlscacerts/tls-0-0-0-0-7052.pem</code>. Find the file and copy the absolute path to the environment variable. x is the number of the peer between 1 and 4.
-- Below the environment variables for the 4 peers, there are more variables that need altering. These are specifically for the user to be registered and enrolled to the Certificate Authority.
-  - <code>CA_TLS_CERT_PATH</code>: Relative to the <code>fabric-ca</code> directory, it's path is <code>fabric-ca/peerorg/ca/crypto/ca-cert.pem</code>. Find the file and copy the absolute path to the environment variable.
-  - <code>ADMIN_SIGNCERT</code>: Relative to the <code>fabric-ca</code> directory, it's path is <code>fabric-ca/peerorg/admin/msp/signcerts/cert.pem</code>. Find the file and copy the absolute path to the environment variable.
-  - <code>ADMIN_KEYPATH</code>: Relative to the <code>fabric-ca</code> directory, it's path is <code>fabric-ca/peerorg/admin/msp/keystore/[NAME OF KEY OMITTED]</code>. Find the file and copy the absolute path to the environment variable.
 
 ### Downloading Expo Go To Run The Mobile App
 - Navigate to the <code>wallet_guru</code> folder via a terminal. For Windows, use PowerShell.
