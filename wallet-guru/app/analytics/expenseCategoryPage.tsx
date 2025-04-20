@@ -1,4 +1,4 @@
-import ModalSelectionExpenseCategories from "@/components/modalSelection/modalSelectionCategories"
+import { ModalSelectionExpenseCategories } from "@/components/modalSelection/modalSelectionCategories"
 import setPageTitle from "@/components/pageTitle/setPageTitle"
 import TopBar from "@/components/topBars/topBar"
 import MonthSelector from "@/components/widgets/MonthSelector"
@@ -21,7 +21,7 @@ export default function ExpenseCategoriesAnalytics() {
     const router = useRouter()
     const [token, setToken] = useState<string>('')
     const [email, setEmail] = useState<string>('')
-    
+
     const [categories, setCategories] = useState<ExpenseCategory[]>([])
     const [expenses, setExpenses] = useState<Expense[]>([])
     const [month, setMonth] = useState<Date>(new Date(Date.UTC(new Date().getUTCFullYear(), new Date().getUTCMonth())))
