@@ -84,8 +84,8 @@ Inside the folder <code>middlewareAPI</code>:
 - Run the command <code>export CORE_PEER_ADDRESS=peer1-peerorg:7051</code>
 - Run the command <code>peer lifecycle chaincode install /etc/hyperledger/chaincode/basic.tar.gz</code>
 - Now, right above where the cursor is in the terminal window, there is a package ID that the previous command just returned. A screenshot has been provided below as an example. If this is not put into the next command correctly, the terminal command will still work fine but the chaincode will not install.
-- Run the command <code>peer lifecycle chaincode approveformyorg -o orderer1-ordererorg:7050 --channelID expensechannel --package-ID YOUR_PACKAGE_ID --name basic --version 1.0 --sequence 1 --tls --cafile path/to/orderer/ca/file</code>
-- Run the command <code>peer lifecycle chaincdoe commit -o orderer1-ordererorg:7050 --channelID expensechannel --name basic --version 1.0 --sequence 1 --tls --cafile /path/to/orderer/ca/file --peerAddresses peer1-peerorg:7051 --tlsRootCertFiles /path/to/peer1/ca/file</code>
+- Run the command <code>peer lifecycle chaincode approveformyorg -o orderer1-ordererorg:7050 --channelID expensechannel --package-id YOUR_PACKAGE_ID --name basic --version 1.0 --sequence 1 --tls --cafile path/to/orderer/ca/file</code>
+- Run the command <code>peer lifecycle chaincode commit -o orderer1-ordererorg:7050 --channelID expensechannel --name basic --version 1.0 --sequence 1 --tls --cafile /path/to/orderer/ca/file --peerAddresses peer1-peerorg:7051 --tlsRootCertFiles /path/to/peer1/ca/file</code>
 - Now the chaincode should have installed. To check this is true, go to the Docker window and you should see 4 extra containers that started with "dev-peer...". A further method to check is to run the command <code>peer lifecycle chaincode queryinstalled -C expensechannel -n basic</code>.
 - The blockchain is now running!
 
