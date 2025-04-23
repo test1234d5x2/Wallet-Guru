@@ -1,6 +1,6 @@
 import { Router } from 'express'
 import verifyToken from '../utils/verifyToken'
-import Registry from '../registry/Registry-new'
+import Registry from '../registry/Registry'
 import getUserFromToken from '../utils/getUserFromToken'
 
 const router = Router()

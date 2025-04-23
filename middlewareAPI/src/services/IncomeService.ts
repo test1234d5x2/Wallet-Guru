@@ -1,4 +1,4 @@
-import { GatewayManager } from '../gRPC/init-new'
+import { GatewayManager } from '../gRPC/init'
 import Income from '../models/core/Income'
 import { TextDecoder } from 'util'
 

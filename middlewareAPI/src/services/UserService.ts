@@ -3,7 +3,7 @@ import jwt from 'jsonwebtoken'
 import dotenv from 'dotenv'
 import { TextDecoder } from 'util'
 import registerAndEnrollUser from '../utils/registerAndEnrollUser'
-import { GatewayManager } from '../gRPC/init-new'
+import { GatewayManager } from '../gRPC/init'
 
 dotenv.config()
 const utf8Decoder = new TextDecoder()

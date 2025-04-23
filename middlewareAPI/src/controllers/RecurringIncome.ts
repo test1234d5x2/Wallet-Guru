@@ -1,5 +1,5 @@
 import { Request, Response } from 'express'
-import Registry from '../registry/Registry-new'
+import Registry from '../registry/Registry'
 import BasicRecurrenceRule from '../models/recurrenceModels/BasicRecurrenceRule'
 import getUserFromToken from '../utils/getUserFromToken'
 

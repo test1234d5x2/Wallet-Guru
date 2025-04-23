@@ -1,5 +1,5 @@
 import GoalStatus from '../enums/GoalStatus'
-import { GatewayManager } from '../gRPC/init-new'
+import { GatewayManager } from '../gRPC/init'
 import Goal from '../models/core/Goal'
 import { TextDecoder } from 'util'
 

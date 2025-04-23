@@ -1,5 +1,5 @@
 import { RequestHandler } from "express"
-import Registry from "../registry/Registry-new"
+import Registry from "../registry/Registry"
 import GoalStatus from "../enums/GoalStatus"
 import getUserFromToken from "../utils/getUserFromToken"
 

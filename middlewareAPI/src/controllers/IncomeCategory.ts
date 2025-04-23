@@ -1,5 +1,5 @@
 import { RequestHandler } from "express"
-import Registry from "../registry/Registry-new"
+import Registry from "../registry/Registry"
 import getUserFromToken from "../utils/getUserFromToken"
 
 export const create: RequestHandler = async (req, res) => {

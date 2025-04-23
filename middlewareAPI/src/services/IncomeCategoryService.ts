@@ -1,6 +1,6 @@
 import IncomeCategory from '../models/core/IncomeCategory'
 import { TextDecoder } from 'util'
-import { GatewayManager } from '../gRPC/init-new'
+import { GatewayManager } from '../gRPC/init'
 
 const utf8Decoder = new TextDecoder()
 

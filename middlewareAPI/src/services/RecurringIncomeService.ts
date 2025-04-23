@@ -3,7 +3,7 @@ import RecurringIncome from '../models/recurrenceModels/RecurringIncome'
 import IncomeService from './IncomeService'
 import { TextDecoder } from 'util'
 import BasicRecurrenceRule from '../models/recurrenceModels/BasicRecurrenceRule'
-import { GatewayManager } from '../gRPC/init-new'
+import { GatewayManager } from '../gRPC/init'
 
 const utf8Decoder = new TextDecoder()
 

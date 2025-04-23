@@ -1,166 +1,120 @@
-/*
- * Copyright IBM Corp. All Rights Reserved.
- *
- * SPDX-License-Identifier: Apache-2.0
- */
-
-// Modified to fit the structure of the custom-made blockchain network.
-// Date Accessed: 2/4/2025
-// Website: https://github.com/hyperledger/fabric-samples/blob/main/asset-transfer-basic/application-gateway-typescript/src/app.ts
-
 import * as grpc from '@grpc/grpc-js'
 import { connect, Gateway, Identity, Signer, signers, Network, Contract } from '@hyperledger/fabric-gateway'
 import { promises as fs, readFileSync } from 'fs'
-import * as path from 'path'
 import * as crypto from 'crypto'
-import PeerConfig from './peerConfig'
+import {LRUCache} from 'lru-cache';
+import { Wallets, X509Identity, Wallet } from 'fabric-network'
 import envOrDefault from '../utils/envOrDefault'
-
-const mspId = envOrDefault('MSP_ID', 'PeerOrgMSP')
-const channelName = envOrDefault('CHANNEL_NAME', '')
-const chaincodeName = envOrDefault('CHAINCODE_NAME', '')
-const userContractName = envOrDefault('USER_CONTRACT_NAME', '')
-const expenseCategoryContractName = envOrDefault('EXPENSE_CATEGORY_CONTRACT_NAME', '')
-const incomeCategoryContractName = envOrDefault('INCOME_CATEGORY_CONTRACT_NAME', '')
-const expenseContractName = envOrDefault('EXPENSE_CONTRACT_NAME', '')
-const incomeContractName = envOrDefault('INCOME_CONTRACT_NAME', '')
-const goalConractName = envOrDefault('GOAL_CONTRACT_NAME', '')
-const recurringExpenseContractName = envOrDefault('RECURRING_EXPENSE_CONTRACT_NAME', '')
-const recurringIncomeContractName = envOrDefault('RECURRING_INCOME_CONTRACT_NAME', '')
+import generatePeerConfigsList from '../utils/generatePeerConfigsList'
 
 
-export default class Connection {
-    private static instance: Connection
-    private gateway!: Gateway
-    private network!: Network
+interface GatewayEntry {
+    gateway: Gateway;
+    client: grpc.Client;
+    lastUsed: number;
+}
 
-    public static getInstance(): Connection {
-        if (!Connection.instance) {
-            Connection.instance = new Connection()
-        }
-        return Connection.instance
-    }
+export class GatewayManager {
+    private clients: grpc.Client[] = []
+    private wallet: Wallet
+    private channelName: string
+    private chaincodeName: string
+    private gatewayCache: LRUCache<string, GatewayEntry>
+    private clientTimeout: number
 
-    public async connect(): Promise<boolean> {
-        const peers: PeerConfig[] = []
+    private constructor(wallet: Wallet) {
+        this.channelName = envOrDefault('CHANNEL_NAME', '')
+        this.chaincodeName = envOrDefault('CHAINCODE_NAME', '')
+        this.wallet = wallet
+        this.clientTimeout = 5000
 
-        for (let x = 1; x <= 2; x++) {
-            peers.push({
-                url: envOrDefault(`PEER${x}_ENDPOINT`, ''),
-                tlsCertPath: envOrDefault(`PEER${x}_TLS_CERTIFICATE_PATH`, ''),
-                keyDirectoryPath: envOrDefault(`PEER${x}_KEY_DIRECTORY_PATH`, ''),
-                certDirectoryPath: envOrDefault(`PEER${x}_CERTIFICATE_DIRECTORY_PATH`, ''),
-                hostAlias: envOrDefault(`PEER${x}_HOST_ALIAS`, '')
-            })
-        }
-
-        const connectionTimeout = 5000
-
-        try {
-            await promiseAny(peers.map(peer => this.tryConnectPeer(peer, connectionTimeout)))
-            console.log('Successfully connected to a peer.')
-            return true
-        } catch (error: any) {
-            console.error('Unable to connect to any peer.')
-            console.error(`Last error: ${error.message}`)
-            return false
-        }
-    }
-
-    private async tryConnectPeer(peer: PeerConfig, connectionTimeout: number): Promise<boolean> {
-        const tlsRootCert = readFileSync(peer.tlsCertPath)
-        const endpoint = peer.url.replace('grpcs://', '')
-        const client = new grpc.Client(endpoint, grpc.credentials.createSsl(tlsRootCert), {
-            'grpc.ssl_target_name_override': peer.hostAlias
+        this.gatewayCache = new LRUCache<string, GatewayEntry>({
+            max: 100,
+            ttl: 1000 * 60 * 15,
+            ttlAutopurge: true,
+            dispose: (entry, _entry) => {
+                entry.gateway.close()
+            },
         })
+    }
 
-        console.log(peer.url)
-        return await new Promise((resolve, reject) => {
-            const timeoutId = setTimeout(() => {
-                client.close()
-                reject(new Error(`Timeout: Failed to connect to ${peer.url} within ${connectionTimeout / 1000} seconds`))
-            }, connectionTimeout)
+    public static async build(): Promise<GatewayManager> {
+        const walletPath = envOrDefault('WALLET_PATH', '')
+        const wallet = await Wallets.newFileSystemWallet(walletPath)
+        const mgr = new GatewayManager(wallet)
+        await mgr.initClients()
+        return mgr
+    }
 
-            client.waitForReady(Date.now() + connectionTimeout, async (err) => {
-                clearTimeout(timeoutId)
-                if (err) {
-                    reject(new Error(`Initial connection to ${peer.url} failed: ${err.message}`))
+    private async initClients(): Promise<void> {
+        const peerConfigs = generatePeerConfigsList()
+        const checks = peerConfigs.map(pc => new Promise<void>(resolve => {
+            const tlsRootCert = readFileSync(pc.tlsCertPath)
+            const endpoint = pc.url.replace('grpcs://', '')
+            const client = new grpc.Client(endpoint,
+                grpc.credentials.createSsl(tlsRootCert),
+                { 'grpc.ssl_target_name_override': pc.hostAlias })
+
+            client.waitForReady(Date.now() + this.clientTimeout, err => {
+                if (!err) {
+                    console.log(`Connected to peer ${pc.url}`)
+                    this.clients.push(client)
                 } else {
-                    try {
-                        this.gateway = connect({
-                            client,
-                            identity: await this.newIdentity(peer.certDirectoryPath),
-                            signer: await this.newSigner(peer.keyDirectoryPath),
-                        })
-                        this.network = this.gateway.getNetwork(channelName)
-                        resolve(true)
-                    } catch (err: any) {
-                        reject(new Error(`Failed to connect gateway for peer at ${peer.url}: ${err.message}`))
-                    }
+                    console.warn(`Failed to connect to peer ${pc.url}: ${err.message}`)
                 }
+                resolve()
             })
-        })
-    }
+        }))
 
-    private async newIdentity(certDirectoryPath: string): Promise<Identity> {
-        const certPath = await this.getFirstDirFileName(certDirectoryPath)
-        const credentials = await fs.readFile(certPath)
-        return { mspId, credentials }
-    }
-
-    private async getFirstDirFileName(dirPath: string): Promise<string> {
-        const files = await fs.readdir(dirPath)
-        const file = files[0]
-        if (!file) {
-            throw new Error(`No files in directory: ${dirPath}`)
+        await Promise.all(checks)
+        if (this.clients.length === 0) {
+            throw new Error('No available peers after initialization')
         }
-        return path.join(dirPath, file)
     }
 
-    private async newSigner(keyDirectoryPath: string): Promise<Signer> {
-        const keyPath = await this.getFirstDirFileName(keyDirectoryPath)
-        const privateKeyPem = await fs.readFile(keyPath)
-        const privateKey = crypto.createPrivateKey(privateKeyPem)
-        return signers.newPrivateKeySigner(privateKey)
-    }
-
-    public getUserContract(): Contract { return this.network.getContract(chaincodeName, userContractName) }
-    public getExpenseCategoryContract(): Contract { return this.network.getContract(chaincodeName, expenseCategoryContractName) }
-    public getIncomeCategoryContract(): Contract { return this.network.getContract(chaincodeName, incomeCategoryContractName) }
-    public getExpenseContract(): Contract { return this.network.getContract(chaincodeName, expenseContractName) }
-    public getIncomeContract(): Contract { return this.network.getContract(chaincodeName, incomeContractName) }
-    public getGoalContract(): Contract { return this.network.getContract(chaincodeName, goalConractName) }
-    public getRecurringExpenseContract(): Contract { return this.network.getContract(chaincodeName, recurringExpenseContractName) }
-    public getRecurringIncomeContract(): Contract { return this.network.getContract(chaincodeName, recurringIncomeContractName) }
-}
-
-
-function promiseAny<T>(promises: Promise<T>[]): Promise<T> {
-    return new Promise((resolve, reject) => {
-        const errors: any[] = []
-        let pending = promises.length
-        promises.forEach((p, index) => {
-            Promise.resolve(p)
-                .then(resolve)
-                .catch(error => {
-                    errors[index] = error
-                    pending = pending - 1
-                    if (pending === 0) {
-                        reject(new Error('All promises were rejected'))
-                    }
+    public async getGateway(label: string): Promise<Gateway> {
+        const now = Date.now()
+        const cacheEntry = this.gatewayCache.get(label)
+        if (cacheEntry) {
+            try {
+                await new Promise<void>((res, rej) => {
+                    cacheEntry.client.waitForReady(now + this.clientTimeout, err => err ? rej(err) : res())
                 })
-        })
-    })
-}
+                cacheEntry.lastUsed = now
+                return cacheEntry.gateway
+            } catch {
+                cacheEntry.gateway.close()
+                this.gatewayCache.delete(label)
+            }
+        }
 
-console.log('MSP ID:', mspId)
-console.log('Channel Name:', channelName)
-console.log('Chaincode Name:', chaincodeName)
-console.log('User Contract Name:', userContractName)
-console.log('Expense Category Contract Name:', expenseCategoryContractName)
-console.log('Income Category Contract Name:', incomeCategoryContractName)
-console.log('Expense Contract Name:', expenseContractName)
-console.log('Income Contract Name:', incomeContractName)
-console.log('Goal Contract Name:', goalConractName)
-console.log('Recurring Expense Contract Name:', recurringExpenseContractName)
-console.log('Recurring Income Contract Name:', recurringIncomeContractName)
+        const x509 = (await this.wallet.get(label)) as X509Identity
+        if (!x509) throw new Error(`Identity ${label} not found in wallet`)
+
+        const identity: Identity = { mspId: x509.mspId, credentials: Buffer.from(x509.credentials.certificate) }
+        const privateKey = crypto.createPrivateKey(x509.credentials.privateKey)
+        const signer: Signer = signers.newPrivateKeySigner(privateKey)
+
+        let lastErr: Error | null = null
+        for (const client of this.clients) {
+            try {
+                await new Promise<void>((res, rej) => {
+                    client.waitForReady(now + this.clientTimeout, err => err ? rej(err) : res())
+                })
+                const gateway = connect({ client, identity, signer })
+                this.gatewayCache.set(label, { gateway, client, lastUsed: now })
+                return gateway
+            } catch (err: any) {
+                lastErr = err
+                console.warn(`Gateway connect via client failed: ${err.message}`)
+            }
+        }
+        throw lastErr || new Error('Unable to connect any peer for gateway')
+    }
+
+    public async getContract(userLabel: string, contractName: string): Promise<Contract> {
+        const gw = await this.getGateway(userLabel)
+        const network: Network = gw.getNetwork(this.channelName)
+        return network.getContract(this.chaincodeName, contractName)
+    }
+}
