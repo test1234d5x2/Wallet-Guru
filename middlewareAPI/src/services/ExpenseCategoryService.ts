@@ -1,22 +1,30 @@
-import { Contract } from '@hyperledger/fabric-gateway'
 import ExpenseCategory from '../models/core/ExpenseCategory'
 import RecurrenceRule from '../models/recurrenceModels/RecurrenceRule'
 import { TextDecoder } from 'util'
 import BasicRecurrenceRule from '../models/recurrenceModels/BasicRecurrenceRule'
+import { GatewayManager } from '../gRPC/init-new'
 
 const utf8Decoder = new TextDecoder()
 
 class ExpenseCategoryService {
-    private expenseCategoryContract: Contract
+    private expenseCategoryContractName: string
+    private gm: GatewayManager
 
-    constructor(expenseCategoryContract: Contract) {
-        this.expenseCategoryContract = expenseCategoryContract
+    constructor(gm: GatewayManager) {
+        const EXPENSE_CATEGORY_CONTRACT_NAME = process.env.EXPENSE_CATEGORY_CONTRACT_NAME
+        if (!EXPENSE_CATEGORY_CONTRACT_NAME) {
+            throw new Error("Set env variables")
+        }
+
+        this.gm = gm
+        this.expenseCategoryContractName = EXPENSE_CATEGORY_CONTRACT_NAME
     }
 
-    public async addExpenseCategory(userID: string, name: string, monthlyBudget: number, recurrenceRule: RecurrenceRule, colour: string): Promise<boolean> {
+    public async addExpenseCategory(email: string, userID: string, name: string, monthlyBudget: number, recurrenceRule: RecurrenceRule, colour: string): Promise<boolean> {
         const category = new ExpenseCategory(userID, name, monthlyBudget, recurrenceRule, undefined, colour)
         try {
-            await this.expenseCategoryContract.submitTransaction(
+            const expenseCategoryContract = await this.gm.getContract(email, this.expenseCategoryContractName)
+            await expenseCategoryContract.submitTransaction(
                 'createExpenseCategory',
                 JSON.stringify(category.toJSON())
             )
@@ -29,9 +37,9 @@ class ExpenseCategoryService {
         return false
     }
 
-    public async updateExpenseCategory(id: string, userID: string, name: string, monthlyBudget: number, recurrenceRule: BasicRecurrenceRule, colour: string): Promise<boolean> {
+    public async updateExpenseCategory(email: string, id: string, userID: string, name: string, monthlyBudget: number, recurrenceRule: BasicRecurrenceRule, colour: string): Promise<boolean> {
         try {
-            const category = await this.findByID(id, userID)
+            const category = await this.findByID(email, id, userID)
             if (!category) {
                 throw new Error('Category not found')
             }
@@ -41,7 +49,8 @@ class ExpenseCategoryService {
             category.recurrenceRule = recurrenceRule
             category.colour = colour
 
-            await this.expenseCategoryContract.submitTransaction(
+            const expenseCategoryContract = await this.gm.getContract(email, this.expenseCategoryContractName)
+            await expenseCategoryContract.submitTransaction(
                 'updateExpenseCategory',
                 JSON.stringify(category.toJSON())
             )
@@ -54,9 +63,10 @@ class ExpenseCategoryService {
         return false
     }
 
-    public async deleteExpenseCategory(id: string, userID: string): Promise<boolean> {
+    public async deleteExpenseCategory(email: string, id: string, userID: string): Promise<boolean> {
         try {
-            await this.expenseCategoryContract.submitTransaction(
+            const expenseCategoryContract = await this.gm.getContract(email, this.expenseCategoryContractName)
+            await expenseCategoryContract.submitTransaction(
                 'deleteExpenseCategory',
                 userID,
                 id
@@ -70,9 +80,10 @@ class ExpenseCategoryService {
         return false
     }
 
-    public async getAllCategoriesByUser(userID: string): Promise<ExpenseCategory[]> {
+    public async getAllCategoriesByUser(email: string, userID: string): Promise<ExpenseCategory[]> {
         try {
-            const resultBytes = await this.expenseCategoryContract.evaluateTransaction(
+            const expenseCategoryContract = await this.gm.getContract(email, this.expenseCategoryContractName)
+            const resultBytes = await expenseCategoryContract.evaluateTransaction(
                 'listExpenseCategoriesByUser',
                 userID
             )
@@ -97,9 +108,10 @@ class ExpenseCategoryService {
         return []
     }
 
-    public async findByID(id: string, userID: string): Promise<ExpenseCategory | undefined> {
+    public async findByID(email: string, id: string, userID: string): Promise<ExpenseCategory | undefined> {
         try {
-            const resultBytes = await this.expenseCategoryContract.evaluateTransaction(
+            const expenseCategoryContract = await this.gm.getContract(email, this.expenseCategoryContractName)
+            const resultBytes = await expenseCategoryContract.evaluateTransaction(
                 'getExpenseCategoryByID',
                 userID,
                 id

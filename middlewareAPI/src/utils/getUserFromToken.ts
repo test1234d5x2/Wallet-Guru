@@ -1,6 +1,6 @@
 import jwt, { JwtPayload } from 'jsonwebtoken'
 
-const getUserFromToken = (req: any): string | undefined => {
+const getUserFromToken = (req: any): {email: string, userID: string} | undefined => {
     const authHeader = req.headers.authorization
     if (!authHeader) {
         return
@@ -10,8 +10,9 @@ const getUserFromToken = (req: any): string | undefined => {
         const jwtSecret = process.env.JWT_SECRET || 'your_default_secret'
         const decoded = jwt.verify(token, jwtSecret) as JwtPayload
         const userID = decoded.userID
+        const email = decoded.email
         if (userID) {
-            return userID
+            return {userID, email}
         }
     } catch {
         return

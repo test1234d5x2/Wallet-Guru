@@ -1,15 +1,17 @@
 import { RequestHandler } from "express"
-import Registry from "../registry/Registry"
+import Registry from "../registry/Registry-new"
 import getUserFromToken from "../utils/getUserFromToken"
 
 export const create: RequestHandler = async (req, res) => {
     const { title, amount, date, notes, categoryID } = req.body
 
-    const userID = getUserFromToken(req)
-    if (!userID) {
-        res.status(401).json({ message: "You must be logged in to create an income transaction." })
+    const userDetails = getUserFromToken(req)
+    if (!userDetails) {
+        res.status(401).json({ message: "You must be logged in to create an expense." })
         return
     }
+
+    const {email, userID} = userDetails
 
     if (!title || amount === undefined || !date || !categoryID) {
         res.status(400).json({ message: "Missing required fields: title, amount, date" })
@@ -19,7 +21,7 @@ export const create: RequestHandler = async (req, res) => {
     const registry = await Registry.getInstance()
     const incomeService = registry.incomeService
 
-    const added = await incomeService.addIncome(userID, title, amount, new Date(date), notes, categoryID)
+    const added = await incomeService.addIncome(email, userID, title, amount, new Date(date), notes, categoryID)
     if (added) {
         res.status(201).json({ message: "Income created" })
     } else {
@@ -31,11 +33,13 @@ export const update: RequestHandler = async (req, res) => {
     const { id } = req.params
     const { title, amount, date, notes, categoryID } = req.body
 
-    const userID = getUserFromToken(req)
-    if (!userID) {
-        res.status(401).json({ error: "You must be logged in to update your income transaction." })
+    const userDetails = getUserFromToken(req)
+    if (!userDetails) {
+        res.status(401).json({ message: "You must be logged in to create an expense." })
         return
     }
+
+    const {email, userID} = userDetails
 
     if (!id || !title || amount === undefined || !date || !categoryID) {
         res.status(400).json({ error: "Missing required fields: id, title, amount, date" })
@@ -45,7 +49,7 @@ export const update: RequestHandler = async (req, res) => {
     const registry = await Registry.getInstance()
     const incomeService = registry.incomeService
 
-    const updated = await incomeService.updateIncome(id, userID, title, amount, new Date(date), notes, categoryID)
+    const updated = await incomeService.updateIncome(email, id, userID, title, amount, new Date(date), notes, categoryID)
     if (updated) {
         res.status(200).json({ message: "Income updated" })
     } else {
@@ -56,11 +60,13 @@ export const update: RequestHandler = async (req, res) => {
 export const remove: RequestHandler = async (req, res) => {
     const { id } = req.params
 
-    const userID = getUserFromToken(req)
-    if (!userID) {
-        res.status(401).json({ error: "You must be logged in to remove your income transaction." })
+    const userDetails = getUserFromToken(req)
+    if (!userDetails) {
+        res.status(401).json({ message: "You must be logged in to create an expense." })
         return
     }
+
+    const {email, userID} = userDetails
 
     if (!id) {
         res.status(400).json({ error: "Income id is required" })
@@ -70,7 +76,7 @@ export const remove: RequestHandler = async (req, res) => {
     const registry = await Registry.getInstance()
     const incomeService = registry.incomeService
 
-    const deleted = await incomeService.deleteIncome(id, userID)
+    const deleted = await incomeService.deleteIncome(email, id, userID)
     if (deleted) {
         res.status(200).json({ message: "Income deleted" })
     } else {
@@ -79,27 +85,31 @@ export const remove: RequestHandler = async (req, res) => {
 }
 
 export const listByUser: RequestHandler = async (req, res) => {
-    const userID = getUserFromToken(req)
-    if (!userID) {
-        res.status(401).json({ error: "You must be logged in to view income transactions." })
+    const userDetails = getUserFromToken(req)
+    if (!userDetails) {
+        res.status(401).json({ message: "You must be logged in to create an expense." })
         return
     }
+
+    const {email, userID} = userDetails
 
     const registry = await Registry.getInstance()
     const incomeService = registry.incomeService
 
-    const incomes = await incomeService.getAllIncomesByUser(userID)
+    const incomes = await incomeService.getAllIncomesByUser(email, userID)
     res.status(200).json({ incomes })
 }
 
 export const findByID: RequestHandler = async (req, res) => {
     const { id } = req.params
 
-    const userID = getUserFromToken(req)
-    if (!userID) {
-        res.status(401).json({ message: "You must be logged in to view an income transaction." })
+    const userDetails = getUserFromToken(req)
+    if (!userDetails) {
+        res.status(401).json({ message: "You must be logged in to create an expense." })
         return
     }
+
+    const {email, userID} = userDetails
 
     if (!id) {
         res.status(400).json({ message: "Income ID is required." })
@@ -109,7 +119,7 @@ export const findByID: RequestHandler = async (req, res) => {
     const registry = await Registry.getInstance()
     const incomeService = registry.incomeService
 
-    const income = await incomeService.findByID(id, userID)
+    const income = await incomeService.findByID(email, id, userID)
     if (!income) {
         res.status(404).json({ message: "Income transaction not found." })
         return

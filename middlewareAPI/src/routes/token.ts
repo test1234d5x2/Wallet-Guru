@@ -1,6 +1,6 @@
 import { Router } from 'express'
 import verifyToken from '../utils/verifyToken'
-import Registry from '../registry/Registry'
+import Registry from '../registry/Registry-new'
 import getUserFromToken from '../utils/getUserFromToken'
 
 const router = Router()
@@ -24,13 +24,15 @@ router.post('/', async (req, res) => {
     const registry = await Registry.getInstance()
     const userService = registry.userService
 
-    const userID = getUserFromToken(req)
-    if (!userID) {
-        res.status(401).json({ message: 'Invalid or expired token' })
+    const userDetails = getUserFromToken(req)
+    if (!userDetails) {
+        res.status(401).json({ message: "You must be logged in to create an expense." })
         return
     }
 
-    const user = await userService.findByID(userID)
+    const userID = userDetails.userID
+
+    const user = await userService.findByID(email, userID)
     if (!user) {
         res.status(401).json({ message: 'Invalid token' })
         return

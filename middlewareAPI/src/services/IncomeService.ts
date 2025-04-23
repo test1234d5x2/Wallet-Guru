@@ -1,21 +1,29 @@
+import { GatewayManager } from '../gRPC/init-new'
 import Income from '../models/core/Income'
-import { Contract } from '@hyperledger/fabric-gateway'
 import { TextDecoder } from 'util'
 
 const utf8Decoder = new TextDecoder()
 
 class IncomeService {
-    private incomeContract: Contract
+    private gm: GatewayManager
+    private incomeContractName: string
 
-    constructor(c: Contract) {
-        this.incomeContract = c
+    constructor(gm: GatewayManager) {
+        const INCOME_CONTRACT_NAME = process.env.INCOME_CONTRACT_NAME
+        if (!INCOME_CONTRACT_NAME) {
+            throw new Error("Set env variables")
+        }
+
+        this.gm = gm
+        this.incomeContractName = INCOME_CONTRACT_NAME
     }
 
-    public async addIncome(userID: string, title: string, amount: number, date: Date, notes: string, categoryID: string): Promise<boolean> {
+    public async addIncome(email: string, userID: string, title: string, amount: number, date: Date, notes: string, categoryID: string): Promise<boolean> {
         const income = new Income(userID, title, amount, date, notes, categoryID)
 
         try {
-            await this.incomeContract.submitTransaction(
+            const incomeContract = await this.gm.getContract(email, this.incomeContractName)
+            await incomeContract.submitTransaction(
                 'createIncome',
                 JSON.stringify(income.toJSON())
             )
@@ -28,9 +36,9 @@ class IncomeService {
         return false
     }
 
-    public async updateIncome(id: string, userID: string, title: string, amount: number, date: Date, notes: string, categoryID: string): Promise<boolean> {
+    public async updateIncome(email: string, id: string, userID: string, title: string, amount: number, date: Date, notes: string, categoryID: string): Promise<boolean> {
         try {
-            const income = await this.findByID(id, userID)
+            const income = await this.findByID(email, id, userID)
             if (!income) {
                 throw new Error('Income does not exist')
             }
@@ -41,7 +49,8 @@ class IncomeService {
             income.notes = notes
             income.categoryID = categoryID
 
-            await this.incomeContract.submitTransaction(
+            const incomeContract = await this.gm.getContract(email, this.incomeContractName)
+            await incomeContract.submitTransaction(
                 'updateIncome',
                 JSON.stringify(income.toJSON())
             )
@@ -54,9 +63,10 @@ class IncomeService {
         return false
     }
 
-    public async deleteIncome(id: string, userID: string): Promise<boolean> {
+    public async deleteIncome(email: string, id: string, userID: string): Promise<boolean> {
         try {
-            await this.incomeContract.submitTransaction(
+            const incomeContract = await this.gm.getContract(email, this.incomeContractName)
+            await incomeContract.submitTransaction(
                 'deleteIncome',
                 userID,
                 id
@@ -70,9 +80,10 @@ class IncomeService {
         return false
     }
 
-    public async getAllIncomesByUser(userID: string): Promise<Income[]> {
+    public async getAllIncomesByUser(email: string, userID: string): Promise<Income[]> {
         try {
-            const resultBytes = await this.incomeContract.evaluateTransaction(
+            const incomeContract = await this.gm.getContract(email, this.incomeContractName)
+            const resultBytes = await incomeContract.evaluateTransaction(
                 'listIncomesByUser',
                 userID
             )
@@ -88,9 +99,10 @@ class IncomeService {
         return []
     }
 
-    public async findByID(id: string, userID: string): Promise<Income | undefined> {
+    public async findByID(email: string, id: string, userID: string): Promise<Income | undefined> {
         try {
-            const resultBytes = await this.incomeContract.evaluateTransaction(
+            const incomeContract = await this.gm.getContract(email, this.incomeContractName)
+            const resultBytes = await incomeContract.evaluateTransaction(
                 'getIncomeByID',
                 userID,
                 id

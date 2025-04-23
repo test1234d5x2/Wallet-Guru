@@ -1,15 +1,17 @@
 import { RequestHandler } from "express"
-import Registry from "../registry/Registry"
+import Registry from "../registry/Registry-new"
 import getUserFromToken from "../utils/getUserFromToken"
 
 export const create: RequestHandler = async (req, res) => {
     const { name, colour } = req.body
 
-    const userID = getUserFromToken(req)
-    if (!userID) {
-        res.status(401).json({ error: "You must be logged in to create an income category." })
+    const userDetails = getUserFromToken(req)
+    if (!userDetails) {
+        res.status(401).json({ message: "You must be logged in to create an expense." })
         return
     }
+
+    const {email, userID} = userDetails
 
     if (!name || !colour) {
         res.status(400).json({ error: "Missing required fields: name, colour" })
@@ -19,7 +21,7 @@ export const create: RequestHandler = async (req, res) => {
     const registry = await Registry.getInstance()
     const incomeCategoryService = registry.incomeCategoryService
 
-    const added = await incomeCategoryService.addIncomeCategory(userID, name, colour)
+    const added = await incomeCategoryService.addIncomeCategory(email, userID, name, colour)
     if (added) {
         res.status(201).json({ message: "Income category created" })
     } else {
@@ -31,11 +33,13 @@ export const update: RequestHandler = async (req, res) => {
     const { id } = req.params
     const { name, colour } = req.body
 
-    const userID = getUserFromToken(req)
-    if (!userID) {
-        res.status(401).json({ error: "You must be logged in to update an income category." })
+    const userDetails = getUserFromToken(req)
+    if (!userDetails) {
+        res.status(401).json({ message: "You must be logged in to create an expense." })
         return
     }
+
+    const {email, userID} = userDetails
 
     if (!id || !name || !colour) {
         res.status(400).json({ error: "Missing required fields: id, name, colour" })
@@ -45,7 +49,7 @@ export const update: RequestHandler = async (req, res) => {
     const registry = await Registry.getInstance()
     const incomeCategoryService = registry.incomeCategoryService
 
-    const updated = await incomeCategoryService.updateIncomeCategory(id, userID, name, colour)
+    const updated = await incomeCategoryService.updateIncomeCategory(email, id, userID, name, colour)
     if (updated) {
         res.status(200).json({ message: "Income category updated" })
     } else {
@@ -56,11 +60,13 @@ export const update: RequestHandler = async (req, res) => {
 export const remove: RequestHandler = async (req, res) => {
     const { id } = req.params
 
-    const userID = getUserFromToken(req)
-    if (!userID) {
-        res.status(401).json({ error: "You must be logged in to delete an income category." })
+    const userDetails = getUserFromToken(req)
+    if (!userDetails) {
+        res.status(401).json({ message: "You must be logged in to create an expense." })
         return
     }
+
+    const {email, userID} = userDetails
 
     if (!id) {
         res.status(400).json({ error: "Income category id is required" })
@@ -70,7 +76,7 @@ export const remove: RequestHandler = async (req, res) => {
     const registry = await Registry.getInstance()
     const incomeCategoryService = registry.incomeCategoryService
 
-    const deleted = await incomeCategoryService.deleteIncomeCategory(id, userID)
+    const deleted = await incomeCategoryService.deleteIncomeCategory(email, id, userID)
     if (deleted) {
         res.status(200).json({ message: "Income category deleted" })
     } else {
@@ -79,27 +85,31 @@ export const remove: RequestHandler = async (req, res) => {
 }
 
 export const listByUser: RequestHandler = async (req, res) => {
-    const userID = getUserFromToken(req)
-    if (!userID) {
-        res.status(401).json({ error: "You must be logged in to view income categories." })
+    const userDetails = getUserFromToken(req)
+    if (!userDetails) {
+        res.status(401).json({ message: "You must be logged in to create an expense." })
         return
     }
+
+    const {email, userID} = userDetails
 
     const registry = await Registry.getInstance()
     const incomeCategoryService = registry.incomeCategoryService
 
-    const categories = await incomeCategoryService.getAllCategoriesByUser(userID)
+    const categories = await incomeCategoryService.getAllCategoriesByUser(email, userID)
     res.status(200).json({ categories })
 }
 
 export const findByID: RequestHandler = async (req, res) => {
     const { id } = req.params
 
-    const userID = getUserFromToken(req)
-    if (!userID) {
-        res.status(401).json({ error: "You must be logged in to view an income category." })
+    const userDetails = getUserFromToken(req)
+    if (!userDetails) {
+        res.status(401).json({ message: "You must be logged in to create an expense." })
         return
     }
+
+    const {email, userID} = userDetails
 
     if (!id) {
         res.status(400).json({ error: "Income category id is required" })
@@ -109,7 +119,7 @@ export const findByID: RequestHandler = async (req, res) => {
     const registry = await Registry.getInstance()
     const incomeCategoryService = registry.incomeCategoryService
 
-    const category = await incomeCategoryService.findByID(id, userID)
+    const category = await incomeCategoryService.findByID(email, id, userID)
     if (!category) {
         res.status(404).json({ error: "Income category not found" })
         return

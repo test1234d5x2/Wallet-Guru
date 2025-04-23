@@ -13,9 +13,10 @@ import { connect, Gateway, Identity, Signer, signers, Network, Contract } from '
 import { promises as fs, readFileSync } from 'fs'
 import * as path from 'path'
 import * as crypto from 'crypto'
+import PeerConfig from './peerConfig'
+import envOrDefault from '../utils/envOrDefault'
 
 const mspId = envOrDefault('MSP_ID', 'PeerOrgMSP')
-
 const channelName = envOrDefault('CHANNEL_NAME', '')
 const chaincodeName = envOrDefault('CHAINCODE_NAME', '')
 const userContractName = envOrDefault('USER_CONTRACT_NAME', '')
@@ -27,13 +28,6 @@ const goalConractName = envOrDefault('GOAL_CONTRACT_NAME', '')
 const recurringExpenseContractName = envOrDefault('RECURRING_EXPENSE_CONTRACT_NAME', '')
 const recurringIncomeContractName = envOrDefault('RECURRING_INCOME_CONTRACT_NAME', '')
 
-interface PeerConfig {
-    url: string
-    tlsCertPath: string
-    keyDirectoryPath: string
-    certDirectoryPath: string
-    hostAlias: string
-}
 
 export default class Connection {
     private static instance: Connection
@@ -140,9 +134,6 @@ export default class Connection {
     public getRecurringIncomeContract(): Contract { return this.network.getContract(chaincodeName, recurringIncomeContractName) }
 }
 
-function envOrDefault(key: string, defaultValue: string): string {
-    return process.env[key] || defaultValue
-}
 
 function promiseAny<T>(promises: Promise<T>[]): Promise<T> {
     return new Promise((resolve, reject) => {

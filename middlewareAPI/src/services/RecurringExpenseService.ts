@@ -1,26 +1,35 @@
 import RecurringExpense from '../models/recurrenceModels/RecurringExpense'
 import RecurrenceRule from '../models/recurrenceModels/RecurrenceRule'
 import ExpenseService from './ExpenseService'
-import { Contract } from '@hyperledger/fabric-gateway'
 import { TextDecoder } from 'util'
 import BasicRecurrenceRule from '../models/recurrenceModels/BasicRecurrenceRule'
+import { GatewayManager } from '../gRPC/init-new'
 
 const utf8Decoder = new TextDecoder()
 
 class RecurringExpenseService {
     private expenseService: ExpenseService
-    private contract: Contract
+    private gm: GatewayManager
+    private recurringExpenseContractName: string
 
-    constructor(expenseService: ExpenseService, recurringExpenseContract: Contract) {
+    constructor(expenseService: ExpenseService, gm: GatewayManager) {
+        const RECURRING_EXPENSE_CONTRACT_NAME = process.env.RECURRING_EXPENSE_CONTRACT_NAME
+        if (!RECURRING_EXPENSE_CONTRACT_NAME) {
+            throw new Error("Set env variables")
+        }
+
+        this.gm = gm
+        this.recurringExpenseContractName = RECURRING_EXPENSE_CONTRACT_NAME
         this.expenseService = expenseService
-        this.contract = recurringExpenseContract
+        
     }
 
-    public async addRecurringExpense(userID: string, title: string, amount: number, date: Date, notes: string, categoryID: string, recurrenceRule: RecurrenceRule): Promise<boolean> {
+    public async addRecurringExpense(email: string, userID: string, title: string, amount: number, date: Date, notes: string, categoryID: string, recurrenceRule: RecurrenceRule): Promise<boolean> {
         const recurringExpense = new RecurringExpense(userID, title, amount, date, notes, categoryID, recurrenceRule)
 
         try {
-            await this.contract.submitTransaction(
+            const contract = await this.gm.getContract(email, this.recurringExpenseContractName)
+            await contract.submitTransaction(
                 'createRecurringExpense',
                 JSON.stringify(recurringExpense.toJSON())
             )
@@ -33,9 +42,9 @@ class RecurringExpenseService {
         return false
     }
 
-    public async updateRecurringExpense(id: string, userID: string, title: string, amount: number, date: Date, notes: string, categoryID: string, recurrenceRule: RecurrenceRule): Promise<boolean> {
+    public async updateRecurringExpense(email: string, id: string, userID: string, title: string, amount: number, date: Date, notes: string, categoryID: string, recurrenceRule: RecurrenceRule): Promise<boolean> {
         try {
-            const recurringExpense = await this.findByID(id, userID)
+            const recurringExpense = await this.findByID(email, id, userID)
             if (!recurringExpense) {
                 throw new Error('The recurring expense does not exist')
             }
@@ -46,7 +55,8 @@ class RecurringExpenseService {
             recurringExpense.categoryID = categoryID
             recurringExpense.recurrenceRule = recurrenceRule
 
-            await this.contract.submitTransaction(
+            const contract = await this.gm.getContract(email, this.recurringExpenseContractName)
+            await contract.submitTransaction(
                 'updateRecurringExpense',
                 JSON.stringify(recurringExpense.toJSON())
             )
@@ -59,9 +69,10 @@ class RecurringExpenseService {
         return false
     }
 
-    public async deleteRecurringExpense(id: string, userID: string): Promise<boolean> {
+    public async deleteRecurringExpense(email: string, id: string, userID: string): Promise<boolean> {
         try {
-            await this.contract.submitTransaction(
+            const contract = await this.gm.getContract(email, this.recurringExpenseContractName)
+            await contract.submitTransaction(
                 'deleteRecurringExpense',
                 userID,
                 id
@@ -75,9 +86,10 @@ class RecurringExpenseService {
         return false
     }
 
-    public async getAllRecurringExpensesByUser(userID: string): Promise<RecurringExpense[]> {
+    public async getAllRecurringExpensesByUser(email: string, userID: string): Promise<RecurringExpense[]> {
         try {
-            const resultBytes = await this.contract.evaluateTransaction(
+            const contract = await this.gm.getContract(email, this.recurringExpenseContractName)
+            const resultBytes = await contract.evaluateTransaction(
                 'listRecurringExpensesByUser',
                 userID
             )
@@ -96,9 +108,10 @@ class RecurringExpenseService {
         return []
     }
 
-    public async findByID(id: string, userID: string): Promise<RecurringExpense | undefined> {
+    public async findByID(email: string, id: string, userID: string): Promise<RecurringExpense | undefined> {
         try {
-            const resultBytes = await this.contract.evaluateTransaction(
+            const contract = await this.gm.getContract(email, this.recurringExpenseContractName)
+            const resultBytes = await contract.evaluateTransaction(
                 'getRecurringExpenseByID',
                 userID,
                 id
@@ -117,7 +130,13 @@ class RecurringExpenseService {
 
     public async processDueRecurringExpenses(): Promise<void> {
         try {
-            const resultBytes = await this.contract.evaluateTransaction(
+            const ADMIN_ID = process.env.ADMIN_ID
+            if (!ADMIN_ID) {
+                throw new Error("Set env variables")
+            }
+
+            const contract = await this.gm.getContract(ADMIN_ID, this.recurringExpenseContractName)
+            const resultBytes = await contract.evaluateTransaction(
                 'listAllRecurringExpenses'
             )
 
@@ -130,13 +149,13 @@ class RecurringExpenseService {
 
             for (const recExp of recurringExpenses) {
                 if (recExp.recurrenceRule.shouldTrigger()) {
-                    await this.expenseService.addExpense(recExp.getUserID(), recExp.title, recExp.amount, new Date(), recExp.notes, recExp.categoryID, recExp.receipt)
+                    await this.expenseService.addExpense(ADMIN_ID, recExp.getUserID(), recExp.title, recExp.amount, new Date(), recExp.notes, recExp.categoryID, recExp.receipt)
                     recExp.recurrenceRule.computeNextTriggerDate()
 
                     if (recExp.recurrenceRule.shouldEnd()) {
-                        await this.deleteRecurringExpense(recExp.getID(), recExp.getUserID())
+                        await this.deleteRecurringExpense(ADMIN_ID, recExp.getID(), recExp.getUserID())
                     } else {
-                        await this.updateRecurringExpense(recExp.getID(), recExp.getUserID(), recExp.title, recExp.amount, recExp.date, recExp.notes, recExp.categoryID, recExp.recurrenceRule)
+                        await this.updateRecurringExpense(ADMIN_ID, recExp.getID(), recExp.getUserID(), recExp.title, recExp.amount, recExp.date, recExp.notes, recExp.categoryID, recExp.recurrenceRule)
                     }
                 }
             }

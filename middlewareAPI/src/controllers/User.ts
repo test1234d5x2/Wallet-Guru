@@ -1,5 +1,5 @@
 import { RequestHandler } from "express"
-import Registry from "../registry/Registry"
+import Registry from "../registry/Registry-new"
 import getUserFromToken from "../utils/getUserFromToken"
 
 
@@ -50,22 +50,24 @@ export const login: RequestHandler = async (req, res) => {
 
 
 export const remove: RequestHandler = async (req, res) => {
-    const { email } = req.body
+    const { emailRequested } = req.body
 
-    if (!email) {
+    if (!emailRequested) {
         res.status(400).json({ error: "Email is required." })
         return
     }
 
-    const userID = getUserFromToken(req)
-    if (!userID) {
-        res.status(401).json({ error: "You must be logged in to perform this action." })
+    const userDetails = getUserFromToken(req)
+    if (!userDetails) {
+        res.status(401).json({ message: "You must be logged in to create an expense." })
         return
     }
 
+    const {email, userID} = userDetails
+
     const registry = await Registry.getInstance()
     const userService = registry.userService
-    const user = await userService.findByID(userID)
+    const user = await userService.findByID(emailRequested, userID)
 
     if (!user || user.getEmail() !== email) {
         res.status(401).json({ error: "You must be logged in to perform this action." })
@@ -89,15 +91,17 @@ export const changePassword: RequestHandler = async (req, res) => {
         return
     }
 
-    const userID = getUserFromToken(req)
-    if (!userID) {
-        res.status(401).json({ error: "You must be logged in to perform this action." })
+    const userDetails = getUserFromToken(req)
+    if (!userDetails) {
+        res.status(401).json({ message: "You must be logged in to create an expense." })
         return
     }
 
+    const userID = userDetails.userID
+
     const registry = await Registry.getInstance()
     const userService = registry.userService
-    const user = await userService.findByID(userID)
+    const user = await userService.findByID(email, userID)
 
     if (!user || user.getEmail() !== email) {
         res.status(401).json({ error: "You are not authorized to change this user's password." })

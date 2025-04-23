@@ -1,21 +1,29 @@
-import { Contract } from '@hyperledger/fabric-gateway'
 import Expense from '../models/core/Expense'
 import { TextDecoder } from 'util'
+
+import { GatewayManager } from '../gRPC/init-new'
 
 const utf8Decoder = new TextDecoder()
 
 class ExpenseService {
-    private expenseContract: Contract
+    private gm: GatewayManager
+    private expenseContractName: string
 
-    constructor(expenseContract: Contract) {
-        this.expenseContract = expenseContract
+    constructor(gm: GatewayManager) {
+        const EXPENSE_CONTRACT_NAME = process.env.EXPENSE_CONTRACT_NAME
+        if (!EXPENSE_CONTRACT_NAME) {
+            throw new Error("Set env variables first")
+        }
+
+        this.expenseContractName = EXPENSE_CONTRACT_NAME
+        this.gm = gm
     }
 
-    public async addExpense(userID: string, title: string, amount: number, date: Date, notes: string, categoryID: string, receipt?: string): Promise<boolean> {
-        const expense = new Expense(userID, title, amount, date, notes, categoryID, receipt)
-
+    public async addExpense(email: string, userID: string, title: string, amount: number, date: Date, notes: string, categoryID: string, receipt?: string): Promise<boolean> {
         try {
-            await this.expenseContract.submitTransaction(
+            const expense = new Expense(userID, title, amount, date, notes, categoryID, receipt)
+            const expenseContract = await this.gm.getContract(email, this.expenseContractName)
+            await expenseContract.submitTransaction(
                 'createExpense',
                 JSON.stringify(expense.toJSON())
             )
@@ -28,9 +36,9 @@ class ExpenseService {
         return false
     }
 
-    public async updateExpense(id: string, userID: string, title: string, amount: number, date: Date, notes: string, categoryID: string, receipt?: string): Promise<boolean> {
+    public async updateExpense(email: string, id: string, userID: string, title: string, amount: number, date: Date, notes: string, categoryID: string, receipt?: string): Promise<boolean> {
         try {
-            const expense = await this.findByID(id, userID)
+            const expense = await this.findByID(email, id, userID)
             if (!expense) {
                 throw new Error('The expense does not exist')
             }
@@ -42,7 +50,8 @@ class ExpenseService {
             expense.categoryID = categoryID
             expense.receipt = receipt || undefined
 
-            await this.expenseContract.submitTransaction(
+            const expenseContract = await this.gm.getContract(email, this.expenseContractName)
+            await expenseContract.submitTransaction(
                 'updateExpense',
                 JSON.stringify(expense.toJSON())
             )
@@ -55,9 +64,10 @@ class ExpenseService {
         return false
     }
 
-    public async deleteExpense(id: string, userID: string): Promise<boolean> {
+    public async deleteExpense(email: string, id: string, userID: string): Promise<boolean> {
         try {
-            await this.expenseContract.submitTransaction(
+            const expenseContract = await this.gm.getContract(email, this.expenseContractName)
+            await expenseContract.submitTransaction(
                 'deleteExpense',
                 userID,
                 id
@@ -71,9 +81,10 @@ class ExpenseService {
         return false
     }
 
-    public async getAllExpensesByUser(userID: string): Promise<Expense[]> {
+    public async getAllExpensesByUser(email: string, userID: string): Promise<Expense[]> {
         try {
-            const resultBytes = await this.expenseContract.evaluateTransaction(
+            const expenseContract = await this.gm.getContract(email, this.expenseContractName)
+            const resultBytes = await expenseContract.evaluateTransaction(
                 'listExpensesByUser',
                 userID
             )
@@ -89,9 +100,10 @@ class ExpenseService {
         return []
     }
 
-    public async findByID(id: string, userID: string): Promise<Expense | undefined> {
+    public async findByID(email: string, id: string, userID: string): Promise<Expense | undefined> {
         try {
-            const resultBytes = await this.expenseContract.evaluateTransaction(
+            const expenseContract = await this.gm.getContract(email, this.expenseContractName)
+            const resultBytes = await expenseContract.evaluateTransaction(
                 'getExpenseByID',
                 userID,
                 id

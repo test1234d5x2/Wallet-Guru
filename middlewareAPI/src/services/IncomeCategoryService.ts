@@ -1,20 +1,29 @@
-import { Contract } from '@hyperledger/fabric-gateway'
 import IncomeCategory from '../models/core/IncomeCategory'
 import { TextDecoder } from 'util'
+import { GatewayManager } from '../gRPC/init-new'
 
 const utf8Decoder = new TextDecoder()
 
 class IncomeCategoryService {
-    private incomeCategoryContract: Contract
+    private gm: GatewayManager
+    private incomeCategoryContractName: string
 
-    constructor(incomeCategoryContract: Contract) {
-        this.incomeCategoryContract = incomeCategoryContract
+    constructor(gm: GatewayManager) {
+        const INCOME_CATEGORY_CONTRACT_NAME = process.env.INCOME_CATEGORY_CONTRACT_NAME
+        if (!INCOME_CATEGORY_CONTRACT_NAME) {
+            throw new Error("Set env variables")
+        }
+
+        this.gm = gm
+        this.incomeCategoryContractName = INCOME_CATEGORY_CONTRACT_NAME
     }
 
-    public async addIncomeCategory(userID: string, name: string, colour: string): Promise<boolean> {
+    public async addIncomeCategory(email: string, userID: string, name: string, colour: string): Promise<boolean> {
         const category = new IncomeCategory(userID, name, undefined, colour)
         try {
-            await this.incomeCategoryContract.submitTransaction(
+
+            const incomeCategoryContract = await this.gm.getContract(email, this.incomeCategoryContractName)
+            await incomeCategoryContract.submitTransaction(
                 'createIncomeCategory',
                 JSON.stringify(category.toJSON())
             )
@@ -25,9 +34,9 @@ class IncomeCategoryService {
         return false
     }
 
-    public async updateIncomeCategory(id: string, userID: string, name: string, colour: string): Promise<boolean> {
+    public async updateIncomeCategory(email: string, id: string, userID: string, name: string, colour: string): Promise<boolean> {
         try {
-            const category = await this.findByID(id, userID)
+            const category = await this.findByID(email, id, userID)
             if (!category) {
                 throw new Error('Category not found')
             }
@@ -35,7 +44,8 @@ class IncomeCategoryService {
             category.name = name
             category.colour = colour
 
-            await this.incomeCategoryContract.submitTransaction(
+            const incomeCategoryContract = await this.gm.getContract(email, this.incomeCategoryContractName)
+            await incomeCategoryContract.submitTransaction(
                 'updateIncomeCategory',
                 JSON.stringify(category.toJSON())
             )
@@ -46,9 +56,10 @@ class IncomeCategoryService {
         return false
     }
 
-    public async deleteIncomeCategory(id: string, userID: string): Promise<boolean> {
+    public async deleteIncomeCategory(email: string, id: string, userID: string): Promise<boolean> {
         try {
-            await this.incomeCategoryContract.submitTransaction(
+            const incomeCategoryContract = await this.gm.getContract(email, this.incomeCategoryContractName)
+            await incomeCategoryContract.submitTransaction(
                 'deleteIncomeCategory',
                 userID,
                 id
@@ -60,9 +71,10 @@ class IncomeCategoryService {
         return false
     }
 
-    public async getAllCategoriesByUser(userID: string): Promise<IncomeCategory[]> {
+    public async getAllCategoriesByUser(email: string, userID: string): Promise<IncomeCategory[]> {
         try {
-            const resultBytes = await this.incomeCategoryContract.evaluateTransaction(
+            const incomeCategoryContract = await this.gm.getContract(email, this.incomeCategoryContractName)
+            const resultBytes = await incomeCategoryContract.evaluateTransaction(
                 'listIncomeCategoriesByUser',
                 userID
             )
@@ -78,9 +90,10 @@ class IncomeCategoryService {
         return []
     }
 
-    public async findByID(id: string, userID: string): Promise<IncomeCategory | undefined> {
+    public async findByID(email: string, id: string, userID: string): Promise<IncomeCategory | undefined> {
         try {
-            const resultBytes = await this.incomeCategoryContract.evaluateTransaction(
+            const incomeCategoryContract = await this.gm.getContract(email, this.incomeCategoryContractName)
+            const resultBytes = await incomeCategoryContract.evaluateTransaction(
                 'getIncomeCategoryByID',
                 userID,
                 id

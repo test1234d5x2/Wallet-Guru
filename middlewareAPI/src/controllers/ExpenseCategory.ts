@@ -1,16 +1,18 @@
 import { RequestHandler } from "express"
-import Registry from "../registry/Registry"
+import Registry from "../registry/Registry-new"
 import getUserFromToken from "../utils/getUserFromToken"
 import BasicRecurrenceRule from "../models/recurrenceModels/BasicRecurrenceRule"
 
 export const create: RequestHandler = async (req, res) => {
     const { name, monthlyBudget, recurrenceRule, colour } = req.body
 
-    const userID = getUserFromToken(req)
-    if (!userID) {
-        res.status(401).json({ error: "You must be logged in to create an expense category." })
+    const userDetails = getUserFromToken(req)
+    if (!userDetails) {
+        res.status(401).json({ message: "You must be logged in to create an expense." })
         return
     }
+
+    const {email, userID} = userDetails
 
     if (!name || monthlyBudget === undefined || !recurrenceRule || !colour) {
         res.status(400).json({ error: "Missing required fields: name, monthlyBudget, recurrenceRule, colour" })
@@ -28,7 +30,7 @@ export const create: RequestHandler = async (req, res) => {
         recurrenceRule.endDate ? new Date(recurrenceRule.endDate) : undefined
     )
 
-    const added = await expenseCategoryService.addExpenseCategory(userID, name, monthlyBudget, rule, colour)
+    const added = await expenseCategoryService.addExpenseCategory(email, userID, name, monthlyBudget, rule, colour)
     if (added) {
         res.status(201).json({ message: "Expense category created" })
     } else {
@@ -40,11 +42,13 @@ export const update: RequestHandler = async (req, res) => {
     const { id } = req.params
     const { name, monthlyBudget, recurrenceRule, colour } = req.body
 
-    const userID = getUserFromToken(req)
-    if (!userID) {
-        res.status(401).json({ error: "You must be logged in to update an expense category." })
+    const userDetails = getUserFromToken(req)
+    if (!userDetails) {
+        res.status(401).json({ message: "You must be logged in to create an expense." })
         return
     }
+
+    const {email, userID} = userDetails
 
     if (!id || !name || monthlyBudget === undefined || !recurrenceRule || !colour) {
         res.status(400).json({ error: "Missing required fields: id, name, monthlyBudget, recurrenceRule, colour" })
@@ -62,7 +66,7 @@ export const update: RequestHandler = async (req, res) => {
         recurrenceRule.endDate ? new Date(recurrenceRule.endDate) : undefined
     )
 
-    const updated = await expenseCategoryService.updateExpenseCategory(id, userID, name, monthlyBudget, rule, colour)
+    const updated = await expenseCategoryService.updateExpenseCategory(email, id, userID, name, monthlyBudget, rule, colour)
     if (updated) {
         res.status(200).json({ message: "Expense category updated" })
     } else {
@@ -73,11 +77,13 @@ export const update: RequestHandler = async (req, res) => {
 export const remove: RequestHandler = async (req, res) => {
     const { id } = req.params
 
-    const userID = getUserFromToken(req)
-    if (!userID) {
-        res.status(401).json({ error: "You must be logged in to delete an expense category." })
+    const userDetails = getUserFromToken(req)
+    if (!userDetails) {
+        res.status(401).json({ message: "You must be logged in to create an expense." })
         return
     }
+
+    const {email, userID} = userDetails
 
     if (!id) {
         res.status(400).json({ error: "Expense category id is required" })
@@ -87,7 +93,7 @@ export const remove: RequestHandler = async (req, res) => {
     const registry = await Registry.getInstance()
     const expenseCategoryService = registry.expenseCategoryService
 
-    const deleted = await expenseCategoryService.deleteExpenseCategory(id, userID)
+    const deleted = await expenseCategoryService.deleteExpenseCategory(email, id, userID)
     if (deleted) {
         res.status(200).json({ message: "Expense category deleted" })
     } else {
@@ -96,27 +102,31 @@ export const remove: RequestHandler = async (req, res) => {
 }
 
 export const listByUser: RequestHandler = async (req, res) => {
-    const userID = getUserFromToken(req)
-    if (!userID) {
-        res.status(401).json({ error: "You must be logged in to view expense categories." })
+    const userDetails = getUserFromToken(req)
+    if (!userDetails) {
+        res.status(401).json({ message: "You must be logged in to create an expense." })
         return
     }
+
+    const {email, userID} = userDetails
 
     const registry = await Registry.getInstance()
     const expenseCategoryService = registry.expenseCategoryService
 
-    const categories = await expenseCategoryService.getAllCategoriesByUser(userID)
+    const categories = await expenseCategoryService.getAllCategoriesByUser(email, userID)
     res.status(200).json({ categories })
 }
 
 export const findByID: RequestHandler = async (req, res) => {
     const { id } = req.params
 
-    const userID = getUserFromToken(req)
-    if (!userID) {
-        res.status(401).json({ error: "You must be logged in to view an expense category." })
+    const userDetails = getUserFromToken(req)
+    if (!userDetails) {
+        res.status(401).json({ message: "You must be logged in to create an expense." })
         return
     }
+
+    const {email, userID} = userDetails
 
     if (!id) {
         res.status(400).json({ error: "Expense category id is required" })
@@ -126,7 +136,7 @@ export const findByID: RequestHandler = async (req, res) => {
     const registry = await Registry.getInstance()
     const expenseCategoryService = registry.expenseCategoryService
 
-    const category = await expenseCategoryService.findByID(id, userID)
+    const category = await expenseCategoryService.findByID(email, id, userID)
     if (!category) {
         res.status(404).json({ error: "Expense category not found" })
         return

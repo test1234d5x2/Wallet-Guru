@@ -1,16 +1,18 @@
 import { Request, Response } from 'express'
-import Registry from '../registry/Registry'
+import Registry from '../registry/Registry-new'
 import BasicRecurrenceRule from '../models/recurrenceModels/BasicRecurrenceRule'
 import getUserFromToken from '../utils/getUserFromToken'
 
 export const create = async (req: Request, res: Response) => {
     const { title, amount, date, notes, categoryID, recurrenceRule } = req.body
 
-    const userID = getUserFromToken(req)
-    if (!userID) {
-        res.status(401).json({ message: "You must be logged in to create a recurring expense transaction." })
+    const userDetails = getUserFromToken(req)
+    if (!userDetails) {
+        res.status(401).json({ message: "You must be logged in to create an expense." })
         return
     }
+
+    const {email, userID} = userDetails
 
     if (!title || amount === undefined || !date || !recurrenceRule || !categoryID) {
         res.status(400).json({ message: "Missing required fields: title, amount, date, categoryID, recurrenceRule" })
@@ -28,7 +30,7 @@ export const create = async (req: Request, res: Response) => {
     const registry = await Registry.getInstance()
     const recurringExpenseService = registry.recurringExpenseService
 
-    const added = await recurringExpenseService.addRecurringExpense(userID, title, amount, new Date(date), notes, categoryID, rule)
+    const added = await recurringExpenseService.addRecurringExpense(email, userID, title, amount, new Date(date), notes, categoryID, rule)
     if (!added) {
         res.status(404).json({ message: 'Failed to create recurring expense.' })
         return
@@ -41,11 +43,13 @@ export const update = async (req: Request, res: Response) => {
     const { id } = req.params
     const { title, amount, date, notes, categoryID, recurrenceRule } = req.body
 
-    const userID = getUserFromToken(req)
-    if (!userID) {
-        res.status(401).json({ message: "You must be logged in to update a recurring expense transaction." })
+    const userDetails = getUserFromToken(req)
+    if (!userDetails) {
+        res.status(401).json({ message: "You must be logged in to create an expense." })
         return
     }
+
+    const {email, userID} = userDetails
 
     if (!title || amount === undefined || !date || !recurrenceRule || !categoryID) {
         res.status(400).json({ message: "Missing required fields: title, amount, date, recurrenceRule" })
@@ -63,7 +67,7 @@ export const update = async (req: Request, res: Response) => {
     const registry = await Registry.getInstance()
     const recurringExpenseService = registry.recurringExpenseService
 
-    const updated = await recurringExpenseService.updateRecurringExpense(id, userID, title, amount, new Date(date), notes, categoryID, rule)
+    const updated = await recurringExpenseService.updateRecurringExpense(email, id, userID, title, amount, new Date(date), notes, categoryID, rule)
     if (!updated) {
         res.status(404).json({ message: 'Failed to update recurring expense.' })
         return
@@ -75,16 +79,18 @@ export const update = async (req: Request, res: Response) => {
 export const remove = async (req: Request, res: Response) => {
     const { id } = req.params
 
-    const userID = getUserFromToken(req)
-    if (!userID) {
-        res.status(401).json({ message: "You must be logged in to delete a recurring expense transaction." })
+    const userDetails = getUserFromToken(req)
+    if (!userDetails) {
+        res.status(401).json({ message: "You must be logged in to create an expense." })
         return
     }
+
+    const {email, userID} = userDetails
 
     const registry = await Registry.getInstance()
     const recurringExpenseService = registry.recurringExpenseService
 
-    const deleted = await recurringExpenseService.deleteRecurringExpense(id, userID)
+    const deleted = await recurringExpenseService.deleteRecurringExpense(email, id, userID)
     if (!deleted) {
         res.status(404).json({ message: 'Failed to delete recurring expense.' })
         return
@@ -94,34 +100,38 @@ export const remove = async (req: Request, res: Response) => {
 }
 
 export const listByUser = async (req: Request, res: Response) => {
-    const userID = getUserFromToken(req)
-    if (!userID) {
-        res.status(401).json({ message: "You must be logged in to view your recurring expense transactions." })
+    const userDetails = getUserFromToken(req)
+    if (!userDetails) {
+        res.status(401).json({ message: "You must be logged in to create an expense." })
         return
     }
+
+    const {email, userID} = userDetails
 
     const registry = await Registry.getInstance()
     const recurringExpenseService = registry.recurringExpenseService
 
     recurringExpenseService.processDueRecurringExpenses()
-    const recurringExpenses = await recurringExpenseService.getAllRecurringExpensesByUser(userID)
+    const recurringExpenses = await recurringExpenseService.getAllRecurringExpensesByUser(email, userID)
     res.status(200).json({ recurringExpenses })
 }
 
 export const findByID = async (req: Request, res: Response) => {
     const { id } = req.params
 
-    const userID = getUserFromToken(req)
-    if (!userID) {
-        res.status(401).json({ message: "You must be logged in to view a recurring expense transaction." })
+    const userDetails = getUserFromToken(req)
+    if (!userDetails) {
+        res.status(401).json({ message: "You must be logged in to create an expense." })
         return
     }
+
+    const {email, userID} = userDetails
 
     const registry = await Registry.getInstance()
     const recurringExpenseService = registry.recurringExpenseService
 
     recurringExpenseService.processDueRecurringExpenses()
-    const expense = await recurringExpenseService.findByID(id, userID)
+    const expense = await recurringExpenseService.findByID(email, id, userID)
     if (!expense) {
         res.status(404).json({ error: 'Recurring Expense not found' })
         return

@@ -1,16 +1,18 @@
 import { RequestHandler } from "express"
-import Registry from "../registry/Registry"
+import Registry from "../registry/Registry-new"
 import GoalStatus from "../enums/GoalStatus"
 import getUserFromToken from "../utils/getUserFromToken"
 
 export const create: RequestHandler = async (req, res) => {
     const { title, description, target, targetDate, status } = req.body
 
-    const userID = getUserFromToken(req)
-    if (!userID) {
-        res.status(401).json({ error: "You must be logged in to create a goal." })
+    const userDetails = getUserFromToken(req)
+    if (!userDetails) {
+        res.status(401).json({ message: "You must be logged in to create an expense." })
         return
     }
+
+    const {email, userID} = userDetails
 
     if (!title || !description || target === undefined) {
         res.status(400).json({ error: "Missing required fields: title, description, target" })
@@ -20,7 +22,7 @@ export const create: RequestHandler = async (req, res) => {
     const registry = await Registry.getInstance()
     const goalService = registry.goalService
 
-    const added = await goalService.addGoal(userID, title, description, target, targetDate, status || GoalStatus.Active)
+    const added = await goalService.addGoal(email, userID, title, description, target, targetDate, status || GoalStatus.Active)
     if (added) {
         res.status(201).json({ message: "Goal created" })
     } else {
@@ -32,11 +34,13 @@ export const updateProgress: RequestHandler = async (req, res) => {
     const { id } = req.params
     const { current } = req.body
 
-    const userID = getUserFromToken(req)
-    if (!userID) {
-        res.status(401).json({ error: "You must be logged in to update a goal." })
+    const userDetails = getUserFromToken(req)
+    if (!userDetails) {
+        res.status(401).json({ message: "You must be logged in to create an expense." })
         return
     }
+
+    const {email, userID} = userDetails
 
     if (!id || current === undefined) {
         res.status(400).json({ error: "Missing required fields: id, current" })
@@ -46,7 +50,7 @@ export const updateProgress: RequestHandler = async (req, res) => {
     const registry = await Registry.getInstance()
     const goalService = registry.goalService
 
-    const updated = await goalService.updateGoalProgress(id, userID, current)
+    const updated = await goalService.updateGoalProgress(email, id, userID, current)
     if (updated) {
         res.status(200).json({ message: "Goal progress updated" })
     } else {
@@ -61,11 +65,13 @@ export const archive: RequestHandler = async (req, res) => {
 export const remove: RequestHandler = async (req, res) => {
     const { id } = req.params
 
-    const userID = getUserFromToken(req)
-    if (!userID) {
-        res.status(401).json({ error: "You must be logged in to delete a goal." })
+    const userDetails = getUserFromToken(req)
+    if (!userDetails) {
+        res.status(401).json({ message: "You must be logged in to create an expense." })
         return
     }
+
+    const {email, userID} = userDetails
 
     if (!id) {
         res.status(400).json({ error: "Goal id is required" })
@@ -75,7 +81,7 @@ export const remove: RequestHandler = async (req, res) => {
     const registry = await Registry.getInstance()
     const goalService = registry.goalService
 
-    const deleted = await goalService.deleteGoal(id, userID)
+    const deleted = await goalService.deleteGoal(email, id, userID)
     if (deleted) {
         res.status(200).json({ message: "Goal deleted" })
     } else {
@@ -84,27 +90,31 @@ export const remove: RequestHandler = async (req, res) => {
 }
 
 export const listByUser: RequestHandler = async (req, res) => {
-    const userID = getUserFromToken(req)
-    if (!userID) {
-        res.status(401).json({ error: "You must be logged in to view goals." })
+    const userDetails = getUserFromToken(req)
+    if (!userDetails) {
+        res.status(401).json({ message: "You must be logged in to create an expense." })
         return
     }
+
+    const {email, userID} = userDetails
 
     const registry = await Registry.getInstance()
     const goalService = registry.goalService
 
-    const goals = await goalService.getAllGoalsByUser(userID)
+    const goals = await goalService.getAllGoalsByUser(email, userID)
     res.status(200).json({ goals })
 }
 
 export const findByID: RequestHandler = async (req, res) => {
     const { id } = req.params
 
-    const userID = getUserFromToken(req)
-    if (!userID) {
-        res.status(401).json({ error: "You must be logged in to view a goal." })
+    const userDetails = getUserFromToken(req)
+    if (!userDetails) {
+        res.status(401).json({ message: "You must be logged in to create an expense." })
         return
     }
+
+    const {email, userID} = userDetails
 
     if (!id) {
         res.status(400).json({ error: "Goal ID is required." })
@@ -114,7 +124,7 @@ export const findByID: RequestHandler = async (req, res) => {
     const registry = await Registry.getInstance()
     const goalService = registry.goalService
 
-    const goal = await goalService.findByID(id, userID)
+    const goal = await goalService.findByID(email, id, userID)
     if (!goal) {
         res.status(404).json({ error: "Goal not found." })
         return
