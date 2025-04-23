@@ -10,7 +10,8 @@ import UserService from "../services/UserService";
 
 export default class Registry {
     private static instance: Registry;
-    private gatewayManager: GatewayManager;
+    private initialised: boolean = false
+    private gatewayManager!: GatewayManager;
 
     public expenseService!: ExpenseService
     public incomeService!: IncomeService
@@ -21,8 +22,11 @@ export default class Registry {
     public recurringExpenseService!: RecurringExpenseService
     public recurringIncomeService!: RecurringIncomeService
 
-    private constructor() {
-        this.gatewayManager = new GatewayManager();
+    private constructor() {}
+
+    private async init() {
+        this.initialised = true
+        this.gatewayManager = await GatewayManager.build()
 
         this.userService = new UserService(this.gatewayManager)
         this.expenseService = new ExpenseService(this.gatewayManager)
@@ -34,10 +38,15 @@ export default class Registry {
         this.recurringIncomeService = new RecurringIncomeService(this.incomeService, this.gatewayManager)
     }
 
-    public static getInstance(): Registry {
+    public static async getInstance(): Promise<Registry> {
         if (!Registry.instance) {
-            Registry.instance = new Registry();
+            Registry.instance = new Registry()
         }
+
+        if (!Registry.instance.initialised) {
+            await Registry.instance.init()
+        }
+
         return Registry.instance;
     }
 }
