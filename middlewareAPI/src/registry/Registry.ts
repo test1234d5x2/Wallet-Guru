@@ -50,3 +50,6 @@ export default class Registry {
         return Registry.instance;
     }
 }
+
+
+Registry.getInstance()

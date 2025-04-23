@@ -2,7 +2,7 @@ import * as grpc from '@grpc/grpc-js'
 import { connect, Gateway, Identity, Signer, signers, Network, Contract } from '@hyperledger/fabric-gateway'
 import { promises as fs, readFileSync } from 'fs'
 import * as crypto from 'crypto'
-import {LRUCache} from 'lru-cache';
+import { LRUCache } from 'lru-cache';
 import { Wallets, X509Identity, Wallet } from 'fabric-network'
 import envOrDefault from '../utils/envOrDefault'
 import generatePeerConfigsList from '../utils/generatePeerConfigsList'
@@ -11,7 +11,6 @@ import generatePeerConfigsList from '../utils/generatePeerConfigsList'
 interface GatewayEntry {
     gateway: Gateway;
     client: grpc.Client;
-    lastUsed: number;
 }
 
 export class GatewayManager {
@@ -41,9 +40,9 @@ export class GatewayManager {
     public static async build(): Promise<GatewayManager> {
         const walletPath = envOrDefault('WALLET_PATH', '')
         const wallet = await Wallets.newFileSystemWallet(walletPath)
-        const mgr = new GatewayManager(wallet)
-        await mgr.initClients()
-        return mgr
+        const gm = new GatewayManager(wallet)
+        await gm.initClients()
+        return gm
     }
 
     private async initClients(): Promise<void> {
@@ -80,7 +79,6 @@ export class GatewayManager {
                 await new Promise<void>((res, rej) => {
                     cacheEntry.client.waitForReady(now + this.clientTimeout, err => err ? rej(err) : res())
                 })
-                cacheEntry.lastUsed = now
                 return cacheEntry.gateway
             } catch {
                 cacheEntry.gateway.close()
@@ -102,7 +100,7 @@ export class GatewayManager {
                     client.waitForReady(now + this.clientTimeout, err => err ? rej(err) : res())
                 })
                 const gateway = connect({ client, identity, signer })
-                this.gatewayCache.set(label, { gateway, client, lastUsed: now })
+                this.gatewayCache.set(label, { gateway, client })
                 return gateway
             } catch (err: any) {
                 lastErr = err
