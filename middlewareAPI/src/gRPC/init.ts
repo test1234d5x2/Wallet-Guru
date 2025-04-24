@@ -2,18 +2,19 @@ import * as grpc from '@grpc/grpc-js'
 import { connect, Gateway, Identity, Signer, signers, Network, Contract } from '@hyperledger/fabric-gateway'
 import { promises as fs, readFileSync } from 'fs'
 import * as crypto from 'crypto'
-import { LRUCache } from 'lru-cache';
+import { LRUCache } from 'lru-cache'
 import { Wallets, X509Identity, Wallet } from 'fabric-network'
 import envOrDefault from '../utils/envOrDefault'
 import generatePeerConfigsList from '../utils/generatePeerConfigsList'
 
 
 interface GatewayEntry {
-    gateway: Gateway;
-    client: grpc.Client;
+    gateway: Gateway
+    client: grpc.Client
 }
 
 export class GatewayManager {
+    private peerConfigs = generatePeerConfigsList();
     private clients: grpc.Client[] = []
     private wallet: Wallet
     private channelName: string
@@ -28,12 +29,9 @@ export class GatewayManager {
         this.clientTimeout = 5000
 
         this.gatewayCache = new LRUCache<string, GatewayEntry>({
-            max: 100,
             ttl: 1000 * 60 * 15,
             ttlAutopurge: true,
-            dispose: (entry, _entry) => {
-                entry.gateway.close()
-            },
+            dispose: entry => entry.gateway.close(),
         })
     }
 
@@ -41,13 +39,13 @@ export class GatewayManager {
         const walletPath = envOrDefault('WALLET_PATH', '')
         const wallet = await Wallets.newFileSystemWallet(walletPath)
         const gm = new GatewayManager(wallet)
-        await gm.initClients()
+        await gm.initialiseClients()
         return gm
     }
 
-    private async initClients(): Promise<void> {
-        const peerConfigs = generatePeerConfigsList()
-        const checks = peerConfigs.map(pc => new Promise<void>(resolve => {
+    private async initialiseClients(): Promise<void> {
+        const newClients: grpc.Client[] = []
+        const checks = this.peerConfigs.map(pc => new Promise<void>(resolve => {
             const tlsRootCert = readFileSync(pc.tlsCertPath)
             const endpoint = pc.url.replace('grpcs://', '')
             const client = new grpc.Client(endpoint,
@@ -57,7 +55,7 @@ export class GatewayManager {
             client.waitForReady(Date.now() + this.clientTimeout, err => {
                 if (!err) {
                     console.log(`Connected to peer ${pc.url}`)
-                    this.clients.push(client)
+                    newClients.push(client)
                 } else {
                     console.warn(`Failed to connect to peer ${pc.url}: ${err.message}`)
                 }
@@ -66,9 +64,36 @@ export class GatewayManager {
         }))
 
         await Promise.all(checks)
+        this.clients = newClients
         if (this.clients.length === 0) {
-            throw new Error('No available peers after initialization')
+            console.warn('No available peers after reconnection attempt');
         }
+    }
+
+    private async pickClient(): Promise<grpc.Client | undefined> {
+        const now = Date.now()
+        const readyClients: grpc.Client[] = []
+        for (const client of this.clients) {
+            try {
+                await new Promise<void>((res, rej) => {
+                    client.waitForReady(now + this.clientTimeout, err => err ? rej(err) : res())
+                })
+                readyClients.push(client)
+            } catch {
+
+            }
+        }
+
+        if (readyClients.length > 0) {
+            return readyClients[0]
+        }
+
+        console.log('No ready peers, reinitialising client pool...')
+        await this.initialiseClients()
+        if (this.clients.length === 0) {
+            return undefined
+        }
+        return this.clients[0]
     }
 
     public async getGateway(label: string): Promise<Gateway> {
@@ -93,21 +118,16 @@ export class GatewayManager {
         const privateKey = crypto.createPrivateKey(x509.credentials.privateKey)
         const signer: Signer = signers.newPrivateKeySigner(privateKey)
 
-        let lastErr: Error | null = null
-        for (const client of this.clients) {
-            try {
-                await new Promise<void>((res, rej) => {
-                    client.waitForReady(now + this.clientTimeout, err => err ? rej(err) : res())
-                })
-                const gateway = connect({ client, identity, signer })
-                this.gatewayCache.set(label, { gateway, client })
-                return gateway
-            } catch (err: any) {
-                lastErr = err
-                console.warn(`Gateway connect via client failed: ${err.message}`)
-            }
+        const client = await this.pickClient()
+        try {
+            if (!client) {throw new Error("No peers connected")}
+            const gateway = connect({ client, identity, signer })
+            this.gatewayCache.set(label, { gateway, client })
+            return gateway
+        } catch (err: any) {
+            console.warn(`Gateway connect via client failed: ${err.message}`)
+            throw err
         }
-        throw lastErr || new Error('Unable to connect any peer for gateway')
     }
 
     public async getContract(userLabel: string, contractName: string): Promise<Contract> {
