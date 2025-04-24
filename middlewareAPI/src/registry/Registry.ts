@@ -53,3 +53,4 @@ export default class Registry {
 
 
 Registry.getInstance()
+// IMPORTANT: Start the connection initialisation before any users send requests for transactions.
