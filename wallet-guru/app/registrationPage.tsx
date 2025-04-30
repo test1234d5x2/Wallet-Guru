@@ -5,8 +5,9 @@ import setPageTitle from '@/components/pageTitle/setPageTitle'
 import { useRouter } from 'expo-router'
 import isValidEmail from '@/utils/validation/validateEmail'
 import clearRouterHistory from '@/utils/clearRouterHistory'
+import saveFile from '@/utils/saveFile'
 
-async function createUser(email: string, password: string): Promise<void> {
+async function createUser(email: string, password: string): Promise<string> {
     const API_DOMAIN = process.env.EXPO_PUBLIC_BLOCKCHAIN_MIDDLEWARE_API_IP_ADDRESS
     if (!API_DOMAIN) {
         throw new Error('Domain could not be found.')
@@ -26,6 +27,10 @@ async function createUser(email: string, password: string): Promise<void> {
         const error = await response.json()
         throw new Error(error.message)
     }
+
+    const data = await response.json()
+    const credentials = data.data
+    return credentials
 }
 
 export default function Register() {
@@ -56,8 +61,9 @@ export default function Register() {
         setIsLoading(true)
 
         try {
-            await createUser(email, password)
-            Alert.alert('Success', 'User registered successfully!')
+            const credentials = await createUser(email, password)
+            Alert.alert('User Registration Success', 'Please store the upcoming file very safely as these are your credentials!')
+            await saveFile('credentials.id', credentials)
             handleRedirection()
         } catch (error: any) {
             console.log('Registration error:', error.message)

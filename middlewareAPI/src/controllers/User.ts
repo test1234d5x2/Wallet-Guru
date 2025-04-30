@@ -1,6 +1,7 @@
 import { RequestHandler } from "express"
 import Registry from "../registry/Registry"
 import getUserFromToken from "../utils/getUserFromToken"
+import getWallet from "../utils/getWallet"
 
 
 export const create: RequestHandler = async (req, res) => {
@@ -22,7 +23,8 @@ export const create: RequestHandler = async (req, res) => {
 
     const added = await userService.addUser(username, password)
     if (added) {
-        res.status(201).json({ message: "User created" })
+        const credentials = await getWallet(username)
+        res.status(201).json({ message: "User created", data: credentials })
     } else {
         res.status(409).json({ message: "User already exists" })
     }
