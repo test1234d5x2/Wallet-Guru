@@ -62,8 +62,12 @@ export default function Register() {
 
         try {
             const credentials = await createUser(email, password)
-            Alert.alert('User Registration Success', 'Please store the upcoming file very safely as these are your credentials!')
-            await saveFile('credentials.id', credentials)
+            Alert.alert('User Registration Success', 'Please store the upcoming file very safely as these are your credentials!', [
+                {
+                    text: "OK", onPress: () => {saveFile('credentials.id', credentials)}
+                }
+            ])
+            
             handleRedirection()
         } catch (error: any) {
             console.log('Registration error:', error.message)

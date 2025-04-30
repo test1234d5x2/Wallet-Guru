@@ -14,7 +14,6 @@ export default async function saveFile(filename: string, contents: string) {
                 contents,
                 { encoding: FileSystem.EncodingType.UTF8 }
             )
-            return uri
         }
     } catch (e) {
         console.warn('Error requesting directory or writing file:', e)
