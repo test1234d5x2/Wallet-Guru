@@ -26,7 +26,7 @@ export class GatewayManager {
         this.channelName = envOrDefault('CHANNEL_NAME', '')
         this.chaincodeName = envOrDefault('CHAINCODE_NAME', '')
         this.wallet = wallet
-        this.clientTimeout = 5000
+        this.clientTimeout = 1500
 
         // 15 minute Time-To-Live, autopurge removes entries without new requests being sent to the cache.
         this.gatewayCache = new LRUCache<string, GatewayEntry>({
