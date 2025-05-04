@@ -48,15 +48,6 @@ Inside the folder <code>wallet_guru</code>:
 Inside the folder <code>middlewareAPI</code>:
 - The environment variable <code>IP</code> has been marked with "*****". Change it to your IP address.
 
-### Downloading Expo Go To Run The Mobile App
-- Navigate to the <code>wallet_guru</code> folder via a terminal. For Windows, use PowerShell.
-- Run the command <code>npm install</code>
-- Run the command <code>npx expo start</code>
-- When the initialisation process done by Expo is complete, press "a".
-- The terminal window will then give you a choice of install Expo Go on the Android Emulator, proceed with it.
-- Expo Go should open automatically once downloaded and complete.
-- If the app does not open, press "a" again in the terminal window and it should open.
-
 
 ### Running The Blockchain
 - On a separate terminal window, navigate to <code>blockchain-network</code> --> <code>config-files</code>
@@ -94,3 +85,14 @@ Inside the folder <code>middlewareAPI</code>:
 - Run the command <code>npm install</code>
 - Run the command <code>npm run dev</code>
 - This part is now complete.
+
+
+
+### Downloading Expo Go To Run The Mobile App
+- Navigate to the <code>wallet_guru</code> folder via a terminal. For Windows, use PowerShell.
+- Run the command <code>npm install</code>
+- Run the command <code>npx expo start</code>
+- When the initialisation process done by Expo is complete, press "a".
+- The terminal window will then give you a choice of install Expo Go on the Android Emulator, proceed with it.
+- Expo Go should open automatically once downloaded and complete.
+- If the app does not open, press "a" again in the terminal window and it should open.
