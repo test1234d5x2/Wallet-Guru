@@ -1,5 +1,3 @@
-# QUICK SPIN UP OF A READMED
-
 ## Why is there no single executable file?
 The project had to be broken down into several smaller microservices that connect with each other to create the full application. Because of this, each microservice requires installing the correct packages before running.
 
@@ -10,6 +8,8 @@ Another main reason for why there is no single executable file is because the en
 - <code>testing</code> folder: These contain some tests regarding the Recurrence Rule class and for the blockchain tests.
 - <code>middlewareAPINonPersistent</code> folder: This folder contains the code for ExpressJS API. However, this is not used for the actual application. This was used during development to speed up the initialisation instead of having to take a long time starting up the blockchain network. As in the name, this development API uses non-persistent storage. This API was used mainly to test the frontend in a way that simulates the app working.
 - <code>middlewareAPI</code> folder: This is the ExpressJS API that is used by the running application.
+- <code>blockchain-network</code>: This folder contains the smart contracts and the config files for running the blockchain network.
+- <code>caliper-workspace</code>: This folder contains the code to benchmark the blockchain network.
 
 
 ## Steps To Get The Project Fully Running
@@ -59,7 +59,7 @@ Inside the folder <code>middlewareAPI</code>:
 
 
 ### Running The Blockchain
-- On a separate terminal window, navigate to <code>middlewareAPI</code> --> <code>blockchain-network</code> --> <code>config-files</code>
+- On a separate terminal window, navigate to <code>blockchain-network</code> --> <code>config-files</code>
 - Run the command <code>docker-compose -f docker-compose-fabric-ca.yaml up -d</code>. This command starts up the Certificate Authorities.
 - If this is the first time you run the command, it may take a few minutes for the images to be pulled.
 - Run the command <code>docker-compose up -d</code>. This command runs the peers, orderers and a dedicated bash terminal.
