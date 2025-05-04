@@ -89,7 +89,7 @@ export default function ViewReccuringTransactionsList() {
         }
 
         getExpenseList()
-    }, [token, categories])
+    }, [token])
 
     useEffect(() => {
         async function getIncomesList() {

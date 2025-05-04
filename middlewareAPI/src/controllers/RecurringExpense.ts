@@ -111,7 +111,7 @@ export const listByUser = async (req: Request, res: Response) => {
     const registry = await Registry.getInstance()
     const recurringExpenseService = registry.recurringExpenseService
 
-    recurringExpenseService.processDueRecurringExpenses()
+    await recurringExpenseService.processDueRecurringExpenses()
     const recurringExpenses = await recurringExpenseService.getAllRecurringExpensesByUser(email, userID)
     res.status(200).json({ recurringExpenses })
 }
@@ -130,11 +130,12 @@ export const findByID = async (req: Request, res: Response) => {
     const registry = await Registry.getInstance()
     const recurringExpenseService = registry.recurringExpenseService
 
-    recurringExpenseService.processDueRecurringExpenses()
     const expense = await recurringExpenseService.findByID(email, id, userID)
     if (!expense) {
         res.status(404).json({ error: 'Recurring Expense not found' })
         return
     }
+    
+    await recurringExpenseService.processDueRecurringExpenses()
     res.status(200).json(expense.toJSON())
 }
