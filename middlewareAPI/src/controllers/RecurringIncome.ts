@@ -111,6 +111,7 @@ export const listByUser = async (req: Request, res: Response) => {
     const registry = await Registry.getInstance()
     const recurringIncomeService = registry.recurringIncomeService
 
+    // Check through all recurring incomes that need to be updated.
     await recurringIncomeService.processDueRecurringIncomes()
     const recurringIncomes = await recurringIncomeService.getAllRecurringIncomesByUser(email, userID)
     res.status(200).json({ recurringIncomes })
@@ -136,6 +137,7 @@ export const findByID = async (req: Request, res: Response) => {
         return
     }
 
+    // Check through all recurring incomes that need to be updated.
     await recurringIncomeService.processDueRecurringIncomes()
     res.status(200).json(income.toJSON())
 }

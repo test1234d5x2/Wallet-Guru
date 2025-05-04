@@ -44,6 +44,7 @@ export class GatewayManager {
         return gm
     }
 
+    // Check connection to client.
     private async isClientAvailable(client: grpc.Client): Promise<boolean> {
         try {
             await new Promise<void>((res, rej) => {

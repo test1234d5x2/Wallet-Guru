@@ -8,6 +8,8 @@ import RecurringExpenseService from "../services/RecurringExpenseService";
 import RecurringIncomeService from "../services/RecurringIncomeService";
 import UserService from "../services/UserService";
 
+
+// This is the connector class.
 export default class Registry {
     private static instance: Registry;
     private initialised: boolean = false

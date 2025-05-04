@@ -4,6 +4,7 @@ import path from 'path'
 
 dotenv.config()
 
+// Get a user's wallet credentials.
 export default async function getWallet(email: string): Promise<string> {
     const WALLET_PATH = process.env.WALLET_PATH
 

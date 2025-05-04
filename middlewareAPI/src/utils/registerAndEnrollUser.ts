@@ -6,6 +6,7 @@ import FabricCAServices from 'fabric-ca-client'
 
 dotenv.config()
 
+// Generate a user's wallet credentials by registering and enroling to Fabric Certificate Authroity (Fabric CA)
 export default async function registerAndEnrollUser(userID: string, adminID: string): Promise<boolean> {
     const CA_URL = process.env.CA_URL
     const CA_TLS_CERT_PATH = process.env.CA_TLS_CERT_PATH
