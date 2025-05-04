@@ -9,6 +9,7 @@ interface ModalSelectionProps {
     setValue: (text: Date) => void
 }
 
+// Date selection using a modal.
 const ModalSelectionDates = (props: ModalSelectionProps) => {
 
     const [showDropdown, setShowDropdown] = useState<boolean>(false)

@@ -47,6 +47,7 @@ export default function Login() {
     const [error, setError] = useState<string>('')
     const router = useRouter()
 
+    // Auto-login feature
     useEffect(() => {
         const checkToken = async () => {
             const data = await getToken()

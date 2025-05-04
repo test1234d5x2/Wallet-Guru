@@ -6,8 +6,9 @@ type PillProps = {
     text: string
 }
 
-const getTextColor = (bgColor: string): string => {
-    const hex = bgColor.replace('#', '')
+// Determining whether the colour of the text should be black or white
+const getTextColour = (bgColour: string): string => {
+    const hex = bgColour.replace('#', '')
     const r = parseInt(hex.substring(0, 2), 16)
     const g = parseInt(hex.substring(2, 4), 16)
     const b = parseInt(hex.substring(4, 6), 16)
@@ -18,11 +19,11 @@ const getTextColor = (bgColor: string): string => {
 }
 
 export const StrongPill: React.FC<PillProps> = ({ colour, text }) => {
-    const textColor = getTextColor(colour)
+    const textColour = getTextColour(colour)
 
     return (
         <View style={[strongStyles.pill, { backgroundColor: colour }]}>
-            <Text style={[strongStyles.text, { color: textColor }]}>{text}</Text>
+            <Text style={[strongStyles.text, { color: textColour }]}>{text}</Text>
         </View>
     )
 }
@@ -42,11 +43,11 @@ const strongStyles = StyleSheet.create({
 })
 
 export const Pill: React.FC<PillProps> = ({ colour, text }) => {
-    const textColor = getTextColor(colour)
+    const textColour = getTextColour(colour)
 
     return (
         <View style={[styles.pill, { backgroundColor: colour }]}>
-            <Text style={[styles.text, { color: textColor }]}>Category: {text}</Text>
+            <Text style={[styles.text, { color: textColour }]}>Category: {text}</Text>
         </View>
     )
 }

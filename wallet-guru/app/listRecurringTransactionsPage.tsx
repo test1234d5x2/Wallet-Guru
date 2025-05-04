@@ -109,6 +109,7 @@ export default function ViewReccuringTransactionsList() {
         router.navigate(transaction.getPageURL())
     }
 
+    // Start of filtering.
     let tomorrow = new Date()
     tomorrow = new Date(tomorrow.setDate(tomorrow.getDate() + 1))
 
@@ -139,6 +140,7 @@ export default function ViewReccuringTransactionsList() {
         )
     }
 
+    // Sorting list of transactions
     combinedTransactions.sort((a, b) => b.data.date.getTime() - a.data.date.getTime())
 
     const transactionDisplayElements = combinedTransactions.map((item) => {

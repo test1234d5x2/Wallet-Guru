@@ -11,6 +11,7 @@ interface ModalSelectionProps<T extends Category> {
     required?: boolean
 }
 
+// Handle the TSX for both expense and income categories.
 export function ModalSelectionCategories<T extends Category>(props: ModalSelectionProps<T>, label: string) {
     const [showDropdown, setShowDropdown] = useState<boolean>(false)
     const displayText = props.value?.name || ''

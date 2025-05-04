@@ -100,7 +100,7 @@ export default function Dashboard() {
         getCategories()
     }, [token, incomes])
 
-
+    // Getting the 3 latest transactions.
     const combinedTransactions = [...expenses.map(expense => ({ type: 'expense', data: expense })), ...incomes.map(income => ({ type: 'income', data: income }))]
     combinedTransactions.sort((a, b) => b.data.date.getTime() - a.data.date.getTime())
     const transactionItemsList = combinedTransactions.slice(0, 3).map(item => {

@@ -10,6 +10,7 @@ function isExpense(tx: Transaction): tx is Expense {
     return 'receipt' in tx
 }
 
+// Generate QIF file format using the user's transaction data.
 export async function generateQIF(transactions: Transaction[], expenseCategoriesList: ExpenseCategory[], incomeCategoriesList: IncomeCategory[], filename: string, accountType = 'Bank') {
     const lines: string[] = []
     lines.push(`!Type:${accountType}`)

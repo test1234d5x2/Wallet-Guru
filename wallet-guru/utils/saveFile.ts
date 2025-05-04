@@ -1,5 +1,6 @@
 import * as FileSystem from 'expo-file-system'
 
+// Save a file with its contents. Used for saving the user's credentials.
 export default async function saveFile(filename: string, contents: string) {
     try {
         const perm = await FileSystem.StorageAccessFramework.requestDirectoryPermissionsAsync()
@@ -7,7 +8,7 @@ export default async function saveFile(filename: string, contents: string) {
             const uri = await FileSystem.StorageAccessFramework.createFileAsync(
                 perm.directoryUri,
                 filename,
-                'application/x-qif'
+                'application/json'
             )
             await FileSystem.StorageAccessFramework.writeAsStringAsync(
                 uri,

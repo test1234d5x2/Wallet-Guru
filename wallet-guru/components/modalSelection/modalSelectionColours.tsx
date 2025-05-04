@@ -9,6 +9,7 @@ interface ModalSelectionProps {
     required?: boolean
 }
 
+// Colour selection using a modal.
 const ModalSelectionColours = (props: ModalSelectionProps) => {
 
     const [showDropdown, setShowDropdown] = useState<boolean>(false)

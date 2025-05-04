@@ -113,6 +113,8 @@ export default function ViewTransactionsList() {
         router.navigate(transaction.getPageURL())
     }
 
+
+    // Start of filtering.
     const tomorrow = new Date()
     tomorrow.setDate(tomorrow.getDate() + 1)
 
@@ -139,6 +141,7 @@ export default function ViewTransactionsList() {
         combinedTransactions.push(...filteredExpenses.map(expense => ({ type: 'expense', data: expense })))
     }
 
+    // Sorting list of transactions
     combinedTransactions.sort((a, b) => b.data.date.getTime() - a.data.date.getTime())
 
     const transactionDisplayElements = combinedTransactions.map(item => {

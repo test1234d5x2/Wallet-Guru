@@ -9,7 +9,7 @@ function isExpense(tx: Transaction): tx is Expense {
     return 'receipt' in tx
 }
 
-
+// Generate CSV file format using the user's transaction data.
 export async function generateCSV(transactions: Transaction[], expenseCategoriesList: ExpenseCategory[], incomeCategoriesList: IncomeCategory[], filename: string) {
     const formatDate = (dt: Date): string => {
         const mm = String(dt.getMonth() + 1).padStart(2, '0')

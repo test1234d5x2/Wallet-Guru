@@ -5,6 +5,7 @@ import * as FileSystem from 'expo-file-system';
 
 const GEMINI_API_KEY = process.env.EXPO_PUBLIC_GEMINI_API_KEY
 
+// Google Gemini API to autofill fields using receipt upload.
 const pickImage = async (setReceipt: (r: string) => void, setDate: (text: Date | null) => void, setAmount: (text: string) => void, setTitle: (text: string) => void, setWaiting: (text: boolean) => void) => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync()
     if (status !== 'granted') {
